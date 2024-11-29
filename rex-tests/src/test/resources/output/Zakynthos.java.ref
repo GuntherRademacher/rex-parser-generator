@@ -1,0 +1,565 @@
+// This file was generated on Fri Dec 9, 2022 22:25 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q Zakynthos.ebnf -trace -java -a java
+
+                                                            // line 5 "Zakynthos.ebnf"
+                                                            import java.io.IOException;
+                                                            import java.io.OutputStreamWriter;
+                                                            import java.io.UnsupportedEncodingException;
+                                                            import java.io.Writer;
+
+                                                            class Zakynthos
+                                                            {
+                                                              public Zakynthos(String string)
+                                                              {
+                                                                initialize(string);
+                                                              }
+
+                                                              public static void main(String args[])
+                                                              {
+                                                                System.out.println("<result>");
+                                                                new Zakynthos("Ζάκυνθος2").parse_Zakynthos();
+                                                                new Zakynthos("1߿ࠀ�𐀀􏿿21").parse_Zakynthos();
+                                                                try
+                                                                {
+                                                                  new Zakynthos("x").parse_Zakynthos();
+                                                                  System.out.println("  <fail/>");
+                                                                }
+                                                                catch (Zakynthos.ParseException e)
+                                                                {
+                                                                  System.out.println("  <pass/>");
+                                                                }
+                                                                System.out.println("</result>");
+                                                              }
+                                                            // line 34 "Zakynthos.java"
+
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  public void initialize(CharSequence source)
+  {
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_Zakynthos()
+  {
+    traceNonterminal("parse", "start", "Zakynthos");
+    lookahead1(16);                 // Z1 | Z2
+    switch (l1)
+    {
+    case 1:                         // Z1
+      consume(1);                   // Z1
+      parse_Ζάκυνθος();
+      lookahead1(14);               // '1'
+      consume(19);                  // '1'
+      lookahead1(13);               // EOF
+      consume(18);                  // EOF
+      break;
+    default:
+      consume(2);                   // Z2
+      parse_Ζάκυνθος();
+      lookahead1(15);               // '2'
+      consume(20);                  // '2'
+      lookahead1(13);               // EOF
+      consume(18);                  // EOF
+    }
+    traceNonterminal("parse", "end", "Zakynthos");
+    flushTrace();
+  }
+
+  private void parse_Ζάκυνθος()
+  {
+    traceNonterminal("parse", "start", "Ζάκυνθος");
+    lookahead1(17);                 // CP49 | Ζ
+    switch (l1)
+    {
+    case 10:                        // Ζ
+      consume(10);                  // Ζ
+      lookahead1(6);                // ά
+      consume(11);                  // ά
+      lookahead1(7);                // κ
+      consume(12);                  // κ
+      lookahead1(8);                // υ
+      consume(13);                  // υ
+      lookahead1(9);                // ν
+      consume(14);                  // ν
+      lookahead1(10);               // θ
+      consume(15);                  // θ
+      lookahead1(11);               // ο
+      consume(16);                  // ο
+      lookahead1(12);               // ς
+      consume(17);                  // ς
+      break;
+    default:
+      consume(3);                   // CP49
+      lookahead1(0);                // CP55295
+      consume(4);                   // CP55295
+      lookahead1(1);                // CP57344
+      consume(5);                   // CP57344
+      lookahead1(2);                // CP65533
+      consume(6);                   // CP65533
+      lookahead1(3);                // CP65536
+      consume(7);                   // CP65536
+      lookahead1(4);                // CP1114111
+      consume(8);                   // CP1114111
+      lookahead1(5);                // CP50
+      consume(9);                   // CP50
+    }
+    traceNonterminal("parse", "end", "Ζάκυνθος");
+  }
+
+  private void traceNonterminal(String method, String occasion, String name)
+  {
+    writeTrace("  <" + method + " " + occasion + "nonterminal=\"" + name + "\"" + (l1 == 0 ? "" : " input=\"" + xmlEscape(lookaheadString()) + "\"") + "/>\n");
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+      writeTrace("  <parse terminal=\"" + xmlEscape(TOKEN[t]) + "\"" + (l1 == 0 ? "" : " input=\"" + xmlEscape(lookaheadString()) + "\"") + "/>\n");
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    flushTrace();
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private String lookaheadString()
+  {
+    String result = "";
+    if (l1 > 0)
+    {
+      result += TOKEN[l1];
+    }
+    return result;
+  }
+
+  private int     b0, e0;
+  private int l1, b1, e1;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+  private Writer err;
+  {
+    try
+    {
+      err = new OutputStreamWriter(System.err, "UTF-8");
+    }
+    catch (UnsupportedEncodingException uee)
+    {}
+  }
+
+  private int match(int tokenSetId)
+  {
+    writeTrace("  <tokenize tokenset=\"" + tokenSetId + "\">\n");
+
+    boolean nonbmp = false;
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    writeTrace("    <next state=\"" + (result & 127) + "\"");
+    for (int code = result & 127; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      writeTrace(" offset=\"" + current + "\"");
+      ++current;
+      if (c0 < 0x80)
+      {
+        if (c0 >= 32 && c0 <= 126)
+        {
+          writeTrace(" char=\"" + xmlEscape(String.valueOf((char) c0)) + "\"");
+        }
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 4;
+        charclass = MAP1[(c0 & 15) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = current < size ? input.charAt(current) : 0;
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            nonbmp = true;
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+
+        int lo = 0, hi = 2;
+        for (int m = 1; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) {hi = m - 1;}
+          else if (MAP2[3 + m] < c0) {lo = m + 1;}
+          else {charclass = MAP2[6 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+      writeTrace(" codepoint=\"" + c0 + "\" class=\"" + charclass + "\"");
+
+      state = code;
+      int i0 = (charclass << 7) + code - 1;
+      code = TRANSITION[(i0 & 7) + TRANSITION[i0 >> 3]];
+
+      if (code > 127)
+      {
+        result = code;
+        writeTrace(" result=\"" + xmlEscape(TOKEN[((result >> 7) & 31) - 1]) + "\"");
+        if ((result & 4096) > 0)
+        {
+          writeTrace(" token-size=\"" + (result >> 13) + "\"");
+        }
+        else if ((result >> 13) > 0)
+        {
+          writeTrace(" trailing-context-size=\"" + (result >> 13) + "\"");
+        }
+        code &= 127;
+        end = current;
+      }
+      writeTrace("/>\n");
+      if (code != 0)
+      {
+        writeTrace("    <next state=\"" + code + "\"");
+      }
+    }
+
+    result >>= 7;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      writeTrace("    <fail begin=\"" + begin + "\" end=\"" + end + "\" state=\"" + state + "\"/>\n");
+      writeTrace("  </tokenize>\n");
+      return error(begin, end, state, -1, -1);
+    }
+    else if ((result & 32) != 0)
+    {
+      end = begin;
+      if (nonbmp)
+      {
+        for (int i = result >> 6; i > 0; --i)
+        {
+          int c1 = end < size ? input.charAt(end) : 0;
+          ++end;
+          if (c1 >= 0xd800 && c1 < 0xdc000)
+          {
+            ++end;
+          }
+        }
+      }
+      else
+      {
+        end += (result >> 6);
+      }
+    }
+    else if (nonbmp)
+    {
+      for (int i = result >> 6; i > 0; --i)
+      {
+        --end;
+        int c1 = end < size ? input.charAt(end) : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000)
+        {
+          --end;
+        }
+      }
+    }
+    else
+    {
+      end -= result >> 6;
+    }
+
+    if (end > size) end = size;
+    writeTrace("    <done result=\"" + xmlEscape(TOKEN[(result & 31) - 1]) + "\" begin=\"" + begin + "\" end=\"" + end + "\"/>\n");
+    writeTrace("  </tokenize>\n");
+    return (result & 31) - 1;
+  }
+
+  private static String xmlEscape(String s)
+  {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length(); ++i)
+    {
+      char c = s.charAt(i);
+      switch (c)
+      {
+      case '<': sb.append("&lt;"); break;
+      case '"': sb.append("&quot;"); break;
+      case '&': sb.append("&amp;"); break;
+      default : sb.append(c); break;
+      }
+    }
+    return sb.toString();
+  }
+
+  public void setTraceWriter(Writer w)
+  {
+    err = w;
+  }
+
+  private void writeTrace(String content)
+  {
+    try
+    {
+      err.write(content);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void flushTrace()
+  {
+    try
+    {
+      err.flush();
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 127;
+    for (int i = 0; i < 21; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 81 + s - 1;
+      int f = EXPECTED[(i0 & 1) + EXPECTED[i0 >> 1]];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 108, 115, 148, 149, 147, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148,
+    /*  21 */ 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148,
+    /*  42 */ 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148,
+    /*  63 */ 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148,
+    /*  84 */ 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148, 148,
+    /* 105 */ 148, 148, 148, 181, 182, 182, 199, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182,
+    /* 126 */ 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 243, 203, 251, 233, 182, 182, 182,
+    /* 147 */ 219, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182,
+    /* 168 */ 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 182, 183, 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 194 */ 0, 0, 0, 0, 11, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 229 */ 0, 0, 0, 0, 0, 0, 9, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 6, 0, 0,
+    /* 264 */ 7, 0, 8
+  };
+
+  private static final int[] MAP2 =
+  {
+    /* 0 */ 65533, 65536, 1114111, 65533, 65536, 1114111, 13, 14, 15
+  };
+
+  private static final int[] INITIAL =
+  {
+    /*  0 */ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*   0 */ 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 515, 272, 283, 283,
+    /*  21 */ 283, 283, 283, 283, 525, 283, 283, 283, 283, 283, 283, 546, 505, 535, 283, 631, 283, 282, 292, 303, 487,
+    /*  42 */ 283, 283, 283, 283, 283, 283, 283, 283, 314, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283,
+    /*  63 */ 283, 274, 283, 283, 316, 324, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 333, 283, 344,
+    /*  84 */ 379, 283, 355, 366, 474, 378, 283, 283, 283, 283, 283, 283, 284, 283, 325, 283, 283, 454, 283, 283, 283,
+    /* 105 */ 283, 283, 283, 283, 283, 283, 283, 283, 387, 283, 397, 389, 283, 407, 496, 417, 283, 283, 283, 283, 283,
+    /* 126 */ 283, 283, 283, 610, 283, 649, 283, 427, 460, 653, 436, 448, 283, 283, 283, 283, 283, 283, 283, 464, 283,
+    /* 147 */ 440, 283, 472, 597, 585, 574, 482, 495, 283, 283, 283, 283, 283, 283, 504, 283, 513, 336, 283, 409, 523,
+    /* 168 */ 283, 283, 283, 283, 283, 283, 283, 283, 533, 283, 283, 306, 283, 283, 283, 283, 283, 283, 283, 283, 283,
+    /* 189 */ 283, 283, 283, 543, 283, 554, 283, 283, 565, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 582, 283,
+    /* 210 */ 627, 283, 593, 283, 347, 283, 283, 283, 283, 283, 283, 283, 283, 283, 570, 283, 614, 283, 605, 399, 283,
+    /* 231 */ 419, 622, 283, 283, 283, 283, 283, 283, 283, 370, 283, 295, 283, 644, 428, 283, 639, 358, 283, 283, 283,
+    /* 252 */ 283, 283, 283, 283, 283, 557, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 30,
+    /* 273 */ 32, 0, 0, 0, 0, 0, 0, 24, 0, 25472, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 33536, 0, 0, 0, 0, 0, 37, 0, 0, 0,
+    /* 304 */ 0, 41600, 0, 0, 0, 0, 0, 43, 0, 45, 31, 33, 0, 0, 0, 0, 0, 0, 44, 0, 46, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0,
+    /* 335 */ 28, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 63, 0, 65, 0, 0, 61, 0, 0, 0, 0, 0, 75, 0, 77, 0, 0,
+    /* 368 */ 0, 68, 0, 0, 0, 0, 23, 0, 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 52, 0, 27, 0, 0, 0, 0, 0, 0, 51, 0, 0, 40, 0, 0,
+    /* 401 */ 0, 0, 0, 0, 58, 0, 0, 60, 0, 0, 0, 0, 0, 0, 64, 0, 0, 73, 0, 0, 0, 0, 0, 0, 70, 0, 53, 0, 0, 0, 0, 0, 0,
+    /* 434 */ 0, 59, 0, 0, 0, 74, 0, 0, 0, 0, 10368, 0, 0, 0, 0, 0, 0, 80, 0, 81, 0, 0, 0, 55, 0, 57, 0, 0, 0, 62, 0, 0,
+    /* 466 */ 0, 0, 2304, 0, 0, 0, 0, 18432, 0, 0, 0, 0, 0, 0, 76, 0, 0, 50688, 0, 0, 0, 0, 0, 79, 0, 49664, 0, 4480, 0,
+    /* 495 */ 58752, 0, 0, 0, 0, 0, 0, 0, 71, 26, 0, 0, 0, 0, 0, 0, 0, 2688, 39, 0, 0, 0, 0, 0, 0, 0, 2560, 0, 66, 0, 0,
+    /* 526 */ 0, 0, 0, 0, 0, 4352, 0, 19, 0, 0, 0, 0, 0, 0, 0, 9344, 0, 0, 20, 0, 0, 0, 0, 0, 0, 1280, 0, 0, 0, 0, 34,
+    /* 557 */ 0, 0, 0, 0, 0, 2432, 0, 0, 0, 0, 54, 0, 56, 0, 0, 0, 22, 0, 0, 0, 0, 42624, 0, 0, 0, 0, 0, 21, 0, 0, 0, 0,
+    /* 589 */ 0, 34560, 0, 0, 0, 47, 0, 0, 0, 0, 0, 0, 26496, 0, 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 36, 0,
+    /* 620 */ 0, 0, 72, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 17408, 0, 0, 0, 0, 67, 0, 0, 0, 0, 0, 0, 49, 0, 0, 0, 0,
+    /* 652 */ 42, 0, 0, 0, 0, 69, 0, 0, 0
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /*  0 */ 41, 43, 53, 45, 62, 67, 55, 57, 64, 41, 43, 59, 61, 66, 68, 48, 50, 42, 44, 61, 66, 47, 49, 41, 70, 61, 63,
+    /* 27 */ 48, 50, 72, 61, 47, 49, 51, 46, 48, 74, 47, 49, 47, 50, 16, 32, 64, 128, 2048, 4096, 6, 6, 8, 1024, 16,
+    /* 52 */ 2048, 256, 512, 131072, 262144, 524288, 1048576, 256, 2048, 4096, 8192, 16384, 6, 1032, 16384, 32768,
+    /* 68 */ 65536, 6, 64, 2048, 32, 2048, 1024, 2048
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "Z1",
+    "Z2",
+    "'1'",
+    "CP55295",
+    "CP57344",
+    "CP65533",
+    "CP65536",
+    "CP1114111",
+    "'2'",
+    "'Ζ'",
+    "'ά'",
+    "'κ'",
+    "'υ'",
+    "'ν'",
+    "'θ'",
+    "'ο'",
+    "'ς'",
+    "EOF",
+    "'1'",
+    "'2'"
+  };
+}
+
+// End

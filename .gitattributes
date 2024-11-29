@@ -1,0 +1,6 @@
+*.rex                           linguist-language=Text
+*.sh                            text eol=lf
+*.bat                           text eol=crlf
+rex-tests/gradlew               text eol=lf
+rex-tests/gradlew.bat           text eol=crlf
+rex-tests/src/test/resources/** binary

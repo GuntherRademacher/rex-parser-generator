@@ -1,0 +1,1419 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintGo.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include "../common/CompressedMap.hpp"
+
+                                                            void PrintGo::openClass()
+                                                            {
+                                                              if (hasProlog)
+                                                              {
+~
+~                                                             }
+                                                              else
+                                                              {
+~
+package ~                                                       if (main || packageName.empty())
+                                                                {
+        ~main~                                                  }
+                                                                else
+                                                                {
+                                                                  print(packageName.c_str());
+                                                                }
+~
+
+import (
+  "strconv"
+  "unicode/utf8"~
+                                                                if (main || performanceTest)
+                                                                {
+~
+  "os"
+  "io/ioutil"
+  "fmt"~                                                        }
+                                                                if (main || performanceTest || trace)
+                                                                {
+~
+  "strings"~                                                    }
+                                                                if (performanceTest)
+                                                                {
+~
+  "path/filepath"
+  "time"~                                                       }
+                                                                if (useGlr)
+                                                                {
+~
+  "container/heap"~                                             }
+~
+)
+~                                                             }
+                                                              if (main)
+                                                              {
+~
+func main() {
+  if len(os.Args) < 2 {
+    os.Stderr.WriteString("Usage: ~                             print(className.c_str());
+                                                                if (tree)
+                                                                {
+                                  ~ [-i]~                       }
+                                  ~ INPUT...\n")
+    os.Stderr.WriteString("\n")
+    os.Stderr.WriteString("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n")~
+                                                                if (tree)
+                                                                {
+~
+    os.Stderr.WriteString("\n")
+    os.Stderr.WriteString("  Option:\n")
+    os.Stderr.WriteString("    -i     indented parse tree\n")~  }
+~
+  } else {~                                                     if (tree)
+                                                                {
+~
+    indent := false~                                            }
+~
+    for i := 1; i < len(os.Args); i++ {
+      arg := os.Args[i]~                                        if (tree)
+                                                                {
+~
+      if arg == "-i" {
+        indent = true
+        continue
+      }
+      s := new(XmlSerializer)
+      s.indent = indent~                                          if (isLrParser)
+                                                                  {
+~
+      b := &ParseTreeBuilder{}~                                 }
+                                                                }
+~
+      input := read(arg)
+      parser := NewParser(input~                                if (noLexer)
+                                                                {
+                               ~, new ~                           print(className.c_str());
+                                      ~Lexer()~                 }
+                                                                if (tree)
+                                                                {
+                               ~, ~                             if (isLrParser)
+                                                                  {
+                                  ~b~                             }
+                                                                  else
+                                                                  {
+                                  ~s~                             }
+                                                                }
+                                       ~)~                      if (trace)
+                                                                {
+~
+      writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n")~
+                                                                }
+~
+      pe := parser.~                                            print(visibilityMethodPrefix());
+                                                                print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                   ~()~                                         if (trace)
+                                                                {
+~
+      writeTrace("</trace>\n")~                                 }
+~
+      if pe != nil {~                                           if (useGlr && tree)
+                                                                {
+~
+        if pe.IsAmbiguousInput() {
+          pe.Serialize(s)
+          fmt.Println()
+        }~                                                      }
+~
+        panic(fmt.Sprintf("ParseError while processing %s:\n%s\n", arg, parser.GetErrorMessage(*pe)))
+      }~                                                        if (tree && isLrParser)
+                                                                {
+       ~ else {
+        b.Serialize(s)
+      }~                                                        }
+~
+    }
+  }
+}
+~                                                             }
+                                                              if (interfaceName.empty())
+                                                              {
+                                                                printParseException();
+                                                                printEventHandlerImplementation();
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+                                                                printFileProcessor();
+                                                              }
+                                                              if (main || performanceTest)
+                                                              {
+                                                                printReadMethod();
+                                                              }
+                                                              if (! hasProlog)
+                                                              {
+                                                                WString args(L"input string");
+                                                                if (noLexer) args += L", lexer Lexer";
+                                                                if (tree) args += isLrParser ? L", t BottomUpEventHandler" : L", t EventHandler";
+~
+func NewParser(~                                                print(args.c_str());
+               ~) *~                                            print(className.c_str());
+                   ~ {
+  parser := new(~                                               print(className.c_str());
+                ~)
+  parser.Initialize(input~                                      if (noLexer)
+                                                                {
+                         ~, lexer~                              }
+                                                                if (tree)
+                                                                {
+                         ~, t~                                  }
+                         ~)
+  return parser
+}
+~                                                             }
+                                                            }
+
+                                                            void PrintGo::openStackNode()
+                                                            {
+~
+type StackNode struct {
+  state int~                                                  if (grammar->states->hasLookback)
+                                                              {
+~
+  code int~                                                   }
+                                                              if (tree || useGlr)
+                                                              {
+~
+  pos int~                                                    }
+~
+  link *StackNode
+}
+
+func (this *StackNode) equals(rhs *StackNode) bool {
+  lhs := this
+  for lhs != nil && rhs != nil {
+    if lhs == rhs {
+      return true
+    }
+    if lhs.state != rhs.state {
+      return false
+    }~                                                        if (grammar->states->hasLookback)
+                                                              {
+~
+    if lhs.code != rhs.code {
+      return false
+    }~                                                        }
+                                                              if (tree || useGlr)
+                                                              {
+~
+    if lhs.pos != rhs.pos {
+      return false
+    }~                                                        }
+~
+    lhs = lhs.link
+    rhs = rhs.link
+  }
+  return lhs == rhs
+}
+~                                                             beginPublic();
+                                                            }
+
+                                                            void PrintGo::closeStackNode()
+                                                            {
+                                                              beginNonpublic();
+                                                              if (hasCustomCode)
+                                                              {
+~
+type DeferredCode struct {
+  link *DeferredCode
+  codeId int
+  b0 int
+  e0 int
+}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+type DeferredEvent interface {
+  getLink() DeferredEvent
+  setLink(d DeferredEvent)
+  getName() string
+  setName(s string)
+  getBegin() int
+  setBegin(i int)
+  getEnd() int
+  setEnd(i int)
+  execute(eventHandler BottomUpEventHandler)
+}
+
+type AbstractDeferredEvent struct {
+  link DeferredEvent
+  name string
+  begin int
+  end int
+}
+
+func (this *AbstractDeferredEvent) getLink() DeferredEvent {
+  d, ok := this.link.(DeferredEvent)
+  if ok {
+    return d
+  } else {
+    return nil
+  }
+}
+
+func (this *AbstractDeferredEvent) setLink(d DeferredEvent) {this.link = d}
+func (this *AbstractDeferredEvent) getName() string {return this.name}
+func (this *AbstractDeferredEvent) setName(s string) {this.name = s}
+func (this *AbstractDeferredEvent) getBegin() int {return this.begin}
+func (this *AbstractDeferredEvent) setBegin(i int) {this.begin = i}
+func (this *AbstractDeferredEvent) getEnd() int {return this.end}
+func (this *AbstractDeferredEvent) setEnd(i int) {this.end = i}
+
+func release(this DeferredEvent, eventHandler BottomUpEventHandler) {
+  current := this
+  predecessor := current.getLink()
+  current.setLink(nil)
+  for predecessor != nil {
+    next := predecessor.getLink()
+    predecessor.setLink(current)
+    current = predecessor
+    predecessor = next
+  }
+  for {
+    current.execute(eventHandler)
+    current = current.getLink()
+    if current == nil {
+      break
+    }
+  }
+}
+
+func show(this DeferredEvent, eventHandler BottomUpEventHandler) {
+  var stack []DeferredEvent
+  for current := this; current != nil; current = current.getLink() {
+    stack = append(stack, current)
+  }
+  for i := len(stack) - 1; i >= 0; i -= 1 {
+    stack[i].execute(eventHandler)
+  }
+}
+
+type TerminalEvent struct {
+  *AbstractDeferredEvent
+}
+
+func (this *TerminalEvent) execute(eventHandler BottomUpEventHandler) {
+  eventHandler.Terminal(this.name, this.begin, this.end)
+}
+
+func (this *TerminalEvent) toString() string {
+  return "terminal(" + this.name + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ")"
+}
+
+type NonterminalEvent struct {
+  *AbstractDeferredEvent
+  count int
+}
+
+func (this *NonterminalEvent) execute(eventHandler BottomUpEventHandler) {
+  eventHandler.Nonterminal(this.name, this.begin, this.end, this.count)
+}
+
+func (this *NonterminalEvent) toString() string {
+  return "nonterminal(" + this.name + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ", " + strconv.Itoa(this.count) + ")"
+}
+~                                                             }
+~
+const (
+  PARSING = 0
+  ACCEPTED = 1
+  ERROR = 2
+)
+
+func (this *~                                                 print(className.c_str());
+            ~) parse(target int, initialState int, ~          if (tree)
+                                                              {
+                                                        ~eventHandler BottomUpEventHandler, ~
+                                                              }
+                                                        ~thread *ParsingThread) *ParsingThread {
+  threads := thread.open(initialState~                        if (tree)
+                                                              {
+                                     ~, eventHandler~         }
+                                     ~, target)
+  for {
+    thread = heap.Pop(threads).(*ParsingThread)
+    if (thread.accepted) {
+      var other *ParsingThread = nil
+      for ! threads.isEmpty() {
+        other = heap.Pop(threads).(*ParsingThread)
+        if thread.e0 < other.e0 {
+          thread = other
+          other = nil
+        }
+      }
+      if other != nil {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+                        ~, thread.deferredEvent, other.deferredEvent~
+                                                              }
+                        ~)
+      }~
+                                                              if (tree)
+                                                              {
+~
+      if thread.deferredEvent != nil {
+        release(thread.deferredEvent, eventHandler)
+        thread.deferredEvent = nil
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.ExecuteDeferredCode()~                           }
+~
+      return thread
+    }
+
+    if ! threads.isEmpty() {
+      if threads.peek().equals(thread) {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+                        ~, thread.deferredEvent, threads.peek().deferredEvent~
+                                                              }
+                        ~)
+      }~
+                                                              if (tree || hasCustomCode)
+                                                              {
+~
+    } else {~                                                   if (tree)
+                                                                {
+~
+      if thread.deferredEvent != nil {
+        release(thread.deferredEvent, eventHandler)
+        thread.deferredEvent = nil
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.ExecuteDeferredCode()~                             }
+                                                              }
+~
+    }
+
+    var status int
+    for {
+      status = thread.parse()
+      if status != PARSING {
+        break
+      }
+      if ! threads.isEmpty() {
+        break
+      }
+    }
+
+    if status != ERROR {
+      heap.Push(threads, thread)
+    } else if threads.isEmpty() {
+      panic(&ParseError{thread.b1,
+                        thread.e1,
+                        tokenset[thread.state] + 1,
+                        thread.l1,
+                        -1,
+                        false~                                if (tree)
+                                                              {
+                             ~,
+                        nil~                                  }
+                           ~})
+    }
+  }
+}
+
+func (this *~                                                 print(className.c_str());
+            ~) rejectAmbiguity(begin int, end int~            if (tree)
+                                                              {
+                             ~, first DeferredEvent, second DeferredEvent~
+                                                              }
+                             ~) {~                            if (tree)
+                                                              {
+~
+  treeBuilder := new(ParseTreeBuilder)
+  treeBuilder.Reset(this.input)
+  show(second, treeBuilder)
+  treeBuilder.Nonterminal("ALTERNATIVE", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
+  secondTree := treeBuilder.pop(1)[0]
+  show(first, treeBuilder)
+  treeBuilder.Nonterminal("ALTERNATIVE", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
+  treeBuilder.push(secondTree)
+  treeBuilder.Nonterminal("AMBIGUOUS", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)~
+                                                              }
+~
+  panic(&ParseError{begin, end, 1, -1, -1, true~              if (tree)
+                                                              {
+                                     ~, treeBuilder~          }
+                                     ~})
+}
+~                                                           }
+
+                                                            void PrintGo::openThread()
+                                                            {
+~
+type PriorityQueue []*ParsingThread
+
+func (this PriorityQueue) Len() int {
+  return len(this)
+}
+
+func (this PriorityQueue) Less(i, j int) bool {
+  return this[i].compareTo(this[j]) < 0
+}
+
+func (this PriorityQueue) Swap(i, j int) {
+  this[i], this[j] = this[j], this[i]
+}
+
+func (this *PriorityQueue) Push(x interface{}) {
+  thread := x.(*ParsingThread)
+  *this = append(*this, thread)
+}
+
+func (this *PriorityQueue) Pop() interface{} {
+  pq := *this
+  n := len(pq) - 1
+  thread := pq[n]
+  pq[n] = nil
+  *this = pq[0:n]
+  return thread
+}
+
+func (this *PriorityQueue) isEmpty() bool {
+  return len(*this) == 0
+}
+
+func (this *PriorityQueue) peek() *ParsingThread {
+  pq := *this
+  return pq[len(pq) - 1]
+}
+
+type ParsingThread struct {
+  parser *~                                                   print(className.c_str());
+          ~
+  threads *PriorityQueue
+  accepted bool
+  stack *StackNode
+  state int
+  action int
+  target int~                                                 if (tree)
+                                                              {
+~
+  deferredEvent DeferredEvent~                                }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  deferredCode *DeferredCode~                                 }
+~
+  id int~                                                     printTokenVars();
+~
+  begin int
+  end int
+}
+
+func (this *ParsingThread) open(initialState int~             if (tree)
+                                                              {
+                         ~, eh BottomUpEventHandler~          }
+                         ~, t int) *PriorityQueue {
+  this.accepted = false
+  this.target = t~                                            if (tree)
+                                                              {
+~
+  this.eventHandler = eh
+  if this.eventHandler != nil {
+    this.eventHandler.Reset(this.parser.input)
+  }
+  this.deferredEvent = nil~                                   }
+                                                              if (hasCustomCode && useGlr)
+                                                              {
+~
+  this.deferredCode = nil~                                    }
+~
+  this.stack = &StackNode{-1, ~                               if (grammar->states->hasLookback)
+                                                              {
+                              ~0, ~                           }
+                              ~this.e0, nil}
+  this.state = initialState
+  this.action = this.predict(initialState)~                   if (tree)
+                                                              {
+~
+  this.bw = this.e0
+  this.bs = this.e0
+  this.es = this.e0~                                          }
+~
+  this.threads = new(PriorityQueue)
+  heap.Push(this.threads, this)
+  return this.threads
+}
+
+func (this *ParsingThread) copy(other *ParsingThread, action int) *ParsingThread {
+  this.action = action
+  this.accepted = other.accepted
+  this.target = other.target
+  this.parser = other.parser~                                 if (tree)
+                                                              {
+~
+  this.bs = other.bs
+  this.es = other.es
+  this.bw = other.bw
+  this.eventHandler = other.eventHandler
+  this.deferredEvent = other.deferredEvent~                   }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  this.deferredCode = other.deferredCode~                     }
+~
+  this.parser.maxId++
+  this.id = this.parser.maxId
+  this.threads = other.threads
+  this.state = other.state
+  this.stack = other.stack
+  this.b0 = other.b0
+  this.e0 = other.e0~                                         for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+  this.l~                                                       print(iString);
+        ~ = other.l~                                            print(iString);
+                   ~
+  this.b~                                                       print(iString);
+        ~ = other.b~                                            print(iString);
+                   ~
+  this.e~                                                       print(iString);
+        ~ = other.e~                                            print(iString);
+                                                              }
+~
+  this.end = other.end
+  return this
+}
+
+func (this *ParsingThread) compareTo(other *ParsingThread) int {
+  if this.accepted != other.accepted {
+    if this.accepted {
+      return 1
+    }
+    return -1
+  }
+  comp := this.e0 - other.e0
+  if comp == 0 {
+    return this.id - other.id
+  }
+  return comp
+}
+
+func (this *ParsingThread) equals(other *ParsingThread) bool {
+  if this.accepted != other.accepted {
+    return false
+  }
+  if this.b1 != other.b1 {
+    return false
+  }
+  if this.e1 != other.e1 {
+    return false
+  }
+  if this.l1 != other.l1 {
+    return false
+  }
+  if this.state != other.state {
+    return false
+  }
+  if this.action != other.action {
+    return false
+  }
+  if ! this.stack.equals(other.stack) {
+    return false
+  }
+  return true
+}
+
+func (this *ParsingThread) parse() int {~                     beginPublic();
+                                                            }
+
+                                                            void PrintGo::printFlush(int i, bool withinThread)
+                                                            {
+                                                              if (trace)
+                                                              {
+                                                                increaseIndent(i);
+~
+flushTrace();~                                                  decreaseIndent(i);
+                                                              }
+                                                            }
+
+                                                            void PrintGo::openMethod(const wchar_t *type,
+                                                                                     const wchar_t *prefix,
+                                                                                     const wchar_t *name,
+                                                                                     const wchar_t *args,
+                                                                                     bool constant,
+                                                                                     const wchar_t *clazz)
+                                                            {
+                                                              if (clazz == 0) clazz = className.c_str();
+~
+func (this *~                                                 print(clazz);
+            ~) ~                                              wchar_t initial[2] = {name[0], 0};
+                                                              if (wcscmp(visibility, publ()) == 0) initial[0] = towupper(initial[0]);
+                                                              print(initial);
+                                                              print(name + 1);
+                ~(~                                           printArgs(args);
+                  ~)~                                         if (wcscmp(type, voidType()))
+                                                              {
+                    ~ ~                                         print(WString(type).rtrim().c_str());
+                                                              }
+                                                            }
+
+                                                            void PrintGo::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+~
+func (this *~                                                   print(useGlr ? L"ParsingThread" : className.c_str());
+            ~) lookaheadString() string {
+  result := ""~                                                 for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+~
+  if this.l~                                                      print(format.toString<wchar_t>(i));
+           ~ > 0 {
+    result += ~                                                   if (i != 1)
+                                                                  {
+              ~" " + ~                                            }
+                     ~token[this.l~                               print(format.toString<wchar_t>(i));
+                                  ~]~                             increaseIndent();
+                                                                }
+                                                                for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+  }~                                                            }
+~
+  return result
+}
+~                                                             }
+                                                              if (memoization)
+                                                              {
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+func (this *~                                                   print(className.c_str());
+            ~) memoize(i int, e int, v int) {
+  this.memo[(e << ~                                             print(format.toString<wchar_t>(bits));
+                  ~) + i] = v
+}
+
+func (this *~                                                   print(className.c_str());
+            ~) memoized(i int, e int) int {
+  return this.memo[(e << ~                                      print(format.toString<wchar_t>(bits));
+                         ~) + i]
+}
+~                                                             }
+~
+type ~                                                        print(className.c_str());
+     ~ struct {~                                              if (useGlr)
+                                                              {
+~
+  thread *ParsingThread
+  input string~                                                 if (tree)
+                                                                {
+~
+  eventHandler BottomUpEventHandler~                            }
+~
+  size int
+  maxId int~                                                  }
+                                                              else
+                                                              {
+                                                                printTokenVars();
+                                                              }
+                                                              if (memoization)
+                                                              {
+~
+  memo map[int]int~                                             if (grammar->noThrow)
+                                                                {
+~
+  viable bool~                                                  }
+                                                              }
+                                                            }
+
+                                                            void PrintGo::printFileProcessor()
+                                                            {
+~
+var quiet bool = false
+var parsed int64 = 0
+var errorCount int = 0
+var parsers []*ParseJob
+
+type ParseJob struct {
+  name string
+  input string
+  parser *~                                                   print(className.c_str());
+                                                              if (tree)
+                                                              {
+~
+  contentCounter *ContentCounter~                               if (isLrParser)
+                                                                {
+~
+  parseTreeBuilder *ParseTreeBuilder~                           }
+                                                              }
+~
+}
+
+func main() {
+  if len(os.Args) < 2 {
+    os.Stderr.WriteString("Usage: ~                           print(className.c_str());
+                                  ~ [-q] [-r N] [-t N] ENDING...\n")
+    os.Stderr.WriteString("\n")
+    os.Stderr.WriteString("  parse all files that have names ending with ENDING, in current dir and below,\n")
+    os.Stderr.WriteString("  and display performance summary.\n")
+    os.Stderr.WriteString("\n")
+    os.Stderr.WriteString("  -q     do not show file names\n")
+    os.Stderr.WriteString("  -r N   repeat N times\n")
+    os.Stderr.WriteString("  -t N   repeat until N seconds have elapsed\n")
+  } else {
+    repeat := 1
+    timeout := 0
+    var i int
+    for i = 1; i < len(os.Args) && strings.HasPrefix(os.Args[i], "-"); i++ {
+      var opt byte = ' '
+      if len(os.Args[i]) == 2 {
+        opt = os.Args[i][1]
+      }
+      switch opt {
+      case 'q':
+        quiet = true
+      case 'r':
+        i++
+        repeat, _ = strconv.Atoi(os.Args[i])
+        timeout = 0
+      case 't':
+        repeat = 0
+        i++
+        timeout, _ = strconv.Atoi(os.Args[i])
+        timeout *= 1000
+      default:
+        panic("invalid option: " + os.Args[i])
+      }
+    }
+
+    start := time.Now().UnixNano() / int64(time.Millisecond)
+
+    for ; i < len(os.Args); i++ {
+      err := filepath.Walk(".", func (path string, f os.FileInfo, err error) error {
+        if strings.HasSuffix(path, os.Args[i]) {
+          collectInput(path, read(path))
+        }
+        return nil
+      })
+      if err != nil {
+        panic(err)
+      }
+    }
+
+    if len(parsers) != 0 {
+      msec := time.Now().UnixNano() / int64(time.Millisecond) - start
+
+      if ! quiet {
+        fmt.Println()
+      }
+      plural := "s"
+      if len(parsers) == 1 {
+        plural = ""
+      }
+      fmt.Println("loaded " + strconv.Itoa(len(parsers)) + " file" + plural + " in " + strconv.FormatInt(msec, 10) + " msec")
+      if ! quiet {
+        fmt.Println()
+      }
+      os.Stdout.Sync()
+
+      start = time.Now().UnixNano() / int64(time.Millisecond)
+      for i = 0; ; i++ {
+        if repeat != 0 && i >= repeat {
+          break
+        }
+        if timeout != 0 && int(time.Now().UnixNano() / int64(time.Millisecond) - start) >= timeout {
+          break
+        }
+
+        for _, job := range parsers {
+          if job.parser != nil {
+            if ! quiet {
+              fmt.Print("parsing " + job.name)
+            }
+            job.parser~                                           if (useGlr)
+                                                                  {
+                      ~.thread~                                   }
+                      ~.Reset(0, 0, 0)
+            pe := job.parser.Parse_~                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                                   ~()
+            if pe != nil {
+              errorCount++
+              if quiet {
+                fmt.Println("parsing " + job.name)
+              }
+              fmt.Println(": error: " + job.parser.GetErrorMessage(*pe))
+              job.parser = nil
+            }
+            if ! quiet {
+              fmt.Println()
+            }~                                                    if (tree)
+                                                                  {
+                                                                    if (isLrParser)
+                                                                    {
+~
+            job.parseTreeBuilder.Serialize(job.contentCounter)~     }
+~
+            if (job.contentCounter.getLength() != len(job.input)) {
+              panic("content counter saw " + strconv.Itoa(job.contentCounter.getLength()) + ", but input length is " + strconv.Itoa(len(job.input)))
+            }~                                                    }
+~
+            parsed += int64(len(job.input))
+          }
+        }
+      }
+      msec = time.Now().UnixNano() / int64(time.Millisecond) - start
+      var mbPerSec string = ""
+      if msec != 0 {
+        mbPerSec = fmt.Sprintf("%.2f", float64(parsed) / 1024e0 / 1024e0 * 1000e0 / float64(msec))
+      }
+
+      if ! quiet {
+        fmt.Println()
+      }
+      plural = "s"
+      if parsed == 1 {
+        plural = ""
+      }
+      fmt.Print("parsed " + strconv.FormatInt(parsed, 10) + " byte" + plural +
+                " in " + strconv.FormatInt(msec, 10) + " msec")
+      if mbPerSec != "" {
+        fmt.Print(" (" + mbPerSec + " MB/sec)")
+      }
+      fmt.Println()
+      plural = "s"
+      if errorCount == 1 {
+        plural = ""
+      }
+      fmt.Println(strconv.Itoa(errorCount) + " error" + plural)
+    }
+  }
+}
+
+func collectInput(name string, content string) {
+  if ! quiet {
+    fmt.Println("loading " + name)
+  }
+~                                                             if (tree)
+                                                              {
+~
+  contentCounter := new(ContentCounter)~                        if (isLrParser)
+                                                                {
+~
+  parseTreeBuilder := new(ParseTreeBuilder)~                    }
+                                                              }
+~
+  parsers = append(parsers, &ParseJob{name, content, NewParser(content~
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                          ~, parseTreeBuilder~                  }
+                                                                else
+                                                                {
+                          ~, contentCounter~                    }
+                                                              }
+                          ~)~                                 if (tree)
+                                                              {
+                          ~, contentCounter~                    if (isLrParser)
+                                                                {
+                          ~, parseTreeBuilder~                  }
+                                                              }
+                          ~})
+}
+~
+                                                            }
+
+                                                            void PrintGo::printReadMethod()
+                                                            {
+~
+func read(arg string) string {
+  if strings.HasPrefix(arg, "{") && strings.HasSuffix(arg, "}") {
+    return arg[1:len(arg) - 1]
+  } else {
+    content, err := ioutil.ReadFile(arg)
+    if err != nil {
+      panic(err)
+    }
+    if len(content) > 0 && content[0] == byte(0xef) && content[1] == byte(0xbb) && content[2] == byte(0xbf) {
+      content = content[3:]
+    }
+    return string(content)
+  }
+}
+~                                                           }
+
+                                                            void PrintGo::printInterface()
+                                                            {
+                                                              if (! packageName.empty())
+                                                              {
+~
+package ~                                                       print(packageName.c_str());
+~;
+~                                                             }
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+import java.io.IOException;
+import java.io.Writer;
+~                                                               }
+~
+import java.util.Arrays;~                                     }
+~
+public interface ~                                            print(className.c_str());
+~
+{
+  public void initialize(CharSequence input~                  if (noLexer)
+                                                              {
+                                           ~, Lexer l~        }
+                                                              if (tree)
+                                                              {
+                                           ~, ~                 if (isLrParser)
+                                                                {
+                                              ~BottomUp~
+                                                                }
+                                              ~EventHandler eh~
+                                                              }
+                                           ~);
+  public void parse();
+  public void Reset();
+  public String getErrorMessage(ParseException e);
+~                                                             printParseException();
+                                                              printEventHandlerImplementation();
+~}
+~                                                           }
+
+                                                            void PrintGo::printParseException()
+                                                            {
+~
+type ParseError struct {
+  begin int
+  end int
+  state int
+  offending int
+  expected int~                                               if (useGlr)
+                                                              {
+~
+  ambiguousInput bool~                                          if (tree)
+                                                                {
+~
+  ambiguityDescriptor *ParseTreeBuilder~                        }
+                                                              }
+~
+}
+
+func (this ParseError) Error() string {
+  if ~                                                        if (useGlr)
+                                                              {
+     ~this.ambiguousInput {
+    return "ambiguous input"
+  } else if ~                                                 }
+     ~this.offending < 0 {
+    return "lexical analysis failed"
+  } else {
+    return "syntax error"
+  }
+}
+~                                                             if (tree)
+                                                              {
+~
+func (this *ParseError) Serialize(eventHandler EventHandler) {~ if (useGlr)
+                                                                {
+~
+  this.ambiguityDescriptor.Serialize(eventHandler)~             }
+~
+}
+~                                                             }
+~
+func (this *ParseError) GetBegin() int {return this.begin}
+func (this *ParseError) GetEnd() int {return this.end}
+func (this *ParseError) GetState() int {return this.state}
+func (this *ParseError) GetOffending() int {return this.offending}
+func (this *ParseError) GetExpected() int {return this.expected}
+func (this *ParseError) IsAmbiguousInput() bool {return ~     if (useGlr)
+                                                              {
+                                                        ~this.ambiguousInput~
+                                                              }
+                                                              else
+                                                              {
+                                                        ~false~
+                                                              }
+                                                              ~}
+~                                                             if (noLexer)
+                                                              {
+~
+  public static class Token
+  {
+    public int code;
+    public int begin;
+    public int end;
+  }
+
+  public interface Lexer
+  {
+    void Reset(CharSequence input);
+    void match(int tokenset, Token token);
+  }
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+type EventHandler interface {
+  Reset(input string)
+  StartNonterminal(name string, begin int)
+  EndNonterminal(name string, end int)
+  Terminal(name string, begin, end int)
+  Whitespace(begin, end int)
+}
+
+type TopDownTreeBuilder struct {
+  input string
+  stack []*Nonterminal
+  top int
+}
+
+func (this *TopDownTreeBuilder) Reset(input string) {
+  this.input = input
+  this.stack = make([]*Nonterminal, 1)
+  this.top = -1
+}
+
+func (this *TopDownTreeBuilder) StartNonterminal(name string, begin int) {
+  nonterminal := &Nonterminal{&AbstractSymbol{name, begin, begin}, []Symbol{}}
+  if this.top >= 0 {
+    this.addChild(nonterminal)
+  }
+  this.top++
+  if this.top >= cap(this.stack) {
+    this.stack = append(this.stack, this.stack...)
+  }
+  this.stack[this.top] = nonterminal
+}
+
+func (this *TopDownTreeBuilder) EndNonterminal(name string, end int) {
+  this.stack[this.top].end = end
+  if this.top > 0 {
+    this.top--
+  }
+}
+
+func (this *TopDownTreeBuilder) Terminal(name string, begin, end int) {
+  this.addChild(&Terminal{&AbstractSymbol{name, begin, end}})
+}
+
+func (this *TopDownTreeBuilder) Whitespace(begin, end int) {
+}
+
+func (this *TopDownTreeBuilder) addChild(s Symbol) {
+  current := this.stack[this.top]
+  current.addChild(s)
+}
+
+func (this *TopDownTreeBuilder) Serialize(e EventHandler) {
+  e.Reset(this.input)
+  this.stack[0].send(e)
+}
+
+type Symbol interface {
+  GetName() string
+  GetBegin() int
+  GetEnd() int
+  send(e EventHandler)
+}
+
+type AbstractSymbol struct {
+  name string
+  begin int
+  end int
+}
+
+func (this *AbstractSymbol) GetName() string {
+  return this.name
+}
+
+func (this *AbstractSymbol) GetBegin() int {
+  return this.begin
+}
+
+func (this *AbstractSymbol) GetEnd() int {
+  return this.end
+}
+
+type Nonterminal struct {
+  *AbstractSymbol
+  children []Symbol
+}
+
+func (this *Nonterminal) addChild(s Symbol) {
+  this.children = append(this.children, s)
+}
+
+func (this *Nonterminal) send(e EventHandler) {
+  e.StartNonterminal(this.GetName(), this.GetBegin())
+  pos := this.GetBegin()
+  for _, c := range this.children {
+    if pos < c.GetBegin() {
+     e.Whitespace(pos, c.GetBegin())
+    }
+    c.send(e)
+    pos = c.GetEnd()
+  }
+  if pos < this.GetEnd() {
+    e.Whitespace(pos, this.GetEnd())
+  }
+  e.EndNonterminal(this.GetName(), this.GetEnd())
+}
+
+type Terminal struct {
+  *AbstractSymbol
+}
+
+func (this *Terminal) send(e EventHandler) {
+  e.Terminal(this.GetName(), this.GetBegin(), this.GetEnd())
+}
+~                                                               if (isLrParser)
+                                                                {
+~
+type BottomUpEventHandler interface {
+  Reset(input string)
+  Nonterminal(name string, begin int, end int, count int)
+  Terminal(name string, begin int, end int)
+}
+~                                                               }
+                                                              }
+                                                            }
+
+                                                            void PrintGo::printEventHandlerImplementation()
+                                                            {
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+type XmlSerializer struct {
+  indent bool
+  input string
+  delayedTag string
+  hasChildElement bool
+  depth int
+}
+
+func (this *XmlSerializer) Reset(input string) {
+  fmt.Print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+
+  this.input = input
+  this.delayedTag = ""
+  this.hasChildElement = false
+  this.depth = 0
+}
+
+func (this *XmlSerializer) StartNonterminal(tag string, b int) {
+  if this.delayedTag != "" {
+    fmt.Print("<")
+    fmt.Print(this.delayedTag)
+    fmt.Print(">")
+  }
+  this.delayedTag = tag
+  if this.indent {
+    fmt.Println()
+    for i := 0; i < this.depth; i++ {
+      fmt.Print("  ")
+    }
+  }
+  this.hasChildElement = false
+  this.depth++
+}
+
+func (this *XmlSerializer) EndNonterminal(tag string, e int) {
+  this.depth--
+  if this.delayedTag != "" {
+    this.delayedTag = ""
+    fmt.Print("<")
+    fmt.Print(tag)
+    fmt.Print("/>")
+  } else {
+    if this.indent {
+      if this.hasChildElement {
+        fmt.Println()
+        for i := 0; i < this.depth; i++ {
+          fmt.Print("  ")
+        }
+      }
+    }
+    fmt.Print("</")
+    fmt.Print(tag)
+    fmt.Print(">")
+  }
+  this.hasChildElement = true
+}
+
+func (this *XmlSerializer) Whitespace(b, e int) {
+  this.characters(b, e)
+}
+
+func (this *XmlSerializer) characters(b, e int) {
+  if b < e {
+    if this.delayedTag != "" {
+      fmt.Print("<")
+      fmt.Print(this.delayedTag)
+      fmt.Print(">")
+      this.delayedTag = ""
+    }
+    for i := b; i < e; {
+      c, l := utf8.DecodeRuneInString(this.input[i:])
+      i += l
+      switch c {
+      case '&': fmt.Print("&amp;")
+      case '<': fmt.Print("&lt;")
+      case '>': fmt.Print("&gt;")
+      default: fmt.Print(string(c))
+      }
+    }
+  }
+}
+
+func (this *XmlSerializer) Terminal(tag string, b, e int) {
+  if tag[0] == '\'' {
+    tag = "TOKEN"
+  }
+  this.StartNonterminal(tag, b)
+  this.characters(b, e)
+  this.EndNonterminal(tag, e)
+}
+~                                                               }
+                                                                if (performanceTest)
+                                                                {
+~
+type ContentCounter struct {
+  length int
+}
+
+func (this *ContentCounter) getLength() int {
+  return this.length
+}
+
+func (this *ContentCounter) Reset(input string) {this.length = 0}
+func (this *ContentCounter) StartNonterminal(name string, begin int) {}
+func (this *ContentCounter) EndNonterminal(name string, end int) {}
+func (this *ContentCounter) Terminal(name string, begin, end int) {this.length += end - begin}
+func (this *ContentCounter) Whitespace(begin, end int) {this.length += end - begin}
+~
+                                                                }
+                                                                if (isLrParser)
+                                                                {
+~
+type ParseTreeBuilder struct {
+  input string
+  stack []Symbol
+  top int
+}
+
+func (this *ParseTreeBuilder) Reset(input string) {
+  this.input = input
+  this.stack = make([]Symbol, 192)
+  this.top = -1
+}
+
+func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count int) {~
+                                                                if (useGlr)
+                                                                {
+~
+  if count > this.top + 1 {
+    content := this.pop(this.top + 1)
+    e := end
+    if len(content) != 0 {
+       e = content[0].GetBegin()
+    }
+    this.Nonterminal("UNAMBIGUOUS", begin, e, 0)
+    for _, symbol := range content {
+      this.push(symbol)
+    }
+    count = this.top + 1
+  }~                                                        }
+~
+  this.push(&Nonterminal{&AbstractSymbol{name, begin, end}, this.pop(count)})
+}
+
+func (this *ParseTreeBuilder) Terminal(name string, begin int, end int) {
+  this.push(&Terminal{&AbstractSymbol{name, begin, end}})
+}
+
+func (this *ParseTreeBuilder) Serialize(e EventHandler) {
+  e.Reset(this.input)
+  for i := 0; i <= this.top; i++ {
+    symbol := this.stack[i]
+    symbol.send(e)
+  }
+}
+
+func (this *ParseTreeBuilder) push(s Symbol) {
+  this.top++
+  if this.top >= cap(this.stack) {
+    this.stack = append(this.stack, this.stack...)
+  }
+  this.stack[this.top] = s
+}
+
+func (this *ParseTreeBuilder) pop(count int) []Symbol {
+  this.top -= count
+  return append([]Symbol{}, this.stack[this.top + 1:this.top + count + 1]...)
+}
+~                                                               }
+                                                              }
+                                                            }
+
+                                                            void PrintGo::printTokenVars()
+                                                            {
+~
+  ~                                                           if (! isLrParser && (grammar->k > 1 ||
+                                                                                   memoization ||
+                                                                                   ! grammar->decisionPoints.empty()))
+                                                              {
+              ~lk,~                                           }
+                                                              else
+                                                              {
+              ~   ~                                           }
+              ~ b0, e0 int~                                   for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  l~                                                            print(asString);
+   ~, b~                                                        print(asString);
+       ~, e~                                                    print(asString);
+           ~ int~                                             }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  bx, ex, sx, lx, tx int~                                     }
+                                                              else if (isLrParser && ! useGlr)
+                                                              {
+~
+  iStack []int
+  top int~                                                    }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+~
+  bw, bs, es int~                                                 }
+~
+  eventHandler BottomUpEventHandler~                            }
+                                                                else
+                                                                {
+~
+  eventHandler EventHandler~                                    }
+                                                              }
+                                                              else if (useGlr)
+                                                              {
+~
+  bw, bs int~                                                 }
+                                                            }

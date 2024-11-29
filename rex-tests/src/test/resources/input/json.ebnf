@@ -1,0 +1,185 @@
+                                        <?java
+                                          public class json
+                                          {
+                                          /*
+                                            public static void main(String args[])
+                                            {
+                                              json j = new json("{");
+                                              System.out.println(j.match(10));
+                                            }
+                                          */
+                                            public static void main(String args[])
+                                            {
+                                                String input =
+                                                    "{\n" +
+                                                    "  \"Kreditkarte\" : \"Xema\",\n" +
+                                                    "  \"Nummer\"      : \"1234-5678-9012-3456\",\n" +
+                                                    "  \"Inhaber\"       : {\n" +
+                                                    "    \"Name\"        : \"Reich\",\n" +
+                                                    "    \"Vorname\"     : \"Rainer\",\n" +
+                                                    "    \"Geschlecht\"  : \"\\\"männlich\\\"\",\n" +
+                                                    "    \"Vorlieben\"   : [\n" +
+                                                    "      \"Reiten\",\n" +
+                                                    "      \"Schwimmen\",\n" +
+                                                    "      \"Lesen\"\n" +
+                                                    "    ],\n" +
+                                                    "    \"Alter\"       : null\n" +
+                                                    "  },\n" +
+                                                    "  \"Deckung\"     : 1e+6,\n" +
+                                                    "  \"Währung\"     : \"EURO\"\n" +
+                                                    "}";
+                                                json j = new json(input);
+                                                try
+                                                {
+                                                  j.parse_json();
+                                                  System.out.println("ok");
+                                                }
+                                                catch (ParseException p)
+                                                {
+                                                  System.out.println("Exception: " + p.getBegin() + " " + p.getEnd() + " " + input.substring(p.getBegin()));
+                                                }
+                                            }
+                                        ?>
+                                        <?xquery
+                                          declare namespace saxon="http://saxon.sf.net/";
+                                          declare namespace p="json";
+
+                                          declare option saxon:output "indent=yes";
+                                        ?>
+json   ::= value eof
+object ::= '{' (pair (',' pair)*)? '}'
+pair   ::= string ':' value
+array  ::= '[' (value (',' value)*)? ']'
+value  ::= string
+         | number
+         | object
+         | array
+         | 'true'
+         | 'false'
+         | 'null'
+
+whitespace
+       ::= whitespace^token
+           /* ws: definition */
+
+<?TOKENS?>
+
+eof    ::= $
+string ::= '"' ( anyUnicodeCharacterExceptQuoteOrBackslashOrControlCharacter
+               | '\"'
+               | '\\'
+               | '\/'
+               | '\b'
+               | '\f'
+               | '\n'
+               | '\r'
+               | '\t'
+               | '\u' fourHexadecimalDigits
+               )*
+           '"'
+anyUnicodeCharacterExceptQuoteOrBackslashOrControlCharacter
+       ::= alphabet - ["#x5C]
+alphabet
+       ::= #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+hexadecimalDigit
+       ::= [0-9A-Fa-f]
+fourHexadecimalDigits
+       ::= hexadecimalDigit hexadecimalDigit hexadecimalDigit hexadecimalDigit
+number ::= '-'?
+           ('0' | digitOneThroughNine digit*)
+           ('.' digit+)?
+           (('e' | 'E') ('+' | '-')? digit+)?
+digit  ::= [0-9]
+digitOneThroughNine
+       ::= digit - '0'
+whitespace
+       ::= [#x9#xA#xD#x20]+
+
+<?ENCORE?>
+                                        <?xquery
+                                          declare variable $inputs :=
+                                          (
+'{
+  "Kreditkarte" : "Xema",
+  "Nummer"      : "1234-5678-9012-3456",
+  "Inhaber"       : {
+    "Name"        : "Reich",
+    "Vorname"     : "Rainer",
+    "Geschlecht"  : "\"männlich\"",
+    "Vorlieben"   : [
+      "Reiten",
+      "Schwimmen",
+      "Lesen"
+    ],
+    "Alter"       : null
+  },
+  "Deckung"     : 1e+6,
+  "Währung"     : "EURO"
+}
+'
+                                          ,
+'{
+   "firstName": "John",
+   "lastName": "Smith",
+   "address": {
+       "streetAddress": "21 2nd Street",
+       "city": "New York",
+       "state": "NY",
+       "postalCode": 10021
+   },
+   "phoneNumbers": [
+       "212 732-1234",
+       "646 123-4567"
+   ]
+}'
+                                          ,
+'{"ResultSet":
+   {"LastUpdateDate":"1178683597",
+    "Result":[{"type":"construction",
+               "Title":"Construction work, on I-5 NB at SENECA ST",
+               "Description":"I 5 N Construction work, Left Lane Blocked on I 5 northbound from Seneca Street to Pine Street starting 11:00 PM, 05 08 07 for several days from 11:00pm to 05:00am on Tuesdays, Wednesdays and Thursdays . From milepost 165 to milepost 167",
+               "Latitude":"47.614353",
+               "Longitude":"-122.329586",
+               "Direction":"NB",
+               "Severity" :  2,
+               "ReportDate":1178604000,
+               "UpdateDate":1178608792,
+               "EndDate":1178712000},
+              {"type":"construction",
+               "Title":"Construction work, on I-5 NB at UNIVERSITY ST",
+               "Description":"I 5 N Construction work, On ramp Blocked on I 5 northbound at University Street starting 10:00 PM, 05 08 07 until further notice from 10:00pm to 05:00am on Tuesdays, Wednesdays and Thursdays . From milepost 165 to milepost 166",
+               "Latitude":"47.615975",
+               "Longitude":"-122.328988",
+               "Direction":"NB",
+               "Severity" : 2,
+               "ReportDate":1178600400,
+               "UpdateDate":1178608793,
+               "EndDate":1178712000},
+              {"type":"incident",
+               "Title":"Lane closed, on WA-99 at 4TH AVE",
+               "Description":"SR 99 Road construction, right lane closed on SR 99 in both directions from 4TH AVE W to 7TH AVE SE starting 8:00 PM, 05 07 07 for a week from 08:00pm to 06:00am on Mondays, Tuesdays, Wednesdays and Thursdays . From milepost 50 to milepost 51",
+              "Latitude":"47.634877",
+              "Longitude":"-122.344338",
+              "Direction":"N\/A",
+              "Severity":2,
+              "ReportDate":1178506800,
+              "UpdateDate":1178608788,
+              "EndDate":1178715600}
+            ]
+   }
+}'
+                                          );
+
+                                          <result>
+                                          {
+                                            for $input at $i in $inputs
+                                            let $p := p:parse-json($input)
+                                            return
+                                              <parse i="{$i}" complete="{string($p) = $input}">
+                                              {
+                                                $p
+                                              }
+                                              </parse>
+                                          }
+                                          </result>
+                                        ?>

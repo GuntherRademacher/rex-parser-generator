@@ -1,0 +1,2264 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintJava.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include "../common/CompressedMap.hpp"
+
+                                                            void PrintJava::openClass()
+                                                            {
+                                                              if (hasProlog)
+                                                              {
+~
+~                                                             }
+                                                              else
+                                                              {
+                                                                size_t initialOutputSize = size();
+                                                                if (! packageName.empty())
+                                                                {
+~
+package ~                                                         print(packageName.c_str());
+        ~;
+~                                                               }
+                                                                if ((tree && (main || useGlr) && interfaceName.empty()) || grammar->basex || trace)
+                                                                {
+~
+import java.io.IOException;~                                    }
+                                                                if (trace)
+                                                                {
+~
+import java.io.UnsupportedEncodingException;~                   }
+                                                                if (trace || (tree && main))
+                                                                {
+~
+import java.io.OutputStreamWriter;~                             }
+                                                                if (trace || (tree && (main || useGlr)))
+                                                                {
+~
+import java.io.Writer;~                                         }
+                                                                if ((tree && interfaceName.empty()) || isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+                                                                    if (tree && interfaceName.empty())
+                                                                    {
+~
+import java.util.Arrays;~                                           }
+~
+import java.util.PriorityQueue;~                                  }
+                                                                  else
+                                                                  {
+~
+import java.util.Arrays;~                                         }
+                                                                }
+                                                                if (saxon == 99)
+                                                                {
+~
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.Builder;
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.lib.ExtensionFunctionCall;
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
+import net.sf.saxon.lib.Initializer;
+import net.sf.saxon.om.NoNamespaceName;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.AnySimpleType;
+import net.sf.saxon.type.AnyType;~                                if (! tree)
+                                                                  {
+~
+import net.sf.saxon.value.EmptySequence;~                         }
+~
+import net.sf.saxon.value.SequenceType;~
+                                                                  if (interfaceName.empty())
+                                                                  {
+~
+import net.sf.saxon.expr.parser.ExplicitLocation;
+import net.sf.saxon.expr.parser.Location;~                        }
+                                                                }
+                                                                else if (saxon)
+                                                                {
+~
+import java.util.ArrayList;
+import java.util.List;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.Builder;
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.lib.ExtensionFunctionCall;
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
+import net.sf.saxon.lib.Initializer;
+import net.sf.saxon.om.AttributeInfo;
+import net.sf.saxon.om.NoNamespaceName;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SmallAttributeMap;
+import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.AnySimpleType;
+import net.sf.saxon.type.AnyType;
+import net.sf.saxon.value.SequenceType;~
+                                                                  if (! tree)
+                                                                  {
+~
+import net.sf.saxon.value.EmptySequence;~                         }
+                                                                  if (interfaceName.empty())
+                                                                  {
+~
+import net.sf.saxon.expr.parser.Loc;
+import net.sf.saxon.om.AttributeMap;
+import net.sf.saxon.om.EmptyAttributeMap;
+import net.sf.saxon.om.NamespaceMap;
+import net.sf.saxon.s9api.Location;~                              }
+                                                                  if (saxon == 110)
+                                                                  {
+~
+import net.sf.saxon.str.StringView;~                              }
+                                                                }
+                                                                if (grammar->basex)
+                                                                {
+~
+import org.basex.build.MemBuilder;
+import org.basex.build.SingleParser;
+import org.basex.core.MainOptions;
+import org.basex.io.IOContent;
+import org.basex.query.value.item.Str;
+import org.basex.query.value.node.ANode;
+import org.basex.query.value.node.DBNode;
+import org.basex.util.Atts;
+import org.basex.util.Token;~                                   }
+                                                                if (initialOutputSize != size())
+                                                                {
+~
+~                                                               }
+~
+public class ~                                                  print(className.c_str());
+                                                                if (! interfaceName.empty())
+                                                                {
+             ~ implements ~                                       print(interfaceName.c_str());
+                                                                }
+~
+{~                                                            }
+                                                              if (main)
+                                                              {
+~
+  public static void main(String args[]) throws Exception
+  {
+    if (args.length == 0)
+    {
+      System.out.println("Usage: java ~                         print(className.c_str());
+                                                                if (tree)
+                                                                {
+                                      ~ [-i]~                   }
+                                      ~ INPUT...");
+      System.out.println();
+      System.out.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");~
+                                                                if (tree)
+                                                                {
+~
+      System.out.println();
+      System.out.println("  Option:");
+      System.out.println("    -i     indented parse tree");~    }
+~
+    }
+    else
+    {~                                                          if (tree)
+                                                                {
+~
+      boolean indent = false;~                                  }
+~
+      for (String arg : args)
+      {~                                                        if (tree)
+                                                                {
+~
+        if (arg.equals("-i"))
+        {
+          indent = true;
+          continue;
+        }
+        Writer w = new OutputStreamWriter(System.out, "UTF-8");
+        XmlSerializer s = new XmlSerializer(w, indent);~          if (isLrParser)
+                                                                  {
+~
+        ParseTreeBuilder b = new ParseTreeBuilder();~             }
+                                                                }
+~
+        String input = read(arg);
+        ~                                                       print(className.c_str());
+        ~ parser = new ~                                        print(className.c_str());
+                       ~(input~                                 if (noLexer)
+                                                                {
+                              ~, new ~                            print(className.c_str());
+                                     ~Lexer()~                  }
+                                                                if (tree)
+                                                                {
+                              ~, ~                                if (isLrParser)
+                                                                  {
+                                 ~b~                              }
+                                                                  else
+                                                                  {
+                                 ~s~                              }
+                                                                }
+                              ~);
+        try
+        {~                                                      #if 0
+                                                                if (grammar->tables && grammar->k >= grammar->tables)
+                                                                {
+~
+          parser.begin = -1;
+//        if (begin >= 0) System.out.println("predict(" + dpi + ")[" + TOKEN[l1] + ", " + TOKEN[l2] + "] = " + lk);
+
+          for (int p = 0; p < ~                                   print(format.toString<wchar_t>(grammar->caseidTable->getRows()));
+                              ~; ++p)
+          {
+            int count = 0;~
+                                                                  for (size_t i = 1; i <= grammar->k; ++i)
+                                                                  {
+~
+            for (parser.l~                                          print(format.toString<wchar_t>(i));
+                         ~ = 1; parser.l~                           print(format.toString<wchar_t>(i));
+                                        ~ < TOKEN.length; ++parser.l~
+                                                                    print(format.toString<wchar_t>(i));
+                                                                    ~)~
+                                                                  }
+~
+            {
+              parser.predict(p);
+              if (parser.lk != 0)
+              {
+                ++count;
+              }
+            }
+            if (count == 0)
+            {
+              System.out.println("predict(" + p + ") has " + count + " matches");
+            }
+          }
+          System.out.println("predictions checked");
+          parser.reset(0, 0, 0);
+
+~
+                                                                }
+                                                                #endif
+
+                                                                if (trace)
+                                                                {
+  ~
+          parser.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n");~
+                                                                }
+  ~
+          parser.~                                              print(methodPrefixParse);
+                                                                print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                 ~();~                                          if (trace)
+                                                                {
+  ~
+          parser.writeTrace("</trace>\n");~                     }
+                                                                if (tree && isLrParser)
+                                                                {
+  ~
+          b.serialize(s);~                                      }
+  ~
+        }
+        catch (ParseException pe)
+        {~                                                      if (useGlr && tree)
+                                                                {
+~
+          if (pe.isAmbiguousInput())
+          {
+            pe.serialize(s);
+            w.write("\n");
+            w.flush();
+          }~                                                    }
+~
+          throw new RuntimeException("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe));
+        }~                                                      if (tree || trace)
+                                                                {
+~
+        finally
+        {~                                                      }
+                                                                if (trace)
+                                                                {
+~
+          parser.flushTrace();~                                 }
+                                                                if (tree)
+                                                                {
+~
+          w.close();~                                           }
+                                                                if (tree || trace)
+                                                                {
+~
+        }~                                                      }
+~
+      }
+    }
+  }
+~                                                             }
+                                                              if (interfaceName.empty())
+                                                              {
+                                                                printParseException();
+                                                                printEventHandlerImplementation();
+                                                              }
+                                                              if (saxon)
+                                                              {
+~
+  public static class SaxonInitializer implements Initializer
+  {
+    @Override
+    public void initialize(Configuration conf)
+    {~
+                                                                for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
+                                                                {
+                                                                  Production *p = static_cast <Production *> (n);
+                                                                  if (p->isStartSymbol())
+                                                                  {
+~
+      conf.registerExtensionFunction(new SaxonDefinition_~          print(Format::acceptableName<WString>(p->name).c_str());
+                                                         ~());~   }
+                                                                }
+~
+    }
+  }
+~
+                                                                for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
+                                                                {
+                                                                  Production *p = static_cast <Production *> (n);
+                                                                  if (p->isStartSymbol())
+                                                                  {
+~
+  public static Sequence~                                           if (saxon == 99)
+                                                                    {
+                        ~<?>~                                       }
+                            ~ parse~                                WString acceptableName = Format::acceptableName<WString>(p->name);
+                                                                    const wchar_t *name = acceptableName.c_str();
+                                                                    wchar_t initial = towupper(*name);
+                                                                    print(&initial, 1);
+                                                                    print(name + 1);
+                              ~(XPathContext context, String input) throws XPathException
+  {
+    Builder builder = context.getController().makeBuilder();~       if (tree & isLrParser)
+                                                                    {
+~
+    ParseTreeBuilder bottomUpTreeBuilder = new ParseTreeBuilder();~ }
+~
+    builder.open();
+    ~                                                               print(className.c_str());
+    ~ parser = new ~
+                                                                    print(className.c_str());
+                   ~(input~                                         if (noLexer)
+                                                                    {
+                   ~, new ~                                           print(className.c_str());
+                          ~Lexer()~                                 }
+                                                                    if (tree)
+                                                                    {
+                                                                      if (isLrParser)
+                                                                      {
+                   ~, bottomUpTreeBuilder~                            }
+                                                                      else
+                                                                      {
+                   ~, new SaxonTreeBuilder(builder)~                  }
+                                                                    }
+                   ~);
+    try
+    {
+      parser.parse_~                                                print(Format::acceptableName<WString>(p->name).c_str());
+                   ~();~                                            if (! tree)
+                                                                    {
+~
+      return EmptySequence.getInstance();~                          }
+                                                                    else if (isLrParser)
+                                                                    {
+~
+      bottomUpTreeBuilder.serialize(new SaxonTreeBuilder(builder));~
+                                                                    }
+~
+    }
+    catch (ParseException pe)
+    {
+      buildError(parser, pe, builder);
+    }
+    return builder.getCurrentRoot();
+  }
+
+  public static class SaxonDefinition_~                             print(Format::acceptableName<WString>(p->name).c_str());
+                                      ~ extends SaxonDefinition
+  {
+    @Override
+    public String functionName() {return "parse-~                   print(p->name);
+                                                ~";}
+    @Override
+    public Sequence~                                                if (saxon == 99)
+                                                                    {
+                   ~<?>~                                            }
+                       ~ execute(XPathContext context, String input) throws XPathException
+    {
+      return parse~                                                 print(&initial, 1);
+                                                                    print(name + 1);
+                  ~(context, input);
+    }
+  }
+~                                                                 }
+                                                                }
+~
+  public static abstract class SaxonDefinition extends ExtensionFunctionDefinition
+  {
+    abstract String functionName();
+    abstract Sequence~                                          if (saxon == 99)
+                                                                {
+                     ~<?>~                                      }
+                         ~ execute(XPathContext context, String input) throws XPathException;
+
+    @Override
+    public StructuredQName getFunctionQName() {return new StructuredQName("p", "~
+                                                                if (! packageName.empty())
+                                                                {
+                                                                  for (size_t i = 0; i < packageName.size(); ++i)
+                                                                  {
+                                                                    print(packageName[i] == L'.' ? L'/' : packageName[i]);
+                                                                  }
+                                                                                ~/~
+                                                                }
+                                                                print(className.c_str());
+                                                                                  ~", functionName());}
+    @Override
+    public SequenceType[] getArgumentTypes() {return new SequenceType[] {SequenceType.SINGLE_STRING};}
+    @Override
+    public SequenceType getResultType(SequenceType[] suppliedArgumentTypes) {return SequenceType.~
+                                                                if (tree)
+                                                                {
+                                                                                                 ~SINGLE~
+                                                                }
+                                                                else
+                                                                {
+                                                                                                 ~OPTIONAL~
+                                                                }
+                                                                                                 ~_NODE;}
+
+    @Override
+    public ExtensionFunctionCall makeCallExpression()
+    {
+      return new ExtensionFunctionCall()
+      {
+        @Override
+        public Sequence~                                        if (saxon == 99)
+                                                                {
+                       ~<?>~                                    }
+                       ~ call(XPathContext context, ~           if (saxon == 99)
+                                                                {
+                                                    ~@SuppressWarnings("rawtypes") ~
+                                                                }
+                                                    ~Sequence[] arguments) throws XPathException
+        {
+          return execute(context, arguments[0].iterate().next().getStringValue());
+        }
+      };
+    }
+  }
+
+  private static void buildError(~                              print(className.c_str());
+                                 ~ parser, ParseException pe, Builder builder) throws XPathException
+  {
+    builder.close();
+    builder.reset();
+    builder.open();~                                            if (saxon == 99)
+                                                                {
+~
+    builder.startElement(new NoNamespaceName("ERROR"), AnyType.getInstance(), LOCATION, 0);
+    AnySimpleType anySimpleType = AnySimpleType.getInstance();
+    builder.attribute(new NoNamespaceName("b"), anySimpleType, Integer.toString(pe.getBegin() + 1), LOCATION, 0);
+    builder.attribute(new NoNamespaceName("e"), anySimpleType, Integer.toString(pe.getEnd() + 1), LOCATION, 0);
+    if (pe.getOffending() < 0)
+    {
+      builder.attribute(new NoNamespaceName("s"), anySimpleType, Integer.toString(pe.getState()), LOCATION, 0);
+    }
+    else
+    {
+      builder.attribute(new NoNamespaceName("o"), anySimpleType, Integer.toString(pe.getOffending()), LOCATION, 0);
+      builder.attribute(new NoNamespaceName("x"), anySimpleType, Integer.toString(pe.getExpected()), LOCATION, 0);
+    }~
+                                                                }
+                                                                else
+                                                                {
+~
+    List<AttributeInfo> attributes = new ArrayList<>();
+    AnySimpleType anySimpleType = AnySimpleType.getInstance();
+    attributes.add(new AttributeInfo(new NoNamespaceName("b"), anySimpleType, Integer.toString(pe.getBegin() + 1), LOCATION, 0));
+    attributes.add(new AttributeInfo(new NoNamespaceName("e"), anySimpleType, Integer.toString(pe.getEnd() + 1), LOCATION, 0));
+    if (pe.getOffending() < 0)
+    {
+      attributes.add(new AttributeInfo(new NoNamespaceName("s"), anySimpleType, Integer.toString(pe.getState()), LOCATION, 0));
+    }
+    else
+    {
+      attributes.add(new AttributeInfo(new NoNamespaceName("o"), anySimpleType, Integer.toString(pe.getOffending()), LOCATION, 0));
+      attributes.add(new AttributeInfo(new NoNamespaceName("x"), anySimpleType, Integer.toString(pe.getExpected()), LOCATION, 0));
+    }
+    builder.startElement(new NoNamespaceName("ERROR"), AnyType.getInstance(), new SmallAttributeMap(attributes), NO_NAMESPACES, LOCATION, 0);~
+                                                                }
+~
+    builder.characters(~                                        if (saxon == 110)
+                                                                {
+                       ~StringView.of(~                         }
+                       ~parser.getErrorMessage(pe)~             if (saxon == 110)
+                                                                {
+                                                  ~)~           }
+                                                  ~, LOCATION, 0);
+    builder.endElement();
+  }
+~                                                             }
+                                                              if (grammar->basex)
+                                                              {
+                                                                for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
+                                                                {
+                                                                  Production *p = static_cast <Production *> (n);
+                                                                  if (p->isStartSymbol())
+                                                                  {
+~
+  public static ANode parse~                                        WString acceptableName = Format::acceptableName<WString>(p->name).c_str();
+                                                                    const wchar_t *name = acceptableName.c_str();
+                                                                    wchar_t initial = towupper(*name);
+                                                                    print(&initial, 1);
+                                                                    print(name + 1);
+                           ~(Str str) throws IOException
+  {
+    BaseXFunction baseXFunction = new BaseXFunction()
+    {
+      @Override
+      public void execute(~                                         print(className.c_str());
+                          ~ p) {p.parse_~                           print(Format::acceptableName<WString>(p->name).c_str());
+                                        ~();}
+    };
+    return baseXFunction.call(str);
+  }
+~                                                                 }
+                                                                }
+~
+  public static abstract class BaseXFunction
+  {
+    protected abstract void execute(~                           print(className.c_str());
+                                    ~ p);
+
+    public ANode call(Str str) throws IOException
+    {
+      String input = str.toJava();
+      SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())
+      {
+        @Override
+        protected void parse() throws IOException {}
+      };
+      MemBuilder memBuilder = new MemBuilder(input, singleParser);
+      memBuilder.init();~                                       if (tree)
+                                                                {
+~
+      BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder);~
+                                                                  if (isLrParser)
+                                                                  {
+~
+      ParseTreeBuilder bottomUpTreeBuilder = new ParseTreeBuilder();~
+                                                                  }
+                                                                }
+~
+      ~                                                         print(className.c_str());
+      ~ parser = new ~                                          print(className.c_str());
+                     ~();
+      parser.initialize(input~                                  if (noLexer)
+                                                                {
+                             ~, new ~                              print(className.c_str());
+                                    ~Lexer()~                   }
+                                                                if (tree)
+                                                                {
+                                                                  if (isLrParser)
+                                                                  {
+                             ~, bottomUpTreeBuilder~              }
+                                                                  else
+                                                                  {
+                             ~, treeBuilder~                      }
+                                                                }
+                             ~);
+      try
+      {
+        execute(parser);~                                       if (tree)
+                                                                {
+                                                                  if (isLrParser)
+                                                                  {
+~
+        bottomUpTreeBuilder.serialize(treeBuilder);~              }
+                                                                }
+                                                                else
+                                                                {
+~
+        return null;~                                           }
+~
+      }
+      catch (ParseException pe)
+      {
+        memBuilder = new MemBuilder(input, singleParser);
+        memBuilder.init();
+        Atts atts = new Atts();
+        atts.add(Token.token("b"), Token.token(pe.getBegin() + 1));
+        atts.add(Token.token("e"), Token.token(pe.getEnd() + 1));
+        if (pe.getOffending() < 0)
+        {
+          atts.add(Token.token("s"), Token.token(pe.getState()));
+        }
+        else
+        {
+          atts.add(Token.token("o"), Token.token(pe.getOffending()));
+          atts.add(Token.token("x"), Token.token(pe.getExpected()));
+        }
+        memBuilder.openElem(Token.token("ERROR"), atts, new Atts());
+        memBuilder.text(Token.token(parser.getErrorMessage(pe)));
+        memBuilder.closeElem();
+      }
+      return new DBNode(memBuilder.data());
+    }
+  }
+~
+                                                                if (tree)
+                                                                {
+~
+  public static class BaseXTreeBuilder implements EventHandler
+  {
+    private CharSequence input;
+    private MemBuilder builder;
+    private Atts nsp = new Atts();
+    private Atts atts = new Atts();
+
+    public BaseXTreeBuilder(MemBuilder b)
+    {
+      input = null;
+      builder = b;
+    }
+
+    @Override
+    public void reset(CharSequence string)
+    {
+      input = string;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      try
+      {
+        builder.openElem(Token.token(name), atts, nsp);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      try
+      {
+        builder.closeElem();
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      if (name.charAt(0) == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        try
+        {
+          builder.text(Token.token(input.subSequence(begin, end).toString()));
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+~                                                               }
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+                                                                printFileProcessor();
+                                                              }
+                                                              if (main || performanceTest)
+                                                              {
+                                                                printReadMethod();
+                                                              }
+                                                              if (! hasProlog)
+                                                              {
+                                                                if (grammar->basex)
+                                                                {
+                                                                  increaseIndent();
+                                                                  openMethod(L"", L"", className.c_str(), L"");
+~
+{
+}
+~                                                                 decreaseIndent();
+                                                                }
+                                                                WString args(L"CharSequence string");
+                                                                if (noLexer) args += L", Lexer lexer";
+                                                                if (tree) args += isLrParser ? L", BottomUpEventHandler t" : L", EventHandler t";
+                                                                increaseIndent();
+                                                                openMethod(L"", L"", className.c_str(), args.c_str());
+~
+{
+  initialize(string~                                            if (noLexer)
+                                                                {
+                   ~, lexer~                                    }
+                                                                if (tree)
+                                                                {
+                   ~, t~                                        }
+                   ~);
+}
+~                                                               decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintJava::openStackNode()
+                                                            {
+~
+private static class StackNode
+{
+  public int state;~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+~
+  public int code;~                                           }
+                                                              if (tree || useGlr)
+                                                              {
+~
+  public int pos;~                                            }
+~
+  public StackNode link;
+
+  public StackNode(int state, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                              ~int code, ~                    }
+                                                              if (tree || useGlr)
+                                                              {
+                              ~int pos, ~                     }
+                              ~StackNode link)
+  {
+    this.state = state;~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+~
+    this.code = code;~                                        }
+                                                              if (tree || useGlr)
+                                                              {
+~
+    this.pos = pos;~                                          }
+~
+    this.link = link;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    StackNode lhs = this;
+    StackNode rhs = (StackNode) obj;
+    while (lhs != null && rhs != null)
+    {
+      if (lhs == rhs) return true;
+      if (lhs.state != rhs.state) return false;~              if (grammar->states->hasLookback)
+                                                              {
+~
+      if (lhs.code != rhs.code) return false;~                }
+                                                              if (tree || useGlr)
+                                                              {
+~
+      if (lhs.pos != rhs.pos) return false;~                  }
+~
+      lhs = lhs.link;
+      rhs = rhs.link;
+    }
+    return lhs == rhs;
+  }
+~                                                             increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintJava::closeStackNode()
+                                                            {
+                                                              beginNonpublic();
+                                                              decreaseIndent();
+~
+}
+~                                                             if (hasCustomCode)
+                                                              {
+~
+private static class DeferredCode
+{
+  public DeferredCode link;
+  public int codeId;
+  public int b0;
+  public int e0;
+
+  public DeferredCode(DeferredCode link, int codeId, int b0, int e0)
+  {
+    this.link = link;
+    this.codeId = codeId;
+    this.b0 = b0;
+    this.e0 = e0;
+  }
+}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+private abstract static class DeferredEvent
+{
+  public DeferredEvent link;
+  public String name;
+  public int begin;
+  public int end;
+
+  public DeferredEvent(DeferredEvent link, String name, int begin, int end)
+  {
+    this.link = link;
+    this.name = name;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public abstract void execute(BottomUpEventHandler eventHandler);
+
+  public void release(BottomUpEventHandler eventHandler)
+  {
+    DeferredEvent current = this;
+    DeferredEvent predecessor = current.link;
+    current.link = null;
+    while (predecessor != null)
+    {
+      DeferredEvent next = predecessor.link;
+      predecessor.link = current;
+      current = predecessor;
+      predecessor = next;
+    }
+    do
+    {
+      current.execute(eventHandler);
+      current = current.link;
+    }
+    while (current != null);
+  }
+
+  public void show(BottomUpEventHandler eventHandler)
+  {
+    java.util.Stack<DeferredEvent> stack = new java.util.Stack<>();
+    for (DeferredEvent current = this; current != null; current = current.link)
+    {
+      stack.push(current);
+    }
+    while (! stack.isEmpty())
+    {
+      stack.pop().execute(eventHandler);
+    }
+  }
+}
+
+public static class TerminalEvent extends DeferredEvent
+{
+  public TerminalEvent(DeferredEvent link, String name, int begin, int end)
+  {
+    super(link, name, begin, end);
+  }
+
+  @Override
+  public void execute(BottomUpEventHandler eventHandler)
+  {
+    eventHandler.terminal(name, begin, end);
+  }
+
+  @Override
+  public String toString()
+  {
+    return "terminal(" + name + ", " + begin + ", " + end + ")";
+  }
+}
+
+public static class NonterminalEvent extends DeferredEvent
+{
+  public int count;
+
+  public NonterminalEvent(DeferredEvent link, String name, int begin, int end, int count)
+  {
+    super(link, name, begin, end);
+    this.count = count;
+  }
+
+  @Override
+  public void execute(BottomUpEventHandler eventHandler)
+  {
+    eventHandler.nonterminal(name, begin, end, count);
+  }
+
+  @Override
+  public String toString()
+  {
+    return "nonterminal(" + name + ", " + begin + ", " + end + ", " + count + ")";
+  }
+}
+~                                                             }
+~
+private static final int PARSING = 0;
+private static final int ACCEPTED = 1;
+private static final int ERROR = 2;
+
+private ParsingThread parse(int target, int initialState, ~            if (tree)
+                                                              {
+                                                          ~BottomUpEventHandler eventHandler, ~
+                                                              }
+                                                          ~ParsingThread thread)
+{
+  PriorityQueue<ParsingThread> threads = thread.open(initialState~
+                                                              if (tree)
+                                                              {
+                                   ~, eventHandler~           }
+                                   ~, target);
+  for (;;)
+  {
+    thread = threads.poll();
+    if (thread.accepted)
+    {
+      ParsingThread other = null;
+      while (! threads.isEmpty())
+      {
+        other = threads.poll();
+        if (thread.e0 < other.e0)
+        {
+          thread = other;
+          other = null;
+        }
+      }
+      if (other != null)
+      {
+        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
+                                                              {
+                        ~, thread.deferredEvent, other.deferredEvent~
+                                                              }
+                        ~);
+      }~
+                                                              if (tree)
+                                                              {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.executeDeferredCode();~                          }
+~
+      return thread;
+    }
+
+    if (! threads.isEmpty())
+    {
+      if (threads.peek().equals(thread))
+      {
+        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
+                                                              {
+                        ~, thread.deferredEvent, threads.peek().deferredEvent~
+                                                              }
+                        ~);
+      }
+    }~                                                        if (tree || hasCustomCode)
+                                                              {
+~
+    else
+    {~                                                          if (tree)
+                                                                {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.executeDeferredCode();~                            }
+~
+    }~                                                        }
+~
+
+    int status;
+    for (;;)
+    {
+      if ((status = thread.parse()) != PARSING) break;
+      if (! threads.isEmpty()) break;
+    }
+
+    if (status != ERROR)
+    {
+      threads.offer(thread);
+    }
+    else if (threads.isEmpty())
+    {
+      throw new ParseException(thread.b1,
+                               thread.e1,
+                               TOKENSET[thread.state] + 1,
+                               thread.l1,
+                               -1
+                              );
+    }
+  }
+}
+
+private void rejectAmbiguity(int begin, int end~              if (tree)
+                                                              {
+                             ~, DeferredEvent first, DeferredEvent second~
+                                                              }
+                             ~)
+{~                                                            if (tree)
+                                                              {
+~
+  ParseTreeBuilder treeBuilder = new ParseTreeBuilder();
+  treeBuilder.reset(input);
+  second.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
+  Symbol secondTree = treeBuilder.pop(1)[0];
+  first.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
+  treeBuilder.push(secondTree);
+  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, 2);~
+                                                              }
+~
+  throw new ParseException(begin, end~                        if (tree)
+                                                              {
+                                     ~, treeBuilder~          }
+                                     ~);
+}
+
+private ParsingThread thread = new ParsingThread();~          if (tree)
+                                                              {
+~
+private BottomUpEventHandler eventHandler;~                   }
+~
+private CharSequence input = null;
+private int size = 0;
+private int maxId = 0;~                                       if (trace)
+                                                              {
+~
+private Writer err;
+{
+  try
+  {
+    err = new OutputStreamWriter(System.err, "UTF-8");
+  }
+  catch (UnsupportedEncodingException uee)
+  {}
+}~                                                            }
+~
+~                                                           }
+
+                                                            void PrintJava::openThread()
+                                                            {
+~
+private class ParsingThread implements Comparable<ParsingThread>
+{
+  public PriorityQueue<ParsingThread> threads;
+  public boolean accepted;
+  public StackNode stack;
+  public int state;
+  public int action;
+  public int target;~                                         if (tree)
+                                                              {
+~
+  public DeferredEvent deferredEvent;~                        }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  public DeferredCode deferredCode;~                          }
+~
+  public int id;
+
+  public PriorityQueue<ParsingThread> open(int initialState~  if (tree)
+                                                              {
+                         ~, BottomUpEventHandler eh~          }
+                         ~, int t)
+  {
+    accepted = false;
+    target = t;~                                              if (tree)
+                                                              {
+~
+    eventHandler = eh;
+    if (eventHandler != null)
+    {
+      eventHandler.reset(input);
+    }
+    deferredEvent = null;~                                    }
+                                                              if (hasCustomCode && useGlr)
+                                                              {
+~
+    deferredCode = null;~                                }
+~
+    stack = new StackNode(-1, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                              ~0, ~                           }
+                              ~e0, null);
+    state = initialState;
+    action = predict(initialState);~                          if (tree)
+                                                              {
+~
+    bw = e0;
+    bs = e0;
+    es = e0;~                                                 }
+~
+    threads = new PriorityQueue<>();
+    threads.offer(this);
+    return threads;
+  }
+
+  public ParsingThread copy(ParsingThread other, int action)
+  {
+    this.action = action;
+    accepted = other.accepted;
+    target = other.target;~                                   if (tree)
+                                                              {
+~
+    bs = other.bs;
+    es = other.es;
+    bw = other.bw;
+    eventHandler = other.eventHandler;
+    deferredEvent = other.deferredEvent;~                     }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    deferredCode = other.deferredCode;~                       }
+~
+    id = ++maxId;
+    threads = other.threads;
+    state = other.state;
+    stack = other.stack;
+    b0 = other.b0;
+    e0 = other.e0;~                                           for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    l~                                                          print(iString);
+     ~ = other.l~                                               print(iString);
+                ~;
+    b~                                                          print(iString);
+     ~ = other.b~                                               print(iString);
+                ~;
+    e~                                                          print(iString);
+     ~ = other.e~                                               print(iString);
+                ~;~                                           }
+~
+    end = other.end;
+    return this;
+  }
+
+  @Override
+  public int compareTo(ParsingThread other)
+  {
+    if (accepted != other.accepted)
+      return accepted ? 1 : -1;
+    int comp = e0 - other.e0;
+    return comp == 0 ? id - other.id : comp;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    ParsingThread other = (ParsingThread) obj;
+    if (accepted != other.accepted) return false;
+    if (b1 != other.b1) return false;
+    if (e1 != other.e1) return false;
+    if (l1 != other.l1) return false;
+    if (state != other.state) return false;
+    if (action != other.action) return false;
+    if (! stack.equals(other.stack)) return false;
+    return true;
+  }
+
+  public int parse()
+  {~                                                          increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintJava::printFlush(int i, bool withinThread)
+                                                            {
+                                                              if (trace)
+                                                              {
+                                                                increaseIndent(i);
+~
+flushTrace();~                                                  decreaseIndent(i);
+                                                              }
+                                                            }
+
+                                                            void PrintJava::openMethod(const wchar_t *type,
+                                                                                       const wchar_t *prefix,
+                                                                                       const wchar_t *name,
+                                                                                       const wchar_t *args,
+                                                                                       bool constant,
+                                                                                       const wchar_t *clazz)
+                                                            {
+~
+~                                                             print(visibility);
+~ ~                                                           print(prefix);
+                                                              print(type);
+                                                              print(name);
+  ~(~                                                         print(args);
+    ~)~                                                     }
+
+                                                            void PrintJava::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+~
+  private String lookaheadString()
+  {
+    String result = "";~                                        for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+~
+    if (l~                                                        print(format.toString<wchar_t>(i));
+         ~ > 0)
+    {
+      result += ~                                                 if (i != 1)
+                                                                  {
+                ~" " + ~                                          }
+                       ~TOKEN[l~                                  print(format.toString<wchar_t>(i));
+                               ~];~                               increaseIndent();
+                                                                }
+                                                                for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+    }~                                                          }
+~
+    return result;
+  }
+~                                                             }
+                                                              if (memoization)
+                                                              {
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+  private void memoize(int i, int e, int v)
+  {
+    memo.put((e << ~                                            print(format.toString<wchar_t>(bits));
+                   ~) + i, v);
+  }
+
+  private int memoized(int i, int e)
+  {
+    Integer v = memo.get((e << ~                                print(format.toString<wchar_t>(bits));
+                               ~) + i);
+    return v == null ? 0 : v;
+  }
+~                                                             }
+~
+  private int ~                                               if (! isLrParser && (grammar->k > 1 ||
+                                                                                   memoization ||
+                                                                                   ! grammar->decisionPoints.empty()))
+                                                              {
+              ~lk,~                                           }
+                                                              else
+                                                              {
+              ~   ~                                           }
+              ~ b0, e0;~                                      for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  private int l~                                                print(asString);
+               ~, b~                                            print(asString);
+                   ~, e~                                        print(asString);
+                       ~;~                                    }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  private int bx, ex, sx, lx, tx;~                            }
+                                                              else if (isLrParser && ! useGlr)
+                                                              {
+~
+  private int iStack[] = new int[~                              if (tree)
+                                                                {
+                                 ~192~                          }
+                                                                else
+                                                                {
+                                 ~128~                          }
+                                     ~];
+  private int top = -1;~                                      }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+~
+  private int bw, bs, es;~                                        }
+~
+  private BottomUpEventHandler eventHandler = null;~            }
+                                                                else
+                                                                {
+~
+  private EventHandler eventHandler = null;~                    }
+                                                              }
+                                                              else if (useGlr)
+                                                              {
+~
+  private int bw, bs;~                                        }
+                                                              if (memoization)
+                                                              {
+~
+  private java.util.Map<Integer, Integer> memo = new java.util.HashMap<Integer, Integer>();~
+                                                                if (grammar->noThrow)
+                                                                {
+~
+  private boolean viable;~                                      }
+                                                              }
+                                                              if (useGlr)
+                                                              {
+                                                                decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintJava::printFileProcessor()
+                                                            {
+~
+  private static boolean quiet = false;
+  private static long parsed = 0;
+  private static int errorCount = 0;
+  private static java.util.Collection<ParseJob> parsers = new java.util.ArrayList<>();
+
+  private static class ParseJob
+  {
+    public String name;
+    public String input;
+    public ~                                                  print(className.c_str());
+           ~ parser;~                                         if (tree)
+                                                              {
+                    ~
+    public ContentCounter contentCounter;~                      if (isLrParser)
+                                                                {
+~
+    public ParseTreeBuilder parseTreeBuilder;~                  }
+                                                              }
+~
+
+    public ParseJob(String s, String i)
+    {
+      name = s;
+      input = i;~                                             if (tree)
+                                                              {
+               ~
+      contentCounter = new ContentCounter();~                   if (isLrParser)
+                                                                {
+~
+      parseTreeBuilder = new ParseTreeBuilder();~               }
+                                                              }
+               ~
+      parser = new ~                                          print(className.c_str());
+                   ~(input~                                   if (noLexer)
+                                                              {
+                          ~, new ~                              print(className.c_str());
+                                 ~Lexer()~                    }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                          ~, parseTreeBuilder~                  }
+                                                                else
+                                                                {
+                          ~, contentCounter~                    }
+                                                              }
+                          ~);
+    }
+  }
+
+  public static void main(String[] args) throws Exception
+  {
+    if (args.length == 0)
+    {
+      System.out.println("Usage: java ~                       print(className.c_str());
+                                      ~ [-q] [-r N] [-t N] ENDING...");
+      System.out.println();
+      System.out.println("  parse all files that have names ending with ENDING, in current dir and below,");
+      System.out.println("  and display performance summary.");
+      System.out.println();
+      System.out.println("  -q     do not show file names");
+      System.out.println("  -r N   repeat N times");
+      System.out.println("  -t N   repeat until N seconds have elapsed");
+    }
+    else
+    {
+      int repeat = 1;
+      int timeout = 0;
+      int i;
+      for (i = 0; i < args.length && args[i].startsWith("-"); ++i)
+      {
+        switch (args[i].length() == 2 ? args[i].charAt(1) : ' ')
+        {
+        case 'q':
+          quiet = true;
+          break;
+        case 'r':
+          repeat = Integer.parseInt(args[++i]);
+          timeout = 0;
+          break;
+        case 't':
+          repeat = 0;
+          timeout = 1000 * Integer.parseInt(args[++i]);
+          break;
+        default:
+          throw new RuntimeException("invalid option: " + args[i]);
+        }
+      }
+
+      long start = System.currentTimeMillis();
+
+      for (; i < args.length; ++i)
+      {
+        findFiles(new java.io.File("."), args[i]);
+      }
+
+      if (! parsers.isEmpty())
+      {
+        long msec = System.currentTimeMillis() - start;
+
+        if (! quiet) System.out.println();
+        System.out.println("loaded " + parsers.size() + " file" +
+                           (parsers.size() == 1 ? "" : "s") + " in " +
+                           msec + " msec");
+        if (! quiet) System.out.println();
+        System.out.flush();
+
+        start = System.currentTimeMillis();
+        for (i = 0; ; ++i)
+        {
+          if (repeat != 0 && i >= repeat) break;
+          if (timeout != 0 && System.currentTimeMillis() - start >= timeout) break;
+
+          for (ParseJob job : parsers)
+          {
+            if (job.parser != null)
+            {
+              try
+              {
+                if (! quiet) System.out.print("parsing " + job.name);
+                job.parser~                                       if (useGlr)
+                                                                  {
+                          ~.thread~                               }
+                          ~.reset(0, 0, 0);
+                job.parser.~                                      print(methodPrefixParse);
+                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                           ~();
+                if (! quiet) System.out.println();~               if (tree)
+                                                                  {
+                                                                    if (isLrParser)
+                                                                    {
+~
+                job.parseTreeBuilder.serialize(job.contentCounter);~
+                                                                    }
+~
+                if (job.contentCounter.getLength() != job.input.length())
+                {
+                  throw new RuntimeException("content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length());
+                }~                                                }
+~
+                parsed += job.input.length();
+              }
+              catch (ParseException pe)
+              {
+                ++errorCount;
+                if (quiet) System.out.print("parsing " + job.name);
+                System.out.println(": error: " + job.parser.getErrorMessage(pe));
+                job.parser = null;
+              }
+            }
+          }
+        }
+        msec = System.currentTimeMillis() - start;
+        String mbPerSec = msec == 0
+                        ? null
+                        : new java.text.DecimalFormat("0.##").format(Double.valueOf(parsed / 1024e0 / 1024e0 * 1000e0 / msec));
+
+        if (! quiet) System.out.println();
+        System.out.print("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
+                         " in " + msec + " msec");
+        if (mbPerSec != null)
+        {
+          System.out.print(" (" + mbPerSec + " MB/sec)");
+        }
+        System.out.println();
+        System.out.println(errorCount + " error" + (errorCount == 1 ? "" : "s"));
+      }
+    }
+  }
+
+  private static void collectInput(String name, String content) throws Exception
+  {
+    if (! quiet) System.out.println("loading " + name);
+    parsers.add(new ParseJob(name, content));
+  }
+
+  private static void findFiles(java.io.File f, String filter) throws Exception
+  {
+    if (f.isDirectory())
+    {
+      java.io.File files[] = f.listFiles();
+      if (files != null)
+      {
+        for (java.io.File file : files)
+        {
+          findFiles(file, filter);
+        }
+      }
+    }
+    else if (f.getName().toLowerCase().endsWith(filter.toLowerCase()))
+    {
+      collectInput(f.getPath(), read(f.getPath()));
+    }
+  }
+~
+                                                            }
+
+                                                            void PrintJava::printReadMethod()
+                                                            {
+~
+  private static String read(String input) throws Exception
+  {
+    if (input.startsWith("{") && input.endsWith("}"))
+    {
+      return input.substring(1, input.length() - 1);
+    }
+    else
+    {
+      byte buffer[] = new byte[(int) new java.io.File(input).length()];
+      java.io.FileInputStream stream = new java.io.FileInputStream(input);
+      stream.read(buffer);
+      stream.close();
+      String content = new String(buffer, System.getProperty("file.encoding"));
+      return content.length() > 0 && content.charAt(0) == '\uFEFF'
+           ? content.substring(1)
+           : content;
+    }
+  }
+~
+//      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
+//      {
+//        content = content.substring(1);
+//      }
+//      return content.replace("\r\n", "\n");
+                                                            }
+
+                                                            void PrintJava::printInterface()
+                                                            {
+                                                              if (! packageName.empty())
+                                                              {
+~
+package ~                                                       print(packageName.c_str());
+~;
+~                                                             }
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+import java.io.IOException;
+import java.io.Writer;
+~                                                               }
+~
+import java.util.Arrays;~
+                                                                if (saxon)
+                                                                {
+~
+import net.sf.saxon.event.Builder;~                               if (saxon == 99)
+                                                                  {
+~
+import net.sf.saxon.expr.parser.ExplicitLocation;
+import net.sf.saxon.expr.parser.Location;~                        }
+                                                                  else
+                                                                  {
+~
+import net.sf.saxon.expr.parser.Loc;
+import net.sf.saxon.om.AttributeMap;
+import net.sf.saxon.om.EmptyAttributeMap;
+import net.sf.saxon.om.NamespaceMap;
+import net.sf.saxon.s9api.Location;~                              }
+~
+import net.sf.saxon.om.NoNamespaceName;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.AnyType;~                                if (saxon == 110)
+                                                                  {
+~
+import net.sf.saxon.str.StringView;~                              }
+~
+~                                                               }
+                                                              }
+~
+public interface ~                                            print(className.c_str());
+~
+{
+  public void initialize(CharSequence input~                  if (noLexer)
+                                                              {
+                                           ~, Lexer l~        }
+                                                              if (tree)
+                                                              {
+                                           ~, ~                 if (isLrParser)
+                                                                {
+                                              ~BottomUp~
+                                                                }
+                                              ~EventHandler eh~
+                                                              }
+                                           ~);
+  public void parse();
+  public void reset();
+  public String getErrorMessage(ParseException e);
+~                                                             printParseException();
+                                                              printEventHandlerImplementation();
+~}
+~                                                           }
+
+                                                            void PrintJava::printParseException()
+                                                            {
+~
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;~      if (useGlr)
+                                                              {
+~
+    private boolean ambiguousInput;~                            if (tree)
+                                                                {
+~
+    private ParseTreeBuilder ambiguityDescriptor;~              }
+                                                              }
+~
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;~                                          if (useGlr)
+                                                              {
+~
+      ambiguousInput = false;~                                }
+~
+    }
+~                                                             if (useGlr)
+                                                              {
+~
+    public ParseException(int b, int e~                         if (tree)
+                                                                {
+                                      ~, ParseTreeBuilder ambiguityDescriptor~
+                                                                }
+                                      ~)
+    {
+      this(b, e, 1, -1, -1);
+      ambiguousInput = true;~                                   if (tree)
+                                                                {
+~
+      this.ambiguityDescriptor = ambiguityDescriptor;~          }
+~
+    }
+~                                                             }
+~
+    @Override
+    public String getMessage()
+    {
+      return ~                                                if (useGlr)
+                                                              {
+             ~ambiguousInput
+           ? "ambiguous input"
+           : ~                                                }
+             ~offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+~                                                             if (tree)
+                                                              {
+~
+    public void serialize(EventHandler eventHandler)
+    {~                                                          if (useGlr)
+                                                                {
+~
+      ambiguityDescriptor.serialize(eventHandler);~             }
+~
+    }
+~                                                             }
+~
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return ~               if (useGlr)
+                                                              {
+                                              ~ambiguousInput~
+                                                              }
+                                                              else
+                                                              {
+                                              ~false~         }
+                                              ~;}
+  }
+~                                                             if (noLexer)
+                                                              {
+~
+  public static class Token
+  {
+    public int code;
+    public int begin;
+    public int end;
+  }
+
+  public interface Lexer
+  {
+    void reset(CharSequence input);
+    void match(int tokenset, Token token);
+  }
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+  public interface EventHandler
+  {
+    public void reset(CharSequence string);
+    public void startNonterminal(String name, int begin);
+    public void endNonterminal(String name, int end);
+    public void terminal(String name, int begin, int end);
+    public void whitespace(int begin, int end);
+  }
+
+  public static class TopDownTreeBuilder implements EventHandler
+  {
+    private CharSequence input = null;
+    private Nonterminal[] stack = new Nonterminal[64];
+    private int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      if (top >= 0) addChild(nonterminal);
+      if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
+      stack[top] = nonterminal;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      stack[top].end = end;
+      if (top > 0) --top;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+    }
+
+    private void addChild(Symbol s)
+    {
+      Nonterminal current = stack[top];
+      current.children = Arrays.copyOf(current.children, current.children.length + 1);
+      current.children[current.children.length - 1] = s;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      stack[0].send(e);
+    }
+  }
+
+  public static abstract class Symbol
+  {
+    public String name;
+    public int begin;
+    public int end;
+
+    protected Symbol(String name, int begin, int end)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void send(EventHandler e);
+  }
+
+  public static class Terminal extends Symbol
+  {
+    public Terminal(String name, int begin, int end)
+    {
+      super(name, begin, end);
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.terminal(name, begin, end);
+    }
+  }
+
+  public static class Nonterminal extends Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    {
+      super(name, begin, end);
+      this.children = children;
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.startNonterminal(name, begin);
+      int pos = begin;
+      for (Symbol c : children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(name, end);
+    }
+  }
+~                                                               if (isLrParser)
+                                                                {
+~
+  public interface BottomUpEventHandler
+  {
+    public void reset(CharSequence string);
+    public void nonterminal(String name, int begin, int end, int count);
+    public void terminal(String name, int begin, int end);
+  }
+~                                                               }
+                                                              }
+                                                            }
+
+                                                            void PrintJava::printEventHandlerImplementation()
+                                                            {
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+  public static class XmlSerializer implements EventHandler
+  {
+    private CharSequence input;
+    private String delayedTag;
+    private Writer out;
+    private boolean indent;
+    private boolean hasChildElement;
+    private int depth;
+
+    public XmlSerializer(Writer w, boolean indent)
+    {
+      input = null;
+      delayedTag = null;
+      out = w;
+      this.indent = indent;
+    }
+
+    @Override
+    public void reset(CharSequence string)
+    {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+      input = string;
+      delayedTag = null;
+      hasChildElement = false;
+      depth = 0;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      if (delayedTag != null)
+      {
+        writeOutput("<");
+        writeOutput(delayedTag);
+        writeOutput(">");
+      }
+      delayedTag = name;
+      if (indent)
+      {
+        writeOutput("\n");
+        for (int i = 0; i < depth; ++i)
+        {
+          writeOutput("  ");
+        }
+      }
+      hasChildElement = false;
+      ++depth;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      --depth;
+      if (delayedTag != null)
+      {
+        delayedTag = null;
+        writeOutput("<");
+        writeOutput(name);
+        writeOutput("/>");
+      }
+      else
+      {
+        if (indent)
+        {
+          if (hasChildElement)
+          {
+            writeOutput("\n");
+            for (int i = 0; i < depth; ++i)
+            {
+              writeOutput("  ");
+            }
+          }
+        }
+        writeOutput("</");
+        writeOutput(name);
+        writeOutput(">");
+      }
+      hasChildElement = true;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      if (name.charAt(0) == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        if (delayedTag != null)
+        {
+          writeOutput("<");
+          writeOutput(delayedTag);
+          writeOutput(">");
+          delayedTag = null;
+        }
+        writeOutput(input.subSequence(begin, end)
+                         .toString()
+                         .replace("&", "&amp;")
+                         .replace("<", "&lt;")
+                         .replace(">", "&gt;"));
+      }
+    }
+
+    public void writeOutput(String content)
+    {
+      try
+      {
+        out.write(content);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+~                                                               }
+                                                                if (performanceTest)
+                                                                {
+~
+  public static class ContentCounter implements EventHandler
+  {
+    private int length = 0;
+    public int getLength() {return length;}
+    @Override
+    public void reset(CharSequence string) {length = 0;}
+    @Override
+    public void startNonterminal(String name, int begin) {}
+    @Override
+    public void endNonterminal(String name, int end) {}
+    @Override
+    public void terminal(String name, int begin, int end) {length += end - begin;}
+    @Override
+    public void whitespace(int begin, int end) {length += end - begin;}
+  }
+~
+                                                                }
+                                                                if (saxon)
+                                                                {
+~
+  public static class SaxonTreeBuilder implements EventHandler
+  {
+    private CharSequence input;
+    private Builder builder;
+    private AnyType anyType;
+
+    public SaxonTreeBuilder(Builder b)
+    {
+      input = null;
+      builder = b;
+      anyType = AnyType.getInstance();
+    }
+
+    @Override
+    public void reset(CharSequence string)
+    {
+      input = string;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      try
+      {
+        builder.startElement(new NoNamespaceName(name), anyType, ~
+                                                                  if (saxon != 99)
+                                                                  {
+                              ~NO_ATTRIBUTES, NO_NAMESPACES, ~    }
+                              ~LOCATION, 0);
+      }
+      catch (XPathException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      try
+      {
+        builder.endElement();
+      }
+      catch (XPathException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      if (name.charAt(0) == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        try
+        {
+          builder.characters(~                                    if (saxon == 110)
+                                                                  {
+                             ~StringView.of(~                     }
+                             ~input.subSequence(begin, end)~      if (saxon == 110)
+                                                                  {
+                                                           ~.toString())~
+                                                                  }
+                                                           ~, LOCATION, 0);
+        }
+        catch (XPathException e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+~                                                               }
+                                                                if (isLrParser)
+                                                                {
+~
+  public static class ParseTreeBuilder implements BottomUpEventHandler
+  {
+    private CharSequence input;
+    public Symbol[] stack = new Symbol[64];
+    public int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void nonterminal(String name, int begin, int end, int count)
+    {~                                                          if (useGlr)
+                                                                {
+~
+      if (count > top + 1)
+      {
+        Symbol[] content = pop(top + 1);
+        nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+        for (Symbol symbol : content)
+        {
+          push(symbol);
+        }
+        count = top + 1;
+      }~                                                        }
+~
+      push(new Nonterminal(name, begin, end, pop(count)));
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      push(new Terminal(name, begin, end));
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      for (int i = 0; i <= top; ++i)
+      {
+        stack[i].send(e);
+      }
+    }
+
+    public void push(Symbol s)
+    {
+      if (++top >= stack.length)
+      {
+        stack = Arrays.copyOf(stack, stack.length << 1);
+      }
+      stack[top] = s;
+    }
+
+    public Symbol[] pop(int count)
+    {
+      top -= count;
+      return Arrays.copyOfRange(stack, top + 1, top + count + 1);
+    }
+  }
+~
+                                                                }
+                                                              }
+                                                              if (saxon)
+                                                              {
+                                                                const wchar_t *visibility = interfaceName.empty() ? L"private" : L"public";
+                                                                if (saxon == 99)
+                                                                {
+~
+  ~                                                               print(visibility);
+  ~ static final Location LOCATION = ExplicitLocation.UNKNOWN_LOCATION;
+~                                                               }
+                                                                else
+                                                                {
+~
+  ~                                                               print(visibility);
+  ~ static final AttributeMap NO_ATTRIBUTES = EmptyAttributeMap.getInstance();
+  ~                                                               print(visibility);
+  ~ static final NamespaceMap NO_NAMESPACES = NamespaceMap.emptyMap();
+  ~                                                               print(visibility);
+  ~ static final Location LOCATION = Loc.NONE;
+~                                                               }
+                                                              }
+                                                            }
+
+                                                            /* Saxon extension function definition for match()
+                                                             * did not show a performance difference. Strange...
+~
+  public static class MatchDefinition extends ExtensionFunctionDefinition implements Initializer
+  {
+    private static final long serialVersionUID = 1L;
+
+    public void initialize(Configuration conf) {conf.registerExtensionFunction(this);}
+    public StructuredQName getFunctionQName() {return new StructuredQName("p", "~
+                                                            if (! packageName.empty())
+                                                            {
+                                                              for (size_t i = 0; i < packageName.size(); ++i)
+                                                              {
+                                                                print(packageName[i] == L'.' ? L'/' : packageName[i]);
+                                                              }
+                                                                                ~/~
+                                                            }
+                                                            print(className.c_str());
+                                                                                  ~", "match");}
+    public SequenceType[] getArgumentTypes() {return new SequenceType[] {SequenceType.SINGLE_STRING, SequenceType.SINGLE_INTEGER, SequenceType.SINGLE_INTEGER};}
+    public SequenceType getResultType(SequenceType[] suppliedArgumentTypes) {return SequenceType.NUMERIC_SEQUENCE;}
+
+    public ExtensionFunctionCall makeCallExpression()
+    {
+      return new ExtensionFunctionCall()
+      {
+        private ~                                           print(className.c_str());
+                ~ parser = new ~                            print(className.c_str());
+                               ~();
+        Item[] result = new Item[3];
+
+        @SuppressWarnings("rawtypes")
+        public SequenceIterator<? extends Item> call(SequenceIterator<? extends Item>[] arguments, XPathContext context) throws XPathException
+        {
+          String input = ((StringValue) arguments[0].next()).getStringValue();
+          int begin = (int) ((IntegerValue) arguments[1].next()).longValue() - 1;
+          int set = (int) ((IntegerValue) arguments[2].next()).longValue();
+
+          parser.input = input;
+          parser.size = input.length();
+          parser.end = begin;
+          int token = parser.match(set);
+
+          result[0] = IntegerValue.makeIntegerValue((double) token).asAtomic();
+          result[1] = IntegerValue.makeIntegerValue((double) parser.begin + 1).asAtomic();
+          result[2] = IntegerValue.makeIntegerValue((double) parser.end + 1).asAtomic();
+          return new ArrayIterator<Item>(result);
+        }
+      };
+    }
+  }
+~
+                                                            */

@@ -1,0 +1,156 @@
+                                                            <?java
+                                                              public class strongLL27
+                                                              {
+                                                                public strongLL27(String string)
+                                                                {
+                                                                  initialize(string);
+                                                                }
+
+                                                                public static void main(String[] args)
+                                                                {
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyaz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxybz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxycz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxydz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyez").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyfz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxygz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyhz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyiz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyjz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxykz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxylz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxymz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxynz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyoz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxypz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyqz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyrz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxysz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxytz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyuz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyvz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxywz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyxz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyyz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyzz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxaz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxbz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxcz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxdz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxez").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxfz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxgz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxhz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxiz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxjz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxkz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxlz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxmz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxnz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxoz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxpz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxqz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxrz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxsz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxtz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxuz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxvz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxwz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxxz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxyz").parse_a();
+                                                                    new strongLL27("abcdefghijklmnopqrstuvwxzz").parse_a();
+                                                                    System.out.println("pass");
+                                                                  }
+                                                            ?>
+
+                                                            <?xquery
+                                                              declare namespace p="strongLL27";
+                                                              declare option saxon:output "method=text";
+                                                            ?>
+
+a ::=  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "a" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "b" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "c" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "d" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "e" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "f" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "g" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "h" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "i" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "j" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "k" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "l" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "m" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "n" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "o" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "p" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "q" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "r" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "s" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "t" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "u" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "v" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "w" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "x" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "y" "z"
+    |  "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" y "z" "z"
+
+y ::=  "y"?
+
+<?ENCORE?>
+                                                            <?xquery
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyaz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxybz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxycz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxydz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyez"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyfz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxygz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyhz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyiz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyjz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxykz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxylz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxymz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxynz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyoz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxypz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyqz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyrz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxysz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxytz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyuz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyvz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxywz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyxz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyyz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyzz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxaz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxbz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxcz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxdz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxez"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxfz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxgz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxhz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxiz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxjz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxkz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxlz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxmz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxnz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxoz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxpz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxqz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxrz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxsz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxtz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxuz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxvz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxwz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxxz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxyz"),
+                                                              p:parse-a("abcdefghijklmnopqrstuvwxzz"),
+                                                              "pass"
+                                                            ?>

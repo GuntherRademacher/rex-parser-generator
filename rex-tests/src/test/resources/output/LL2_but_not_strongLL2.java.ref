@@ -1,0 +1,457 @@
+// This file was generated on Fri Dec 2, 2022 18:01 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q LL2_but_not_strongLL2.ebnf -java -saxon
+
+import java.util.ArrayList;
+import java.util.List;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.event.Builder;
+import net.sf.saxon.expr.XPathContext;
+import net.sf.saxon.lib.ExtensionFunctionCall;
+import net.sf.saxon.lib.ExtensionFunctionDefinition;
+import net.sf.saxon.lib.Initializer;
+import net.sf.saxon.om.AttributeInfo;
+import net.sf.saxon.om.NoNamespaceName;
+import net.sf.saxon.om.Sequence;
+import net.sf.saxon.om.SmallAttributeMap;
+import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.type.AnySimpleType;
+import net.sf.saxon.type.AnyType;
+import net.sf.saxon.value.SequenceType;
+import net.sf.saxon.value.EmptySequence;
+import net.sf.saxon.expr.parser.Loc;
+import net.sf.saxon.om.AttributeMap;
+import net.sf.saxon.om.EmptyAttributeMap;
+import net.sf.saxon.om.NamespaceMap;
+import net.sf.saxon.s9api.Location;
+import net.sf.saxon.str.StringView;
+
+public class LL2_but_not_strongLL2
+{
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  private static final AttributeMap NO_ATTRIBUTES = EmptyAttributeMap.getInstance();
+  private static final NamespaceMap NO_NAMESPACES = NamespaceMap.emptyMap();
+  private static final Location LOCATION = Loc.NONE;
+
+  public static class SaxonInitializer implements Initializer
+  {
+    @Override
+    public void initialize(Configuration conf)
+    {
+      conf.registerExtensionFunction(new SaxonDefinition_S());
+    }
+  }
+
+  public static Sequence parseS(XPathContext context, String input) throws XPathException
+  {
+    Builder builder = context.getController().makeBuilder();
+    builder.open();
+    LL2_but_not_strongLL2 parser = new LL2_but_not_strongLL2(input);
+    try
+    {
+      parser.parse_S();
+      return EmptySequence.getInstance();
+    }
+    catch (ParseException pe)
+    {
+      buildError(parser, pe, builder);
+    }
+    return builder.getCurrentRoot();
+  }
+
+  public static class SaxonDefinition_S extends SaxonDefinition
+  {
+    @Override
+    public String functionName() {return "parse-S";}
+    @Override
+    public Sequence execute(XPathContext context, String input) throws XPathException
+    {
+      return parseS(context, input);
+    }
+  }
+
+  public static abstract class SaxonDefinition extends ExtensionFunctionDefinition
+  {
+    abstract String functionName();
+    abstract Sequence execute(XPathContext context, String input) throws XPathException;
+
+    @Override
+    public StructuredQName getFunctionQName() {return new StructuredQName("p", "LL2_but_not_strongLL2", functionName());}
+    @Override
+    public SequenceType[] getArgumentTypes() {return new SequenceType[] {SequenceType.SINGLE_STRING};}
+    @Override
+    public SequenceType getResultType(SequenceType[] suppliedArgumentTypes) {return SequenceType.OPTIONAL_NODE;}
+
+    @Override
+    public ExtensionFunctionCall makeCallExpression()
+    {
+      return new ExtensionFunctionCall()
+      {
+        @Override
+        public Sequence call(XPathContext context, Sequence[] arguments) throws XPathException
+        {
+          return execute(context, arguments[0].iterate().next().getStringValue());
+        }
+      };
+    }
+  }
+
+  private static void buildError(LL2_but_not_strongLL2 parser, ParseException pe, Builder builder) throws XPathException
+  {
+    builder.close();
+    builder.reset();
+    builder.open();
+    List<AttributeInfo> attributes = new ArrayList<>();
+    AnySimpleType anySimpleType = AnySimpleType.getInstance();
+    attributes.add(new AttributeInfo(new NoNamespaceName("b"), anySimpleType, Integer.toString(pe.getBegin() + 1), LOCATION, 0));
+    attributes.add(new AttributeInfo(new NoNamespaceName("e"), anySimpleType, Integer.toString(pe.getEnd() + 1), LOCATION, 0));
+    if (pe.getOffending() < 0)
+    {
+      attributes.add(new AttributeInfo(new NoNamespaceName("s"), anySimpleType, Integer.toString(pe.getState()), LOCATION, 0));
+    }
+    else
+    {
+      attributes.add(new AttributeInfo(new NoNamespaceName("o"), anySimpleType, Integer.toString(pe.getOffending()), LOCATION, 0));
+      attributes.add(new AttributeInfo(new NoNamespaceName("x"), anySimpleType, Integer.toString(pe.getExpected()), LOCATION, 0));
+    }
+    builder.startElement(new NoNamespaceName("ERROR"), AnyType.getInstance(), new SmallAttributeMap(attributes), NO_NAMESPACES, LOCATION, 0);
+    builder.characters(StringView.of(parser.getErrorMessage(pe)), LOCATION, 0);
+    builder.endElement();
+  }
+
+  public LL2_but_not_strongLL2(CharSequence string)
+  {
+    initialize(string);
+  }
+
+  public void initialize(CharSequence source)
+  {
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    l2 = 0; b2 = 0; e2 = 0;
+    l3 = 0; b3 = 0; e3 = 0;
+    end = e;
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_S()
+  {
+    lookahead1(3);                  // a | b
+    switch (l1)
+    {
+    case 2:                         // a
+      consume(2);                   // a
+      parse_A();
+      lookahead1(0);                // a
+      consume(2);                   // a
+      lookahead1(0);                // a
+      consume(2);                   // a
+      break;
+    default:
+      consume(3);                   // b
+      parse_A();
+      lookahead1(1);                // b
+      consume(3);                   // b
+      lookahead1(0);                // a
+      consume(2);                   // a
+    }
+  }
+
+  private void parse_A()
+  {
+    lookahead1(3);                  // a | b
+    switch (l1)
+    {
+    case 3:                         // b
+      lookahead2(3);                // a | b
+      switch (lk)
+      {
+      case 19:                      // b a
+        lookahead3(2);              // END | a
+        break;
+      }
+      break;
+    default:
+      lk = l1;
+    }
+    switch (lk)
+    {
+    case 27:                        // b b
+    case 147:                       // b a a
+      consume(3);                   // b
+      break;
+    default:
+      break;
+    }
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
+      b1 = b2; e1 = e2; l2 = l3; if (l2 != 0) {
+      b2 = b3; e2 = e3; l3 = 0; }}
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private void lookahead2(int tokenSetId)
+  {
+    if (l2 == 0)
+    {
+      l2 = match(tokenSetId);
+      b2 = begin;
+      e2 = end;
+    }
+    lk = (l2 << 3) | l1;
+  }
+
+  private void lookahead3(int tokenSetId)
+  {
+    if (l3 == 0)
+    {
+      l3 = match(tokenSetId);
+      b3 = begin;
+      e3 = end;
+    }
+    lk |= l3 << 6;
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int lk, b0, e0;
+  private int l1, b1, e1;
+  private int l2, b2, e2;
+  private int l3, b3, e3;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 3; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+
+      state = code;
+      int i0 = (charclass << 2) + code - 1;
+      code = TRANSITION[(i0 & 1) + TRANSITION[i0 >> 1]];
+
+      if (code > 3)
+      {
+        result = code;
+        code &= 3;
+        end = current;
+      }
+    }
+
+    result >>= 2;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 3 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 93, 93, 93, 90, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93,
+    /*  78 */ 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2, 9, 3
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 7, 7, 8, 9, 6, 6, 12, 0, 0, 16, 0
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /* 0 */ 4, 8, 12
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "END",
+    "'a'",
+    "'b'"
+  };
+}
+
+// End

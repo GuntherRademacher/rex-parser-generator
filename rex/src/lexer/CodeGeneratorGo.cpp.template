@@ -1,0 +1,688 @@
+~                                                           // generate CodeGeneratorGo.cpp using this command:
+                                                            //
+                                                            //   REx CodeGeneratorGo.cpp.template
+
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "CodeGenerator.hpp"
+
+                                                            void CodeGeneratorGo::generateStaticCode()
+                                                            {
+                                                              isGo = true;
+
+                                                              const char *prefix = variable("useGlr").boolean()
+                                                                                 ? "this.parser."
+                                                                                 : "this.";
+                                                              if (! variable("append").boolean() && ! variable("embedded").boolean())
+                                                              {
+                                                                if (*variable("package").string())
+                                                                {
+~package ~                                                        print(variable("package").string());
+         ~;
+
+~                                                               }
+~public class ~                                                 print(variable("classname").string());
+              ~
+{
+~                                                             }
+                                                              if (! variable("useGlr").boolean())
+                                                              {
+~
+  input string~                                                 if (! variable("nolexer").boolean())
+                                                                {
+~
+  size int~                                                     }
+~
+  begin int
+  end int~                                                    }
+                                                              if (variable("nolexer").boolean())
+                                                              {
+~
+  lexer Lexer
+  token Token~                                                }
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  state int~                                                  }
+~
+}
+~
+                                                              const char *clazz = variable("useGlr").boolean() ? "ParsingThread" : variable("classname").string();
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  public void init(String string)
+  {
+    input = string;
+    size = string.length();
+    end = 0;
+  }
+
+  public int getOffset() {return begin;}
+  public int getSize()   {return end - begin;}
+  public int getState()  {return state;}
+
+  public int match(int tokenSetId, String string)
+  {
+    init(string);
+    return match(tokenSetId);
+  }
+
+  public~                                                     }
+                                                              else
+                                                              {
+                                                                if (variable("lrparser").boolean() ||
+                                                                    variable("tables").boolean())
+                                                                {
+~
+func (this *~                                                     print(clazz);
+            ~) predict(dpi int) int~                              predict();
+                                                                }
+                                                              }
+~
+func (this *~                                                 print(clazz);
+            ~) match(tokenSetId int) int {~                   if (variable("nolexer").boolean())
+                                                              {
+~
+  token.begin = end;
+  lexer.match(tokenSetId, token);
+  begin = token.begin;
+  end = token.end;
+  return token.code >= 0
+       ? token.code
+       : error(begin, end, - tokenSetId, -1, -1);
+}
+~                                                             }
+                                                              else
+                                                              {
+                                                                int lookahead = variable("maxcontextlength").integer();
+                                                                bool hasFixedTokenLength = variable("hasfixedtokenlength").boolean();
+                                                                int lowBits;
+                                                                const char *flags = getenv("FLAGS");
+                                                                bool hack = flags && strchr(flags, 'H');
+
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+  writeTrace("  <tokenize ~
+                                                                if (variable("useGlr").boolean())
+                                                                {
+                          ~thread=\"" + strconv.Itoa(this.id) + "\" ~
+                                                                }
+                          ~tokenset=\"" + strconv.Itoa(tokenSetId) + "\">\n")
+~                                                               }
+                                                                if (lookahead)
+                                                                {
+~
+  nonbmp := false~                                              }
+~
+  this.begin = this.end
+  current := this.end
+  result := initial[tokenSetId]~                                if (variable("embedded").boolean() && (variable("trace").boolean() || ! variable("useGlr").boolean()))
+                                                                {
+~
+  state := 0~                                                   }
+~
+~                                                               if (variable("trace").boolean())
+                                                                {
+~
+  writeTrace("    <next state=\"" + strconv.Itoa(result & ~      print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                          ~) + "\"")~
+                                                                }
+~
+  for code := result & ~                                        print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                       ~; code != 0; {~
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+    writeTrace(" offset=\"" + strconv.Itoa(current) + "\"")~    }
+~
+    var charclass int
+    var c0 int
+    if current < ~                                              print(prefix);
+                 ~size {
+      r, s := utf8.DecodeRuneInString(~                         print(prefix);
+                                      ~input[current:])
+      c0 = int(r)
+      current += s
+    } else {
+      c0 = 0
+      current++
+    }~
+~
+    if c0 < 0x~                                                 print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+              ~ {~
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+      if c0 >= 32 && c0 <= 126 {
+        writeTrace(" char=\"" + xmlEscape(string(rune(c0))) + "\"")
+      }~                                                        }
+~
+      charclass = map0[c0]
+    } else if c0 < 0x~                                          print(format.toString<char>(variable("uncompressedMapSize").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+                       ~ {
+~                                                               compressedMapAccessor(6, "c", "charclass = ", "map1", &variable("m1bits").integer());
+~
+    } else {~                                                   if (variable("m2").size == 0)
+                                                                {
+     ~
+      charclass = 0~                                            }
+                                                                else
+                                                                {
+~
+      lo := 0
+      hi := ~                                                     print(variable("m2").size / 3 - 1);
+~
+      for m := ~                                                  print((variable("m2").size / 3) >> 1);
+               ~; ; m = (hi + lo) >> 1 {
+        if map2[m] > int(c0) {
+          hi = m - 1
+        } else if map2[~                                          print(variable("m2").size / 3);
+                       ~ + m] < int(c0) {
+          lo = m + 1
+        } else {
+          charclass = map2[~                                      print(variable("m2").size / 3 * 2);
+                           ~ + m]
+          break
+        }
+        if lo > hi {
+          charclass = 0
+          break
+        }
+      }~                                                        }
+~
+    }~                                                          if (variable("trace").boolean())
+                                                                {
+~
+    writeTrace(" codepoint=\"" + strconv.Itoa(c0) + "\" class=\"" + strconv.Itoa(charclass) + "\"")~
+                                                                }
+~
+~                                                               if (variable("trace").boolean() || ! variable("useGlr").boolean())
+                                                                {
+~
+    state = code~                                               }
+~
+~                                                               compressedMap2dAccessor("code - 1", "charclass", variable("a1cols").integer(),
+                                                                                           4, "i", "code = ", "transition", &variable("a1bits").integer());
+~
+    if code > ~                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+              ~ {
+      result = code~                                            if (variable("trace").boolean())
+                                                                {
+~
+      writeTrace(" result=\"" + xmlEscape(token[((result >> ~    print(variable("stateCodeBits").integer());
+                                                            ~) & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                                            ~) - 1]) + "\"")~
+                                                                  if (lookahead || hasFixedTokenLength)
+                                                                  {
+                                                                    int contextOffset = variable("stateCodeBits").integer()
+                                                                                      + variable("tokencodeBits").integer();
+                                                                    int sizeOffset = contextOffset
+                                                                                   + (hasFixedTokenLength ? 1 : 0);
+                                                                    if (hasFixedTokenLength)
+                                                                    {
+~
+      if result & ~                                                   print(Math::powerof(2, contextOffset));
+                  ~ > 0 {
+        writeTrace(" token-size=\"" + strconv.Itoa(result >> ~       print(sizeOffset);
+                                                             ~) + "\"")
+      } else ~                                                      }
+                                                                    else
+                                                                    {
+~
+      ~                                                             }
+      ~if (result >> ~                                              print(sizeOffset);
+                     ~) > 0 {
+        writeTrace(" trailing-context-size=\"" + strconv.Itoa(result >> ~
+                                                                    print(sizeOffset);
+                                                                        ~) + "\"")
+      }~                                                          }
+                                                                }
+~
+      code &= ~                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+              ~
+      this.end = current
+    }~                                                          if (variable("trace").boolean())
+                                                                {
+~
+    writeTrace("/>\n")
+    if code != 0 {
+      writeTrace("    <next state=\"" + strconv.Itoa(code) + "\"")
+    }~                                                          }
+~
+  }
+
+  result >>= ~                                                  print(variable("stateCodeBits").integer());
+             ~
+  if result == 0 {
+    if this.end < ~                                             print(prefix);
+                  ~size {
+      _, s := utf8.DecodeLastRuneInString(~                     print(prefix);
+                                          ~input[:current])
+      this.end = current - s
+    } else {
+      this.end = current - 1
+    }~                                                          if (variable("trace").boolean())
+                                                                {
+~
+    writeTrace("    <fail begin=\"" + strconv.Itoa(this.begin) + "\" end=\"" + strconv.Itoa(this.end) + "\" state=\"" + strconv.Itoa(state) + "\"/>\n")
+    writeTrace("  </tokenize>\n")~                              }
+                                                                if (variable("embedded").boolean())
+                                                                {
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+~
+    this.end = this.begin
+    return -1~                                                    }
+                                                                  else
+                                                                  {
+~
+    return this.error(this.begin, this.end, state, -1, -1)~       }
+                                                                }
+~
+  }~                                                            lowBits = variable("tokencodeBits").integer();
+                                                                if (hasFixedTokenLength && ! lookahead)
+                                                                {
+~ else if (result & ~                                             print(Math::powerof(2, lowBits));
+                                                                  ++lowBits;
+                    ~) != 0 {
+    this.end = this.begin
+  }~                                                            }
+                                                                else
+                                                                {
+                                                                  if (hasFixedTokenLength)
+                                                                  {
+~ else if (result & ~                                               print(Math::powerof(2, lowBits));
+                                                                    ++lowBits;
+                    ~) != 0 {
+    this.end = this.begin
+    if (nonbmp) {
+      for i := result >> ~                                          print(lowBits);
+                         ~; i > 0; i-- {
+        if this.end >= ~                                            print(prefix);
+                       ~size {
+          this.end++
+        } else {
+          _, s := utf8.DecodeRuneInString(~                         print(prefix);
+                                          ~input[this.end:])
+          this.end += s
+        }
+      }
+    } else {
+      this.end += (result >> ~                                      print(lowBits);
+                             ~);
+    }
+  }~                                                              }
+                                                                  if (lookahead)
+                                                                  {
+   ~ else if nonbmp {
+    for i := result >> ~                                            print(lowBits);
+                       ~; i > 0; i-- {
+      if this.end >= ~                                              print(prefix);
+                     ~size {
+        this.end--
+      } else {
+        _, s := utf8.DecodeLastRuneInString(~                       print(prefix);
+                                            ~input[:this.end - 1])
+        this.end -= s
+      }
+    }
+  } else {
+    this.end -= result >> ~                                         print(lowBits);
+                          ~
+  }~                                                              }
+                                                                }
+~
+~
+~
+  if this.end > ~                                               print(prefix);
+                ~size {
+    this.end = ~                                                print(prefix);
+               ~size
+  }~                                                            if (variable("trace").boolean())
+                                                                {
+~
+  writeTrace("    <done result=\"" + xmlEscape(token[(result & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+             ~) - 1]) + "\" begin=\"" + strconv.Itoa(this.begin) + "\" end=\"" + strconv.Itoa(this.end) + "\"/>\n")
+  writeTrace("  </tokenize>\n")~                                }
+                                                                if (hack)
+                                                                {
+~
+  return hack((result & ~                                         print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                        ~) - 1);
+}
+~                                                               }
+                                                                else
+                                                                {
+~
+  return (result & ~                                              print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                   ~) - 1
+}
+~                                                               }
+                                                              }
+                                                              if (defined("gtbits"))
+                                                              {
+~
+func reduceAction(nonterminalId int, state int) int {
+~                                                               compressedMap2dAccessor("nonterminalId", "state", variable("gtcols").integer(),
+                                                                                        2, "i", "return ", "goTo", &variable("gtbits").integer());
+~
+}
+~                                                             }
+
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  public String[] getExpectedTokenSet()
+  {
+    return getTokenSet(- state);
+  }
+~                                                             }
+                                                              if (variable("trace").boolean())
+                                                              {
+~
+func xmlEscape(s string) string {
+  var sb strings.Builder
+  for i := 0; i < len(s); {
+    c, l := utf8.DecodeRuneInString(s[i:])
+    i += l
+    switch (c) {
+    case '<': sb.WriteString("&lt;")
+    case '"': sb.WriteString("&quot;")
+    case '&': sb.WriteString("&amp;")
+    default : sb.WriteString(string(c))
+    }
+  }
+  return sb.String()
+}
+
+func writeTrace(content string) {
+  os.Stderr.WriteString(content)
+}
+~                                                               if (variable("embedded").boolean())
+                                                                {
+~
+func flushTrace() {
+  os.Stderr.Sync()
+}
+~                                                               }
+                                                              }
+                                                              if (variable("nolexer").boolean())
+                                                              {
+~
+  public static int getTokenCount() {return ~                   print(variable("t1").size);
+                                            ~;}
+  public static String getTokenName(int code) {return code >= 0 && code < ~
+                                                                print(variable("t1").size);
+                                                                          ~ ? token[code] : null;}
+  public static int getTokenSetCount() {return ~                print(variable("entrycount").integer());
+                                               ~;}
+
+func GetTokenSet(tokenSetId int) []string {~                  }
+                                                              else
+                                                              {
+~
+func getTokenSet(tokenSetId int) []string {~                  }
+                                                              if (! variable("nolexer").boolean())
+                                                              {
+~
+  var s int
+  if tokenSetId < 0 {
+    s = - tokenSetId
+  } else {
+    s = initial[tokenSetId] & ~                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                              ~
+  }~
+                                                              }
+~
+  set := []string {}
+  size := 0
+  for i := 0; i < ~                                           print(variable("t1").size);
+                  ~; i += 32 {
+    j := i
+    i0 := (i >> 5) * ~                                        print(variable("transitionStateCount").integer());
+                     ~ + ~                                    if (variable("nolexer").boolean())
+                                                              {
+                     ~tokenSetId~                             }
+                                                              else
+                                                              {
+                     ~s - 1~                                  }
+~
+~                                                             compressedMapAccessor(4, "i", "f := uint32(", "expected", &variable("t0bits").integer());
+~)
+    for ; f != 0; f >>= 1 {
+      if (f & 1) != 0 {
+        set = append(set, token[j])
+        size++
+      }
+      j++
+    }
+  }
+  return set[:size]
+}~                                                            generateData();
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+
+  public enum Token
+  {
+    ~                                                           const CGVariable &token = variable("token");
+                                                                int w = (int) Format::width(token.size);
+                                                                for (size_t i = 0; i < token.size; ++i)
+                                                                {
+                                                                  if (i)
+                                                                  {
+    ~,
+    ~                                                             }
+    ~/* ~                                                         print(format.toString<char>(i, 10, w));
+    ~ */ ~                                                        print(token.string(i));
+                                                                }
+    ~
+  };~
+                                                              }
+                                                              if (variable("selfTest").boolean())
+                                                              {
+~
+
+  private void selfTest(int set, int tokenId)
+  {
+    String tokenString = token[tokenId];
+    if (tokenString.startsWith("'"))
+    {
+      System.out.print("testing(" + set + ", " + tokenId + ")...");
+      tokenString = tokenString.substring(1, tokenString.length() - 1).replace("''", "'");
+      if (tokenString.trim().equals(""))
+      {
+        System.out.println("  skipped");
+      }
+      else
+      {
+        int result = match(set, tokenString + " ");
+        int resultSize = getSize();
+        if (result != tokenId || resultSize != tokenString.length())
+        {
+          System.out.println();
+          System.out.println("  tested: " + tokenString);
+          System.out.println("  result: " + result);
+          System.out.println("    size: " + resultSize);
+          System.exit(1);
+        }
+        else
+        {
+          System.out.println("  OK");
+        }
+      }
+    }
+  }
+
+  public static void main(String[] args)
+  {
+    ~                                                         print(variable("classname").string());
+    ~ testee = new ~                                          print(variable("classname").string());
+                   ~();
+    for (int e = 0; e < ~                                     print(variable("a0").size);
+                        ~; ++e)
+    {
+      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                           ~;
+      for (int i = 0; i < ~                                   print(variable("t1").size);
+                          ~; i += 32)
+      {
+        int j = i;
+        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+                            ~ + s - 1;
+~                                                             compressedMapAccessor(8, "i", "f := ", "expected", &variable("t0bits").integer());
+~
+        for ( ; f != 0; f >>>= 1, ++j)
+        {
+          if ((f & 1) != 0)
+          {
+            testee.selfTest(e, j);
+          }
+        }
+      }
+    }
+  }~                                                          }
+~
+~                                                             if (! variable("embedded").boolean())
+                                                              {
+~}
+~                                                             }
+                                                            }
+
+                                                            void CodeGeneratorGo::generateCompressedMap()
+                                                            {
+~
+public class ~                                                print(variable("classname").string());
+~
+{
+  public static int get(int i0)
+  {
+    if (i0 < 0x30000)
+    {
+~                                                             compressedMapAccessor(6, "i", "return ", "low", &variable("dtbits").integer());
+~
+    }
+    else
+    {~                                                        indent += 3;
+                                                              generateBinarySearch("i0", "return ", "", "HIGH", variable("rm").size);
+                                                              indent -= 3;
+~
+    }
+  }~                                                          generateData();
+~
+}
+~                                                           }
+
+                                                            void CodeGeneratorGo::generateData()
+                                                            {
+                                                              size_t limit = 119;
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (   a->isArray()
+                                                                    && a->size > 0
+                                                                    && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
+                                                                    && strlen(a->name) == 2)
+                                                              {
+~
+
+var ~                                                           if (strcmp(a->longName, "GOTO") == 0)
+                                                                {
+                                                                  print("goTo");
+                                                                }
+                                                                else
+                                                                {
+                                                                  char name[] = {0, 0};
+                                                                  for (const char *p = a->longName; *p; ++p)
+                                                                  {
+                                                                    name[0] = tolower(*p);
+                                                                    print(name);
+                                                                  }
+                                                                }
+    ~ = [...]~                                                  if ( a->hasType(CGVariable::UNSIGNED))
+                                                                {
+             ~u~                                                }
+             ~int {~                                            int w = (int) Format::width(a->size);
+                                                                for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j == 0 || lineLength() + Format::width(a->integer(j)) + 2 > limit)
+                                                                  {
+                                                                    if (j) print(",");
+~
+/* ~                                                                print(format.toString<char>(j, 10, w));
+   ~ */ ~                                                         }
+                                                                  else
+                                                                  {
+   ~, ~                                                           }
+                                                                  if (a->hasType(CGVariable::UNSIGNED))
+                                                                  {
+                                                                    print(format.toString<char>((unsigned) a->integer(j)));
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    print(a->integer(j));
+                                                                  }
+                                                                }
+~}~                                                           }
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
+                                                              {
+~
+
+var ~                                                           char name[] = {0, 0};
+                                                                for (const char *p = a->longName; *p; ++p)
+                                                                {
+                                                                  name[0] = tolower(*p);
+                                                                  print(name);
+                                                                }
+                            ~ = [...]string {
+~                                                               for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j)
+                                                                  {
+    ~,
+~                                                                 }
+~    "~                                                           const char *s = a->string(j);
+                                                                  const char *c = s;
+                                                                  for (; *c; ++c)
+                                                                  {
+                                                                    if (*c == '"' || *c == '\\')
+                                                                    {
+                                                                      print(s, c - s);
+                                                                      s = c;
+                                                                      print("\\");
+                                                                    }
+                                                                  }
+                                                                  print(s, c - s);
+    ~"~                                                         }
+~}~                                                           }
+                                                            }
+
+                                                            void CodeGeneratorGo::generateBinarySearch(const char *input, const char *outputPrefix, const char *outputSuffix, const char *map, size_t size)
+                                                            {
+~
+int lo = 0, hi = ~                                            print(size / 3 - 1);
+                 ~;
+for (int m = ~                                                print((size / 3) >> 1);
+             ~; ; m = (hi + lo) >> 1)
+{
+  if (~                                                       print(map);
+      ~[m] > ~                                                print(input);
+             ~) {hi = m - 1;}
+  else if (~                                                  print(map);
+           ~[~                                                print(size / 3);
+             ~ + m] < ~                                       print(input);
+                      ~) {lo = m + 1;}
+  else {~                                                     print(outputPrefix);
+                                                              print(map);
+        ~[~                                                   print(size / 3 * 2);
+          ~ + m]~                                             print(outputSuffix);
+                ~;}
+  if (lo > hi) {~                                             print(outputPrefix);
+                ~0~                                           print(outputSuffix);
+                  ~;}
+}~                                                          }

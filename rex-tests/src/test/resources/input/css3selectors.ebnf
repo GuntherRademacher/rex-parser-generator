@@ -1,0 +1,128 @@
+selectors_group
+  ::= selector ( COMMA S* selector )*
+
+selector
+  ::= simple_selector_sequence ( combinator simple_selector_sequence )*
+
+combinator
+  /* combinators can be surrounded by whitespace */
+  ::= PLUS S* | GREATER S* | TILDE S* | S+
+
+simple_selector_sequence
+  ::= ( type_selector | universal )
+    ( HASH | class | attrib | pseudo | negation )*
+  | ( HASH | class | attrib | pseudo | negation )+
+
+type_selector
+  ::= ( namespace_prefix )? element_name
+
+namespace_prefix
+  ::= ( IDENT | '*' )? '|'
+
+element_name
+  ::= IDENT
+
+universal
+  ::= ( namespace_prefix )? '*'
+
+class
+  ::= '.' IDENT
+
+attrib
+  ::= '[' S* ( namespace_prefix )? IDENT S*
+        ( ( PREFIXMATCH |
+            SUFFIXMATCH |
+            SUBSTRINGMATCH |
+            '=' |
+            INCLUDES |
+            DASHMATCH ) S* ( IDENT | STRING ) S*
+        )? ']'
+
+pseudo
+  /* '::' starts a pseudo-element, ':' a pseudo-class */
+  /* Exceptions: :first-line, :first-letter, :before and :after. */
+  /* Note that pseudo-elements are restricted to one per selector and */
+  /* occur only in the last simple_selector_sequence. */
+  ::= ':' ':'? ( IDENT | functional_pseudo )
+
+functional_pseudo
+  ::= FUNCTION S* expression ')'
+
+expression
+  /* In CSS3, the expressions are identifiers, strings, */
+  /* or of the form "an+b" */
+  ::= ( ( PLUS | '-' | DIMENSION | NUMBER | STRING | IDENT ) S* )+
+
+negation
+  ::= NOT S* negation_arg S* ')'
+
+negation_arg
+  ::= type_selector | universal | HASH | class | attrib | pseudo
+
+<?TOKENS?>
+
+ident    ::= [-]? nmstart nmchar*
+name     ::= nmchar+
+nmstart  ::= [_a-z] | nonascii | escape
+nonascii ::= [^#x0-#x7F]
+unicode  ::= '\' one-to-six-hex-digits (#x0D#x0A | [ #x0A#x0D#x09#x0C])?
+escape   ::= unicode | '\' [^0-9a-f#x0A#x0D#x0C]
+nmchar   ::= [_a-z0-9-] | nonascii | escape
+num      ::= [0-9]+ | [0-9]* '.' [0-9]+
+string   ::= string1 | string2
+string1  ::= '"' ([^#x0A#x0D#x0C\"] | '\' nl | nonascii | escape)* '"'
+string2  ::= "'" ([^#x0A#x0D#x0C\'] | '\' nl | nonascii | escape)* "'"
+nl       ::= #x0A | #x0D#x0A | #x0D | #x0C
+w        ::= [ #x09#x0D#x0A#x0C]*
+
+N        ::= 'n' | '\' zero-to-four-zeroes ('4e'|'6e')(#x0D#x0A|[ #x09#x0D#x0A#x0C])? | '\n'
+O        ::= 'o' | '\' zero-to-four-zeroes ('4f'|'6f')(#x0D#x0A|[ #x09#x0D#x0A#x0C])? | '\o'
+T        ::= 't' | '\' zero-to-four-zeroes ('54'|'74')(#x0D#x0A|[ #x09#x0D#x0A#x0C])? | '\t'
+
+S ::=                [ #x09#x0D#x0A#x0C]+
+INCLUDES ::=         "~="
+DASHMATCH ::=        "|="
+PREFIXMATCH ::=      "^="
+SUFFIXMATCH ::=      "$="
+SUBSTRINGMATCH ::=   "*="
+IDENT ::=            ident
+STRING ::=           string
+FUNCTION ::=         ident "("
+NUMBER ::=           num
+HASH ::=             "#" name
+PLUS ::=             w "+"
+GREATER ::=          w ">"
+COMMA ::=            w ","
+TILDE ::=            w "~"
+NOT ::=              ":" N O T "("
+DIMENSION ::=        num ident
+
+one-to-six-hex-digits ::= [0-9a-f]
+                        | [0-9a-f] [0-9a-f]
+                        | [0-9a-f] [0-9a-f] [0-9a-f]
+                        | [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f]
+                        | [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f]
+                        | [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f]
+zero-to-four-zeroes ::=
+                      | '0'
+                      | '00'
+                      | '000'
+                      | '0000'
+
+/* these are not referenced directly?
+
+invalid  ::= invalid1 | invalid2
+invalid1 ::= '"' ([^#x0A#x0D#x0C\"] | '\' nl | nonascii | escape)*
+invalid2 ::= "'" ([^#x0A#x0D#x0C\'] | '\' nl | nonascii | escape)*
+
+D        ::= 'd' | '\' zero-to-four-zeroes (#x44|#x64)(#x0D#x0A|[ #x09#x0D#x0A#x0C])?
+E        ::= 'e' | '\' zero-to-four-zeroes (#x45|#x65)(#x0D#x0A|[ #x09#x0D#x0A#x0C])?
+V        ::= 'v' | '\' zero-to-four-zeroes (#x58|#x78)(#x0D#x0A|[ #x09#x0D#x0A#x0C])? | '\v'
+
+ATKEYWORD ::=        "@" ident
+INVALID ::=          invalid
+PERCENTAGE ::=       num "%"
+CDO ::=              "<!--"
+CDC ::=              "-->"
+
+*/

@@ -1,0 +1,622 @@
+// This file was generated on Mon Nov 1, 2021 16:07 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: HelloWorld.ebnf -name HelloWorld_6 -java -tree -main
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.util.Arrays;
+
+public class HelloWorld_6
+{
+  public static void main(String args[]) throws Exception
+  {
+    if (args.length == 0)
+    {
+      System.out.println("Usage: java HelloWorld_6 [-i] INPUT...");
+      System.out.println();
+      System.out.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+      System.out.println();
+      System.out.println("  Option:");
+      System.out.println("    -i     indented parse tree");
+    }
+    else
+    {
+      boolean indent = false;
+      for (String arg : args)
+      {
+        if (arg.equals("-i"))
+        {
+          indent = true;
+          continue;
+        }
+        Writer w = new OutputStreamWriter(System.out, "UTF-8");
+        XmlSerializer s = new XmlSerializer(w, indent);
+        String input = read(arg);
+        HelloWorld_6 parser = new HelloWorld_6(input, s);
+        try
+        {
+          parser.parse_H();
+        }
+        catch (ParseException pe)
+        {
+          throw new RuntimeException("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe));
+        }
+        finally
+        {
+          w.close();
+        }
+      }
+    }
+  }
+
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public void serialize(EventHandler eventHandler)
+    {
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  public interface EventHandler
+  {
+    public void reset(CharSequence string);
+    public void startNonterminal(String name, int begin);
+    public void endNonterminal(String name, int end);
+    public void terminal(String name, int begin, int end);
+    public void whitespace(int begin, int end);
+  }
+
+  public static class TopDownTreeBuilder implements EventHandler
+  {
+    private CharSequence input = null;
+    private Nonterminal[] stack = new Nonterminal[64];
+    private int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      if (top >= 0) addChild(nonterminal);
+      if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
+      stack[top] = nonterminal;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      stack[top].end = end;
+      if (top > 0) --top;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+    }
+
+    private void addChild(Symbol s)
+    {
+      Nonterminal current = stack[top];
+      current.children = Arrays.copyOf(current.children, current.children.length + 1);
+      current.children[current.children.length - 1] = s;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      stack[0].send(e);
+    }
+  }
+
+  public static abstract class Symbol
+  {
+    public String name;
+    public int begin;
+    public int end;
+
+    protected Symbol(String name, int begin, int end)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void send(EventHandler e);
+  }
+
+  public static class Terminal extends Symbol
+  {
+    public Terminal(String name, int begin, int end)
+    {
+      super(name, begin, end);
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.terminal(name, begin, end);
+    }
+  }
+
+  public static class Nonterminal extends Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    {
+      super(name, begin, end);
+      this.children = children;
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.startNonterminal(name, begin);
+      int pos = begin;
+      for (Symbol c : children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(name, end);
+    }
+  }
+
+  public static class XmlSerializer implements EventHandler
+  {
+    private CharSequence input;
+    private String delayedTag;
+    private Writer out;
+    private boolean indent;
+    private boolean hasChildElement;
+    private int depth;
+
+    public XmlSerializer(Writer w, boolean indent)
+    {
+      input = null;
+      delayedTag = null;
+      out = w;
+      this.indent = indent;
+    }
+
+    @Override
+    public void reset(CharSequence string)
+    {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+      input = string;
+      delayedTag = null;
+      hasChildElement = false;
+      depth = 0;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      if (delayedTag != null)
+      {
+        writeOutput("<");
+        writeOutput(delayedTag);
+        writeOutput(">");
+      }
+      delayedTag = name;
+      if (indent)
+      {
+        writeOutput("\n");
+        for (int i = 0; i < depth; ++i)
+        {
+          writeOutput("  ");
+        }
+      }
+      hasChildElement = false;
+      ++depth;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      --depth;
+      if (delayedTag != null)
+      {
+        delayedTag = null;
+        writeOutput("<");
+        writeOutput(name);
+        writeOutput("/>");
+      }
+      else
+      {
+        if (indent)
+        {
+          if (hasChildElement)
+          {
+            writeOutput("\n");
+            for (int i = 0; i < depth; ++i)
+            {
+              writeOutput("  ");
+            }
+          }
+        }
+        writeOutput("</");
+        writeOutput(name);
+        writeOutput(">");
+      }
+      hasChildElement = true;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      if (name.charAt(0) == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        if (delayedTag != null)
+        {
+          writeOutput("<");
+          writeOutput(delayedTag);
+          writeOutput(">");
+          delayedTag = null;
+        }
+        writeOutput(input.subSequence(begin, end)
+                         .toString()
+                         .replace("&", "&amp;")
+                         .replace("<", "&lt;")
+                         .replace(">", "&gt;"));
+      }
+    }
+
+    public void writeOutput(String content)
+    {
+      try
+      {
+        out.write(content);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  private static String read(String input) throws Exception
+  {
+    if (input.startsWith("{") && input.endsWith("}"))
+    {
+      return input.substring(1, input.length() - 1);
+    }
+    else
+    {
+      byte buffer[] = new byte[(int) new java.io.File(input).length()];
+      java.io.FileInputStream stream = new java.io.FileInputStream(input);
+      stream.read(buffer);
+      stream.close();
+      String content = new String(buffer, System.getProperty("file.encoding"));
+      return content.length() > 0 && content.charAt(0) == '\uFEFF'
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  public HelloWorld_6(CharSequence string, EventHandler t)
+  {
+    initialize(string, t);
+  }
+
+  public void initialize(CharSequence source, EventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_H()
+  {
+    eventHandler.startNonterminal("H", e0);
+    lookahead1W(0);                 // W | 'hello'
+    consume(2);                     // 'hello'
+    lookahead1W(1);                 // W | 'world'
+    consume(3);                     // 'world'
+    eventHandler.endNonterminal("H", e0);
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      whitespace();
+      eventHandler.terminal(TOKEN[l1], b1, e1);
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void whitespace()
+  {
+    if (e0 != b1)
+    {
+      eventHandler.whitespace(e0, b1);
+      e0 = b1;
+    }
+  }
+
+  private int matchW(int tokenSetId)
+  {
+    int code;
+    for (;;)
+    {
+      code = match(tokenSetId);
+      if (code != 1)                // W
+      {
+        break;
+      }
+    }
+    return code;
+  }
+
+  private void lookahead1W(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = matchW(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int     b0, e0;
+  private int l1, b1, e1;
+  private EventHandler eventHandler = null;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 15; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+
+      state = code;
+      int i0 = (charclass << 4) + code - 1;
+      code = TRANSITION[(i0 & 3) + TRANSITION[i0 >> 2]];
+
+      if (code > 15)
+      {
+        result = code;
+        code &= 15;
+        end = current;
+      }
+    }
+
+    result >>= 4;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 15;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 11 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3,
+    /* 105 */ 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 91, 90, 91, 123, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
+    /*  78 */ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0,
+    /* 144 */ 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 37, 37, 37, 37, 37, 37, 55, 37, 43, 37, 37, 37, 36, 37, 37, 37, 37, 62, 41, 37, 37, 47, 53, 37, 37, 49, 37,
+    /* 27 */ 37, 59, 37, 37, 37, 66, 37, 37, 37, 3, 0, 0, 0, 0, 11, 0, 0, 0, 6, 0, 7, 0, 0, 0, 9, 0, 0, 48, 0, 0, 64, 0,
+    /* 59 */ 0, 5, 0, 0, 8, 0, 10, 36, 36, 0, 36
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /*  0 */ 6, 10, 4, 2, 8, 4, 8, 4, 8, 4, 8
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "W",
+    "'hello'",
+    "'world'"
+  };
+}
+
+// End

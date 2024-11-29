@@ -1,0 +1,7 @@
+File    ::= Line? (LF Line?)* EOF
+
+<?TOKENS?>
+
+Line    ::= .+ - ( .* [#xA#xD] .* )
+LF      ::= #xD* [#xA#xD]
+EOF     ::= $

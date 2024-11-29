@@ -1,0 +1,42 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.3'
+    testImplementation 'net.sf.saxon:Saxon-HE:12.5', {
+        exclude group: "xml-apis", module: "xml-apis"
+    }
+    testImplementation 'org.basex:basex:11.6'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+test {
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println "\n" +
+                "${result.testCount} tests completed: " +
+                "${result.successfulTestCount} succeeded, " +
+                "${result.skippedTestCount} skipped, " +
+                "${result.failedTestCount} failed."
+            def testSummary = """# Test Summary
+|           | Count
+|-----------|-------
+|     Total | ${result.testCount}
+| Succeeded | ${result.successfulTestCount}
+|   Skipped | ${result.skippedTestCount}
+|    Failed | ${result.failedTestCount}"""
+            def testSummaryFile = file("${buildDir}/test-results/test-summary.md")
+            testSummaryFile.text = testSummary
+        }
+    }
+}

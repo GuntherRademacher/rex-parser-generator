@@ -1,0 +1,679 @@
+xquery version "1.0" encoding "UTF-8";
+
+(: This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: REx command line: -q exprBNF.ebnf -lalr 1 -xquery -tree -main :)
+
+declare namespace p="exprBNF";
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
+
+(:~
+ : The index of the lexer state for accessing the combined
+ : (i.e. level > 1) lookahead code.
+ :)
+declare variable $p:lk as xs:integer := 1;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the token that has been consumed.
+ :)
+declare variable $p:b0 as xs:integer := 2;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the token that has been consumed.
+ :)
+declare variable $p:e0 as xs:integer := 3;
+
+(:~
+ : The index of the lexer state for accessing the code of the
+ : level-1-lookahead token.
+ :)
+declare variable $p:l1 as xs:integer := 4;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the level-1-lookahead token.
+ :)
+declare variable $p:b1 as xs:integer := 5;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the level-1-lookahead token.
+ :)
+declare variable $p:e1 as xs:integer := 6;
+
+(:~
+ : The index of the lexer state for accessing the token code that
+ : was expected when an error was found.
+ :)
+declare variable $p:error as xs:integer := 7;
+
+(:~
+ : The index of the lexer state that points to the first entry
+ : used for collecting action results.
+ :)
+declare variable $p:result as xs:integer := 8;
+
+(:~
+ : The codepoint to charclass mapping for 7 bit codepoints.
+ :)
+declare variable $p:MAP0 as xs:integer+ :=
+(
+  9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+  0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints below the surrogate block.
+ :)
+declare variable $p:MAP1 as xs:integer+ :=
+(
+  54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+  56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 88, 121, 89, 89,
+  89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+  89, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+  0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0
+);
+
+(:~
+ : The token-set-id to DFA-initial-state mapping.
+ :)
+declare variable $p:INITIAL as xs:integer+ :=
+(
+  1, 2, 3, 4
+);
+
+(:~
+ : The DFA transition table.
+ :)
+declare variable $p:TRANSITION as xs:integer+ :=
+(
+  25, 25, 20, 25, 24, 25, 30, 25, 26, 25, 34, 25, 38, 25, 43, 25, 42, 42, 47, 25, 16, 16, 16, 16, 40, 0, 0, 0, 0, 72, 0,
+  0, 48, 48, 0, 56, 56, 56, 0, 64, 64, 64, 29, 0, 0, 0, 80, 0, 32, 0, 32
+);
+
+(:~
+ : The DFA-state to expected-token-set mapping.
+ :)
+declare variable $p:EXPECTED as xs:integer+ :=
+(
+  22, 202, 226, 1002, 4
+);
+
+(:~
+ : The match-code to case-id map. Maps decision point and lookahead to next action code.
+ :)
+declare variable $p:CASEID as xs:integer+ :=
+(
+  5, 5, 5, 20, 12, 28, 37, 38, 38, 28, 37, 38, 38, 55, 38, 38, 31, 33, 47, 38, 39, 43, 38, 38, 49, 51, 47, 38, 0, 0,
+  392, 0, 0, 0, 180, 180, 180, 146, 0, 0, 0, 0, 24, 0, 0, 274, 402, 530, 658, 0, 0, 0, 148, 148, 148, 0, 424, 274, 402
+);
+
+(:~
+ : The parser tokenset table. Maps state to lookahead tokenset code.
+ :)
+declare variable $p:TOKENSET as xs:integer+ :=
+(
+  0, 0, 0, 0, 0, 0, 1, 3, 2, 3
+);
+
+(:~
+ : The parser goto table. Maps state and nonterminal to next action code.
+ :)
+declare variable $p:GOTO as xs:integer+ :=
+(
+  12, 16, 21, 16, 25, 16, 25, 16, 17, 16, 17, 16, 6, 393, 457, 132, 0, 0, 0, 0, 148, 0, 521, 457, 132, 0, 0, 585, 132
+);
+
+(:~
+ : The token-string table.
+ :)
+declare variable $p:TOKEN as xs:string+ :=
+(
+  "(0)",
+  "ws",
+  "integer",
+  "EOF",
+  "'('",
+  "')'",
+  "'+'",
+  "'-'",
+  "'*'",
+  "'/'"
+);
+
+(:~
+ : The nonterminal name table.
+ :)
+declare variable $p:NONTERMINAL as xs:string+ :=
+(
+  "input",
+  "expr",
+  "term",
+  "factor"
+);
+
+(:~
+ : Predict the decision for a given decision point based on current
+ : lookahead.
+ :
+ : @param $input the input string.
+ : @param $state the parser state.
+ : @param $dpi the decision point index.
+ : @return the updated parser state.
+ :)
+declare function p:predict($input as xs:string,
+                           $state as item()+,
+                           $dpi as xs:integer) as item()+
+{
+  let $state := p:lookahead1W($p:TOKENSET[$dpi + 1], $input, $state)
+  return
+    if ($state[$p:l1] lt 0) then
+    (
+      0,
+      subsequence($state, $p:lk + 1, $p:error - $p:lk - 1),
+      element error
+      {
+        attribute b {$state[$p:b1]},
+        attribute e {$state[$p:e1]},
+        attribute s {- $state[$p:l1]}
+      },
+      subsequence($state, $p:error + 1)
+    )
+    else
+      let $j10 := 16 * $dpi + $state[$p:l1]
+      let $j11 := $j10 idiv 4
+      let $j12 := $j11 idiv 8
+      let $action := $p:CASEID[$j10 mod 4 + $p:CASEID[$j11 mod 8 + $p:CASEID[$j12 + 1] + 1] + 1]
+      return ($action idiv 2, subsequence($state, $p:lk + 1))
+};
+
+(:~
+ : Match next token in input string, starting at given index, using
+ : the DFA entry state for the set of tokens that are expected in
+ : the current context.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start in input string.
+ : @param $token-set the expected token set id.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:match($input as xs:string,
+                         $begin as xs:integer,
+                         $token-set as xs:integer) as xs:integer+
+{
+  let $result := $p:INITIAL[1 + $token-set]
+  return p:transition($input,
+                      $begin,
+                      $begin,
+                      $begin,
+                      $result,
+                      $result mod 8,
+                      0)
+};
+
+(:~
+ : The DFA state transition function. If we are in a valid DFA state, save
+ : it's result annotation, consume one input codepoint, calculate the next
+ : state, and use tail recursion to do the same again. Otherwise, return
+ : any valid result or a negative DFA state id in case of an error.
+ :
+ : @param $input the input string.
+ : @param $begin the begin index of the current token in the input string.
+ : @param $current the index of the current position in the input string.
+ : @param $end the end index of the result in the input string.
+ : @param $result the result code.
+ : @param $current-state the current DFA state.
+ : @param $previous-state the  previous DFA state.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:transition($input as xs:string,
+                              $begin as xs:integer,
+                              $current as xs:integer,
+                              $end as xs:integer,
+                              $result as xs:integer,
+                              $current-state as xs:integer,
+                              $previous-state as xs:integer)
+{
+  if ($current-state eq 0) then
+    let $result := $result idiv 8
+    let $end := if ($end gt string-length($input)) then string-length($input) + 1 else $end
+    return
+      if ($result ne 0) then
+      (
+        $result - 1,
+        $begin,
+        $end
+      )
+      else
+      (
+        - $previous-state,
+        $begin,
+        $current - 1
+      )
+  else
+    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]
+    let $c1 :=
+      if ($c0 < 128) then
+        $p:MAP0[1 + $c0]
+      else if ($c0 < 55296) then
+        let $c1 := $c0 idiv 32
+        let $c2 := $c1 idiv 32
+        return $p:MAP1[1 + $c0 mod 32 + $p:MAP1[1 + $c1 mod 32 + $p:MAP1[1 + $c2]]]
+      else
+        0
+    let $current := $current + 1
+    let $i0 := 8 * $c1 + $current-state - 1
+    let $i1 := $i0 idiv 4
+    let $next-state := $p:TRANSITION[$i0 mod 4 + $p:TRANSITION[$i1 + 1] + 1]
+    return
+      if ($next-state > 7) then
+        p:transition($input, $begin, $current, $current, $next-state, $next-state mod 8, $current-state)
+      else
+        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)
+};
+
+(:~
+ : Recursively translate one 32-bit chunk of an expected token bitset
+ : to the corresponding sequence of token strings.
+ :
+ : @param $result the result of previous recursion levels.
+ : @param $chunk the 32-bit chunk of the expected token bitset.
+ : @param $base-token-code the token code of bit 0 in the current chunk.
+ : @return the set of token strings.
+ :)
+declare function p:token($result as xs:string*,
+                         $chunk as xs:integer,
+                         $base-token-code as xs:integer)
+{
+  if ($chunk = 0) then
+    $result
+  else
+    p:token
+    (
+      ($result, if ($chunk mod 2 != 0) then $p:TOKEN[$base-token-code] else ()),
+      if ($chunk < 0) then $chunk idiv 2 + 2147483648 else $chunk idiv 2,
+      $base-token-code + 1
+    )
+};
+
+(:~
+ : Get GOTO table entry for given nonterminal and parser state.
+ :
+ : @param $nonterminal the nonterminal.
+ : @param $state the LR parser state.
+ : @return the GOTO table entry.
+ :)
+declare function p:goto($nonterminal as xs:integer, $state as xs:integer) as xs:integer
+{
+  let $i0 := 8 * $state + $nonterminal
+  let $i1 := $i0 idiv 4
+  return $p:GOTO[$i0 mod 4 + $p:GOTO[$i1 + 1] + 1]
+};
+
+(:~
+ : Calculate expected token set for a given DFA state as a sequence
+ : of strings.
+ :
+ : @param $state the DFA state.
+ : @return the set of token strings.
+ :)
+declare function p:expected-token-set($state as xs:integer) as xs:string*
+{
+  if ($state > 0) then
+    for $t in 0 to 0
+    let $i0 := $t * 5 + $state - 1
+    return p:token((), $p:EXPECTED[$i0 + 1], $t * 32 + 1)
+  else
+    ()
+};
+
+(:~
+ : Parse input for given target symbol using LR tables. Each invocation
+ : handles one parsing action (shift, reduce, shift+reduce, accept).
+ : Subsequent actions are handled by tail-recursion.
+ :
+ : @param $input the input string.
+ : @param $target the target symbol code.
+ : @param $state the LR parser state number.
+ : @param $action the action code.
+ : @param $nonterminal current nonterminal, -1 if processing a terminal.
+ : @param $bw the whitespace begin input index.
+ : @param $bs the symbol begin input index.
+ : @param $es the symbol end input index.
+ : @param $stack the LR stack.
+ : @param $lexer-state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse($input as xs:string,
+                         $target as xs:integer,
+                         $state as xs:integer,
+                         $action as xs:integer,
+                         $nonterminal as xs:integer,
+                         $bw as xs:integer,
+                         $bs as xs:integer,
+                         $es as xs:integer,
+                         $stack as xs:integer*,
+                         $lexer-state as item()+)
+{
+  if ($lexer-state[$p:error]) then
+    $lexer-state
+  else
+    let $argument := $action idiv 64
+    let $lookback := ($action idiv 8) mod 8
+    let $action := $action mod 8
+    return
+      if ($action eq 6) then (: SHIFT+ACCEPT :)
+        $lexer-state
+      else
+        let $shift-reduce-symbols :=
+          if ($action eq 1) then (: SHIFT :)
+            ($argument, -1, -1)
+          else if ($action eq 2) then (: REDUCE :)
+            (-1, $argument, $lookback)
+          else if ($action eq 4) then (: SHIFT+REDUCE :)
+            ($state, $argument, $lookback + 1)
+          else (: ERROR :)
+            (-1, -1, -1)
+        let $shift := $shift-reduce-symbols[1]
+        let $reduce := $shift-reduce-symbols[2]
+        let $symbols := $shift-reduce-symbols[3]
+        let $es := if ($shift lt 0 or $nonterminal ge 0) then $es else $lexer-state[$p:e1]
+        let $lexer-state :=
+          if ($shift lt 0 or $nonterminal ge 0) then
+            $lexer-state
+          else
+            p:consume
+            (
+              $lexer-state[$p:l1],
+              $input,
+              $lexer-state
+            )
+        let $stack :=
+          if ($shift lt 0) then
+            $stack
+          else
+            ($stack, if ($nonterminal lt 0) then $lexer-state[$p:b0] else $bs, $state, $lookback)
+        let $state := if ($shift lt 0) then $state else $shift
+        return
+          if ($reduce lt 0) then
+            if ($shift lt 0) then
+            (
+              subsequence($lexer-state, 1, $p:error - 1),
+              element error
+              {
+                attribute b {$lexer-state[$p:b1]},
+                attribute e {$lexer-state[$p:e1]},
+                attribute o {$lexer-state[$p:l1]}[. > 0],
+                attribute s {$p:TOKENSET[$state + 1] + 1}
+              },
+              subsequence($lexer-state, $p:error + 1)
+            )
+            else
+              let $lexer-state := p:predict($input, $lexer-state, $state)
+              return p:parse($input, $target, $state, $lexer-state[$p:lk], -1, $bw, $bs, $es, $stack, $lexer-state)
+          else
+            let $state := if ($symbols gt 0) then $stack[last() - 3 * $symbols + 2] else $state
+            let $bs := if ($symbols gt 0) then $stack[last() - 3 * $symbols + 1] else $lexer-state[$p:b1]
+            let $es := if ($symbols gt 0) then $es else $bs
+            let $stack := if ($symbols gt 0) then subsequence($stack, 1, count($stack) - 3 * $symbols) else $stack
+            let $lexer-state := if ($symbols gt 0) then $lexer-state else p:whitespace($input, $lexer-state)
+            let $accept := $reduce eq $target and count($stack) eq 3
+            let $bs := if ($accept) then $bw else $bs
+            let $es := if ($accept) then $lexer-state[$p:b1] else $es
+            let $bw := if ($accept) then $es else $bw
+            let $index := if ($accept) then $p:result else p:first-child-node-index($lexer-state, count($lexer-state) + 1, $symbols)
+            let $lexer-state :=
+            (
+              subsequence($lexer-state, 1, $index - 1),
+              element {$p:NONTERMINAL[$reduce + 1]}
+              {
+                (: bs, es :)
+                subsequence($lexer-state, $index)
+              }
+            )
+            let $nonterminal := $reduce
+            return p:parse($input, $target, $state, p:goto($nonterminal, $state), $nonterminal, $bw, $bs, $es, $stack, $lexer-state)
+};
+
+(:~
+ : Decrement given index by the given number of elements on the result
+ : stack, skipping any non-element nodes.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $index the index into the result stack.
+ : @param $element-count the number of elements to be handled.
+ : @return the decremented index.
+ :)
+declare function p:first-child-node-index($state as item()+,
+                                          $index as xs:integer,
+                                          $element-count as xs:integer)
+{
+  if ($element-count eq 0) then
+    $index
+  else
+    let $index := $index - 1
+    let $element-count := $element-count - (if ($state[$index] instance of element()) then 1 else 0)
+    return p:first-child-node-index($state, $index, $element-count)
+};
+
+(:~
+ : Create a textual error message from a parsing error.
+ :
+ : @param $input the input string.
+ : @param $error the parsing error descriptor.
+ : @return the error message.
+ :)
+declare function p:error-message($input as xs:string, $error as element(error)) as xs:string
+{
+  let $begin := xs:integer($error/@b)
+  let $context := string-to-codepoints(substring($input, 1, $begin - 1))
+  let $linefeeds := index-of($context, 10)
+  let $line := count($linefeeds) + 1
+  let $column := ($begin - $linefeeds[last()], $begin)[1]
+  return
+    string-join
+    (
+      (
+        if ($error/@o) then
+          ("syntax error, found ", $p:TOKEN[$error/@o + 1])
+        else
+          "lexical analysis failed",
+        "&#10;",
+        "while expecting ",
+        if ($error/@x) then
+          $p:TOKEN[$error/@x + 1]
+        else
+          let $expected := p:expected-token-set($error/@s)
+          return
+          (
+            "["[exists($expected[2])],
+            string-join($expected, ", "),
+            "]"[exists($expected[2])]
+          ),
+        "&#10;",
+        if ($error/@o or $error/@e = $begin) then
+          ()
+        else
+          ("after successfully scanning ", string($error/@e - $begin), " characters beginning "),
+        "at line ", string($line), ", column ", string($column), ":&#10;",
+        "...", substring($input, $begin, 64), "..."
+      ),
+      ""
+    )
+};
+
+(:~
+ : Consume one token, i.e. compare lookahead token 1 with expected
+ : token and in case of a match, shift lookahead tokens down such that
+ : l1 becomes the current token, and higher lookahead tokens move down.
+ : When lookahead token 1 does not match the expected token, raise an
+ : error by saving the expected token code in the error field of the
+ : lexer state.
+ :
+ : @param $code the expected token.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:consume($code as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:error]) then
+    $state
+  else if ($state[$p:l1] eq $code) then
+  (
+    subsequence($state, $p:l1, 3),
+    0, 0, 0,
+    subsequence($state, 7),
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    where $begin ne $end
+    return
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      },
+    let $token := $p:TOKEN[1 + $state[$p:l1]]
+    let $name := if (starts-with($token, "'")) then "TOKEN" else $token
+    let $begin := $state[$p:b1]
+    let $end := $state[$p:e1]
+    return
+      element {$name}
+      {
+        substring($input, $begin, $end - $begin)
+      }
+  )
+  else
+  (
+    subsequence($state, 1, $p:error - 1),
+    element error
+    {
+      attribute b {$state[$p:b1]},
+      attribute e {$state[$p:e1]},
+      if ($state[$p:l1] lt 0) then
+        attribute s {- $state[$p:l1]}
+      else
+        (attribute o {$state[$p:l1]}, attribute x {$code})
+    },
+    subsequence($state, $p:error + 1)
+  )
+};
+
+(:~
+ : Consume whitespace.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:whitespace($input as xs:string,
+                              $state as item()+) as item()+
+{
+  if ($state[$p:e0] = $state[$p:b1]) then
+    $state
+  else
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    return
+    (
+      0,
+      $state[$p:b0],
+      $end,
+      subsequence($state, $p:e0 + 1),
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      }
+    )
+};
+
+(:~
+ : Use p:match to fetch the next token, but skip any leading
+ : whitespace.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start.
+ : @param $token-set the valid token set id.
+ : @return a sequence of three values: the token code of the result
+ : token, with input string positions of token begin and end.
+ :)
+declare function p:matchW($input as xs:string,
+                          $begin as xs:integer,
+                          $token-set as xs:integer)
+{
+  let $match := p:match($input, $begin, $token-set)
+  return
+    if ($match[1] = 1) then                                 (: ws :)
+      p:matchW($input, $match[3], $token-set)
+    else
+      $match
+};
+
+(:~
+ : Lookahead one token on level 1 with whitespace skipping.
+ :
+ : @param $set the code of the DFA entry state for the set of valid tokens.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:lookahead1W($set as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:l1] ne 0) then
+    $state
+  else
+    let $match :=
+        p:matchW($input, $state[$p:e0], $set)
+    return
+    (
+      $match[1],
+      subsequence($state, $p:b0, 2),
+      $match,
+      subsequence($state, 7)
+    )
+};
+
+(:~
+ : Parse start symbol input from given string.
+ :
+ : @param $s the string to be parsed.
+ : @return the result as generated by parser actions.
+ :)
+declare function p:parse-input($s as xs:string) as item()*
+{
+  let $state := (0, 1, 1, 0, 0, 0, false())
+  let $state := p:predict($s, $state, 0)
+  let $state := p:parse($s, 0, 0, $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state)
+  let $error := $state[$p:error]
+  return
+    if ($error) then
+      element ERROR {$error/@*, p:error-message($s, $error)}
+    else
+      subsequence($state, $p:result)
+};
+
+(:~
+ : The input filename, or string, if surrounded by curly braces.
+ :)
+declare variable $input as xs:string external;
+
+let $result :=
+  if (matches($input, "^\{.*\}$")) then
+    p:parse-input(substring($input, 2, string-length($input) - 2))
+  else
+    p:parse-input(unparsed-text($input, "utf-8"))
+return
+  if (empty($result/self::ERROR)) then
+    $result
+  else
+    error(xs:QName("p:parse-input"), concat("&#10;    ", replace($result, "&#10;", "&#10;    ")))
+
+(: End :)

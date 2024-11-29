@@ -1,0 +1,267 @@
+xquery version "1.0" encoding "UTF-8";
+
+(: This file was generated on Mon Nov 1, 2021 13:47 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: REx command line: JsonTest.rex :)
+(:~
+ : The tokenizer that was generated for the JsonTest grammar.
+ :)
+module namespace p="JsonTest";
+
+(:~
+ : The codepoint to charclass mapping for 7 bit codepoints.
+ :)
+declare variable $p:MAP0 as xs:integer+ :=
+(
+  29, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2,
+  2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13, 12, 2, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 2, 17, 18, 12, 12, 19, 20, 2, 2, 2, 2, 2, 21,
+  2, 22, 2, 2, 2, 23, 24, 25, 26, 2, 2, 2, 2, 2, 27, 2, 28, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints below the surrogate block.
+ :)
+declare variable $p:MAP1 as xs:integer+ :=
+(
+  54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+  58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 90, 122, 181, 212,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 29, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13,
+  12, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 17, 18, 12, 12, 19, 20, 2, 2, 2, 2,
+  2, 21, 2, 22, 2, 2, 2, 23, 24, 25, 26, 2, 2, 2, 2, 2, 27, 2, 28, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints above the surrogate block.
+ :)
+declare variable $p:MAP2 as xs:integer+ :=
+(
+  57344, 65536, 65533, 1114111, 2, 2
+);
+
+(:~
+ : The token-set-id to DFA-initial-state mapping.
+ :)
+declare variable $p:INITIAL as xs:integer+ :=
+(
+  1, 2, 67, 4, 5, 6, 7, 8, 9, 10, 11, 12
+);
+
+(:~
+ : The DFA transition table.
+ :)
+declare variable $p:TRANSITION as xs:integer+ :=
+(
+  373, 373, 373, 373, 373, 373, 373, 373, 240, 246, 373, 373, 373, 373, 373, 373, 373, 363, 373, 373, 373, 373, 373,
+  373, 292, 330, 364, 373, 373, 373, 373, 373, 373, 363, 392, 373, 373, 373, 373, 373, 373, 259, 373, 373, 373, 373,
+  373, 373, 373, 349, 392, 373, 373, 373, 373, 373, 373, 251, 373, 373, 373, 373, 373, 373, 373, 363, 364, 373, 373,
+  373, 373, 373, 373, 474, 274, 282, 290, 373, 373, 373, 373, 300, 274, 282, 290, 373, 373, 373, 354, 363, 373, 373,
+  373, 373, 373, 373, 373, 363, 373, 308, 290, 373, 373, 373, 373, 335, 373, 316, 290, 373, 373, 373, 373, 324, 373,
+  373, 373, 373, 373, 373, 373, 264, 364, 373, 373, 373, 373, 373, 460, 343, 373, 373, 373, 373, 373, 373, 373, 363,
+  372, 308, 290, 373, 373, 373, 373, 363, 364, 308, 290, 373, 373, 373, 373, 335, 373, 381, 389, 373, 373, 373, 373,
+  438, 364, 308, 290, 373, 373, 373, 373, 363, 414, 404, 373, 373, 373, 373, 373, 444, 364, 373, 373, 373, 373, 373,
+  373, 363, 456, 373, 373, 373, 373, 373, 373, 363, 373, 269, 373, 373, 373, 373, 373, 450, 364, 373, 373, 373, 373,
+  373, 373, 363, 400, 412, 373, 373, 373, 373, 422, 432, 373, 373, 373, 373, 373, 373, 424, 468, 373, 373, 373, 373,
+  373, 373, 359, 373, 373, 373, 373, 373, 373, 373, 0, 0, 451, 451, 451, 451, 451, 451, 0, 451, 13, 0, 0, 0, 0, 13, 0,
+  21, 21, 512, 512, 0, 0, 13, 0, 0, 0, 0, 20, 0, 0, 0, 0, 33, 0, 0, 0, 0, 411, 412, 0, 0, 0, 32, 411, 412, 0, 0, 0, 34,
+  0, 35, 13, 0, 0, 0, 0, 0, 0, 13, 0, 0, 400, 400, 13, 400, 0, 400, 0, 32, 0, 0, 0, 0, 0, 34, 0, 32, 22, 0, 0, 0, 0, 34,
+  0, 0, 640, 640, 13, 0, 0, 0, 13, 13, 320, 0, 0, 0, 0, 13, 0, 22, 22, 704, 0, 0, 704, 13, 0, 0, 0, 14, 14, 13, 0, 0, 0,
+  0, 576, 0, 0, 0, 256, 0, 0, 0, 0, 13, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 22, 0, 0, 0, 896, 34, 768, 35,
+  13, 0, 0, 0, 0, 0, 28, 0, 0, 0, 24, 0, 26, 0, 0, 0, 0, 0, 832, 0, 0, 31, 0, 0, 0, 0, 0, 0, 0, 29, 30, 0, 960, 0, 0, 0,
+  0, 0, 0, 1024, 1024, 0, 0, 960, 960, 13, 0, 0, 0, 17, 17, 13, 0, 0, 0, 18, 18, 13, 0, 0, 0, 19, 19, 13, 0, 0, 0, 25,
+  13, 0, 0, 0, 0, 0, 704, 0, 0, 0, 1024, 0, 0, 13, 0, 0, 0, 399, 399, 13, 399, 0, 400
+);
+
+(:~
+ : The DFA-state to expected-token-set mapping.
+ :)
+declare variable $p:EXPECTED as xs:integer+ :=
+(
+  28, 9, 13, 22, 19, 17, 21, 19, 26, 320, 1088, 32832, 32848, 1216, 32960, 31280, 32368, 32, 32, 2048, 4096, 8192, 16,
+  32, 32, 32, 2048, 16, 16, 16384, 64, 72
+);
+
+(:~
+ : The token-string table.
+ :)
+declare variable $p:TOKEN as xs:string+ :=
+(
+  "EPSILON",
+  "ERROR",
+  "(2)",
+  "eof",
+  "string",
+  "number",
+  "whitespace",
+  "','",
+  "':'",
+  "'['",
+  "']'",
+  "'false'",
+  "'null'",
+  "'true'",
+  "'{'",
+  "'}'"
+);
+
+(:~
+ : Match next token in input string, starting at given index, using
+ : the DFA entry state for the set of tokens that are expected in
+ : the current context.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start in input string.
+ : @param $token-set the expected token set id.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:match($input as xs:string,
+                         $begin as xs:integer,
+                         $token-set as xs:integer) as xs:integer+
+{
+  let $result := $p:INITIAL[1 + $token-set]
+  return p:transition($input,
+                      $begin,
+                      $begin,
+                      $begin,
+                      $result,
+                      $result mod 64,
+                      0)
+};
+
+(:~
+ : The DFA state transition function. If we are in a valid DFA state, save
+ : it's result annotation, consume one input codepoint, calculate the next
+ : state, and use tail recursion to do the same again. Otherwise, return
+ : any valid result or a negative DFA state id in case of an error.
+ :
+ : @param $input the input string.
+ : @param $begin the begin index of the current token in the input string.
+ : @param $current the index of the current position in the input string.
+ : @param $end the end index of the result in the input string.
+ : @param $result the result code.
+ : @param $current-state the current DFA state.
+ : @param $previous-state the  previous DFA state.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:transition($input as xs:string,
+                              $begin as xs:integer,
+                              $current as xs:integer,
+                              $end as xs:integer,
+                              $result as xs:integer,
+                              $current-state as xs:integer,
+                              $previous-state as xs:integer)
+{
+  if ($current-state eq 0) then
+    let $result := $result idiv 64
+    let $end := if ($end gt string-length($input)) then string-length($input) + 1 else $end
+    return
+      if ($result ne 0) then
+      (
+        $result - 1,
+        $begin,
+        $end
+      )
+      else
+      (
+        - $previous-state,
+        $begin,
+        $current - 1
+      )
+  else
+    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]
+    let $c1 :=
+      if ($c0 < 128) then
+        $p:MAP0[1 + $c0]
+      else if ($c0 < 55296) then
+        let $c1 := $c0 idiv 32
+        let $c2 := $c1 idiv 32
+        return $p:MAP1[1 + $c0 mod 32 + $p:MAP1[1 + $c1 mod 32 + $p:MAP1[1 + $c2]]]
+      else
+        p:map2($c0, 1, 2)
+    let $current := $current + 1
+    let $i0 := 64 * $c1 + $current-state - 1
+    let $i1 := $i0 idiv 8
+    let $next-state := $p:TRANSITION[$i0 mod 8 + $p:TRANSITION[$i1 + 1] + 1]
+    return
+      if ($next-state > 63) then
+        p:transition($input, $begin, $current, $current, $next-state, $next-state mod 64, $current-state)
+      else
+        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)
+};
+
+(:~
+ : Recursively translate one 32-bit chunk of an expected token bitset
+ : to the corresponding sequence of token strings.
+ :
+ : @param $result the result of previous recursion levels.
+ : @param $chunk the 32-bit chunk of the expected token bitset.
+ : @param $base-token-code the token code of bit 0 in the current chunk.
+ : @return the set of token strings.
+ :)
+declare function p:token($result as xs:string*,
+                         $chunk as xs:integer,
+                         $base-token-code as xs:integer)
+{
+  if ($chunk = 0) then
+    $result
+  else
+    p:token
+    (
+      ($result, if ($chunk mod 2 != 0) then $p:TOKEN[$base-token-code] else ()),
+      if ($chunk < 0) then $chunk idiv 2 + 2147483648 else $chunk idiv 2,
+      $base-token-code + 1
+    )
+};
+
+(:~
+ : Calculate expected token set for a given DFA state as a sequence
+ : of strings.
+ :
+ : @param $state the DFA state.
+ : @return the set of token strings.
+ :)
+declare function p:expected-token-set($state as xs:integer) as xs:string*
+{
+  if ($state > 0) then
+    for $t in 0 to 0
+    let $i0 := $t * 35 + $state - 1
+    let $i1 := $i0 idiv 4
+    return p:token((), $p:EXPECTED[$i0 mod 4 + $p:EXPECTED[$i1 + 1] + 1], $t * 32 + 1)
+  else
+    ()
+};
+
+(:~
+ : Classify codepoint by doing a tail recursive binary search for a
+ : matching codepoint range entry in MAP2, the codepoint to charclass
+ : map for codepoints above the surrogate block.
+ :
+ : @param $c the codepoint.
+ : @param $lo the binary search lower bound map index.
+ : @param $hi the binary search upper bound map index.
+ : @return the character class.
+ :)
+declare function p:map2($c as xs:integer, $lo as xs:integer, $hi as xs:integer) as xs:integer
+{
+  if ($lo > $hi) then
+    0
+  else
+    let $m := ($hi + $lo) idiv 2
+    return
+      if ($p:MAP2[$m] > $c) then
+        p:map2($c, $lo, $m - 1)
+      else if ($p:MAP2[2 + $m] < $c) then
+        p:map2($c, $m + 1, $hi)
+      else
+        $p:MAP2[4 + $m]
+};
+
+(: EoF :)

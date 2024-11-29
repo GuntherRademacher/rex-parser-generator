@@ -1,0 +1,7 @@
+TabFree ::= Line? (LF Line?)* EOF
+
+<?TOKENS?>
+
+Line    ::= .+ - ( .* ' ' | .* [#x9#xA#xD] .* )
+LF      ::= #xD? #xA
+EOF     ::= $

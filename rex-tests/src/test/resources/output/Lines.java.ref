@@ -1,0 +1,589 @@
+// This file was generated on Sat Jan 7, 2023 21:03 (UTC+01) by REx v5.56 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q Lines.ebnf -java -basex -tree
+
+import java.io.IOException;
+import java.util.Arrays;
+import org.basex.build.MemBuilder;
+import org.basex.build.SingleParser;
+import org.basex.core.MainOptions;
+import org.basex.io.IOContent;
+import org.basex.query.value.item.Str;
+import org.basex.query.value.node.ANode;
+import org.basex.query.value.node.DBNode;
+import org.basex.util.Atts;
+import org.basex.util.Token;
+
+public class Lines
+{
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public void serialize(EventHandler eventHandler)
+    {
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  public interface EventHandler
+  {
+    public void reset(CharSequence string);
+    public void startNonterminal(String name, int begin);
+    public void endNonterminal(String name, int end);
+    public void terminal(String name, int begin, int end);
+    public void whitespace(int begin, int end);
+  }
+
+  public static class TopDownTreeBuilder implements EventHandler
+  {
+    private CharSequence input = null;
+    private Nonterminal[] stack = new Nonterminal[64];
+    private int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      if (top >= 0) addChild(nonterminal);
+      if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
+      stack[top] = nonterminal;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      stack[top].end = end;
+      if (top > 0) --top;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+    }
+
+    private void addChild(Symbol s)
+    {
+      Nonterminal current = stack[top];
+      current.children = Arrays.copyOf(current.children, current.children.length + 1);
+      current.children[current.children.length - 1] = s;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      stack[0].send(e);
+    }
+  }
+
+  public static abstract class Symbol
+  {
+    public String name;
+    public int begin;
+    public int end;
+
+    protected Symbol(String name, int begin, int end)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void send(EventHandler e);
+  }
+
+  public static class Terminal extends Symbol
+  {
+    public Terminal(String name, int begin, int end)
+    {
+      super(name, begin, end);
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.terminal(name, begin, end);
+    }
+  }
+
+  public static class Nonterminal extends Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    {
+      super(name, begin, end);
+      this.children = children;
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.startNonterminal(name, begin);
+      int pos = begin;
+      for (Symbol c : children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(name, end);
+    }
+  }
+
+  public static ANode parseFile(Str str) throws IOException
+  {
+    BaseXFunction baseXFunction = new BaseXFunction()
+    {
+      @Override
+      public void execute(Lines p) {p.parse_File();}
+    };
+    return baseXFunction.call(str);
+  }
+
+  public static abstract class BaseXFunction
+  {
+    protected abstract void execute(Lines p);
+
+    public ANode call(Str str) throws IOException
+    {
+      String input = str.toJava();
+      SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())
+      {
+        @Override
+        protected void parse() throws IOException {}
+      };
+      MemBuilder memBuilder = new MemBuilder(input, singleParser);
+      memBuilder.init();
+      BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder);
+      Lines parser = new Lines();
+      parser.initialize(input, treeBuilder);
+      try
+      {
+        execute(parser);
+      }
+      catch (ParseException pe)
+      {
+        memBuilder = new MemBuilder(input, singleParser);
+        memBuilder.init();
+        Atts atts = new Atts();
+        atts.add(Token.token("b"), Token.token(pe.getBegin() + 1));
+        atts.add(Token.token("e"), Token.token(pe.getEnd() + 1));
+        if (pe.getOffending() < 0)
+        {
+          atts.add(Token.token("s"), Token.token(pe.getState()));
+        }
+        else
+        {
+          atts.add(Token.token("o"), Token.token(pe.getOffending()));
+          atts.add(Token.token("x"), Token.token(pe.getExpected()));
+        }
+        memBuilder.openElem(Token.token("ERROR"), atts, new Atts());
+        memBuilder.text(Token.token(parser.getErrorMessage(pe)));
+        memBuilder.closeElem();
+      }
+      return new DBNode(memBuilder.data());
+    }
+  }
+
+  public static class BaseXTreeBuilder implements EventHandler
+  {
+    private CharSequence input;
+    private MemBuilder builder;
+    private Atts nsp = new Atts();
+    private Atts atts = new Atts();
+
+    public BaseXTreeBuilder(MemBuilder b)
+    {
+      input = null;
+      builder = b;
+    }
+
+    @Override
+    public void reset(CharSequence string)
+    {
+      input = string;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      try
+      {
+        builder.openElem(Token.token(name), atts, nsp);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      try
+      {
+        builder.closeElem();
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      if (name.charAt(0) == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        try
+        {
+          builder.text(Token.token(input.subSequence(begin, end).toString()));
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+    }
+  }
+
+  public Lines()
+  {
+  }
+
+  public Lines(CharSequence string, EventHandler t)
+  {
+    initialize(string, t);
+  }
+
+  public void initialize(CharSequence source, EventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_File()
+  {
+    eventHandler.startNonterminal("File", e0);
+    lookahead1(1);                  // Line | LF | EOF
+    if (l1 == 1)                    // Line
+    {
+      consume(1);                   // Line
+    }
+    for (;;)
+    {
+      lookahead1(0);                // LF | EOF
+      if (l1 != 2)                  // LF
+      {
+        break;
+      }
+      consume(2);                   // LF
+      lookahead1(1);                // Line | LF | EOF
+      if (l1 == 1)                  // Line
+      {
+        consume(1);                 // Line
+      }
+    }
+    consume(3);                     // EOF
+    eventHandler.endNonterminal("File", e0);
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      eventHandler.terminal(TOKEN[l1], b1, e1);
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int     b0, e0;
+  private int l1, b1, e1;
+  private EventHandler eventHandler = null;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 7; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = current < size ? input.charAt(current) : 0;
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+
+        int lo = 0, hi = 1;
+        for (int m = 1; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) {hi = m - 1;}
+          else if (MAP2[2 + m] < c0) {lo = m + 1;}
+          else {charclass = MAP2[4 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+
+      state = code;
+      int i0 = (charclass << 2) + code - 1;
+      code = TRANSITION[i0];
+
+      if (code > 7)
+      {
+        result = code;
+        code &= 7;
+        end = current;
+      }
+    }
+
+    result >>= 3;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 7;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 4 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+    /*  35 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /*  70 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /* 105 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+    /*  26 */ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+    /*  52 */ 55, 55, 87, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119,
+    /*  74 */ 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3,
+    /* 101 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /* 136 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  };
+
+  private static final int[] MAP2 =
+  {
+    /* 0 */ 57344, 65536, 65533, 1114111, 1, 1
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 0, 0, 0, 0, 0, 20, 0, 20, 24, 24, 24, 0, 27, 27, 27, 0, 32, 32, 0, 0
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /* 0 */ 12, 14, 4, 2
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "Line",
+    "LF",
+    "EOF"
+  };
+}
+
+// End

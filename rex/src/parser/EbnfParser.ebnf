@@ -1,0 +1,281 @@
+// rex EbnfParser.ebnf -cpp -a rex
+                                                        <?rex
+                                                          #include "EbnfParserBase.hpp"
+                                                          #include "../common/Strings.hpp"
+
+                                                          // TODO: supply syntax for "disambiguating/lazy" lookahead (as opposed to mandatory lookahead)
+
+                                                          class EbnfParser : public EbnfParserBase
+                                                          {
+                                                            const wchar_t *currentChar() {return input + b0;}
+                                                            const int currentLength() {return e0 - b0;}
+
+                                                          public:
+                                                            virtual ~EbnfParser() {}
+
+                                                            Grammar *parse(wchar_t *input, const wchar_t *aFileName)
+                                                            {
+                                                              fileName = aFileName;
+                                                              initialize(input);
+                                                              grammar = new Grammar();
+                                                              currentNode = grammar;
+                                                              parse_Grammar();
+                                                              Grammar *g = grammar;
+                                                              grammar = 0;
+                                                              return g;
+                                                            }
+                                                        ?>
+Grammar           ::= Prolog SyntaxDefinition LexicalDefinition? Encore? EOF
+Prolog            ::=                                   <?rex section = PROLOG;?>
+                      ProcessingInstruction*
+ProcessingInstruction
+                  ::= "<?" Name                         <?rex
+                                                          wchar_t *name(WStringRef(currentToken()).copy());
+                                                          wchar_t *content = 0;
+                                                          int line;
+                                                          int column;
+                                                          Strings::getLineAndColumn(input, b0, &line, &column);
+                                                        ?>
+                      ( Space+
+                        ( DirPIContents                 <?rex
+                                                          Strings::getLineAndColumn(input, b0, &line, &column);
+                                                          wchar_t *value = currentToken().copy();
+                                                          content = Format::reIndent(trim(value), 0);
+                                                          free(value);
+                                                        ?>
+                        )?
+                      )?                                <?rex
+                                                          if (content == 0)
+                                                            content = wcsdup(L"");
+                                                          currentNode->addChild(new ProcessingInstruction(name, line, fileName, content));
+                                                        ?>
+                      "?>"
+                   /* ws: explicit */
+SyntaxDefinition  ::=                                   <?rex
+                                                          static_cast<Grammar *>(currentNode)->setProlog();
+                                                          section = NONTERMINALS;
+                                                        ?>
+                      SyntaxProduction+                 <?rex static_cast<Grammar *>(currentNode)->setNonTerminals();?>
+SyntaxProduction  ::=                                   <?rex GrammarSection s = section;?>
+                      Name                              <?rex WStringRef name(currentToken());?>
+                      "::=" SyntaxChoice                <?rex wrap(new Production(s, false, name.copy()));?>
+                      Option*
+SyntaxChoice      ::= SyntaxSequence                    <?rex Choice *choice = 0;?>
+                      ( ( "|"                           <?rex if (choice == 0) choice = currentNode->addChild(new Choice(currentNode->isolateLastChild()));?>
+                          SyntaxSequence                <?rex choice->addCase(currentNode->isolateLastChild());?>
+                        )+
+                      | ( "/"                           <?rex if (choice == 0) choice = currentNode->addChild(new Choice(currentNode->isolateLastChild()));?>
+                          SyntaxSequence                <?rex choice->addCase(currentNode->isolateLastChild());?>
+                        )+                              <?rex choice->setOrdered();?>
+                      )?                                <?rex
+                                                          if (choice)
+                                                          {
+                                                            Node *simplified = currentNode->isolateLastChild()->simplified();
+                                                            currentNode->addChild(simplified);
+                                                            if (choice != simplified) delete choice;
+                                                          }
+                                                        ?>
+SyntaxSequence    ::=                                   <?rex descend(new Sequence());?>
+                      SyntaxItem*                       <?rex ascend();?>
+SyntaxItem        ::= SyntaxPrimary
+                      ( "?"                             <?rex wrap(new Optional());?>
+                      | "*"                             <?rex wrap(new ZeroOrMore());?>
+                      | "+"                             <?rex wrap(new OneOrMore());?>
+                      )?
+SyntaxPrimary     ::= NameOrString
+                    | "(" SyntaxChoice ")"
+                    | ProcessingInstruction
+LexicalDefinition ::= "<?TOKENS?>"                      <?rex section = TERMINALS;?>
+                      ( LexicalProduction
+                      | Preference
+                      | Delimiter
+                      | Equivalence
+                      )*                                <?rex static_cast<Grammar *>(currentNode)->setTerminals();?>
+LexicalProduction ::=                                   <?rex GrammarSection
+                                                          s = section;
+                                                          bool nonGreedy = false;
+                                                        ?>
+                      ( Name
+                      | "."
+                      )                                 <?rex WStringRef name(currentToken());?>
+                      ("?"                              <?rex nonGreedy = true;?>
+                      )?
+                      "::=" ContextChoice               <?rex wrap(new Production(s, nonGreedy, name.copy()));?>
+                      Option*
+ContextChoice     ::= ContextExpression                 <?rex Choice *choice = 0;?>
+                      ( "|"                             <?rex if (choice == 0) choice = currentNode->addChild(new Choice(currentNode->isolateLastChild()));?>
+                        ContextExpression               <?rex choice->addCase(currentNode->isolateLastChild());?>
+                      )*                                <?rex
+                                                          if (choice)
+                                                          {
+                                                            Node *simplified = currentNode->isolateLastChild()->simplified();
+                                                            currentNode->addChild(simplified);
+                                                            if (choice != simplified) delete choice;
+                                                          }
+                                                        ?>
+LexicalChoice     ::= LexicalSequence                   <?rex Choice *choice = 0;?>
+                      ( "|"                             <?rex if (choice == 0) choice = currentNode->addChild(new Choice(currentNode->isolateLastChild()));?>
+                        LexicalSequence                 <?rex choice->addCase(currentNode->isolateLastChild());?>
+                      )*                                <?rex
+                                                          if (choice)
+                                                          {
+                                                            Node *simplified = currentNode->isolateLastChild()->simplified();
+                                                            currentNode->addChild(simplified);
+                                                            if (choice != simplified) delete choice;
+                                                          }
+                                                        ?>
+ContextExpression ::= LexicalSequence
+                      ( "&" LexicalItem                 <?rex
+                                                          Node *rhs = currentNode->isolateLastChild();
+                                                          currentNode->addChild(new Context(currentNode->isolateLastChild(), rhs));
+                                                        ?>
+                      )?
+LexicalSequence   ::=                                   <?rex descend(new Sequence());?>
+                      (
+                      | LexicalItem
+                        ( "-" LexicalItem               <?rex
+                                                          Node *rhs = currentNode->isolateLastChild();
+                                                          Node *lhs = currentNode->isolateLastChild();
+                                                          currentNode->addChild(new Exclusion(lhs, rhs));
+                                                        ?>
+                        | LexicalItem*
+                        )
+                      )                                 <?rex ascend();?>
+LexicalItem       ::= LexicalPrimary
+                      ( "?"                             <?rex wrap(new Optional());?>
+                      | "*"                             <?rex wrap(new ZeroOrMore());?>
+                      | "+"                             <?rex wrap(new OneOrMore());?>
+                      )?
+LexicalPrimary    ::= (Name | ".")                      <?rex currentNode->addChild(new Ref(currentToken().copy()));?>
+                    | StringLiteral                     <?rex currentNode->addChild(new String(currentToken().copy()));?>
+                    | "(" LexicalChoice ")"
+                    | "$"                               <?rex currentNode->addChild(new EndOfFile());?>
+                    | CharCode                          <?rex currentNode->addChild(new CharCode(charCodeValue(currentChar() + 1)));?>
+                    | CharClass
+NameOrString      ::= Name                              <?rex currentNode->addChild(new Ref(currentToken().copy()));?>
+                      Context?
+                    | StringLiteral                     <?rex currentNode->addChild(new String(currentToken().copy()));?>
+                      Context?
+Context           ::= CaretName                         <?rex
+                                                          wchar_t *context = currentToken().copy();
+                                                          wcscpy(context, context + 1);
+                                                          static_cast<NodeWithContext *>(currentNode->lastChild)->context = context;
+                                                        ?>
+CharClass         ::=                                   <?rex bool complement = false;?>
+                      ( "["
+                      | "[^"                            <?rex complement = true;?>
+                      )                                 <?rex descend(new CharClass());?>
+                      ( Char                            <?rex currentNode->addChild(new Char(*currentChar()));?>
+                      | CharCode                        <?rex currentNode->addChild(new CharCode(charCodeValue(currentChar() + 1)));?>
+                      | CharRange                       <?rex currentNode->addChild(new CharRange(b0, *currentChar(), *(currentChar() + 2)));?>
+                      | CharCodeRange                   <?rex
+                                                          int minValue = charCodeValue(currentChar() + 1);
+                                                          currentNode->addChild(new CharCodeRange(b0, minValue, charCodeValue(wcschr(currentChar(), L'-') + 2)));
+                                                        ?>
+                      )+                                <?rex ascend();?>
+                      "]"                               <?rex
+                                                          if (complement)
+                                                          {
+                                                            currentNode->addChild(new Complement(static_cast<CharClass *>(currentNode->isolateLastChild())));
+                                                          }
+                                                        ?>
+                      /* ws: explicit */
+Option            ::= "/*" Space*
+                      ( "ws"  ":" Space*
+                                  ( "explicit"          <?rex static_cast<Production *>(currentNode->lastChild)->wsExplicit = true;?>
+                                  | "definition"        <?rex
+                                                          Production *p = static_cast<Production *>(currentNode->lastChild);
+                                                          p->wsExplicit = true;
+                                                          setWhitespaceDefinition(p);
+                                                        ?>
+                                  )
+                                  Space*
+                      )
+                      "*/"
+                      /* ws: explicit */
+Preference        ::= NameOrString                      <?rex Preference *preference = new Preference();?>
+                    ( ">>"                              <?rex preference->addLhs(currentNode->isolateLastChild());?>
+                      ( NameOrString                    <?rex preference->addRhs(currentNode->isolateLastChild());?>
+                      )+
+                    | "<<"                              <?rex preference->addRhs(currentNode->isolateLastChild());?>
+                      ( NameOrString                    <?rex preference->addLhs(currentNode->isolateLastChild());?>
+                      )+
+                    )                                   <?rex currentNode->addChild(preference);?>
+Delimiter         ::= Name                              <?rex Delimiter *delimiter = new Delimiter(new Ref(currentToken().copy()));?>
+                      "\\" ( NameOrString               <?rex delimiter->addRhs(currentNode->isolateLastChild());?>
+                           )+                           <?rex currentNode->addChild(delimiter);?>
+Equivalence       ::= EquivalenceLookAhead              <?rex Equivalence *equivalence = new Equivalence();?>
+                      EquivalenceCharRange              <?rex equivalence->setLhs(currentNode->isolateLastChild());?>
+                      "=="
+                      EquivalenceCharRange              <?rex
+                                                          equivalence->setRhs(currentNode->isolateLastChild());
+                                                          currentNode->addChild(equivalence);
+                                                        ?>
+EquivalenceCharRange
+                  ::= StringLiteral                     <?rex currentNode->addChild(new String(currentToken().copy()));?>
+                    | "["
+                      ( Char                            <?rex currentNode->addChild(new Char(*currentChar()));?>
+                      | CharCode                        <?rex currentNode->addChild(new CharCode(charCodeValue(currentChar() + 1)));?>
+                      | CharRange                       <?rex currentNode->addChild(new CharRange(b0, *currentChar(), *(currentChar() + 2)));?>
+                      | CharCodeRange                   <?rex
+                                                          int minValue = charCodeValue(currentChar() + 1);
+                                                          currentNode->addChild(new CharCodeRange(b0, minValue, charCodeValue(wcschr(currentChar(), L'-') + 2)));
+                                                        ?>
+                      )
+                      "]"
+                      /* ws: explicit */
+
+Encore            ::= "<?ENCORE?>"                      <?rex section = EPILOG;?>
+                      ProcessingInstruction*            <?rex static_cast<Grammar *>(currentNode)->setEpilog();?>
+
+<?TOKENS?>
+
+// name definition as per https://www.w3.org/TR/xml/#d0e804 (except ':' is not a NameStartChar)
+
+NameStartChar     ::= [A-Z]
+                    | "_"
+                    | [a-z]
+                    | [#xC0-#xD6]
+                    | [#xD8-#xF6]
+                    | [#xF8-#x2FF]
+                    | [#x370-#x37D]
+                    | [#x37F-#x1FFF]
+                    | [#x200C-#x200D]
+                    | [#x2070-#x218F]
+                    | [#x2C00-#x2FEF]
+                    | [#x3001-#xD7FF]
+                    | [#xF900-#xFDCF]
+                    | [#xFDF0-#xFFFD]
+                    | [#x10000-#xEFFFF]
+NameChar          ::= NameStartChar
+                    | "-"
+                    | "."
+                    | [0-9]
+                    | #xB7
+                    | [#x0300-#x036F]
+                    | [#x203F-#x2040]
+Name              ::= NameStartChar (NameChar)*
+
+Space             ::= (#x9 | #xD | #x20)+ | #xA
+DirPIContents     ::= ([^?#x9#xD#x20#xA] | '?'+ [^?>])
+                      ([^?]              | '?'+ [^?>])* '?'* &'?>'
+StringLiteral     ::= ('"' [^"#x9#xA#xD]* '"')
+                    | ("'" [^'#x9#xA#xD]* "'")
+CaretName         ::= "^" Name?
+CharCode          ::= "#x" [0-9a-fA-F]+
+Char              ::= [^#x9#xA#xD#x23#x5D]
+                    | '#' &[^0-9a-fA-F]
+CharRange         ::= Char "-" Char
+CharCodeRange     ::= CharCode "-" CharCode
+SingleLineComment ::= '//' [^#xA]* #xA?
+MultiLineComment  ::= '/*' ( ( .* - ( .* '*/' .* ) ) - ( Space* 'ws' Space* ':' .* ) ) '*/'
+EOF               ::= $
+EquivalenceLookAhead
+                  ::= & ("[" ( Char | CharCode | CharRange | CharCodeRange ) "]" Whitespace? "==")
+Whitespace        ::= ( Space
+                      | SingleLineComment
+                      | MultiLineComment
+                      )+
+                   /* ws: definition */
+
+// EoF

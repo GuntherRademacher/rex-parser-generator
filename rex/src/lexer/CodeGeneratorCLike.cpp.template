@@ -1,0 +1,450 @@
+~                                                           #include "../common/Memory.hpp"
+                                                            #include "../common/Format.hpp"
+
+                                                            #include "CodeGenerator.hpp"
+
+                                                            void CodeGeneratorCLike::predict()
+                                                            {
+                                                              const char *thiz = isTypescript || isGo ? "this."
+                                                                                           : isPython ? "self."
+                                                                                                      : "";
+                                                              const char *leftBrace = isPython ? ""
+                                                                             : isScala || isGo ? " {"
+                                                                                               : "\n{";
+                                                              const char *rightBrace = isPython ? ""
+                                                                                                : "\n}";
+                                                              const char *semicolon = isScala || isGo || isPython ? ""
+                                                                                                                  : ";";
+                                                              const char *lbracket = isScala ? "(" : "[";
+                                                              const char *rbracket = isScala ? ")" : "]";
+                                                              const char *returnKeyword = isScala ? "" : "return ";
+
+                                                              if (! isGo && ! isPython)
+                                                                indent += 1;
+                                                              print(leftBrace);
+                                                              indent += 1;
+                                                              if (isJavascript || isTypescript || isHaxe || isScala)
+                                                              {
+~
+var ~                                                         }
+                                                              else if (isGo || isPython)
+                                                              {
+~
+~                                                             }
+                                                              else
+                                                              {
+~
+int ~                                                         }
+    ~d ~                                                      if (isGo)
+                                                              {
+       ~:~                                                    }
+       ~= dpi~                                                print(semicolon);
+                                                              const char* ifLeftParen = isGo || isPython ? "" : "(";
+                                                              const char* ifRightParen = isGo ? "" : isPython ? ":" : ")";
+                                                              if (variable("lrparser").boolean())
+                                                              {
+~
+if ~                                                            print(ifLeftParen);
+                                                                print(thiz);
+   ~l1 == 0~                                                    print(ifRightParen);
+                                                                print(leftBrace);
+~
+  ~                                                             print(thiz);
+  ~l1 = ~                                                       print(thiz);
+        ~match~                                                 if (variable("anywhitespace").boolean())
+                                                                {
+              ~W~                                               }
+                                                                else if (isScala)
+                                                                {
+              ~er~                                              }
+              ~(~                                               if (isTypescript)
+                                                                {
+                ~Parser.~                                       }
+                                                                else if (isJavascript || isScala || isPython || (isHaxe && variable("useGlr").boolean()))
+                                                                {
+                                                                  print(variable("classname").string());
+                ~.~                                             }
+                                                                if (isGo)
+                                                                {
+                ~tokenset~                                      }
+                                                                else
+                                                                {
+                ~TOKENSET~                                      }
+                                                                print(lbracket);
+                         ~d~                                    print(rbracket);
+                           ~)~                                  print(semicolon);
+~
+  ~                                                             print(thiz);
+  ~b1 = ~                                                       print(thiz);
+        ~begin~                                                 print(semicolon);
+~
+  ~                                                             print(thiz);
+  ~e1 = ~                                                       print(thiz);
+        ~end~                                                   print(semicolon);
+                                                                print(rightBrace);
+                                                              }
+                                                              if (variable("nothrow").boolean())
+                                                              {
+                                                                if (isGo)
+                                                                {
+~
+if this.l1 < 0 {
+  return this.l1
+}~                                                              }
+                                                                else
+                                                                {
+~
+if ~                                                              print(ifLeftParen);
+                                                                  print(thiz);
+   ~l1 < 0~                                                       print(ifRightParen);
+~
+  return ~                                                        print(thiz);
+         ~l1~                                                     print(semicolon);
+                                                                }
+                                                              }
+                                                              if (variable("useGlr").boolean())
+                                                              {
+                                                                if (isGo)
+                                                                {
+~
+if this.l1 < 0 {
+  return 0~                                                       print(rightBrace);
+                                                                }
+                                                                else
+                                                                {
+~
+if ~                                                              print(ifLeftParen);
+                                                                  print(thiz);
+   ~l1 < 0~                                                       print(ifRightParen);
+~
+  return 0~                                                       print(semicolon);
+                                                                }
+                                                              }
+                                                              int k = variable("k").integer();
+                                                              bool loop = k > 1 && variable("lrparser").boolean();
+                                                              if (loop)
+                                                              {
+                                                                if (isHaxe || isScala)
+                                                                {
+~
+while (true)~                                                     print(leftBrace);
+                                                                }
+                                                                else if (isPython)
+                                                                {
+~
+while True:~                                                    }
+                                                                else if (isGo)
+                                                                {
+~
+for ;; d++ {~                                                   }
+                                                                else
+                                                                {
+~
+for (;; ++d)~                                                     print(leftBrace);
+                                                                }
+                                                                indent += 1;
+                                                              }
+~
+~                                                             const char *action = isJavascript || isTypescript || isHaxe || isScala ? "var action = "
+                                                                                                                                     : isGo ? "action := "
+                                                                                                                                            : isPython ? "action = "
+                                                                                                                                                       : "int action = ";
+                                                              const char *x = isTypescript || isGo ? "this.l1"
+                                                                                                   : isPython ? "self.l1"
+                                                                                                              : "l1";
+                                                              CString caseId;
+                                                              if (isScala || (isHaxe && variable("useGlr").boolean()))
+                                                              {
+                                                                caseId += variable("classname").string();
+                                                                caseId += ".";
+                                                              }
+                                                              caseId += isGo ? "caseid" : "CASEID";
+                                                              compressedMap2dAccessor(x, "d", variable("cicols").integer(),
+                                                                                         0, "j1", action, caseId.c_str(), &variable("cibits").integer());
+                                                              for (int i = 2; i <= k; ++i)
+                                                              {
+                                                                if (loop && i != 2)
+                                                                {
+~
+if ~                                                              print(ifLeftParen);
+   ~action != 0~                                                  print(ifRightParen);
+                                                                  print(leftBrace);
+                                                                  indent += 1;
+                                                                }
+~
+if ~                                                            print(ifLeftParen);
+   ~(action & 1) == 0~                                          print(ifRightParen);
+                                                                if (isGo)
+                                                                {
+                      ~ {~                                      }
+                      ~
+  return action >> 1~                                           print(semicolon);
+                                                                if (isGo)
+                                                                {
+~
+}~                                                              }
+~
+if ~                                                            print(ifLeftParen);
+                                                                print(thiz);
+    ~l~                                                         print(format.toString<char>(i));
+      ~ == 0~                                                   print(ifRightParen);
+                                                                print(leftBrace);
+~
+  ~                                                             print(thiz);
+  ~l~                                                           print(format.toString<char>(i));
+    ~ = ~                                                       print(thiz);
+        ~match~                                                 if (variable("anywhitespace").boolean())
+                                                                {
+              ~W~                                               }
+                                                                else if (isScala)
+                                                                {
+              ~er~                                              }
+              ~(action >> 1)~                                   print(semicolon);
+~
+  ~                                                             print(thiz);
+  ~b~                                                           print(format.toString<char>(i));
+    ~ = ~                                                       print(thiz);
+        ~begin~                                                 print(semicolon);
+~
+  ~                                                             print(thiz);
+  ~e~                                                           print(format.toString<char>(i));
+    ~ = ~                                                       print(thiz);
+        ~end~                                                   print(semicolon);
+                                                                print(rightBrace);
+                                                                if (variable("nothrow").boolean())
+                                                                {
+                                                                  if (isGo)
+                                                                  {
+~
+if this.l~                                                          print(format.toString<char>(i));
+         ~ < 0 {
+  return this.l~                                                    print(format.toString<char>(i));
+                                                                    print(semicolon);
+~
+}~                                                                }
+                                                                  else
+                                                                  {
+~
+if ~                                                                print(ifLeftParen);
+                                                                    print(thiz);
+    ~l~                                                             print(format.toString<char>(i));
+      ~ < 0~                                                        print(ifRightParen);
+~
+  return l~                                                         print(format.toString<char>(i));
+                                                                    print(semicolon);
+                                                                  }
+                                                                }
+                                                                if (variable("useGlr").boolean())
+                                                                {
+~
+if ~                                                              print(ifLeftParen);
+                                                                  print(thiz);
+    ~l~                                                           print(format.toString<char>(i));
+      ~ < 0~                                                      print(ifRightParen);
+                                                                  if (isGo)
+                                                                  {
+           ~ {~                                                   }
+~
+  return 0~                                                       print(semicolon);
+                                                                  if (isGo)
+                                                                  {
+~
+}~                                                                }
+                                                                }
+~
+~                                                               CString li(isTypescript || isGo ? "this.l" : isPython ? "self.l" : "l");
+                                                                li += format.toString<char>(i);
+                                                                CString ii("i");
+                                                                ii += format.toString<char>(i);
+                                                                const char *x = isTypescript || isGo ? (i == 2 ? "this.l1" : "matchCode")
+                                                                                          : isPython ? (i == 2 ? "self.l1" : "matchCode")
+                                                                                                     : (i == 2 ? "l1" : "matchCode");
+                                                                const char *result = isTypescript || isJavascript || isHaxe || isScala ? (i == 2 ? "var matchCode = " : "matchCode = ")
+                                                                                                                                : isGo ? (i == 2 ? "matchCode := " : "matchCode = ")
+                                                                                                                             :isPython ? "matchCode = "
+                                                                                                                                       : (i == 2 ? "int matchCode = " : "matchCode = ");
+                                                                CString lookahead;
+                                                                if (isScala)
+                                                                {
+                                                                  lookahead += variable("classname").string();
+                                                                  lookahead += ".";
+                                                                }
+                                                                lookahead += isGo ? "lookahead" : "LOOKAHEAD";
+                                                                compressedMap2dAccessor(x, li.c_str(), variable("lxcols").integer(),
+                                                                                           0, ii.c_str(), result, lookahead.c_str(), &variable("lxbits").integer());
+~
+if ~                                                            print(ifLeftParen);
+   ~matchCode != 0~                                             print(ifRightParen);
+                                                                print(leftBrace);
+~
+~                                                               CString ji("j");
+                                                                ji += format.toString<char>(i);
+                                                                compressedMap2dAccessor("matchCode", "d", variable("cicols").integer(),
+                                                                                           2, ji.c_str(), "action = ", caseId.c_str(), &variable("cibits").integer());
+                                                                indent += 1;
+                                                              }
+                                                              if (loop)
+                                                              {
+~
+if ~                                                            print(ifLeftParen);
+   ~action != 0~                                                print(ifRightParen);
+                                                                print(leftBrace);
+                                                                indent += 1;
+                                                              }
+~
+return action >> 1~                                           print(semicolon);
+                                                              for (int i = k; i >= 2; --i)
+                                                              {
+                                                                indent -= 1;
+                                                                print(rightBrace);
+                                                                if (loop)
+                                                                {
+                                                                  indent -= 1;
+                                                                  print(rightBrace);
+                                                                }
+                                                              }
+                                                              if (loop)
+                                                              {
+                                                                if (isHaxe || isScala || isPython)
+                                                                {
+~
+d += 1~                                                           print(semicolon);
+                                                                }
+                                                                indent -= 1;
+                                                                print(rightBrace);
+                                                              }
+                                                              if ((k > 1 && ! loop) || isScala)
+                                                              {
+~
+~                                                               print(returnKeyword);
+~0~                                                             print(semicolon);
+                                                              }
+                                                              indent -= 1;
+                                                              print(rightBrace);
+~
+~                                                             if (! isGo && ! isPython)
+                                                                indent -= 1;
+                                                            }
+
+                                                            void CodeGeneratorCLike::compressedMap2dAccessor(const char *x,
+                                                                                                           const char *y,
+                                                                                                           int xCount,
+                                                                                                           size_t indent,
+                                                                                                           const char *index,
+                                                                                                           const char *result,
+                                                                                                           const char *map,
+                                                                                                           const int *bits)
+                                                            {
+                                                              const char *semicolon = isScala || isGo || isPython ? "" : ";";
+                                                              print(indent, " ");
+                                                              if (isJavascript || isTypescript || isHaxe)
+                                                              {
+~var ~                                                        }
+                                                              else if (isScala)
+                                                              {
+~val ~                                                        }
+                                                              else if (! isGo && ! isPython)
+                                                              {
+~int ~                                                        }
+                                                              print(index);
+                                                              if (isGo)
+                                                              {
+     ~0 := ~                                                  }
+                                                              else
+                                                              {
+     ~0 = ~                                                   }
+                                                              if (Math::isPowerOf2(xCount))
+                                                              {
+          ~(~                                                   print(y);
+
+            ~ << ~                                              print(format.toString<char>(Math::log2(xCount)));
+                 ~)~                                          }
+                                                              else
+                                                              {
+                                                                print(format.toString<char>(xCount));
+          ~ * ~                                                 print(y);
+                                                              }
+              ~ + ~                                           print(x);
+                                                              print(semicolon);
+                  ~
+~                                                             compressedMapAccessor(indent, index, result, map, bits);
+                                                            }
+
+                                                            void CodeGeneratorCLike::compressedMapAccessor(size_t indent, const char *index, const char *result, const char *map, const int *bits)
+                                                            {
+                                                              const char *lBracket = isScala ? "(" : "[";
+                                                              const char *rBracket = isScala ? ")" : "]";
+                                                              const char *semicolon = isScala || isGo || isPython ? "" : ";";
+                                                              size_t i = 0;
+                                                              if (bits[0])
+                                                              {
+                                                                for (i = 1; bits[i]; ++i)
+                                                                {
+                                                                  print(indent, " ");
+                                                                  if (isJavascript || isTypescript || isHaxe)
+                                                                  {
+~var ~                                                            }
+                                                                  else if (isScala)
+                                                                  {
+~val ~                                                            }
+                                                                  else if (! isGo && ! isPython)
+                                                                  {
+~int ~                                                            }
+                                                                  print(index);
+                                                                  print(i);
+                                                                  if (isGo)
+                                                                  {
+     ~ := ~                                                       }
+                                                                  else
+                                                                  {
+     ~ = ~                                                       }
+                                                                  print(index);
+                                                                  print(i - 1);
+         ~ >> ~                                                   print(bits[i - 1]);
+                                                                  print(semicolon);
+              ~
+~                                                               }
+                                                              }
+                                                              print(indent, " ");
+                                                              print(result);
+                                                              if (isTypescript)
+                                                              {
+~Parser.~                                                     }
+                                                              else if (isJavascript || isPython)
+                                                              {
+                                                                print(variable("classname").string());
+~.~                                                           }
+                                                              print(map);
+                                                              print(lBracket);
+                                                              for (i = 0; bits[i]; ++i)
+                                                              {
+  ~(~                                                           print(index);
+                                                                print(i);
+    ~ & ~                                                       print(Math::powerof(2, bits[i]) - 1);
+        ~) + ~                                                  if (isTypescript)
+                                                                {
+             ~Parser.~                                          }
+                                                                else if (isJavascript || isPython)
+                                                                {
+                                                                  print(variable("classname").string());
+             ~.~                                                }
+                                                                print(map);
+                                                                print(lBracket);
+                                                              }
+                                                              print(index);
+                                                              if (i > 0)
+                                                              {
+                                                                print(i - 1);
+               ~ >> ~                                           print(bits[i - 1]);
+                                                              }
+                                                              else
+                                                              {
+                                                                print(i);
+                                                              }
+                                                              for (i = 0; bits[i]; ++i)
+                                                              {
+                                                                print(rBracket);
+                                                              }
+                                                              print(rBracket);
+                                                              print(semicolon);
+                                                            }

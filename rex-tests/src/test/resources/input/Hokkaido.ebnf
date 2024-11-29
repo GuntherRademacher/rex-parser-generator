@@ -1,0 +1,101 @@
+// cpp: rex -cpp -a cpp-wchar_t Hokkaido.ebnf -char
+// java: rex -trace -java -a java Zakynthos.ebnf
+// xquery: rex -trace -xquery -a xquery Zakynthos.ebnf
+                                <?xquery declare namespace module="Hokkaido.xquery";?>
+                                <?java
+                                  public class Hokkaido
+                                  {
+                                    public static void main(String[] args)
+                                    {
+                                      System.out.println("<result>");
+                                      new Hokkaido("北海道").parse_Hokkaido();
+                                      new Hokkaido("1߿ࠀ�𐀀􏿿2").parse_Hokkaido();
+                                      try
+                                      {
+                                        new Hokkaido("x").parse_Hokkaido();
+                                        System.out.println("  <fail/>");
+                                      }
+                                      catch (ParseException p)
+                                      {
+                                        System.out.println("  <pass/>");
+                                      }
+                                      System.out.println("</result>");
+                                    }
+                                ?>
+Hokkaido   ::= H1 "北" "海" "道" EOF
+             | H2 CP49 CP55295 CP57344 CP65533 CP65536 CP1114111 CP50 EOF
+<?TOKENS?>
+
+H1        ::= &( "北" "海" "道" EOF? )
+H2        ::= &( CP49 CP55295 CP57344 CP65533 CP65536 CP1114111 CP50 EOF? )
+
+CP49      ::= "1" &( CP55295 CP57344 CP65533 CP65536 CP1114111 CP50)
+CP55295   ::= "߿" &(         CP57344 CP65533 CP65536 CP1114111 CP50)
+CP57344   ::= "ࠀ" &(                 CP65533 CP65536 CP1114111 CP50)
+CP65533   ::= "�" &(                         CP65536 CP1114111 CP50)
+CP65536   ::= "𐀀" &(                                 CP1114111 CP50)
+CP1114111 ::= "􏿿" &                                           CP50
+CP50      ::= "2"
+
+EOF ::= $
+
+<?ENCORE?>
+                                <?cpp-char
+                                  int main(int argc, char **argv)
+                                  {
+                                    printf("<result>\n");
+                                    try
+                                    {
+                                      HokkaidoC("北海道").parse_Hokkaido();
+                                      HokkaidoC("1߿ࠀ�𐀀􏿿2").parse_Hokkaido();
+                                      try
+                                      {
+                                        HokkaidoC("x").parse_Hokkaido();
+                                        printf("  <fail/>\n");
+                                      }
+                                      catch (HokkaidoC::ParseException &)
+                                      {
+                                        printf("  <pass/>\n");
+                                      }
+                                    }
+                                    catch (HokkaidoC::ParseException &)
+                                    {
+                                      printf("  <fail/>\n");
+                                    }
+                                    printf("</result>\n");
+                                  }
+                                ?>
+                                <?cpp-wchar_t
+                                  int main(int argc, char **argv)
+                                  {
+                                    wprintf(L"<result>\n");
+                                    HokkaidoWC(L"北海道").parse_Hokkaido();
+                                    HokkaidoWC(L"1߿ࠀ�𐀀􏿿2").parse_Hokkaido();
+                                    try
+                                    {
+                                      try
+                                      {
+                                        HokkaidoWC(L"x").parse_Hokkaido();
+                                        wprintf(L"  <fail/>\n");
+                                      }
+                                      catch (HokkaidoWC::ParseException &)
+                                      {
+                                        wprintf(L"  <pass/>\n");
+                                      }
+                                    }
+                                    catch (HokkaidoWC::ParseException &)
+                                    {
+                                      printf("  <fail/>\n");
+                                    }
+                                    wprintf(L"</result>\n");
+                                  }
+                                ?>
+                                <?xquery
+                                  <result>
+                                    {
+                                      module:parse_Hokkaido("北海道"),
+                                      module:parse_Hokkaido("1߿ࠀ�𐀀􏿿2")
+                                    }
+                                    <pass/>
+                                  </result>
+                                ?>

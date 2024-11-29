@@ -1,0 +1,2818 @@
+~                                                           /*
+                                                             * PrintXSLT.cpp
+                                                             *
+                                                             *  Created on: 31.07.2008
+                                                             *      Author: Gunther
+                                                             */
+
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "PrintXSLT.hpp"
+                                                            #include "OrderedTokenSequenceVector.hpp"
+                                                            #include "ItemSet.hpp"
+
+                                                            #include "../common/PtrLess.hpp"
+                                                            #include "../common/Format.hpp"
+                                                            #include "../common/Encoder.hpp"
+                                                            #include "../common/Math.hpp"
+
+                                                            void PrintXSLT::printCodeSequenceAnnotation(const TokenSequenceSet &t)
+                                                            {
+                                                              lineBuffer += L" ";
+                                                              print(lineBuffer.c_str());
+                                                              bool xml = content()[size() - 2] == L'>';
+
+                                                              const size_t align = xml ? 84 : 86;
+                                                              const size_t linelength = 160;
+                                                              const size_t headerWidth = xml ? 5 : 3; // "<!-- "
+                                                              const size_t trailerWidth = xml ? 4 : 3; // " -->"
+                                                              const wchar_t *header = xml ? L"<!-- " : L"(: ";
+                                                              const wchar_t *trailer = xml ? L" -->" : L" :)";
+
+                                                              size_t lsize = column();
+                                                              size_t filler = lsize > align ? 0 : align - lsize;
+                                                              size_t spaces = lsize + filler + headerWidth;
+                                                              size_t width = spaces > linelength ? 0 : linelength - spaces;
+                                                              if (width < (linelength - align) / 2) width = (linelength - align) / 2;
+
+                                                              WString annotation(t.toString(grammar, L"\n", L" |", width, trailerWidth, false, toBeEscaped));
+                                                              if (xml)
+                                                                invalidateXmlCommentTokens(annotation);
+                                                              else
+                                                                invalidateXPathCommentTokens(annotation);
+                                                              wchar_t *indentedAnnotation = Format::reIndent(annotation.c_str(), Math::max(0, static_cast<int>(spaces) - getIndent()));
+
+                                                              print(filler, L" ");
+                                                              print(header);
+                                                              print(indentedAnnotation);
+                                                              print(trailer);
+                                                              free(indentedAnnotation);
+                                                            }
+
+                                                            bool PrintXSLT::printLookahead(size_t k,
+                                                                                           const TokenSequenceSet &prefix,
+                                                                                           size_t level,
+                                                                                           const CompressedTokenSet *lookahead,
+                                                                                           bool findsLookahead)
+                                                            {
+                                                              bool empty = true;
+                                                              if (lookahead != 0 && ! lookahead->empty())
+                                                              {
+                                                                if (level > 1 || ! findsLookahead)
+                                                                {
+                                                                  empty = false;
+                                                                  const wchar_t *lookaheadType;
+                                                                  if (lookahead->hasImplicitWhitespace())
+                                                                  {
+                                                                    lookaheadType = L"W";
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    lookaheadType = L"";
+                                                                  }
+
+                                                                  lineBuffer.clear();
+                                                                  lineBuffer += L"<xsl:variable name=\"state\" select=\"p:lookahead";
+                                                                  lineBuffer += format.toString<wchar_t>(level);
+                                                                  lineBuffer += lookaheadType;
+                                                                  lineBuffer += L"(";
+                                                                  lineBuffer += level == 1 || ! unlimitedLookahead ? L"" : format.toString<wchar_t>(lookahead->prefixCode(grammar->tokenSequenceFactory->tokenBits()));
+                                                                  lineBuffer += level == 1 || ! unlimitedLookahead ? L"" : L", ";
+                                                                  lineBuffer += grammar->singleLexer ? L"0" : format.toString<wchar_t>(lookahead->getSetNo(grammar->lookaheadSets));
+                                                                  lineBuffer += L", $input, $state)\"/>";
+~
+~                                                                 printCodeSequenceAnnotation(lookahead->getInitials());
+                                                                }
+
+                                                                if (lookahead->getDpi() >= 0)
+                                                                {
+                                                                  empty = false;
+~
+<xsl:variable name="state" select="p:predict($input, $state, ~    print(format.toString<wchar_t>(lookahead->getDpi()));
+                                                             ~)"/>~
+                                                                }
+                                                                else if (level < k)
+                                                                {
+                                                                  // this block will be obsolete when "tables" proves to be successful
+
+                                                                  const CompressedTokenSet::CompressedTokenSetByTokenSet &chol(lookahead->getCombinedHigherOrderLookahead());
+                                                                  if (! chol.empty())
+                                                                  {
+                                                                    empty = false;
+                                                                    ++level;
+~
+<xsl:variable name="state" as="item()+">
+  <xsl:choose>~                                                     increaseIndent(2);
+                                                                    OrderedTokenSequenceVector orderedPrefix(prefix, __FILE__, __LINE__);
+                                                                    if (unlimitedLookahead)
+                                                                    {
+                                                                      const CompressedTokenSet::HigherOrderLookahead &hol(lookahead->getHigherOrderLookahead());
+                                                                      for (CompressedTokenSet::HigherOrderLookahead::const_iterator i(hol.begin());
+                                                                           i != hol.end();
+                                                                           ++i)
+                                                                      {
+                                                                        Token::Code token = i->first;
+                                                                        for (OrderedTokenSequenceVector::const_iterator p = orderedPrefix.begin(); p != orderedPrefix.end(); ++p)
+                                                                        {
+                                                                          TokenSequence nextPrefix(grammar->tokenSequenceFactory->tokenSequence(*p, grammar->tokenSequence(token)));
+
+                                                                          lineBuffer.clear();
+                                                                          lineBuffer += L"<xsl:when test=\"$state[$p:l";
+                                                                          lineBuffer += level == 2 ? L"1" : L"k";
+                                                                          lineBuffer += L"] = ";
+                                                                          lineBuffer += format.toString<wchar_t>(lookahead->localSequenceCode(grammar->tokenSequenceFactory, grammar->tokenSequence(token), grammar->externalTokenCode));
+                                                                          lineBuffer += L"\">";
+~
+~                                                                         printCodeSequenceAnnotation(nextPrefix);
+                                                                          increaseIndent();
+
+                                                                          TokenSequenceSet singleNextPrefixSet;
+                                                                          singleNextPrefixSet.insert(nextPrefix);
+                                                                          printLookahead(k, singleNextPrefixSet, level, i->second, findsLookahead);
+~
+<xsl:sequence select="$state"/>~                                          decreaseIndent();
+~
+</xsl:when>~                                                            }
+                                                                      }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      const CompressedTokenSet::CompressedTokenSetByTokenSet &chol = lookahead->getCombinedHigherOrderLookahead();
+                                                                      for (CompressedTokenSet::CompressedTokenSetByTokenSet::const_iterator i = chol.begin();
+                                                                           i != chol.end();
+                                                                           ++i)
+                                                                      {
+                                                                        const CompressedTokenSet *cts = i->second;
+                                                                        TokenSequenceSet nextPrefixSet;
+                                                                        const OrderedTokenSequenceVector &ots(i->first);
+                                                                        TokenSequence nextPrefix(grammar->tokenSequenceFactory->emptySequence());
+                                                                        size_t size = orderedPrefix.size() * ots.size();
+                                                                        int seqNo = 0;
+                                                                        for (OrderedTokenSequenceVector::const_iterator p = orderedPrefix.begin(); p != orderedPrefix.end(); ++p)
+                                                                          for (OrderedTokenSequenceVector::const_iterator j = ots.begin(); j != ots.end(); ++j)
+                                                                        {
+                                                                          if (seqNo != 0)
+                                                                          {
+                                                                            lineBuffer += L",";
+~
+~                                                                           printCodeSequenceAnnotation(nextPrefix);
+                                                                          }
+
+                                                                          nextPrefix = grammar->tokenSequenceFactory->tokenSequence(*p, *j);
+                                                                          nextPrefixSet.insert(nextPrefix);
+
+                                                                          lineBuffer.clear();
+                                                                          if (seqNo == 0)
+                                                                          {
+                                                                            lineBuffer += L"<xsl:when test=\"$state[$p:l";
+                                                                            lineBuffer += level == 2 ? L"1" : L"k";
+                                                                            lineBuffer += L"] ";
+                                                                            lineBuffer += size == 1 ? L"eq " : L"= (";
+                                                                          }
+                                                                          else
+                                                                          {
+                                                                            lineBuffer += L"               ";
+                                                                            lineBuffer += L"      ";
+                                                                            lineBuffer += L"            ";
+                                                                          }
+
+                                                                          lineBuffer += format.toString<wchar_t>(CompressedTokenSet::uniqueSequenceCode(grammar->tokenSequenceFactory, nextPrefix, grammar->externalTokenCode));
+                                                                          ++seqNo;
+                                                                        }
+                                                                        lineBuffer += size == 1 ? L"" : L")";
+                                                                        lineBuffer += L"\">";
+~
+~                                                                       printCodeSequenceAnnotation(nextPrefix);
+
+                                                                        increaseIndent();
+                                                                        printLookahead(k, nextPrefixSet, level, cts, findsLookahead);
+~
+<xsl:sequence select="$state"/>~                                        decreaseIndent();
+~
+</xsl:when>~                                                          }
+                                                                    }
+                                                                    --level;
+~
+<xsl:otherwise>~                                                    increaseIndent();
+                                                                    if (level == 1)
+                                                                    {
+~
+<xsl:sequence select="$state[$p:l1], subsequence($state, $p:lk + 1)"/>~
+                                                                    }
+                                                                    else
+                                                                    {
+~
+<xsl:sequence select="$state"/>~                                    }
+                                                                    decreaseIndent(3);
+~
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>~                                                  }
+                                                                }
+                                                              }
+                                                              return ! empty;
+                                                            }
+
+                                                            void PrintXSLT::printMatch(const CompressedTokenSet *lookahead,
+                                                                                       size_t k,
+                                                                                       int backtrackedCaseId,
+                                                                                       const TokenSequenceSet &ts,
+                                                                                       MatchType matchType,
+                                                                                       int caseId,
+                                                                                       const wchar_t *prefix,
+                                                                                       const wchar_t *suffix)
+                                                            {
+                                                              if (matchType == DEFAULT)
+                                                              {
+~
+<xsl:otherwise>~                                                return;
+                                                              }
+                                                              size_t prefixSize = wcslen(prefix);
+                                                              if (prefixSize)
+                                                              {
+                                                                lineBuffer = prefix;
+                                                              }
+
+                                                              const wchar_t *comparison = matchType == IFNOT ? L" != " : L" = ";
+                                                              const wchar_t *connector  = matchType == IFNOT ? L"and " : L" or ";
+
+                                                              const TokenSequence *previousCodeSequence = 0;
+                                                              const TokenSequence *codeSequence = 0;
+
+                                                              const wchar_t *matchVariable = k == 0
+                                                                                           ? L"$match[1]"
+                                                                                           : k == 1 && backtrackedCaseId == 0 && (lookahead == 0 || lookahead->getDpi() < 0)
+                                                                                           ? L"$state[$p:l1]"
+                                                                                           : L"$state[$p:lk]";
+                                                              bool first = true;
+
+                                                              OrderedTokenSequenceVector v(ts, __FILE__, __LINE__);
+                                                              for (OrderedTokenSequenceVector::const_iterator i = v.begin(); ; )
+                                                              {
+                                                                const wchar_t *matchCode;
+                                                                if (backtrackedCaseId)
+                                                                {
+                                                                  matchCode = format.toString<wchar_t>(- backtrackedCaseId);
+                                                                  backtrackedCaseId = 0;
+                                                                }
+                                                                else if (lookahead && lookahead->getDpi() >= 0 && i != v.end())
+                                                                {
+                                                                  matchCode = format.toString<wchar_t>(caseId);
+                                                                  i = v.end();
+                                                                }
+                                                                else if (! (i != v.end()))
+                                                                {
+                                                                  break;
+                                                                }
+                                                                else
+                                                                {
+                                                                  codeSequence = &*i;
+                                                                  ++i;
+                                                                  matchCode = ! unlimitedLookahead
+                                                                            ? format.toString<wchar_t>(CompressedTokenSet::uniqueSequenceCode(grammar->tokenSequenceFactory, *codeSequence, grammar->externalTokenCode))
+                                                                            : lookahead
+                                                                            ? format.toString<wchar_t>(lookahead->localSequenceCode(grammar->tokenSequenceFactory, *codeSequence, grammar->externalTokenCode))
+                                                                            : format.toString<wchar_t>(grammar->externalTokenCode[codeSequence->first()]);
+                                                                }
+
+                                                                switch (matchType)
+                                                                {
+                                                                case IF:
+                                                                case IFNOT:
+                                                                case CASE:
+                                                                  if (! first)
+                                                                  {
+                                                                    if (previousCodeSequence)
+                                                                    {
+~
+~                                                                     printCodeSequenceAnnotation(*previousCodeSequence);
+                                                                    }
+                                                                    else
+                                                                    {
+~
+~                                                                     print(lineBuffer.c_str());
+                                                                    }
+                                                                    lineBuffer.assign(prefixSize - 4, L' ');
+                                                                    lineBuffer += connector;
+                                                                  }
+                                                                  lineBuffer += matchVariable;
+                                                                  lineBuffer += comparison;
+                                                                  lineBuffer += matchCode;
+                                                                  break;
+
+                                                                default:
+                                                                  break;
+                                                                }
+                                                                previousCodeSequence = codeSequence;
+                                                                first = false;
+                                                              }
+
+                                                              if (! first && *suffix)
+                                                              {
+                                                                lineBuffer += suffix;
+                                                                if (previousCodeSequence)
+                                                                {
+~
+~                                                                  printCodeSequenceAnnotation(*previousCodeSequence);
+                                                                }
+                                                                else
+                                                                {
+~
+~                                                                 print(lineBuffer.c_str());
+                                                                }
+                                                              }
+                                                            }
+
+                                                            void PrintXSLT::printConsume(Token::Code code)
+                                                            {
+                                                              lineBuffer = L"<xsl:variable name=\"state\" select=\"p:consume";
+                                                              if (tree && methodPrefix == methodPrefixTry)
+                                                              {
+                                                                lineBuffer += L"T";
+                                                                consumeMethods = 2;
+                                                              }
+                                                              lineBuffer += L"(";
+                                                              lineBuffer += Format().toString<wchar_t>(grammar->externalTokenCode[code]);
+                                                              lineBuffer += L", $input, $state)\"/>";
+~
+~                                                              printCodeSequenceAnnotation(grammar->tokenSequence(code));
+                                                            }
+
+                                                            void PrintXSLT::visitNodeList(Node *firstNode)
+                                                            {
+                                                              if (firstNode)
+                                                              {
+                                                                bool doIndent = firstNode->getParent() && ! firstNode->getParent()->isSequence();
+                                                                if (doIndent) increaseIndent();
+                                                                for (Node *node = firstNode; node; node = node->followingSibling)
+                                                                {
+                                                                  node->accept(*this);
+                                                                }
+                                                                if (doIndent) decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintXSLT::visitOptional(Optional *node)
+                                                            {
+                                                              printLookahead(node->k, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printBacktracking(node,
+                                                                                node->getLookahead(),
+                                                                                node->conflictCaseId,
+                                                                                node->conflictId,
+                                                                                node->firstElementChild);
+~
+<xsl:variable name="state" as="item()+">
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:sequence select="$state"/>
+    </xsl:when>~                                              increaseIndent(2);
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                              printMatch(node->getLookahead(),
+                                                                         node->k,
+                                                                           node->conflicts(node->k) == 0
+                                                                         ? 0
+                                                                         : matchType == IF
+                                                                         ? 1
+                                                                         : 2,
+                                                                         match,
+                                                                         matchType,
+                                                                         1,
+                                                                         L"<xsl:when test=\"",
+                                                                         L"\">");
+                                                              Visitor::visitNodeWithChildren(node);
+                                                              decreaseIndent(2);
+~
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:sequence select="$state"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>~                                            }
+
+                                                            void PrintXSLT::visitZeroOrMore(ZeroOrMore *node)
+                                                            {
+~
+<xsl:variable name="state" select="p:~                        print(methodPrefix);
+                                     ~-~                      print(node->production->name);
+                                       ~-~                    print(format.toString<wchar_t>(node->loopId));
+                                         ~($input, $state)"/>~
+                                                            }
+
+                                                            void PrintXSLT::visitOneOrMore(OneOrMore *node)
+                                                            {
+~
+<xsl:variable name="state" select="p:~                        print(methodPrefix);
+                                     ~-~                      print(node->production->name);
+                                       ~-~                    print(format.toString<wchar_t>(node->loopId));
+                                         ~($input, $state)"/>~
+                                                            }
+
+                                                            void PrintXSLT::printCase(const CompressedTokenSet *lookahead, size_t k, Node *c, const wchar_t *prefix)
+                                                            {
+                                                              Node *e = c->element();
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = e->getMatch(matchType);
+                                                              printMatch(lookahead,
+                                                                         k,
+                                                                         0,
+                                                                         match,
+                                                                         matchType,
+                                                                         e->caseId,
+                                                                         prefix,
+                                                                         L"\">");
+                                                              increaseIndent();
+                                                              size_t outputSize1 = size();
+
+                                                              c->accept(*this);
+
+                                                              size_t outputSize2 = size();
+                                                              if (outputSize1 != outputSize2)
+                                                              {
+~
+<xsl:sequence select="$state"/>~                              }
+                                                              else
+                                                              {
+~
+<xsl:sequence select="$state"/>~                              }
+                                                              decreaseIndent();
+                                                            }
+
+                                                            bool PrintXSLT::printBacktracking(Node *node,
+                                                                                              const CompressedTokenSet *lookahead,
+                                                                                              int conflictCaseId,
+                                                                                              int conflictId,
+                                                                                              Node *predicate)
+                                                            {
+                                                              bool hasBacktracking = node->conflicts(node->k) != 0;
+                                                              if (hasBacktracking)
+                                                              {
+                                                                NodeList cases(false);
+                                                                cases.push_back(predicate);
+                                                                cases.push_back(predicate);
+                                                                hasBacktracking = printBacktracking(node,
+                                                                                                    lookahead,
+                                                                                                    conflictCaseId,
+                                                                                                    conflictId,
+                                                                                                    cases);
+
+                                                              }
+                                                              return hasBacktracking;
+                                                            }
+
+                                                            bool PrintXSLT::printBacktracking(Node *node,
+                                                                                              const CompressedTokenSet *lookahead,
+                                                                                              int conflictCaseId,
+                                                                                              int conflictId,
+                                                                                              const NodeList &cases)
+                                                            {
+                                                              bool hasBacktracking = node->conflicts(node->k) != 0;
+                                                              if (hasBacktracking)
+                                                              {
+~
+<xsl:variable name="state" as="item()+">~                       increaseIndent();
+                                                                MatchType conflictMatchType;
+                                                                const TokenSequenceSet &conflictMatch = node->getConflictMatch(conflictMatchType);
+                                                                if (! conflictMatch.empty())
+                                                                {
+
+~
+<xsl:choose>
+  <xsl:when test="$state[$p:error]">
+    <xsl:sequence select="$state"/>
+  </xsl:when>~                                                    if (lookahead && lookahead->getDpi() >= 0 && conflictMatchType == IFNOT)
+                                                                  {
+                                                                    conflictMatchType = IF;
+                                                                    conflictCaseId = 0;
+                                                                  }
+                                                                  increaseIndent();
+                                                                  printMatch(lookahead,
+                                                                             node->k,
+                                                                             0,
+                                                                             conflictMatch,
+                                                                             conflictMatchType,
+                                                                             conflictCaseId,
+                                                                             L"<xsl:when test=\"",
+                                                                             L"\">");
+                                                                  increaseIndent();
+                                                                }
+~
+<xsl:variable name="state"~                                     if (memoization)
+                                                                {
+~ select="p:memoized($state, ~                                    print(format.toString<wchar_t>(conflictId));
+                             ~)"/>
+<xsl:choose>
+  <xsl:when test="$state[$p:lk] != 0">
+    <xsl:sequence select="$state"/>
+  </xsl:when>
+  <xsl:otherwise~                                                 increaseIndent();
+                                                                }
+                ~>~                                             increaseIndent();
+                                                                size_t caseId = 0;
+                                                                size_t firstConflictCaseId = 0;
+                                                                size_t lastConflictCaseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (c->involvedInConflict)
+                                                                  {
+                                                                    lastConflictCaseId = caseId;
+                                                                    if (firstConflictCaseId == 0)
+                                                                    {
+                                                                      firstConflictCaseId = caseId;
+                                                                    }
+                                                                  }
+                                                                }
+
+                                                                bool nestedTry = methodPrefix == methodPrefixTry;
+                                                                caseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (caseId == lastConflictCaseId)
+                                                                  {
+~
+<xsl:sequence select="p:memoize($backtrack, $state, ~               print(format.toString<wchar_t>(conflictId));
+                      ~, $backtrack[$p:e0], -~                      print(format.toString<wchar_t>(caseId));
+                                             ~, -~                  print(format.toString<wchar_t>(caseId));
+                                                 ~)"/>~           }
+                                                                  else if (c->involvedInConflict)
+                                                                  {
+                                                                    if (caseId == firstConflictCaseId)
+                                                                    {
+~
+<xsl:variable name="backtrack" select="$state"/>
+<xsl:variable name="state" select="p:strip-result($state)"/>~       }
+                                                                    else
+                                                                    {
+~
+<xsl:variable name="state" select="p:restore($backtrack, $state)"/>~  restoreCalled = true;
+                                                                    }
+                                                                    const wchar_t *v = variant;
+                                                                    const wchar_t *m = methodPrefix;
+                                                                    variant = L"";
+                                                                    methodPrefix = methodPrefixTry;
+                                                                    if (node->isChoice())
+                                                                    {
+                                                                      c->accept(*this);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      decreaseIndent();
+                                                                      visitNodeList(c);
+                                                                      increaseIndent();
+                                                                    }
+                                                                    variant = v;
+                                                                    methodPrefix = m;
+~
+<xsl:choose>
+  <xsl:when test="not($state[$p:error])">~                          if (nestedTry && (node->isZeroOrMore() || node->isOneOrMore()))
+                                                                    {
+~
+    <xsl:sequence select="p:memoize($state, $state, ~                 print(format.toString<wchar_t>(conflictId));
+                              ~, $backtrack[$p:e0], -~                print(format.toString<wchar_t>(caseId));
+                                                     ~, -3)"/>~     }
+                                                                    else
+                                                                    {
+~
+    <xsl:sequence select="p:memoize($backtrack, $state, ~             print(format.toString<wchar_t>(conflictId));
+                                  ~, $backtrack[$p:e0], -~            print(format.toString<wchar_t>(caseId));
+                                                         ~, -~        print(format.toString<wchar_t>(caseId));
+                                                             ~)"/>~ }
+~
+  </xsl:when>
+  <xsl:otherwise>~                                                  increaseIndent(2);
+                                                                  }
+                                                                }
+                                                                caseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (c->involvedInConflict && caseId != lastConflictCaseId)
+                                                                  {
+                                                                    decreaseIndent(2);
+~
+  </xsl:otherwise>
+</xsl:choose>~                                                    }
+                                                                }
+                                                                decreaseIndent();
+                                                                if (memoization)
+                                                                {
+                                                                  decreaseIndent();
+~
+  </xsl:otherwise>
+</xsl:choose>~                                                  }
+                                                                if (! conflictMatch.empty())
+                                                                {
+                                                                  decreaseIndent(2);
+~
+  </xsl:when>
+  <xsl:otherwise>~                                                if (node->k > 1)
+                                                                  {
+~
+    <xsl:sequence select="$state"/>~                              }
+                                                                  else
+                                                                  {
+~
+    <xsl:sequence select="$state[$p:l1], subsequence($state, $p:lk + 1)"/>~
+                                                                  }
+~
+  </xsl:otherwise>
+</xsl:choose>~                                                  }
+                                                                decreaseIndent();
+~
+</xsl:variable>~                                              }
+                                                              return hasBacktracking;
+                                                            }
+
+                                                            void PrintXSLT::visitChoice(Choice *node)
+                                                            {
+                                                              printLookahead(node->k, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printBacktracking(node,
+                                                                                node->getLookahead(),
+                                                                                node->conflictCaseId,
+                                                                                node->conflictId,
+                                                                                node->cases);
+~
+<xsl:variable name="state" as="item()+">
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:sequence select="$state"/>
+    </xsl:when>~                                              increaseIndent(2);
+                                                              Node *defaultCase = 0;
+                                                              const wchar_t *prefix = L"<xsl:when test=\"";
+                                                              size_t caseId = 0;
+                                                              for (NodeList::iterator i = node->cases.begin(); i != node->cases.end(); ++i)
+                                                              {
+                                                                Node *c = *i;
+                                                                ++caseId;
+                                                                MatchType matchType;
+                                                                const TokenSequenceSet &match = c->element()->getMatch(matchType);
+                                                                if (matchType == DEFAULT)
+                                                                {
+                                                                  defaultCase = c;
+                                                                }
+                                                                else
+                                                                {
+                                                                  if (c->involvedInConflict)
+                                                                  {
+~
+~                                                                   print(prefix);
+                                                                    prefix = L"             or ";
+~$state[$p:lk] = -~                                                 print(format.toString<wchar_t>(caseId));
+                                                                    if (match.empty())
+                                                                    {
+~">~                                                                }
+                                                                  }
+                                                                  printCase(node->getLookahead(), node->k, c, prefix);
+                                                                  prefix = L"<xsl:when test=\"";
+~
+</xsl:when>~                                                    }
+                                                              }
+                                                              printCase(node->getLookahead(), node->k, defaultCase, L"");
+                                                              decreaseIndent(2);
+~
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>~                                            }
+
+                                                            void PrintXSLT::visitProduction(Production *node)
+                                                            {
+                                                              setIndent(1);
+~
+<!--~~
+ ! ~                                                          if (methodPrefix != methodPrefixTry)
+                                                              {
+   ~Parse~                                                    }
+                                                              else
+                                                              {
+   ~Try parsing~                                              }
+               ~ ~                                            print(node->name);
+                 ~.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:~                                       print(methodPrefix);
+                      ~-~                                     print(node->name);
+                        ~" as="item()+">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+~                                                             if (trace)
+                                                              {
+~
+  <xsl:sequence select="p:trace-nonterminal($state, &quot;~     print(methodPrefix);
+                                                          ~&quot;, &quot;start&quot;, &quot;~
+                                                                print(node->name);
+                                                                                            ~&quot;)"/>
+  <xsl:variable name="state" as="item()+">~                     increaseIndent();
+                                                              }
+                                                              if (tree && methodPrefix != methodPrefixTry)
+                                                              {
+~
+  <xsl:variable name="count" select="count($state)"/>~          if (! noPosition)
+                                                                {
+~
+  <xsl:variable name="begin" select="$state[$p:e0]"/>~          }
+                                                              }
+                                                              visitNodeList(node->firstChild);
+                                                              if (tree && methodPrefix != methodPrefixTry)
+                                                              {
+                                                                if (! noPosition)
+                                                                {
+~
+  <xsl:variable name="end" select="$state[$p:e0]"/>~            }
+~
+  <xsl:sequence select="p:reduce($state, '~                     print(node->name);
+                                          ~', $count~           if (! noPosition)
+                                                                {
+                                                    ~, $begin, $end~
+                                                                }
+                                                    ~)"/>~    }
+                                                              else
+                                                              {
+~
+  <xsl:sequence select="$state"/>~                            }
+                                                              if (trace)
+                                                              {
+~
+</xsl:variable>
+<xsl:sequence select="p:trace-nonterminal($state, &quot;~       print(methodPrefix);
+                                                        ~&quot;, &quot;end&quot;, &quot;~
+                                                                print(node->name);
+                                                                                          ~&quot;), $state"/>~
+                                                                decreaseIndent();
+                                                              }
+~
+</xsl:function>
+~                                                             setIndent(0);
+                                                            }
+
+                                                            void PrintXSLT::visitRef(Ref *node)
+                                                            {
+                                                              printLookahead(1, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              if (node->lexical)
+                                                              {
+                                                                printConsume(node->lexical->tokenCode);
+                                                              }
+                                                              else
+                                                              {
+                                                                if (   node->whitespaceAllowance == IMPLICIT
+                                                                    && tree
+                                                                    && methodPrefix != methodPrefixTry)
+                                                                {
+~
+<xsl:variable name="state" select="p:whitespace($input, $state)"/>~
+                                                                  whitespaceCalled = true;
+                                                                }
+~
+<xsl:variable name="state" select="
+  if ($state[$p:error]) then
+    $state
+  else
+    p:~                                                         print(methodPrefix);
+      ~-~                                                       print(node->name);
+        ~($input, $state)
+"/>~                                                          }
+                                                            }
+
+                                                            void PrintXSLT::visitString(String *node)
+                                                            {
+                                                              printLookahead(1, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printConsume(node->lexical->tokenCode);
+                                                            }
+
+                                                            void PrintXSLT::visitProcessingInstruction(ProcessingInstruction *node)
+                                                            {
+                                                              int spaces = Math::max(0, static_cast<int>(piIndent) - getIndent());
+                                                              if (variant != 0 && wcscmp(node->target, variant) == 0)
+                                                              {
+~
+~                                                               print(spaces, L" ");
+~<!-- line ~                                                      print(format.toString<wchar_t>(node->line));
+         ~ "~                                                   print(node->fileName);
+            ~" -->
+~                                                               print(spaces, L" ");
+                                                                wchar_t *reIndented = Format::reIndent(node->content, spaces);
+                                                                print(reIndented);
+                                                                free(reIndented);
+~
+~                                                               print(spaces, L" ");
+~<!-- line ~                                                      print(format.toString<wchar_t>(lineNo + 1));
+        ~ "~                                                    print(wFileName);
+           ~" -->~                                             }
+                                                            }
+
+                                                            void PrintXSLT::printUtilities()
+                                                            {
+                                                              setIndent(1);
+                                                              if (isLrParser)
+                                                              {
+                                                                if (grammar->states->hasLookback)
+                                                                {
+~
+<!--~~
+ ! Compare a lookback code to a sorted, zero-terminated list of pairs at
+ ! the given index into the LOOKBACK table. A matching first code in a
+ ! pair will cause its second code to be returned. The list is sorted in
+ ! descending order of first codes, so it is safe to stop when the first
+ ! code is less than what is searched for.
+ !
+ ! @param $x the lookback code to search for.
+ ! @param $i the index into the LOOKBACK table.
+ ! @return the new lookback code as the second code from a pair with a
+ ! matching first code.
+-->
+<xsl:function name="p:lookback">
+  <xsl:param name="x" as="xs:integer"/>
+  <xsl:param name="i" as="xs:integer"/>
+
+  <xsl:variable name="l" select="$p:LOOKBACK[$i + 1]"/>
+  <xsl:sequence select="
+    if ($l gt $x) then
+      p:lookback($x, $i + 2)
+    else if ($l eq $x) then
+      $p:LOOKBACK[$i + 2]
+    else
+      0
+  "/>
+</xsl:function>
+
+<!--~~
+ ! Calculate number of symbols to remove from LR stack for reduction by
+ ! walking through lookback codes of reduction and stack entries. A single
+ ! invocation combines two of those, more are handled in tail recursion.
+ !
+ ! @param $code the reduction lookback code.
+ ! @param $count the initial count value.
+ ! @param $stack the LR stack.
+ ! @param $t the stack running index.
+ ! @return the initial count value, increased by the number of calculations
+ ! yielding a non-zero lookback code.
+-->
+<xsl:function name="p:count">
+  <xsl:param name="code" as="xs:integer"/>
+  <xsl:param name="count" as="xs:integer"/>
+  <xsl:param name="stack" as="xs:integer*"/>
+  <xsl:param name="t" as="xs:integer"/>
+
+  <xsl:choose>
+    <xsl:when test="$stack[$t] lt 0">
+      <xsl:sequence select="$count"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="code" select="p:lookback($stack[$t + 1], $p:LOOKBACK[$code + 1])"/>
+      <xsl:sequence select="
+        if ($code eq 0) then
+          $count
+        else
+          p:count($code, $count + 1, $stack, $t - 3)
+      "/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+<!--~~
+ ! Determine index of the next thread that must be parsed, by comparing
+ ! threads in $threads starting at $i with the candidate at $thread.
+ !
+ ! @param $threads the sequence of all current threads.
+ ! @param $thread the index of the next thread candidate.
+ ! @param $i the index where to start searching.
+ ! @return the index of the next thread.
+-->
+<xsl:function name="p:next-thread">
+  <xsl:param name="threads" as="map(*)*"/>
+  <xsl:param name="thread" as="xs:integer"/>
+  <xsl:param name="i" as="xs:integer"/>
+
+  <xsl:choose>
+    <xsl:when test="$i gt count($threads)">
+      <xsl:sequence select="$thread"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="thread">
+        <xsl:choose>
+          <xsl:when test="$threads[$thread]?accepted ne $threads[$i]?accepted">
+            <xsl:sequence select="if ($threads[$thread]?accepted) then $i else $thread"/>
+          </xsl:when>
+          <xsl:when test="$threads[$thread]?lexer-state[$p:e0] ne $threads[$i]?lexer-state[$p:e0]">
+            <xsl:sequence select="if ($threads[$thread]?lexer-state[$p:e0] lt $threads[$i]?lexer-state[$p:e0]) then $thread else $i"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:sequence select="if ($threads[$thread]?id le $threads[$i]?id) then $thread else $i"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:sequence select="p:next-thread($threads, $thread, $i + 1)"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+
+<!--~~
+ ! Compare two parsing threads for equality. A result of false indicates an
+ ! ambiguity.
+ !
+ ! @param $t1 the first thread data.
+ ! @param $t2 the second thread data.
+ ! @return true(), if threads are equal.
+-->
+<xsl:function name="p:thread-equals" as="xs:boolean">
+  <xsl:param name="t1" as="map(*)"/>
+  <xsl:param name="t2" as="map(*)"/>
+
+  <xsl:sequence select="
+    if ($t1?accepted ne $t2?accepted) then false() else
+    if ($t1?b1 ne $t2?lexer-state[$p:b1]) then false() else
+    if ($t1?e1 ne $t2?lexer-state[$p:e1]) then false() else
+    if ($t1?l1 ne $t2?lexer-state[$p:l1]) then false() else
+    if ($t1?state ne $t2?state) then false() else
+    if ($t1?action ne $t2?action) then false() else deep-equal($t1?stack, $t2?stack)
+  "/>
+</xsl:function>
+
+<!--~~
+ ! Perform GLR parsing by selecting a thread and invoke the LR parse function
+ ! on it for a single token. Process result with respect to thread management.
+ !
+ ! @param $input the input string.
+ ! @param $target the target symbol code.
+ ! @param $max-id the maximum thread id.
+ ! @param $threads the sequence of all current threads.
+ ! @return the lexer state of the accepting (or error) thread.
+-->
+<xsl:function name="p:parse-glr">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="target" as="xs:integer"/>
+  <xsl:param name="max-id" as="xs:integer"/>
+  <xsl:param name="threads" as="map(*)+"/>
+
+  <xsl:variable name="i" select="p:next-thread($threads, 1, 2)"/>
+  <xsl:variable name="thread" select="$threads[$i]"/>
+  <xsl:variable name="lexer-state" select="$thread?lexer-state"/>
+  <xsl:choose>
+    <xsl:when test="$thread?accepted">
+      <xsl:variable name="max-e0" select="max($threads!?lexer-state[$p:e0])"/>
+      <xsl:variable name="longest-accept" select="$threads[?lexer-state[$p:e0] eq $max-e0]"/>
+      <xsl:choose>
+        <xsl:when test="count($longest-accept) eq 1">
+          <xsl:sequence select="$longest-accept?lexer-state"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:sequence select="p:reject-ambiguity($longest-accept[1]~
+                                                                if (tree)
+                                                                {
+                                                                     ~, $longest-accept[2]~
+                                                                }
+                                                                     ~)"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="threads" select="(subsequence($threads, 1, $i - 1), subsequence($threads, $i + 1))"/>
+      <xsl:variable name="other" select="if (exists($threads)) then $threads[p:next-thread($threads, 1, 2)] else ()"/>
+      <xsl:choose>
+        <xsl:when test="exists($other) and p:thread-equals($thread, $other)">
+          <xsl:sequence select="p:reject-ambiguity($thread~
+                                                                if (tree)
+                                                                {
+                                                          ~, $other~
+                                                                }
+                                                          ~)"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:variable name="thread" select="p:parse($input, $target, $max-id, $thread)"/>
+          <xsl:variable name="lexer-state" select="$thread?lexer-state"/>
+          <xsl:sequence select="
+            if (count($thread) gt 1) then
+              p:parse-glr($input, $target, $max-id + 1, ($threads, $thread))
+            else if (not($lexer-state[$p:error])) then
+              p:parse-glr($input, $target, $max-id, ($threads, $thread))
+            else if (exists($threads)) then
+              p:parse-glr($input, $target, $max-id, $threads)
+            else
+              $lexer-state
+          "/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+
+<!--~~
+ ! Raise an error for ambiguous input.
+ !
+ ! @param $thread the parsing thread data.~                     if (tree)
+                                                                {
+~
+ ! @param $other the parsing thread data of the other thread.~  }
+~
+ ! @return a lexer state containing an error element describing the ambiguity.
+-->
+<xsl:function name="p:reject-ambiguity" as="item()+">
+  <xsl:param name="thread" as="map(*)"/>~                       if (tree)
+                                                                {
+~
+  <xsl:param name="other" as="map(*)"/>~                        }
+~
+
+  <xsl:variable name="lexer-state" select="$thread?lexer-state"/>~
+                                                                if (tree)
+                                                                {
+~
+  <xsl:variable name="first-tree" select="$lexer-state[last()]"/>
+  <xsl:variable name="second-tree" select="$other?lexer-state[last()]"/>~
+                                                                }
+~
+  <xsl:variable name="node">
+    <xsl:element name="error">
+      <xsl:attribute name="b" select="$thread?stack[last() - 2]"/>
+      <xsl:attribute name="e" select="$lexer-state[$p:e0]"/>
+      <xsl:attribute name="ambiguous-input" select="true()"/>~  if (tree)
+                                                                {
+~
+      <xsl:element name="AMBIGUOUS">
+        <xsl:element name="ALTERNATIVE">
+          <xsl:sequence select="p:rewrite-ambiguity($first-tree, $second-tree, true())"/>
+        </xsl:element>
+        <xsl:element name="ALTERNATIVE">
+          <xsl:sequence select="p:rewrite-ambiguity($second-tree, $first-tree, true())"/>
+        </xsl:element>
+      </xsl:element>~                                           }
+~
+    </xsl:element>
+  </xsl:variable>
+  <xsl:sequence select="
+    subsequence($lexer-state, 1, $p:error - 1),
+    $node/node(),
+    subsequence($lexer-state, $p:error + 1)
+  "/>
+</xsl:function>
+~                                                               if (tree)
+                                                                {
+~
+<!--~~
+ ! Rewrite a parse tree fragment $first, combining elements into an "UNAMBIGUOUS"
+ ! element as long as they match elements in $second, in node order.
+ !
+ ! @param $first the first node.
+ ! @param $second the second node.
+ ! @return $first rewritten, with initial element nodes possibly combined.
+-->
+<xsl:function name="p:rewrite-ambiguity">
+  <xsl:param name="first" as="node()"/>
+  <xsl:param name="second" as="node()?"/>
+  <xsl:param name="unambiguous" as="xs:boolean"/>
+
+  <xsl:choose>
+    <xsl:when test="$first instance of element()">
+      <xsl:choose>
+        <xsl:when test="$unambiguous and deep-equal($first, $second)">
+          <xsl:variable name="node">
+            <xsl:element name="UNAMBIGUOUS">
+              <xsl:sequence select="string($first)"/>
+            </xsl:element>
+          </xsl:variable>
+          <xsl:sequence select="$node/node()"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:variable name="node">
+            <xsl:element name="{node-name($first)}">
+              <xsl:for-each select="1 to count($first/node())">
+                <xsl:variable name="i" select="."/>
+                <xsl:sequence select="
+                  p:rewrite-ambiguity
+                  (
+                    $first/node()[$i], $second/node()[$i],
+                    $unambiguous and (every $j in 1 to $i - 1 satisfies deep-equal($first/node()[$j], $second/node()[$j]))
+                  )
+                "/>
+              </xsl:for-each>
+            </xsl:element>
+          </xsl:variable>
+          <xsl:sequence select="$node/node()"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:sequence select="$first"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+~
+<!--~~
+ ! Construct a new map containing data for one parsing thread.
+ !
+ ! @param $id the parsing thread id.
+ ! @param $accepted true(), if this thread has accepted.
+ ! @param $state the LR parser state number.
+ ! @param $action the action code.
+ ! @param $nonterminal current nonterminal, -1 if processing a terminal.
+ ! @param $bw the whitespace begin input index.
+ ! @param $bs the symbol begin input index.
+ ! @param $es the symbol end input index.
+ ! @param $stack the LR stack.
+ ! @param $lexer-state lexer state, error indicator, and result stack.
+ ! @return the thread data map.
+-->
+<xsl:function name="p:thread" as="map(*)">
+  <xsl:param name="id" as="xs:integer"/>
+  <xsl:param name="accepted" as="xs:boolean"/>
+  <xsl:param name="state" as="xs:integer"/>
+  <xsl:param name="action" as="xs:integer"/>
+  <xsl:param name="nonterminal" as="xs:integer"/>
+  <xsl:param name="bw" as="xs:integer"/>
+  <xsl:param name="bs" as="xs:integer"/>
+  <xsl:param name="es" as="xs:integer"/>
+  <xsl:param name="stack" as="xs:integer*"/>
+  <xsl:param name="lexer-state" as="item()+"/>
+
+  <xsl:sequence select="
+    map
+    {
+      'id': $id,
+      'accepted': $accepted,
+      'state': $state,
+      'action': $action,
+      'nonterminal': $nonterminal,
+      'bw': $bw,
+      'bs': $bs,
+      'es': $es,
+      'stack': $stack,
+      'lexer-state': $lexer-state
+    }
+  "/>
+</xsl:function>
+~                                                               }
+~
+<!--~~
+ ! Parse input for given target symbol using LR tables. Each invocation
+ ! handles one parsing action (shift, reduce, shift+reduce, accept).
+ ! Subsequent actions are handled by tail-recursion.
+ !
+ ! @param $input the input string.
+ ! @param $target the target symbol code.~                      if (grammar->useGlr)
+                                                                {
+~
+ ! @param $max-id the maximum thread id.
+ ! @param $thread the parsing thread data.~                     }
+                                                                else
+                                                                {
+~
+ ! @param $state the LR parser state number.
+ ! @param $action the action code.
+ ! @param $nonterminal current nonterminal, -1 if processing a terminal.
+ ! @param $bw the whitespace begin input index.
+ ! @param $bs the symbol begin input index.
+ ! @param $es the symbol end input index.
+ ! @param $stack the LR stack.
+ ! @param $lexer-state lexer state, error indicator, and result stack.~
+                                                                }
+~
+ ! @return the updated state.
+-->
+<xsl:function name="p:parse">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="target" as="xs:integer"/>~                   if (grammar->useGlr)
+                                                                {
+~
+  <xsl:param name="max-id" as="xs:integer"/>
+  <xsl:param name="thread" as="map(*)"/>
+
+  <xsl:variable name="lexer-state" select="$thread?lexer-state"/>
+  <xsl:choose>
+    <xsl:when test="$lexer-state[$p:error]">
+      <xsl:sequence select="$thread"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="state" select="$thread?state"/>
+      <xsl:variable name="action" select="$thread?action"/>
+      <xsl:variable name="nonterminal" select="$thread?nonterminal"/>
+      <xsl:variable name="bw" select="$thread?bw"/>
+      <xsl:variable name="bs" select="$thread?bs"/>
+      <xsl:variable name="es" select="$thread?es"/>
+      <xsl:variable name="stack" select="$thread?stack"/>~      }
+                                                                else
+                                                                {
+~
+  <xsl:param name="state" as="xs:integer"/>
+  <xsl:param name="action" as="xs:integer"/>
+  <xsl:param name="nonterminal" as="xs:integer"/>
+  <xsl:param name="bw" as="xs:integer"/>
+  <xsl:param name="bs" as="xs:integer"/>
+  <xsl:param name="es" as="xs:integer"/>
+  <xsl:param name="stack" as="xs:integer*"/>
+  <xsl:param name="lexer-state" as="item()+"/>
+
+  <xsl:choose>
+    <xsl:when test="$lexer-state[$p:error]">
+      <xsl:sequence select="$lexer-state"/>
+    </xsl:when>
+    <xsl:otherwise>~                                            }
+                                                                /*
+~
+      <xsl:sequence select="trace((), concat('compound action: ', string($action), ', action: ', string($action mod ~
+                                                                print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                     ~), ', lookback: ', string(($action idiv ~ print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                                   ~) mod ~                     print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
+                     ~),  ', argument: ', string($action idiv ~ print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
+                     ~)~
+      ~))"/>~
+                                                                */
+                                                                if (trace)
+                                                                {
+~
+      <xsl:variable name="trace" select="
+        string-join
+        (
+          (
+            '  &lt;parse ~                                        if (grammar->useGlr)
+                                                                  {
+                    ~thread=&quot;', $thread?id, '&quot; offset=&quot;', $lexer-state[$p:e0], '&quot; ~
+                                                                  }
+                    ~state=&quot;', string($state), '&quot; input=&quot;',
+            $p:NONTERMINAL[$nonterminal + 1],
+            ' '[$nonterminal ge 0 and $lexer-state[$p:l1] gt 0],
+            p:xml-escape(p:lookahead-string($lexer-state)),
+            '&quot; action=&quot;'
+          ),
+          ''
+        )
+      "/>~
+                                                                }
+~
+      <xsl:variable name="argument" select="$action idiv ~      print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
+                                                         ~"/>
+      <xsl:variable name="lookback" select="($action idiv ~     print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                                                          ~) mod ~
+                                                                print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
+                                                                 ~"/>
+      <xsl:variable name="action" select="$action mod ~         print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                                                      ~"/>
+      <xsl:choose>
+        <xsl:when test="$action eq 6"> <!-- SHIFT+ACCEPT -->
+          <xsl:sequence select="~                               if (trace)
+                                                                {
+~
+            p:trace(concat($trace, 'accept&quot;/>')),
+            ~                                                   }
+                                                                if (grammar->useGlr)
+                                                                {
+            ~p:thread($thread?id, true(), $state, $action, $nonterminal, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                else
+                                                                {
+            ~$lexer-state~                                      }
+                                                                if (trace)
+                                                                {
+~
+          ~                                                     }
+          ~"/>
+        </xsl:when>~                                            if (grammar->useGlr)
+                                                                {
+~
+        <xsl:when test="$action eq 7"> <!-- FORK -->
+          <xsl:sequence select="~                                 if (trace)
+                                                                  {
+~
+            p:trace(concat($trace, 'fork&quot;/>')),~             }
+~
+            for $i in (1, 2)
+            return p:thread(($max-id + 1, $thread?id)[$i], false(), $state, $p:APPENDIX[$argument + $i], -1, $bw, $bs, $es, $stack, $lexer-state)~
+~
+          "/>
+        </xsl:when>~                                            }
+~
+        <xsl:otherwise>
+          <xsl:variable name="shift-reduce-symbols" select="
+            if ($action eq 1) then (: SHIFT :)
+              ($argument, -1, -1)
+            else if ($action eq 2) then (: REDUCE :)
+              (-1, $argument, $lookback)~                       if (grammar->states->hasLookback)
+                                                                {
+~
+            else if ($action eq 3) then (: REDUCE+LOOKBACK :)
+              (-1, $argument, p:count($lookback, 0, $stack, count($stack) - 1))~
+                                                                }
+~
+            else if ($action eq 4) then (: SHIFT+REDUCE :)
+              ($state, $argument, $lookback + 1)~               if (grammar->states->hasLookback)
+                                                                {
+~
+            else if ($action eq 5) then (: SHIFT+REDUCE+LOOKBACK :)
+              ($state, $argument, p:count($lookback, 1, $stack, count($stack) - 1))~
+                                                                }
+~
+            else (: ERROR :)
+              (-1, -1, -1)
+          "/>
+          <xsl:variable name="shift" select="$shift-reduce-symbols[1]"/>
+          <xsl:variable name="reduce" select="$shift-reduce-symbols[2]"/>
+          <xsl:variable name="symbols" select="$shift-reduce-symbols[3]"/>
+          <xsl:variable name="es" select="if ($shift lt 0 or $nonterminal ge 0) then $es else $lexer-state[$p:e1]"/>~
+                                                                if (trace)
+                                                                {
+~
+          <xsl:variable name="trace" select="if ($shift lt 0) then $trace else concat($trace, 'shift')"/>~
+                                                                }
+~
+          <xsl:variable name="lexer-state" select="
+            if ($shift lt 0 or $nonterminal ge 0) then
+              $lexer-state
+            else
+              p:consume
+              (
+                $lexer-state[$p:l1],
+                $input,
+                $lexer-state
+              )
+          "/>
+          <xsl:variable name="stack" select="
+            if ($shift lt 0) then
+              $stack
+            else
+              ($stack, if ($nonterminal lt 0) then $lexer-state[$p:b0] else $bs, $state, $lookback)
+          "/>
+          <xsl:variable name="state" select="if ($shift lt 0) then $state else $shift"/>
+          <xsl:choose>
+            <xsl:when test="$reduce lt 0">
+              <xsl:choose>
+                <xsl:when test="$shift lt 0">
+                  <xsl:variable name="node">
+                    <xsl:element name="error">
+                      <xsl:attribute name="b" select="$lexer-state[$p:b1]"/>
+                      <xsl:attribute name="e" select="$lexer-state[$p:e1]"/>
+                      <xsl:if test="$lexer-state[$p:l1] gt 0">
+                        <xsl:attribute name="o" select="$lexer-state[$p:l1]"/>
+                      </xsl:if>
+                      <xsl:attribute name="s" select="$p:TOKENSET[$state + 1] + 1"/>
+                    </xsl:element>
+                  </xsl:variable>
+                  <xsl:sequence select="~                       if (trace)
+                                                                {
+~
+                    p:trace(concat($trace, 'fail&quot;/>')),~   }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+                    p:thread
+                    (
+                      $thread?id, false(), $state, 0, -1, $bw, $bs, $es, $stack,
+                      (~                                          increaseIndent(2);
+                                                                }
+~
+                    subsequence($lexer-state, 1, $p:error - 1),
+                    $node/node(),
+                    subsequence($lexer-state, $p:error + 1)~    if (grammar->useGlr)
+                                                                {
+                                                                  decreaseIndent(2);
+~
+                      )
+                    )~
+                                                                }
+~
+                  "/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:variable name="lexer-state" select="p:predict($input, $lexer-state, $state~
+                                                                if (grammar->useGlr)
+                                                                {
+                                        ~, $thread?id~          }
+                                        ~)"/>~
+~
+                  <xsl:sequence select="~
+                                                                if (trace)
+                                                                {
+~
+                    p:trace(concat($trace, '&quot;/&gt;')),
+                    ~                                           }
+                                                                if (grammar->useGlr)
+                                                                {
+                    ~p:thread($thread?id, false(), $state, $lexer-state[$p:lk], -1, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                else
+                                                                {
+                    ~p:parse($input, $target, $state, $lexer-state[$p:lk], -1, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                if (trace)
+                                                                {
+~
+                  ~
+                                                                }
+                  ~"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:when>
+            <xsl:otherwise>~                                    if (trace)
+                                                                {
+~
+              <xsl:variable name="trace" select="concat($trace, if ($shift lt 0) then '' else ' ', 'reduce&quot; nonterminal=&quot;', $p:NONTERMINAL[$reduce + 1], '&quot; count=&quot;', $symbols, '&quot;/>')"/>~
+                                                                }~
+              <xsl:variable name="state" select="if ($symbols gt 0) then $stack[last() - 3 * $symbols + 2] else $state"/>
+              <xsl:variable name="bs" select="if ($symbols gt 0) then $stack[last() - 3 * $symbols + 1] else $lexer-state[$p:b1]"/>
+              <xsl:variable name="es" select="if ($symbols gt 0) then $es else $bs"/>
+              <xsl:variable name="stack" select="if ($symbols gt 0) then subsequence($stack, 1, count($stack) - 3 * $symbols) else $stack"/>~
+                                                                if (tree && anyWhitespace)
+                                                                {
+~
+              <xsl:variable name="lexer-state" select="if ($symbols gt 0) then $lexer-state else p:whitespace($input, $lexer-state)"/>~
+                                                                  whitespaceCalled = true;
+                                                                }
+~
+              <xsl:variable name="accept" select="$reduce eq $target and count($stack) eq 3"/>
+              <xsl:variable name="bs" select="if ($accept) then $bw else $bs"/>
+              <xsl:variable name="es" select="if ($accept) then $lexer-state[$p:b1] else $es"/>
+              <xsl:variable name="bw" select="if ($accept) then $es else $bw"/>~
+                                                                if (tree)
+                                                                {
+~
+              <xsl:variable name="index" select="if ($accept) then $p:result else p:first-child-node-index($lexer-state, count($lexer-state) + 1, $symbols)"/>
+              <xsl:variable name="node">
+                <xsl:element name="{$p:NONTERMINAL[$reduce + 1]}">
+                  <xsl:sequence select="subsequence($lexer-state, $index)"/>
+                </xsl:element>
+              </xsl:variable>
+              <xsl:variable name="lexer-state" select="subsequence($lexer-state, 1, $index - 1), $node/node()"/>~
+                                                                }
+                                                                if (hasCustomCode)
+                                                                {
+~
+              <xsl:variable name="nonterminal" select="$p:REDUCTION[$reduce + 1]"/>
+              <xsl:variable name="reduce" select="$p:REDUCTION[$reduce + 2]"/>
+              <xsl:variable name="lexer-state" select="if ($reduce lt 0) then $lexer-state else p:execute($input, $lexer-state, $reduce)"/>~
+                                                                }
+                                                                else
+                                                                {
+~
+              <xsl:variable name="nonterminal" select="$reduce"/>~
+                                                                }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+              <xsl:variable name="thread" select="p:thread($thread?id, false(), $state, p:goto($nonterminal, $state), $nonterminal, $bw, $bs, $es, $stack, $lexer-state)"/>~
+                                                                }
+~
+              <xsl:sequence select="~                           if (trace)
+                                                                {
+                                    ~p:trace($trace), ~         }
+                                    ~p:parse($input, $target, ~ if (grammar->useGlr)
+                                                                {
+                                        ~$max-id, $thread)"/>~  }
+                                                                else
+                                                                {
+                                        ~$state, p:goto($nonterminal, $state), $nonterminal, $bw, $bs, $es, $stack, $lexer-state)"/>~
+                                                                }
+~
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               if (hasCustomCode)
+                                                                {
+~
+<!--~~
+ ! Update state with code annotation results.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result stack.
+ ! @param $reduce the reduce case id.
+ ! @return the updated state.
+-->
+<xsl:function name="p:execute" as="item()+">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="reduce" as="xs:integer"/>
+
+  <xsl:choose>~                                                   increaseIndent(2);
+                                                                  int lastContentId = grammar->distinctCodeAnnotations.size() - 1;
+                                                                  for (int contentId = 0; contentId <= lastContentId; ++contentId)
+                                                                  {
+                                                                    ProcessingInstruction *p = grammar->distinctCodeAnnotations[contentId];
+~
+<xsl:when test="$reduce eq ~                                        print(format.toString<wchar_t>(contentId));
+                           ~">~                                     visitProcessingInstruction(p);
+~
+  <xsl:sequence select="$state"/>
+</xsl:when>~                                                      }
+~
+<xsl:otherwise>
+  <xsl:sequence select="$state"/>
+</xsl:otherwise>~                                                 decreaseIndent(2);
+~
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+
+                                                                if (tree)
+                                                                {
+~
+<!--~~
+ ! Decrement given index by the given number of elements on the result
+ ! stack, skipping any non-element nodes.
+ !
+ ! @param $state lexer state, error indicator, and result stack.
+ ! @param $index the index into the result stack.
+ ! @param $element-count the number of elements to be handled.
+ ! @return the decremented index.
+-->
+<xsl:function name="p:first-child-node-index">
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="index" as="xs:integer"/>
+  <xsl:param name="element-count" as="xs:integer"/>
+
+  <xsl:choose>
+    <xsl:when test="$element-count eq 0">
+      <xsl:sequence select="$index"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="index" select="$index - 1"/>
+      <xsl:variable name="element-count" select="$element-count - (if ($state[$index] instance of element()) then 1 else 0)"/>
+      <xsl:sequence select="p:first-child-node-index($state, $index, $element-count)"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+                                                              }
+                                                              if (trace)
+                                                              {
+~
+<!--~~
+ ! Assemble a string showing current lookahead tokens, as far as they have
+ ! been tokenized.
+ !
+ ! @param $state lexer state, error indicator, and result stack.
+ ! @return a string containing the space-separated list of lookahead tokens.
+ -->
+<xsl:function name="p:lookahead-string" as="xs:string">
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:sequence select="
+    string-join
+    (
+      (
+        if ($state[$p:l1] le 0) then
+          ()
+        else
+        (
+          $p:TOKEN[$state[$p:l1] + 1]~                          for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  increaseIndent();
+                                     ~,
+        if ($state[$p:l~                                          print(format.toString<wchar_t>(i));
+                       ~] le 0) then
+          ()
+        else
+        (
+          $p:TOKEN[$state[$p:l~                                   print(format.toString<wchar_t>(i));
+                              ~] + 1]~                          }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+  ~
+        )~                                                        decreaseIndent();
+                                                                }
+  ~
+        )
+      ),
+      ' '
+    )
+  "/>
+</xsl:function>
+~                                                             }
+~
+<!--~~
+ ! Create a textual error message from a parsing error.
+ !
+ ! @param $input the input string.
+ ! @param $error the parsing error descriptor.
+ ! @return the error message.
+-->
+<xsl:function name="p:error-message" as="xs:string">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="error" as="element(error)"/>
+
+  <xsl:variable name="begin" select="xs:integer($error/@b)"/>
+  <xsl:variable name="context" select="string-to-codepoints(substring($input, 1, $begin - 1))"/>
+  <xsl:variable name="linefeeds" select="index-of($context, 10)"/>
+  <xsl:variable name="line" select="count($linefeeds) + 1"/>
+  <xsl:variable name="column" select="($begin - $linefeeds[last()], $begin)[1]"/>
+  <xsl:variable name="expected" select="if ($error/@x or $error/@ambiguous-input) then () else p:expected-token-set($error/@s)"/>
+  <xsl:sequence select="
+    string-join
+    (
+      (
+        ~                                                     if (grammar->useGlr)
+                                                              {
+        ~if ($error/@ambiguous-input) then
+          'ambiguous input'
+        else ~                                                }
+        ~if ($error/@o) then
+          ('syntax error, found ', $p:TOKEN[$error/@o + 1])
+        else
+          'lexical analysis failed',
+        '&#10;',~                                             if (grammar->useGlr)
+                                                              {
+~
+        if ($error/@ambiguous-input) then
+          ()
+        else
+        (~                                                      increaseIndent();
+                                                              }
+~
+        'while expecting ',
+        if ($error/@x) then
+          $p:TOKEN[$error/@x + 1]
+        else
+        (
+          '['[exists($expected[2])],
+          string-join($expected, ', '),
+          ']'[exists($expected[2])]
+        ),
+        '&#10;',
+        if ($error/@o or $error/@e = $begin) then
+          ()
+        else
+          ('after successfully scanning ', string($error/@e - $begin), ' characters beginning ')~
+                                                              if (grammar->useGlr)
+                                                              {
+                                                                decreaseIndent();
+~
+        )~                                                    }
+         ~,
+        'at line ', string($line), ', column ', string($column), ':&#10;',
+        '...', substring($input, $begin, 64), '...'
+      ),
+      ''
+    )
+  "/>
+</xsl:function>
+~
+                                                              for (int i = 0; i < consumeMethods; ++i)
+                                                              {
+                                                                const wchar_t *name[2] = {L"consume", L"consumeT"};
+~
+<!--~~
+ ! Consume one token, i.e. compare lookahead token 1 with expected
+ ! token and in case of a match, shift lookahead tokens down such that
+ ! l1 becomes the current token, and higher lookahead tokens move down.
+ ! When lookahead token 1 does not match the expected token, raise an
+ ! error by saving the expected token code in the error field of the
+ ! lexer state.~                                                if (i)
+                                                                {
+                ~ In contrast to p:consume, do not create any output.~
+                                                                }
+                ~
+ !
+ ! @param $code the expected token.
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:~                                         print(name[i]);
+                      ~" as="item()+">
+  <xsl:param name="code" as="xs:integer"/>
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:when test="$state[$p:l1] eq $code">~                   if (trace && ! isLrParser)
+                                                                {
+~
+      <xsl:variable name="state" as="item()+">~                   increaseIndent();
+                                                                }
+                                                                if (tree && i == 0)
+                                                                {
+~
+      <xsl:variable name="begin" select="$state[$p:e0]"/>
+      <xsl:variable name="end" select="$state[$p:b1]"/>
+      <xsl:variable name="whitespace">
+        <xsl:if test="$begin ne $end">
+          <xsl:value-of select="substring($input, $begin, $end - $begin)"/>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:variable name="token" select="$p:TOKEN[1 + $state[$p:l1]]"/>
+      <xsl:variable name="name" select="if (starts-with($token, &quot;'&quot;)) then 'TOKEN' else $token"/>
+      <xsl:variable name="begin" select="$state[$p:b1]"/>
+      <xsl:variable name="end" select="$state[$p:e1]"/>
+      <xsl:variable name="node">
+        <xsl:element name="{$name}">
+          <xsl:sequence select="substring($input, $begin, $end - $begin)"/>
+        </xsl:element>
+      </xsl:variable>~                                          }
+~
+      <xsl:sequence select="
+        subsequence($state, $p:l1, ~                            print(format.toString<wchar_t>(grammar->k * 3));
+                                   ~),
+        0, 0, 0,
+        subsequence($state, ~                                   print(format.toString<wchar_t>((grammar->k + 1) * 3 + 1));
+                            ~)~                                 if (tree && i == 0)
+                                                                {
+                                      ~,
+        $whitespace/node(),
+        $node/node()~                                           }
+~
+      "/>~                                                      if (trace && ! isLrParser)
+                                                                {
+                                                                  decreaseIndent();
+~
+      </xsl:variable>
+      <xsl:sequence select="
+        p:trace
+        (
+          string-join
+          (
+            (
+              '  &lt;~                                            print(i == 0 ? methodPrefixParse : methodPrefixTry);
+                  ~ terminal=&quot;', p:xml-escape($p:TOKEN[$code + 1]), '&quot;',
+              if ($state[$p:l1] le 0) then () else (' input=&quot;', p:xml-escape(p:lookahead-string($state)), '&quot;'),
+              '/>'
+            ),
+            ''
+          )
+        ),
+        $state
+      "/>~                                                      }
+~
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="error">
+        <xsl:element name="error">~                             if (memoization)
+                                                                {
+~
+          <xsl:choose>
+            <xsl:when test="$state[$p:e1] &lt; $state[$p:memo]/@e">
+              <xsl:sequence select="$state[$p:memo]/@*"/>
+            </xsl:when>
+            <xsl:otherwise>~                                      increaseIndent();
+                                                                }
+~
+          <xsl:attribute name="b" select="$state[$p:b1]"/>
+          <xsl:attribute name="e" select="$state[$p:e1]"/>
+          <xsl:choose>
+            <xsl:when test="$state[$p:l1] lt 0">
+              <xsl:attribute name="s" select="- $state[$p:l1]"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:attribute name="o" select="$state[$p:l1]"/>
+              <xsl:attribute name="x" select="$code"/>
+            </xsl:otherwise>
+          </xsl:choose>~                                        if (memoization)
+                                                                {
+                                                                  decreaseIndent();
+~
+            </xsl:otherwise>
+          </xsl:choose>~                                        }
+~
+        </xsl:element>
+      </xsl:variable>
+      <xsl:sequence select="
+        subsequence($state, 1, $p:error - 1),
+        $error/node(),
+        subsequence($state, $p:error + 1)
+      "/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                             }
+                                                              if (anyWhitespace)
+                                                              {
+                                                                if (whitespaceCalled)
+                                                                {
+~
+<!--~~
+ ! Consume whitespace.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:whitespace" as="item()+">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:variable name="begin" select="$state[$p:e0]"/>
+  <xsl:variable name="end" select="$state[$p:b1]"/>
+  <xsl:choose>
+    <xsl:when test="$begin eq $end">
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="whitespace">
+        <xsl:value-of select="substring($input, $begin, $end - $begin)"/>
+      </xsl:variable>
+      <xsl:sequence select="
+        0,
+        $state[$p:b0],
+        $end,
+        subsequence($state, $p:e0 + 1),
+        $whitespace/node()
+      "/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+~
+<!--~~
+ ! Use p:match to fetch the next token, but skip any leading
+ ! whitespace.
+ !
+ ! @param $input the input string.
+ ! @param $begin the index where to start.
+ ! @param $token-set the valid token set id.~                   if (grammar->useGlr)
+                                                                {
+~
+ ! @param $id the parsing thread id.~                           }
+~
+ ! @return a sequence of three values: the token code of the result
+ ! token, with input string positions of token begin and end.
+-->
+<xsl:function name="p:matchW">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="begin" as="xs:integer"/>
+  <xsl:param name="token-set" as="xs:integer"/>~                if (grammar->useGlr)
+                                                                {
+~
+  <xsl:param name="id" as="xs:integer"/>~                       }
+~
+
+  <xsl:variable name="match" select="p:match($input, $begin, $token-set~
+                                                                if (grammar->useGlr)
+                                                                {
+                                                  ~, $id~       }
+                                                  ~)"/>
+  <xsl:choose>~                                                 increaseIndent(2);
+                                                                if (simpleWhitespace)
+                                                                {
+                                                                  printMatch(0, 0, 0, grammar->simpleWhitespaceIntroducers, IF, 0, L"<xsl:when test=\"", L"\">");
+~
+  <xsl:sequence select="p:matchW($input, $match[3], $token-set~   if (grammar->useGlr)
+                                                                  {
+                                        ~, $id~                   }
+                                        ~)"/>
+</xsl:when>~                                                    }
+                                                                if (complexWhitespace)
+                                                                {
+                                                                  printMatch(0, 0, 0, grammar->complexWhitespaceIntroducers, IF, 0, L"<xsl:when test=\"", L"\">");
+                                                                  if (memoization)
+                                                                  {
+~
+  <xsl:variable name="memo">
+    <xsl:element name="memo"/>
+  </xsl:variable>~                                                }
+                                                                  if (isLrParser)
+                                                                  {
+~
+  <xsl:variable name="state" select="0, $begin, $begin, $match, 0, 0~
+                                                                    for (size_t k = 2; k <= grammar->k; ++k)
+                                                                    {
+                                              ~, 0, 0, 0~           }
+                                              ~, false()~           if (memoization)
+                                                                    {
+                                              ~, $memo/node()~      }
+                                              ~"/>
+  <xsl:variable name="state" select="p:predict($input, $state, ~    print(format.toString<wchar_t>((*grammar->states)[grammar->whitespace->state]->getStateId()));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                              ~, $id~               }
+                                              ~)"/>
+  <xsl:variable name="e0" select="$state[$p:e0]"/>
+  <xsl:variable name="state" select="p:parse~                       if (grammar->useGlr)
+                                                                    {
+                       ~-glr~                                       }
+                       ~($input, -1~                                if (grammar->useGlr)
+                                                                    {
+                                  ~, 0, p:thread(0, false()~        }
+                                  ~, ~                              print(format.toString<wchar_t>((*grammar->states)[grammar->whitespace->state]->getStateId()));
+                                  ~, $state[$p:lk], -1, $e0, $e0, $e0, (1, -1, 0), $state~
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                  ~)~                               }
+                                  ~)"/>~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+  <xsl:variable name="state" select="p:try-~                        print(grammar->whitespace->name);
+                                           ~($input, (0, $begin, $begin, $match~
+                                                                    for (size_t k = 2; k <= grammar->k; ++k)
+                                                                    {
+                                           ~, 0, 0, 0~              }
+                                           ~, false()~              if (memoization)
+                                                                    {
+                                           ~, $memo/node()~         }
+                                           ~))"/>~
+                                                                  }
+~
+  <xsl:sequence select="p:matchW($input, $state[$p:e0], $token-set~
+                                                                  if (grammar->useGlr)
+                                                                  {
+                                           ~, $id~                }
+                                           ~)"/>
+</xsl:when>~                                                    }
+~
+<xsl:otherwise>
+  <xsl:sequence select="$match"/>~                              decreaseIndent(2);
+~
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               size_t lwc = grammar->tables && grammar->k >= grammar->tables && anyWhitespace
+                                                                           ? grammar->k
+                                                                           : grammar->lookaheadSets.lookaheadWCount;
+                                                                printLookaheadMethods(lwc, true);
+                                                              }
+                                                              size_t lc = grammar->tables && grammar->k >= grammar->tables && ! anyWhitespace
+                                                                        ? grammar->k
+                                                                        : grammar->lookaheadSets.lookaheadCount;
+                                                              printLookaheadMethods(lc, false);
+                                                              if (tree && ! isLrParser)
+                                                              {
+~
+<!--~~
+ ! Reduce the result stack, creating a nonterminal element. Pop
+ ! $count elements off the stack, wrap them in a new element
+ ! named $name, and push the new element.
+ !
+ ! @param $state lexer state, error indicator, and result.
+ ! @param $name the name of the result node.
+ ! @param $count the number of child nodes.~                    if (! noPosition)
+                                                                {
+~
+ ! @param $begin the input index where the nonterminal begins.
+ ! @param $end the input index where the nonterminal ends.~     }
+~
+ ! @return the updated state.
+-->
+<xsl:function name="p:reduce" as="item()+">
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="name" as="xs:string"/>
+  <xsl:param name="count" as="xs:integer"/>
+  <xsl:param name="begin" as="xs:integer"/>
+  <xsl:param name="end" as="xs:integer"/>
+
+  <xsl:variable name="node">
+    <xsl:element name="{$name}">
+      <xsl:sequence select="subsequence($state, $count + 1)"/>
+    </xsl:element>
+  </xsl:variable>
+  <xsl:sequence select="subsequence($state, 1, $count), $node/node()"/>
+</xsl:function>
+~                                                             }
+                                                              if (memoization)
+                                                              {
+                                                                const wchar_t *factor = format.toString<wchar_t>(Math::powerof(2, Math::bits(grammar->conflictCount)));
+~
+<!--~~
+ ! Strip result from lexer state, in order to avoid carrying it while
+ ! backtracking.
+ !
+ ! @param $state the lexer state after an alternative failed.
+ ! @return the updated state.
+-->
+<xsl:function name="p:strip-result" as="item()+">
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:sequence select="subsequence($state, 1, $p:memo)"/>
+</xsl:function>
+~                                                               if (restoreCalled)
+                                                                {
+~
+<!--~~
+ ! Restore lexer state after unsuccessfully trying an alternative,
+ ! merging any memoization that was collected on the way.
+ !
+ ! @param $backtrack the lexer state before backtracking started.
+ ! @param $state the lexer state after an alternative failed.
+ ! @return the updated state.
+-->
+<xsl:function name="p:restore" as="item()+">
+  <xsl:param name="backtrack" as="item()+"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:variable name="memo">
+    <xsl:element name="memo">
+      <xsl:variable name="errors" select="($state[$p:memo], $state[$p:error])[.]"/>
+      <xsl:sequence select="$errors[@e = max($errors/xs:integer(@e))][last()]/@*, $state[$p:memo]/value"/>
+    </xsl:element>
+  </xsl:variable>
+  <xsl:sequence select="subsequence($backtrack, 1, $p:memo - 1), $memo/node()"/>
+</xsl:function>
+~                                                               }
+~
+<!--~~
+ ! Memoize the backtracking result that was computed at decision point
+ ! $dpi for input position $e0. Reconstruct state from the parameters.
+ !
+ ! @param $state the lexer state to be restored.
+ ! @param $update the lexer state containing updates.
+ ! @param $dpi the decision point id.
+ ! @param $e0 the input position.
+ ! @param $v the id of the successful alternative.
+ ! @param $lk the new lookahead code.
+ ! @return the reconstructed state.
+-->
+<xsl:function name="p:memoize" as="item()+">
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="update" as="item()+"/>
+  <xsl:param name="dpi" as="xs:integer"/>
+  <xsl:param name="e0" as="xs:integer"/>
+  <xsl:param name="v" as="xs:integer"/>
+  <xsl:param name="lk" as="xs:integer"/>
+
+  <xsl:variable name="memo" select="$update[$p:memo]"/>
+  <xsl:variable name="errors" select="($memo, $update[$p:error])[.]"/>
+  <xsl:variable name="memo">
+    <xsl:element name="memo">
+      <xsl:sequence select="$errors[@e = max($errors/xs:integer(@e))][last()]/@*, $memo/value"/>
+      <xsl:element name="value">
+        <xsl:attribute name="key" select="$e0 * ~               print(factor);
+                                                ~ + $dpi"/>
+        <xsl:sequence select="$v"/>
+      </xsl:element>
+    </xsl:element>
+  </xsl:variable>
+  <xsl:sequence select="
+    $lk,
+    subsequence($state, $p:b0, $p:memo - $p:b0),
+    $memo/node(),
+    subsequence($state, $p:memo + 1)
+  "/>
+</xsl:function>
+
+<!--~~
+ ! Retrieve memoized backtracking result for decision point $dpi
+ ! and input position $state[$p:e0] into $state[$p:lk].
+ !
+ ! @param $state lexer state, error indicator, and result.
+ ! @param $dpi the decision point id.
+ ! @return the updated state.
+-->
+<xsl:function name="p:memoized" as="item()+">
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="dpi" as="xs:integer"/>
+
+  <xsl:variable name="value" select="data($state[$p:memo]/value[@key = $state[$p:e0] * ~
+                                                                print(factor);
+                                                                                       ~ + $dpi])"/>
+  <xsl:sequence select="
+    if ($value) then $value else 0,
+    subsequence($state, $p:lk + 1)
+  "/>
+</xsl:function>
+~                                                             }
+                                                            }
+
+                                                            void PrintXSLT::printLookaheadMethods(size_t lookaheadMethods, bool withWhitespace)
+                                                            {
+                                                              for (size_t k = 1; k <= lookaheadMethods; ++k)
+                                                              {
+~
+<!--~~
+ ! Lookahead one token on level ~                               print(format.toString<wchar_t>(k));
+                                                                if (withWhitespace)
+                                                                {
+                                ~ with whitespace skipping~     }
+                                ~.
+ !~                                                             if (k != 1 && unlimitedLookahead)
+                                                                {
+~
+ ! @param $prefix the prefix code representing lower level lookahead.~
+                                                                }
+~
+ ! @param $set the code of the DFA entry state for the set of valid tokens.
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result stack.~
+                                                                if (grammar->useGlr)
+                                                                {
+~
+ ! @param $id the parsing thread id.~                           }
+~
+ ! @return the updated state.
+-->
+<xsl:function name="p:lookahead~                                print(format.toString<wchar_t>(k));
+                                                                if (withWhitespace)
+                                                                {
+                               ~W~
+                                                                }
+                               ~" as="item()+">~                if (k != 1 && unlimitedLookahead)
+                                                                {
+~
+  <xsl:param name="prefix" as="xs:integer"/>~                   }
+~
+  <xsl:param name="set" as="xs:integer"/>
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>~                       if (grammar->useGlr)
+                                                                {
+~
+  <xsl:param name="id" as="xs:integer"/>~                       }
+~
+~                                                               if (k == 1)
+                                                                {
+~
+  <xsl:choose>
+    <xsl:when test="$state[$p:l1] ne 0">
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="match" select="~                        increaseIndent();
+                                                                }
+                                                                else
+                                                                {
+~
+  <xsl:variable name="match" select="
+    if ($state[$p:l~                                              print(format.toString<wchar_t>(k));
+                   ~] ne 0) then
+      subsequence($state, $p:l~                                   print(format.toString<wchar_t>(k));
+                              ~, ~                                print(format.toString<wchar_t>(k < grammar->k ? 6 : 3));
+                                 ~)
+    else~                                                       }
+                                                                if (k > 1 && k < grammar->k)
+                                                                {
+~
+    (~                                                          }
+~
+      p:match~                                                  if (withWhitespace)
+                                                                {
+             ~W~
+                                                                }
+             ~($input, $state[$p:e~                             print(format.toString<wchar_t>(k - 1));
+                                  ~], $set~                     if (grammar->useGlr)
+                                                                {
+                                          ~, $id~               }
+                                          ~)~                   if (k < grammar->k)
+                                                                {
+                                           ~,
+      0, 0, 0~                                                    if (k > 1)
+                                                                  {
+~
+    )~                                                            }
+                                                                }
+                                                                if (k == 1)
+                                                                {
+                                                                  increaseIndent();
+                                                                }
+~
+  "/>
+  <xsl:sequence select="
+    ~                                                           if (grammar->tables && k >= grammar->tables)
+                                                                {
+
+    ~subsequence($state, 1, ~                                     print(format.toString<wchar_t>(k * 3));
+                            ~),~                                }
+                                                                else
+                                                                {
+                                                                  if (k != 1 && unlimitedLookahead)
+                                                                  {
+    ~$match[1] + $prefix~                                         }
+                                                                  else
+                                                                  {
+    ~$match[1]~                                                     switch (k)
+                                                                    {
+                                                                    case 1: break;
+                                                                    case 2:
+              ~ * ~                                                   print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
+                  ~ + $state[$p:l1]~                                  break;
+                                                                    default:
+              ~ * ~                                                   print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
+                  ~ + $state[$p:lk]~                                  break;
+                                                                    }
+                                                                  }
+              ~,
+    subsequence($state, $p:b0, ~                                  print(format.toString<wchar_t>(k * 3 - 1));
+                               ~),~                             }
+~
+    $match,
+    subsequence($state, ~                                         print(format.toString<wchar_t>(k * 3 + (grammar->k > k ? 7 : 4)));
+                        ~)
+  "/>~                                                          if (k == 1)
+                                                                {
+                                                                  decreaseIndent(2);
+~
+    </xsl:otherwise>
+  </xsl:choose>~                                                }
+~
+</xsl:function>
+~
+                                                              }
+                                                            }
+
+                                                            void PrintXSLT::printEpilog(Grammar *node)
+                                                            {
+                                                              setIndent(1);
+                                                              if (node->automaticSemicolonInsertion)
+                                                              {
+~
+<!--~~
+ ! Check whether the lookahead token is preceded by a line terminator.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:follows-line-terminator" as="item()+">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:variable name="begin" select="if ($state[$p:e0] eq $state[$p:b1]) then $state[$p:b0] else $state[$p:e0]"/>
+  <xsl:variable name="preceding-whitespace" select="substring($input, $begin, $state[$p:b1] - $begin)"/>
+  <xsl:sequence select="string-to-codepoints($preceding-whitespace) = (10, 13, 8232, 8233)"/>
+</xsl:function>
+~                                                             }
+                                                              for (Node *n = node->nonTerminals; n; n = n->followingSibling)
+                                                              {
+                                                                Production *p = static_cast <Production *> (n);
+                                                                if (p->isStartSymbol())
+                                                                {
+~
+<!--~~
+ ! Parse start symbol ~                                           print(p->name);
+                      ~ from given string.
+ !
+ ! @param $s the string to be parsed.
+ ! @return the result as generated by parser actions.
+-->
+<xsl:function name="p:~                                           print(methodPrefix);
+                      ~-~                                         print(p->name);
+                        ~" as="item()*">
+  <xsl:param name="s" as="xs:string"/>
+~                                                                 if (memoization)
+                                                                  {
+~
+  <xsl:variable name="memo">
+    <xsl:element name="memo"/>
+  </xsl:variable>~                                                }
+~
+  <xsl:variable name="state" select="0, 1, 1~                     for (size_t k = 1; k <= grammar->k; ++k)
+                                                                  {
+                                            ~, 0, 0, 0~           }
+                                            ~, false()~           if (memoization)
+                                                                  {
+                                            ~, $memo/node()~      }
+                                            ~"/>~                 if (isLrParser)
+                                                                  {
+~
+  <xsl:variable name="state" select="p:predict($s, $state, ~        print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                                           ~, 0~    }
+                                                           ~)"/>
+  <xsl:variable name="state" select="p:parse~                       if (grammar->useGlr)
+                                                                    {
+                                            ~-glr~                  }
+                                            ~($s, ~                 print(format.toString<wchar_t>(p->nonterminalCode));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                             ~, 0, p:thread(0, false()~             }
+                             ~, ~                                   print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
+                             ~, $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state~
+                                                                    if (grammar->useGlr)
+                                                                    {
+                             ~)~                                    }
+                             ~)"/>~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+  <xsl:variable name="state" select="p:~                            print(methodPrefix);
+                  ~-~                                               print(p->name);
+                    ~($s, $state)"/>~                             }
+~
+  <xsl:variable name="error" select="$state[$p:error]"/>
+  <xsl:choose>
+    <xsl:when test="$error">
+      <xsl:variable name="ERROR">
+        <xsl:element name="ERROR">
+          <xsl:sequence select="$error/@*, p:error-message($s, $error)"/>
+        </xsl:element>
+      </xsl:variable>
+      <xsl:sequence select="~                                     if (tree && grammar->useGlr)
+                                                                  {
+                            ~$error/AMBIGUOUS, ~                  }
+                            ~$ERROR/node()"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:sequence select="subsequence($state, $p:result)"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                               }
+                                                              }
+                                                              if (trace && ! isLrParser)
+                                                              {
+~
+<!--~~
+ ! Trace LL processing of a nonterminal.
+ !
+ ! @param $state lexer state, error indicator, and result stack.
+ ! @param $method processing method type.
+ ! @param $occasion the current step.
+ ! @param $name the nonterminal name.
+ ! @return the empty sequence.
+-->
+<xsl:function name="p:trace-nonterminal" as="xs:string?">
+  <xsl:param name="state" as="item()+"/>
+  <xsl:param name="method" as="xs:string"/>
+  <xsl:param name="occasion" as="xs:string"/>
+  <xsl:param name="name" as="xs:string"/>
+
+  <xsl:sequence select="
+    p:trace
+    (
+      string-join
+      (
+        (
+          '  &lt;',
+          $method,
+          ' ',
+          $occasion,
+          'nonterminal=&quot;',
+          $name,
+          '&quot;',
+          if ($state[$p:l1] le 0) then () else (' input=&quot;', p:xml-escape(p:lookahead-string($state)), '&quot;'),
+          '/>'
+        ),
+        ''
+      )
+    )
+  "/>
+</xsl:function>
+~                                                             }
+                                                              if (main)
+                                                              {
+~
+<!--~~
+ ! The input filename, or string, if surrounded by curly braces.
+-->
+<xsl:param name="input" as="xs:string?" select="()"/>
+
+<!--~~
+ ! The (simple) main program.
+-->
+<xsl:template name="main" match="/">
+  <xsl:param name="input" as="xs:string?" select="$input"/>
+
+  <xsl:choose>
+    <xsl:when test="empty($input)">
+      <xsl:sequence select="error(xs:QName('main'), '&#xA;    Usage: java net.sf.saxon.Transform -xsl:~
+                                                                print(wFileName);
+      ~ -it:main input=INPUT&#xA;&#xA;      parse INPUT, which is either a filename or literal text enclosed in curly braces')"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="result" select="~
+                                                                if (trace)
+                                                                {
+~
+        p:trace('&lt;trace&gt;'),~                              }
+~
+        if (matches($input, '^^\{.*\}$')) then
+          p:~                                                   print(methodPrefix);
+            ~-~                                                 print(grammar->startSymbol()->name);
+              ~(substring($input, 2, string-length($input) - 2))
+        else
+          p:~                                                   print(methodPrefix);
+            ~-~                                                 print(grammar->startSymbol()->name);
+              ~(unparsed-text($input, 'utf-8'))~                if (trace)
+                                                                {
+                                               ~,
+        p:trace('&lt;/trace&gt;')~                              }
+~
+      "/>
+      <xsl:choose>
+        <xsl:when test="empty($result/self::ERROR)">
+          <xsl:sequence select="$result"/>
+        </xsl:when>
+        <xsl:otherwise>~                                        if (tree && grammar->useGlr)
+                                                                {
+~
+          <xsl:result-document>
+            <xsl:sequence select="$result[not(self::ERROR)], '&#10;'"/>
+          </xsl:result-document>~                               }
+~
+          <xsl:sequence select="error(xs:QName('p:~             print(methodPrefix);
+                                                  ~-~           print(grammar->startSymbol()->name);
+                                                    ~'), concat('&#10;    ', replace($result~
+                                                                if (tree && grammar->useGlr)
+                                                                {
+                                                                                                ~[self::ERROR]~
+                                                                }
+                                                                                                ~, '&#10;', '&#10;    ')))"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+~                                                             }
+                                                              setIndent(0);
+                                                              if (! visitEpilog())
+                                                              {
+~
+</xsl:stylesheet>~                                            }
+                                                            }
+
+                                                            void PrintXSLT::printVariables()
+                                                            {
+                                                              setIndent(1);
+~
+<!--~~
+ ! The index of the lexer state for accessing the combined
+ ! (i.e. level > 1) lookahead code.
+-->
+<xsl:variable name="p:lk" as="xs:integer" select="1"/>
+
+<!--~~
+ ! The index of the lexer state for accessing the position in the
+ ! input string of the begin of the token that has been consumed.
+-->
+<xsl:variable name="p:b0" as="xs:integer" select="2"/>
+
+<!--~~
+ ! The index of the lexer state for accessing the position in the
+ ! input string of the end of the token that has been consumed.
+-->
+<xsl:variable name="p:e0" as="xs:integer" select="3"/>~       int stateIndex = 3;
+                                                              for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+~
+
+<!--~~
+ ! The index of the lexer state for accessing the code of the
+ ! level-~                                                      print(format.toString<wchar_t>(k));
+         ~-lookahead token.
+-->
+<xsl:variable name="p:l~                                        print(format.toString<wchar_t>(k));
+                          ~" as="xs:integer" select="~          print(format.toString<wchar_t>(++stateIndex));
+                                                     ~"/>
+
+<!--~~
+ ! The index of the lexer state for accessing the position in the
+ ! input string of the begin of the level-~                     print(format.toString<wchar_t>(k));
+                                          ~-lookahead token.
+-->
+<xsl:variable name="p:b~                                        print(format.toString<wchar_t>(k));
+                     ~" as="xs:integer" select="~               print(format.toString<wchar_t>(++stateIndex));
+                                                ~"/>
+
+<!--~~
+ ! The index of the lexer state for accessing the position in the
+ ! input string of the end of the level-~                       print(format.toString<wchar_t>(k));
+                                        ~-lookahead token.
+-->
+<xsl:variable name="p:e~                                        print(format.toString<wchar_t>(k));
+                     ~" as="xs:integer" select="~               print(format.toString<wchar_t>(++stateIndex));
+                                                ~"/>~         }
+~
+
+<!--~~
+ ! The index of the lexer state for accessing the token code that
+ ! was expected when an error was found.
+-->
+<xsl:variable name="p:error" as="xs:integer" select="~        print(format.toString<wchar_t>(++stateIndex));
+                                                     ~"/>
+~                                                             if (memoization)
+                                                              {
+~
+<!--~~
+ ! The index of the lexer state for accessing the memoization
+ ! of backtracking results.
+-->
+<xsl:variable name="p:memo" as="xs:integer" select="~           print(format.toString<wchar_t>(++stateIndex));
+                                                    ~"/>
+~                                                             }
+~
+<!--~~
+ ! The index of the lexer state that points to the first entry
+ ! used for collecting action results.
+-->
+<xsl:variable name="p:result" as="xs:integer" select="~       print(format.toString<wchar_t>(++stateIndex));
+                                                      ~"/>~   setIndent(0);
+                                                            }
+
+                                                            void PrintXSLT::printProlog(Grammar *aNode)
+                                                            {
+                                                              if (! hasProlog)
+                                                              {
+~
+<xsl:stylesheet version="~                                      if (grammar->useGlr)
+                                                                {
+                         ~3.0~                                  }
+                                                                else
+                                                                {
+                         ~2.0~                                  }
+                         ~"
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:p="~                                      print(className);
+                         ~">~                                 }
+                                                            }
+
+                                                            void PrintXSLT::PrintLoops::visitZeroOrMore(ZeroOrMore *node)
+                                                            {
+                                                              px->setIndent(1);
+                                                              if (node->loopId == 0)
+                                                              {
+                                                                node->loopId = ++loopId;
+                                                                Visitor::visitZeroOrMore(node);
+                                                              }
+                                                              if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
+                                                              {
+~
+<!--~~
+ ! ~                                                          if (px->methodPrefix != px->methodPrefixTry)
+                                                              {
+   ~Parse~                                                    }
+                                                              else
+                                                              {
+   ~Try parsing~                                              }
+               ~ the ~                                        px->print(px->format.toString<wchar_t>(node->loopId));
+                                                              switch (node->loopId)
+                                                              {
+                                                              case 1:  append(L"st"); break;
+                                                              case 2:  append(L"nd"); break;
+                                                              case 3:  append(L"rd"); break;
+                                                              default: append(L"th"); break;
+                                                              }
+                     ~ loop of production ~                   px->print(node->production->name);
+                                          ~ (zero or more). Use
+ ! tail recursion for iteratively updating the lexer state.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:~                                       px->print(px->methodPrefix);
+                      ~-~                                     px->print(node->production->name);
+                        ~-~                                   px->print(px->format.toString<wchar_t>(node->loopId));
+                          ~">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:otherwise>~                                          px->increaseIndent(3);
+                                                              px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              px->automaticSemicolonInsertion(node);
+                                                              bool nestedTry = px->methodPrefix == px->methodPrefixTry;
+                                                              bool hasBacktracking =
+                                                                px->printBacktracking(node,
+                                                                                      node->getLookahead(),
+                                                                                      node->conflictCaseId,
+                                                                                      node->conflictId,
+                                                                                      node->firstElementChild);
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+~
+<xsl:choose>~                                                 px->increaseIndent();
+                                                              if (hasBacktracking && nestedTry)
+                                                              {
+~
+<xsl:when test="$state[$p:lk] = -3">
+  <xsl:sequence select="p:~                                     px->print(px->methodPrefix);
+                          ~-~                                   px->print(node->production->name);
+                            ~-~                                 px->print(px->format.toString<wchar_t>(node->loopId));
+                              ~($input, $state)"/>
+</xsl:when>~                                                  }
+                                                              px->printMatch(node->getLookahead(),
+                                                                             node->k,
+                                                                             node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
+                                                                             match,
+                                                                             matchType == IF ? IFNOT : IF,
+                                                                             1,
+                                                                             L"<xsl:when test=\"",
+                                                                             L"\">");
+~
+  <xsl:sequence select="$state"/>
+</xsl:when>
+<xsl:otherwise>~                                              px->Visitor::visitNodeWithChildren(node);
+~
+  <xsl:sequence select="p:~                                   px->print(px->methodPrefix);
+                          ~-~                                 px->print(node->production->name);
+                            ~-~                               px->print(px->format.toString<wchar_t>(node->loopId));
+                              ~($input, $state)"/>~           px->decreaseIndent();
+//                                                              if (hasLookahead || hasBacktracking)
+//                                                              {
+//                                                                px->decreaseIndent();
+//                                                              }
+                                                              px->decreaseIndent(3);
+~
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~
+                                                              }
+                                                              px->setIndent(0);
+
+                                                              if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
+                                                              {
+                                                                px->methodPrefix = px->methodPrefixTry;
+                                                                visitZeroOrMore(node);
+                                                                px->methodPrefix = px->methodPrefixParse;
+                                                              }
+                                                            }
+
+                                                            void PrintXSLT::PrintLoops::visitOneOrMore(OneOrMore *node)
+                                                            {
+                                                              px->setIndent(1);
+                                                              if (node->loopId == 0)
+                                                              {
+                                                                node->loopId = ++loopId;
+                                                                Visitor::visitOneOrMore(node);
+                                                              }
+                                                              if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
+                                                              {
+~
+<!--~~
+ ! ~                                                            if (px->methodPrefix != px->methodPrefixTry)
+                                                                {
+   ~Parse~                                                      }
+                                                                else
+                                                                {
+   ~Try parsing~                                                }
+               ~ the ~                                          px->print(px->format.toString<wchar_t>(node->loopId));
+                                                                switch (node->loopId)
+                                                                {
+                                                                case 1:  append(L"st"); break;
+                                                                case 2:  append(L"nd"); break;
+                                                                case 3:  append(L"rd"); break;
+                                                                default: append(L"th"); break;
+                                                                }
+         ~ loop of production ~                                 px->print(node->production->name);
+                              ~ (one or more). Use
+ ! tail recursion for iteratively updating the lexer state.
+ !
+ ! @param $input the input string.
+ ! @param $state lexer state, error indicator, and result.
+ ! @return the updated state.
+-->
+<xsl:function name="p:~                                         px->print(px->methodPrefix);
+                      ~-~                                       px->print(node->production->name);
+                        ~-~                                     px->print(px->format.toString<wchar_t>(node->loopId));
+                          ~">
+  <xsl:param name="input" as="xs:string"/>
+  <xsl:param name="state" as="item()+"/>
+
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:sequence select="$state"/>
+    </xsl:when>
+    <xsl:otherwise>~                                            px->increaseIndent(2);
+                                                                px->visitNodeList(node->firstChild);
+                                                                px->increaseIndent();
+                                                                px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                                px->automaticSemicolonInsertion(node);
+                                                                bool nestedTry = px->methodPrefix == px->methodPrefixTry;
+                                                                bool hasBacktracking =
+                                                                  px->printBacktracking(node,
+                                                                                        node->getLookahead(),
+                                                                                        node->conflictCaseId,
+                                                                                        node->conflictId,
+                                                                                        node->firstElementChild);
+~
+<xsl:choose>~                                                   px->increaseIndent();
+                                                                if (hasBacktracking && nestedTry)
+                                                                {
+~
+<xsl:when test="$state[$p:lk] = -3">
+  <xsl:sequence select="p:~                                       px->print(px->methodPrefix);
+                          ~-~                                     px->print(node->production->name);
+                            ~-~                                   px->print(px->format.toString<wchar_t>(node->loopId));
+                              ~($input, $state)"/>
+</xsl:when>~                                                    }
+                                                                MatchType matchType;
+                                                                const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                                px->printMatch(node->getLookahead(),
+                                                                               node->k,
+                                                                               node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
+                                                                               match,
+                                                                               matchType == IF ? IFNOT : IF,
+                                                                               1,
+                                                                               L"<xsl:when test=\"",
+                                                                               L"\">");
+~
+  <xsl:sequence select="$state"/>
+</xsl:when>
+<xsl:otherwise>
+  <xsl:sequence select="p:~                                     px->print(px->methodPrefix);
+                          ~-~                                   px->print(node->production->name);
+                            ~-~                                 px->print(px->format.toString<wchar_t>(node->loopId));
+                              ~($input, $state)"/>~             px->decreaseIndent(4);
+~
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:function>
+~                                                             }
+                                                              px->setIndent(0);
+                                                              if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
+                                                              {
+                                                                px->methodPrefix = px->methodPrefixTry;
+                                                                visitOneOrMore(node);
+                                                                px->methodPrefix = px->methodPrefixParse;
+                                                              }
+                                                            }
+
+                                                            void PrintXSLT::automaticSemicolonInsertion(Node *node)
+                                                            {
+                                                              if (node->automaticSemicolonInsertion)
+                                                              {
+                                                                const bool afterRbrace = false;
+                                                                Production *p;
+                                                                p = grammar->stringByName.byStringValue(L";");
+                                                                Token::Code semicolon = p == 0 ? -1 : p->tokenCode;
+                                                                lineBuffer.clear();
+                                                                TokenSequenceSet tss;
+~
+<xsl:variable name="state" select="~                            switch (node->automaticSemicolonInsertion)
+                                                                {
+                                                                case PLUSPLUS:
+                                                                case MINUSMINUS:
+                                                                  {
+                                                                    p = grammar->stringByName.byStringValue(L"++");
+                                                                    Token::Code plusplus = p == 0 ? -1 : p->tokenCode;
+                                                                    p = grammar->stringByName.byStringValue(L"--");
+                                                                    Token::Code minusminus = p == 0 ? -1 : p->tokenCode;
+~
+  if ($state[$p:l1] = (~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
+                       ~, ~                                         print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
+                          ~) and p:follows-line-terminator($input, $state)) then~ tss.insert(grammar->tokenSequence(plusplus));
+                                                                    tss.insert(grammar->tokenSequence(minusminus));
+                                                                    printCodeSequenceAnnotation(tss);
+                                                                  }
+                                                                  break;
+                                                                case CONTINUE:
+                                                                case BREAK:
+                                                                case RETURN:
+                                                                case THROW:
+                                                                  {
+~
+  if ($state[$p:l1] ne ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                       ~ and $state[$p:l1] ge 0 and p:follows-line-terminator($input, $state)) then~
+                                                                    tss.insert(grammar->tokenSequence(semicolon));
+                                                                    printCodeSequenceAnnotation(tss);
+                                                                  }
+                                                                  break;
+                                                                case SEMICOLON:
+                                                                  {
+                                                                    p = grammar->terminalByName.byNodeType(EndOfFile().getNodeType());
+                                                                    Token::Code eof = p == 0 ? -1 : p->tokenCode;
+                                                                    p = grammar->stringByName.byStringValue(L"}");
+                                                                    Token::Code rbrace = p == 0 ? -1 : p->tokenCode;
+~
+  if ($state[$p:l1] eq ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
+~
+   or $state[$p:l1] eq ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(eof));
+~
+   or $state[$p:l1] ne ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                       ~ and $state[$p:l1] ge 0 and ~               if (afterRbrace)
+                                                                    {
+                                                    ~(~             }
+                                                    ~p:follows-line-terminator($input, $state)~
+                                                                    if (afterRbrace)
+                                                                    {
+                                                    ~ or substring($input, $state[$p:b0], 1) eq '}')~
+                                                                    }
+                                                    ~) then~        printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
+                                                                  }
+                                                                  break;
+                                                                default:
+                                                                  {
+                                                                    internalerr();
+                                                                  }
+                                                                }
+~
+  (
+    subsequence($state, 1, $p:l1 - 1),
+    ~                                                               print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+    ~,~                                                             printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
+~
+    $state[$p:b1],
+    $state[$p:b1],
+    subsequence($state, $p:e1 + 1)
+  )
+  else
+    $state"/>~                                                }
+                                                            }

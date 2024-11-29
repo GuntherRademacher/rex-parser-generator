@@ -1,0 +1,15 @@
+input   ::= expr EOF
+expr    ::= term
+          | expr '+' term
+          | expr '-' term
+term    ::= factor
+          | term '*' factor
+          | term '/' factor
+factor  ::= integer
+          | '(' expr ')'
+
+<?TOKENS?>
+
+integer ::= [0-9]+
+EOF     ::= $
+ws      ::= ' ' /* ws:definition */

@@ -1,0 +1,1225 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintScala.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include "../common/CompressedMap.hpp"
+
+                                                            void PrintScala::openClass()
+                                                            {
+                                                              if (! hasProlog)
+                                                              {
+                                                                if (! packageName.empty())
+                                                                {
+~
+package ~                                                        print(packageName.c_str());
+        ~
+~                                                               }
+                                                                if (performanceTest)
+                                                                {
+~
+import java.io.File~                                            }
+                                                                if (trace || (tree && main))
+                                                                {
+~
+import java.io.OutputStreamWriter
+import java.io.Writer~                                          }
+~
+import collection.mutable.ArrayBuffer~                          if (useGlr)
+                                                                {
+~
+import collection.mutable.PriorityQueue~                          if (tree)
+                                                                  {
+~
+import collection.mutable.Stack~                                  }
+                                                                }
+                                                                if (hasBacktracking)
+                                                                {
+~
+import collection.mutable.HashMap~                              }
+~
+
+class ~                                                         print(className.c_str());
+                                                                if (! interfaceName.empty())
+                                                                {
+       ~ implements ~
+                                                                  print(interfaceName.c_str());
+                                                                }
+       ~ {
+~                                                             }
+                                                              if (! hasProlog)
+                                                              {
+~
+  def this(string: String~                                      if (noLexer)
+                                                                {
+                         ~, l: ~                                  print(className.c_str());
+                                ~.Lexer~                        }
+                                                                if (tree)
+                                                                {
+                         ~, eh: ~                                 print(className.c_str());
+                                ~.~                               if (isLrParser)
+                                                                  {
+                                  ~BottomUp~                      }
+                                  ~EventHandler~                }
+                         ~) = {
+    this()
+    initialize(string~                                          if (noLexer)
+                                                                {
+                     ~, l~                                      }
+                                                                if (tree)
+                                                                {
+                     ~, eh~                                     }
+                     ~)
+  }
+~                                                             }
+                                                            }
+
+                                                            void PrintScala::openStackNode()
+                                                            {
+                                                              increaseIndent();
+~
+class StackNode(val state: Int, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                                ~val code: Int, ~             }
+                                ~val pos: Int, val link: StackNode) {
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case other: StackNode =>
+        var lhs = this
+        var rhs = other
+        while (lhs != null && rhs != null) {
+          if (lhs eq rhs) return true
+          if (lhs.state != rhs.state) return false~           if (grammar->states->hasLookback)
+                                                              {
+~
+          if (lhs.code != rhs.code) return false~             }
+~
+          if (lhs.pos != rhs.pos) return false
+          lhs = lhs.link
+          rhs = rhs.link
+        }
+        lhs == rhs
+      case _ => false
+    }
+~                                                             increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintScala::closeStackNode()
+                                                            {
+                                                              beginNonpublic();
+                                                              decreaseIndent();
+~
+}
+~                                                             if (hasCustomCode)
+                                                              {
+~
+class DeferredCode(var link: DeferredCode, val codeId: Int, val b0: Int, val e0: Int) {
+}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begin: Int, val end: Int) {
+
+  def execute(eventHandler: BottomUpEventHandler): Unit
+
+  def release(eventHandler: BottomUpEventHandler): Unit = {
+    var current = this
+    var predecessor = current.link
+    current.link = null
+    while (predecessor != null) {
+      var next = predecessor.link
+      predecessor.link = current
+      current = predecessor
+      predecessor = next
+    }
+    while (current != null) {
+      current.execute(eventHandler)
+      current = current.link
+    }
+  }
+
+  def show(eventHandler: BottomUpEventHandler): Unit = {
+    var stack = Stack[DeferredEvent]()
+    var current = this
+    while (current != null) {
+      stack.push(current)
+      current = current.link
+    }
+    while (! stack.isEmpty) {
+      stack.pop.execute(eventHandler)
+    }
+  }
+}
+
+private class TerminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int) extends DeferredEvent(link, name, begin, end) {
+  override def execute(eventHandler: BottomUpEventHandler): Unit = {
+    eventHandler.terminal(name, begin, end)
+  }
+}
+
+private class NonterminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int) extends DeferredEvent(link, name, begin, end) {
+  override def execute(eventHandler: BottomUpEventHandler): Unit = {
+    eventHandler.nonterminal(name, begin, end, count)
+  }
+}
+~                                                             }
+~
+private val PARSING = 0
+private val ACCEPTED = 1
+private val ERROR = 2
+~                                                           }
+
+                                                            void PrintScala::printGlrParseMethod()
+                                                            {
+~
+private def parse(target: Int, initialState: Int, ~           if (tree)
+                                                              {
+                                                  ~eventHandler: ~
+                                                                print(className.c_str());
+                                                                 ~.BottomUpEventHandler, ~
+                                                              }
+                                                  ~t: ~
+                                                              print(className.c_str());
+                                                      ~.ParsingThread): ~
+                                                              print(className.c_str());
+                                                                        ~.ParsingThread = {
+  var thread = t
+  val threads = thread.open(initialState~                     if (tree)
+                                                              {
+                                        ~, eventHandler~      }
+                                        ~, target)
+  while (true) {
+    thread = threads.dequeue
+    if (thread.accepted) {
+      var other: ~
+                                                              print(className.c_str());
+                 ~.ParsingThread = null
+      while (! threads.isEmpty) {
+        other = threads.dequeue
+        if (thread.e0 < other.e0) {
+          thread = other
+          other = null
+        }
+      }
+      if (other != null)
+        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
+                                                              {
+                ~, thread.deferredEvent, other.deferredEvent~
+                                                              }
+                ~)~                                           if (tree)
+                                                              {
+~
+      if (thread.deferredEvent != null) {
+        thread.deferredEvent.release(eventHandler)
+        thread.deferredEvent = null
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.executeDeferredCode~                           }
+~
+      return thread
+    }
+
+    if (! threads.isEmpty) {
+      if (threads.head == thread)
+        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
+                                                              {
+         ~, thread.deferredEvent, threads.head.deferredEvent~ }
+         ~)
+    }~                                                        if (tree || hasCustomCode)
+                                                              {
+~
+    else {~                                                     if (tree)
+                                                                {
+~
+      if (thread.deferredEvent != null) {
+        thread.deferredEvent.release(eventHandler)
+        thread.deferredEvent = null
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.executeDeferredCode~                               }
+~
+    }~                                                        }
+~
+
+    var status = ~                                            print(className.c_str());
+                 ~.PARSING
+    var continue = true
+    while (continue) {
+      status = thread.parse
+      continue = status == ~                                  print(className.c_str());
+                           ~.PARSING && threads.isEmpty
+    }
+
+    if (status != ~                                           print(className.c_str());
+                  ~.ERROR) {
+      threads += thread
+    }
+    else if (threads.isEmpty) {
+      throw new ~                                             print(className.c_str());
+                ~.ParseException(thread.b1,
+                ~                                             print(className.size(), L" ");
+                ~                thread.e1,
+                ~                                             print(className.size(), L" ");
+                ~                ~                            print(className.c_str());
+                                 ~.TOKENSET(thread.state) + 1,
+                ~                                             print(className.size(), L" ");
+                ~                thread.l1,
+                ~                                             print(className.size(), L" ");
+                ~                -1
+                ~                                             print(className.size(), L" ");
+                ~               )
+    }
+  }
+  thread
+}
+
+def rejectAmbiguity(begin: Int, end: Int~                     if (tree)
+                                                              {
+          ~, first: ~                                           print(className.c_str());
+                    ~.DeferredEvent, second: ~                  print(className.c_str());
+                                             ~.DeferredEvent~ }
+          ~): Unit = {~                                       if (tree)
+                                                              {
+~
+  val treeBuilder = new ~                                       print(className.c_str());
+                        ~.ParseTreeBuilder
+  treeBuilder.reset(input)
+  second.show(treeBuilder)
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
+  val secondTree = treeBuilder.pop(1)(0)
+  first.show(treeBuilder)
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
+  treeBuilder.push(secondTree)
+  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)~
+                                                              }
+~
+  val exception = new ~                                       print(className.c_str());
+                      ~.ParseException(begin, end, -1, -1, -1)
+  exception.setAmbiguousInput(~                               if (tree)
+                                                              {
+                              ~treeBuilder~                   }
+                              ~)
+  throw exception
+}
+~                                                           }
+
+                                                            void PrintScala::openThread()
+                                                            {
+~
+class ParsingThread extends Ordered[ParsingThread] {
+  var parser: ~                                               print(className.c_str());
+              ~ = null
+  var threads: PriorityQueue[ParsingThread] = null
+  var accepted: Boolean = false
+  var stack: StackNode = null
+  var state = 0
+  var action = 0
+  var target = 0~                                             if (tree)
+                                                              {
+~
+  var deferredEvent: DeferredEvent = null~                    }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  var deferredCode: DeferredCode = null~                      }
+~
+  var id = 0
+
+  def open(initialState: Int~                                 if (tree)
+                                                              {
+                            ~, eh: BottomUpEventHandler~
+                                                              }
+                            ~, t: Int): PriorityQueue[ParsingThread] = {
+    accepted = false~                                         if (tree)
+                                                              {
+~
+    eventHandler = eh
+    if (eventHandler != null) {
+      eventHandler.reset(parser.input)
+    }
+    deferredEvent = null~                                     }
+~
+    target = t~                                               if (hasCustomCode && useGlr)
+                                                              {
+~
+    deferredCode = null~                                      }
+~
+    stack = new StackNode(-1, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                              ~0, ~                           }
+                              ~e0, null)
+    state = initialState
+    action = predict(initialState)
+    bw = e0
+    bs = e0~                                                  if (tree)
+                                                              {
+~
+    es = e0~                                                  }
+~
+    threads = PriorityQueue()
+    threads += this
+    threads
+  }
+
+  def copy(other: ParsingThread, action: Int): ParsingThread = {
+    this.action = action
+    accepted = other.accepted
+    parser = other.parser
+    bs = other.bs
+    bw = other.bw~                                            if (tree)
+                                                              {
+~
+    es = other.es
+    eventHandler = other.eventHandler
+    deferredEvent = other.deferredEvent~                      }
+~
+    target = other.target~                                    if (hasCustomCode)
+                                                              {
+~
+    deferredCode = other.deferredCode~                        }
+~
+    parser.maxId += 1
+    id = parser.maxId
+    threads = other.threads
+    state = other.state
+    stack = other.stack
+    b0 = other.b0
+    e0 = other.e0~                                            for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    l~                                                          print(iString);
+     ~ = other.l~                                               print(iString);
+                ~
+    b~                                                          print(iString);
+     ~ = other.b~                                               print(iString);
+                ~
+    e~                                                          print(iString);
+     ~ = other.e~                                               print(iString);
+                                                              }
+~
+    end = other.end
+    this
+  }
+
+  override def compare(other: ParsingThread): Int = {
+    var comp = 0
+    if (accepted != other.accepted) {
+      comp = if (accepted) -1 else 1
+    }
+    else {
+      comp = other.e0 - e0
+      if (comp == 0)
+        comp = other.id - id
+    }
+    comp
+  }
+
+  override def equals(other: Any): Boolean =
+    other match {
+      case other: ParsingThread =>
+        if (accepted != other.accepted) false
+        else if (b1 != other.b1) false
+        else if (e1 != other.e1) false
+        else if (l1 != other.l1) false
+        else if (state != other.state) false
+        else if (action != other.action) false
+        else if (stack != other.stack) false
+        else true
+      case _ => false
+    }
+
+  def parse : Int = {~                                        increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintScala::printFlush(int i, bool withinThread)
+                                                            {
+                                                              increaseIndent(i);
+                                                              if (trace)
+                                                              {
+~
+~                                                               if (useGlr && withinThread)
+                                                                {
+~parser.~                                                       }
+~flushTrace~                                                  }
+                                                              decreaseIndent(i);
+                                                            }
+
+                                                            void PrintScala::openMethod(const wchar_t *type,
+                                                                                        const wchar_t *prefix,
+                                                                                        const wchar_t *name,
+                                                                                        const wchar_t *args,
+                                                                                        bool constant,
+                                                                                        const wchar_t *clazz)
+                                                            {
+~
+~                                                             print(visibility);
+~def ~                                                        print(name);
+                                                              if (args[0])
+                                                              {
+     ~(~                                                        printArgs(args);
+
+       ~)~                                                    }
+                                                              if (wcscmp(type, voidType()) == 0)
+                                                              {
+                                                                type = L"Unit ";
+                                                              }
+         ~: ~                                                 print(type);
+            ~=~                                             }
+
+                                                            void PrintScala::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+~
+  def lookaheadString: String = {
+    var result = ""
+    if (l1 > 0) {
+      result += ~                                               print(staticPrefix());
+                ~TOKEN(l1)~                                     for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+~
+      if (l~                                                      print(format.toString<wchar_t>(i));
+           ~ > 0) {
+        result += " " + ~                                         print(staticPrefix());
+                        ~TOKEN(l~                                 print(format.toString<wchar_t>(i));
+                                ~)~                               increaseIndent();
+                                                                }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+      }~                                                       }
+~
+    }
+    result
+  }
+~                                                             }
+
+                                                              if (grammar->k > 1 || memoization || ! grammar->decisionPoints.empty())
+                                                              {
+~
+  var lk = 0~                                                 }
+~
+  var b0 = 0
+  var e0 = 0~                                                 for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  var l~                                                        print(asString);
+       ~ = 0
+  var b~                                                        print(asString);
+       ~ = 0
+  var e~                                                        print(asString);
+       ~ = 0~                                                 }
+                                                              if (useGlr)
+                                                              {
+~
+  var bw = 0
+  var bs = 0~                                                 }
+                                                              if (tree && useGlr)
+                                                              {
+~
+  var es = 0~                                                 }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  var bx = 0
+  var ex = 0
+  var sx = 0
+  var lx = 0
+  var tx = 0~                                                 }
+                                                              if (isLrParser && ! useGlr)
+                                                              {
+~
+  var iStack = new Array[Int](~                                 if (tree)
+                                                                {
+                              ~192~                             }
+                                                                else
+                                                                {
+                              ~128~                             }
+                                  ~)
+  var top = -1~                                               }
+                                                              if (tree)
+                                                              {
+~
+  var eventHandler: ~                                           print(className.c_str());
+                    ~.~                                         if (isLrParser)
+                                                                {
+                      ~BottomUp~                                }
+                      ~EventHandler = null~                   }
+                                                              if (memoization)
+                                                              {
+~
+  val memo = new HashMap[Int, Int]~                             if (grammar->noThrow)
+                                                                {
+~
+  var viable = false~                                           }
+                                                              }
+                                                              if (useGlr)
+                                                              {
+~
+}
+~                                                             }
+                                                            }
+
+                                                            void PrintScala::printSimpleMain()
+                                                            {
+~
+  def main(args: Array[String]): Unit = {
+    if (args.length == 0) {
+      println("Usage: scala ~                                 print(className.c_str());
+                                                              if (tree)
+                                                              {
+                            ~ [-i]~                           }
+                            ~ INPUT...")
+      println
+      println("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n")~
+                                                              if (tree)
+                                                              {
+~
+      println
+      println("  Option:")
+      println("    -i     indented parse tree")~              }
+~
+    }
+    else {
+      var indent = false
+      for (arg <- args) {~                                    if (tree)
+                                                              {
+~
+        if (arg == "-i") {
+          indent = true
+        }
+        else {
+          val w = new OutputStreamWriter(System.out, "utf-8")
+          val s = new XmlSerializer(w, indent)~                 if (isLrParser)
+                                                                {
+~
+          val b = new ParseTreeBuilder~                         }
+                                                                increaseIndent();
+                                                              }
+~
+        val parser = new ~                                    print(className.c_str());
+                         ~(read(arg)~                         if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                    ~, b~                       }
+                                                                else
+                                                                {
+                                    ~, s~                       }
+                                                              }
+                                    ~)
+        try {~
+                                                              if (trace)
+                                                              {
+~
+          parser.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n")~
+                                                              }
+~
+          parser.~                                            print(methodPrefixParse);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                                                              if (trace)
+                                                              {
+~
+          parser.writeTrace("</trace>\n")~                    }
+                                                              if (tree && isLrParser)
+                                                              {
+~
+          b.serialize(s)~                                     }
+~
+        }
+        catch {
+          case pe: ParseException =>~                         if (useGlr && tree)
+                                                              {
+~
+            if (pe.isAmbiguousInput) {
+              pe.serialize(s)
+              w.write("\n")
+              w.flush()
+            }~                                                }
+~
+            throw new RuntimeException("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe))
+        }~                                                    if (tree || trace)
+                                                              {
+~
+        finally {~                                            }
+                                                              if (trace)
+                                                              {
+~
+          parser.flushTrace~                                  }
+                                                              if (tree)
+                                                              {
+~
+          w.close~                                            }
+                                                              if (tree || trace)
+                                                              {
+~
+        }~                                                    }
+                                                              if (tree)
+                                                              {
+~
+      }~                                                        decreaseIndent();
+                                                              }
+~
+      }
+    }
+  }
+~
+                                                            }
+
+                                                            void PrintScala::printFileProcessor()
+                                                            {
+~
+  private class ParseJob(val name: String, val input: String) {~
+                                                              if (tree)
+                                                              {
+~
+    var contentCounter = new ContentCounter~                  }
+                                                              if (isLrParser)
+                                                              {
+~
+    var parseTreeBuilder = new ParseTreeBuilder~              }
+~
+    var parser = new ~                                        print(className.c_str());
+                     ~(input~                                 if (noLexer)
+                                                              {
+                            ~, null~                          }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                            ~, parseTreeBuilder~                }
+                                                                else
+                                                                {
+                            ~, contentCounter~                  }
+                                                              }
+                            ~)
+  }
+
+  private def collectInput(name: String, content: String): Unit = {
+    if (! quiet) println("loading " + name)
+    parsers += new ParseJob(name, content)
+  }
+
+  private def findFiles(ending: String)(f: File): List[File] = {
+    val files = f.listFiles.toList
+    files.filter(_.getName.endsWith(ending)) ++
+    files.filter(_.isDirectory).flatMap(findFiles(ending))
+  }
+
+  private var quiet = false
+  private var parsed: Long = 0
+  private var errorCount = 0
+  private var parsers = ArrayBuffer[ParseJob]()
+
+  def main(args: Array[String]): Unit = {
+    if (args.length == 0) {
+      println("Usage: scala ~                                 print(className.c_str());
+                            ~ [-q] [-r N] [-t N] ENDING...")
+      println
+      println("  parse all files that have names ending with ENDING, in current dir and below,")
+      println("  and display performance summary.")
+      println
+      println("  -q     do not show file names")
+      println("  -r N   repeat N times")
+      println("  -t N   repeat until N seconds have elapsed")
+    }
+    else {
+      var repeat = 1
+      var timeout = 0
+      var i = 0
+      while (i < args.length && args(i).startsWith("-")) {
+        val option = if (args(i).length == 2) args(i)(1) else ' '
+        option match {
+        case 'q' =>
+          quiet = true
+        case 'r' =>
+          i += 1
+          repeat = args(i).toInt
+          timeout = 0
+        case 't' =>
+          repeat = 0
+          i += 1
+          timeout = 1000 * args(i).toInt
+        case _ =>
+          throw new IllegalArgumentException("invalid option: " + args(i))
+        }
+        i += 1
+      }
+
+      var start = System.currentTimeMillis
+
+      while (i < args.length) {
+        findFiles(args(i))(new File(".")) foreach (f => collectInput(f.getPath, read(f.getPath)))
+        i += 1
+      }
+
+      if (! parsers.isEmpty) {
+
+        var msec = System.currentTimeMillis - start
+
+        if (! quiet) println
+        println("loaded " + parsers.size + " file" +
+                (if (parsers.size == 1) "" else "s") +
+                " in " + msec + " msec")
+        if (! quiet) println
+        Console.flush
+
+        start = System.currentTimeMillis
+        i = 0
+        var continue = true
+        while (continue) {
+          if (repeat != 0 && i >= repeat) {
+            continue = false
+          }
+          else if (timeout != 0 && System.currentTimeMillis - start >= timeout) {
+            continue = false
+          }
+          else {
+            for (job <- parsers) {
+              if (job.parser != null) {
+                try {
+                  if (! quiet) print("parsing " + job.name)
+                  job.parser~                                 if (useGlr)
+                                                              {
+                            ~.thread~                         }
+                            ~.reset(0, 0, 0)
+                  job.parser.~                                print(methodPrefixParse);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                             ~
+                  if (! quiet) println~                       if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+~
+                  job.parseTreeBuilder.serialize(job.contentCounter)~
+                                                                }
+~
+                  if (job.contentCounter.length != job.input.length) {
+                    throw new RuntimeException("content counter saw " + job.contentCounter.length + ", but input length is " + job.input.length);
+                  }~                                          }
+~
+                  parsed += job.input.length
+                }
+                catch {
+                  case pe: ParseException =>
+                    errorCount += 1
+                    if (quiet) print("parsing " + job.name)
+                    println(": error: " + job.parser.getErrorMessage(pe))
+                    job.parser = null
+                }
+              }
+            }
+            i += 1
+          }
+        }
+
+        msec = System.currentTimeMillis - start
+        val mbPerSec = if (msec != 0) new java.text.DecimalFormat("0.##").format(parsed / 1024e0 / 1024e0 * 1000e0 / msec) else null
+
+        if (! quiet) println
+        print("parsed " + parsed + " byte" + (if (parsed == 1) "" else "s") +
+              " in " + msec + " msec")
+        if (mbPerSec != null) {
+          print(" (" + mbPerSec + " MB/sec)")
+        }
+        println
+        println("" + errorCount + " error" + (if (errorCount == 1) "" else "s"))
+      }
+    }
+  }
+~
+                                                            }
+
+                                                            void PrintScala::printReadMethod()
+                                                            {
+~
+  private def read(fileName: String) = {
+    if (fileName(0) == '{' && fileName(fileName.length - 1) == '}') {
+      fileName.substring(1, fileName.length - 1)
+    }
+    else {
+      val file = io.Source.fromFile(fileName, "utf-8")
+      val content = file.mkString
+      file.close
+      if (content(0) == '\ufeff') content.substring(1) else content
+    }
+  }
+~
+                                                            }
+
+                                                            void PrintScala::printInterface()
+                                                            {
+                                                              if (! packageName.empty())
+                                                              {
+~
+package ~                                                       print(packageName.c_str());
+~;
+~                                                             }
+                                                              if (tree)
+                                                              {
+                                                                if (main)
+                                                                {
+~
+import java.io.IOException;
+import java.io.Writer;
+~                                                               }
+                                                              }
+~
+public interface ~                                            print(className.c_str());
+~
+{
+  def initialize(CharSequence input~                  if (tree)
+                                                              {
+                                           ~, EventHandler eh~}
+                                           ~): Unit
+  def parse: Unit
+  def reset: Unit
+  public String getErrorMessage(ParseException e): Unit
+~                                                             printParseException();
+~}
+~                                                           }
+
+                                                            void PrintScala::printParseException()
+                                                            {
+~
+  class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {
+~                                                             if (useGlr)
+                                                              {
+~
+    private var ambiguousInput = false~                         if (tree)
+                                                                {
+~
+    private var ambiguityDescriptor: ParseTreeBuilder = null~   }
+~
+
+    def setAmbiguousInput(~                                     if (tree)
+                                                                {
+                          ~ambiguityDescriptor: ParseTreeBuilder~
+                                                                }
+                          ~): Unit = {
+      ambiguousInput = true~                                    if (tree)
+                                                                {
+~
+      this.ambiguityDescriptor = ambiguityDescriptor~           }
+~
+    }
+~
+                                                              }
+~
+    override def getMessage = {
+      ~                                                       if (useGlr)
+                                                              {
+      ~if (ambiguousInput) "ambiguous input" else ~           }
+      ~if (offending < 0) "lexical analysis failed" else "syntax error"
+    }~                                                        if (useGlr)
+                                                              {
+~
+
+    def isAmbiguousInput: Boolean =
+      ambiguousInput~                                           if (tree)
+                                                                {
+~
+
+    def serialize(eventHandler: EventHandler): Unit = {
+      ambiguityDescriptor.serialize(eventHandler)
+    }~                                                          }
+                                                              }
+~
+  }
+~
+                                                              if (useGlr)
+                                                              {
+                                                                openStackNode();
+                                                                printCountMethod();
+                                                                closeStackNode();
+                                                                openThread();
+                                                                increaseIndent();
+                                                                printThreadBody1();
+                                                                decreaseIndent();
+                                                              }
+~
+  def getExpectedTokenSet(e: ParseException) = {
+    if (e.expected < 0) {
+      getTokenSet(- e.state)
+    }
+    else {
+      Array(TOKEN(e.expected))
+    }
+  }
+~                                                             if (noLexer)
+                                                              {
+~
+  class Token(var code = 0, var begin = 0, var end = 0) {
+  }
+
+  trait Lexer {
+    def reset(input: String): Unit
+    def matcher(tokenset: Int, token: Token)
+  }
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+  trait EventHandler {
+    def reset(string: String): Unit
+    def startNonterminal(name: String, begin: Int): Unit
+    def endNonterminal(name: String, end: Int): Unit
+    def terminal(name: String, begin: Int, end: Int): Unit
+    def whitespace(begin: Int, end: Int): Unit
+  }
+
+  class TopDownTreeBuilder extends EventHandler {
+    private var input: String = null
+    private var stack = new ArrayBuffer[Nonterminal](64)
+    private var top = -1
+
+    override def reset(input: String): Unit = {
+      this.input = input
+      top = -1
+    }
+
+    override def startNonterminal(name: String, begin: Int): Unit = {
+      val nonterminal = new Nonterminal(name, begin, begin, ArrayBuffer[Symbol]())
+      if (top >= 0) addChild(nonterminal)
+      top += 1
+      if (top == stack.length) stack += nonterminal else stack(top) = nonterminal
+    }
+
+    override def endNonterminal(name: String, end: Int): Unit = {
+      var nonterminal = stack(top)
+      nonterminal.end = end
+      if (top > 0) top -= 1
+    }
+
+    override def terminal(name: String, begin: Int, end: Int): Unit = {
+      addChild(new Terminal(name, begin, end))
+    }
+
+    override def whitespace(begin: Int, end: Int): Unit = {
+    }
+
+    private def addChild(s: Symbol): Unit = {
+      var current = stack(top)
+      current.children += s
+    }
+
+    def serialize(e: EventHandler): Unit = {
+      e.reset(input)
+      stack(0).send(e)
+    }
+  }
+
+  abstract class Symbol(n: String, b: Int, e: Int) {
+    var name = n
+    var begin = b
+    var end = e
+
+    def send(e: EventHandler): Unit
+  }
+
+  class Terminal(name: String, begin: Int, end: Int) extends Symbol(name, begin, end) {
+    override def send(e: EventHandler): Unit = {
+      e.terminal(name, begin, end)
+    }
+  }
+
+  class Nonterminal(name: String, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(name, begin, end) {
+    var children = c
+
+    override def send(e: EventHandler): Unit = {
+      e.startNonterminal(name, begin)
+      var pos = begin
+      for (c <- children) {
+        if (pos < c.begin) e.whitespace(pos, c.begin)
+        c.send(e)
+        pos = c.end
+      }
+      if (pos < end) e.whitespace(pos, end)
+      e.endNonterminal(name, end)
+    }
+  }
+~                                                               if (isLrParser)
+                                                                {
+~
+  trait BottomUpEventHandler {
+    def reset(string: String): Unit
+    def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit
+    def terminal(name: String, begin: Int, end: Int): Unit
+  }
+~                                                               }
+
+                                                                if (main)
+                                                                {
+~
+  class XmlSerializer(val out: Writer, val indent: Boolean) extends EventHandler {
+    private var input: String = null
+    private var delayedTag: String = null
+    private var hasChildElement = false
+    private var depth = 0
+
+    def reset(string: String): Unit = {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">")
+      input = string
+      delayedTag = null
+      hasChildElement = false
+      depth = 0
+    }
+
+    def startNonterminal(name: String, begin: Int): Unit = {
+      if (delayedTag != null) {
+        writeOutput("<")
+        writeOutput(delayedTag)
+        writeOutput(">")
+      }
+      delayedTag = name
+      if (indent) {
+        writeOutput("\n")
+        var i = 0
+        for (i <- 1 to depth) {
+          writeOutput("  ")
+        }
+      }
+      hasChildElement = false
+      depth += 1
+    }
+
+    def endNonterminal(name: String, end: Int): Unit = {
+      depth -= 1
+      if (delayedTag != null) {
+        delayedTag = null
+        writeOutput("<")
+        writeOutput(name)
+        writeOutput("/>")
+      }
+      else {
+        if (indent) {
+          if (hasChildElement) {
+            writeOutput("\n")
+            var i = 0
+            for (i <- 1 to depth) {
+              writeOutput("  ")
+            }
+          }
+        }
+        writeOutput("</")
+        writeOutput(name)
+        writeOutput(">")
+      }
+      hasChildElement = true
+    }
+
+    def terminal(name: String, begin: Int, end: Int): Unit = {
+      val tag = if (name(0) == '\'') "TOKEN" else name
+      startNonterminal(tag, begin)
+      characters(begin, end)
+      endNonterminal(tag, end)
+    }
+
+    def whitespace(begin: Int, end: Int): Unit = {
+      characters(begin, end)
+    }
+
+    private def characters(begin: Int, end: Int): Unit = {
+      if (begin < end) {
+        if (delayedTag != null) {
+          writeOutput("<")
+          writeOutput(delayedTag)
+          writeOutput(">")
+          delayedTag = null
+        }
+        writeOutput(input.substring(begin, end)
+                         .replace("&", "&amp;")
+                         .replace("<", "&lt;")
+                         .replace(">", "&gt;"))
+      }
+    }
+
+    def writeOutput(content: String): Unit = {
+      out.write(content)
+    }
+  }
+~                                                               }
+                                                                if (tree && isLrParser)
+                                                                {
+~
+  class ParseTreeBuilder extends BottomUpEventHandler {
+    var input: String = null
+    var stack = new ArrayBuffer[Symbol](64)
+    var top = -1
+
+    override def reset(input: String): Unit = {
+      this.input = input
+      top = -1
+    }
+
+    override def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit = {~
+                                                                  if (useGlr)
+                                                                  {
+~
+      if (count > top + 1) {
+        val content: ArrayBuffer[Symbol] = pop(top + 1)
+        nonterminal("UNAMBIGUOUS", begin, if (content.length == 0) end else content(0).begin, 0)
+        for (symbol <- content)
+          push(symbol)
+        push(new Nonterminal(name, begin, end, pop(top + 1)))
+      }
+      else {
+        push(new Nonterminal(name, begin, end, pop(count)))
+      }~                                                          }
+                                                                  else
+                                                                  {
+~
+      push(new Nonterminal(name, begin, end, pop(count)))~        }
+~
+    }
+
+    override def terminal(name: String, begin: Int, end: Int): Unit = {
+      push(new Terminal(name, begin, end))
+    }
+
+    def serialize(e: EventHandler): Unit = {
+      e.reset(input)
+      var i = 0
+      for (i <- 0 to top)
+        stack(i).send(e)
+    }
+
+    def push(s: Symbol): Unit = {
+      top += 1
+      if (top == stack.length) stack += s else stack(top) = s
+    }
+
+    def pop(count: Int): ArrayBuffer[Symbol] = {
+      top -= count
+      stack.slice(top + 1, top + count + 1)
+    }
+  }
+~                                                               }
+                                                                if (performanceTest)
+                                                                {
+~
+  private class ContentCounter extends EventHandler {
+    var length = 0
+    def reset(string: String): Unit = {length = 0}
+    def startNonterminal(name: String, begin: Int): Unit = {}
+    def endNonterminal(name: String, end: Int): Unit = {}
+    def terminal(name: String, begin: Int, end: Int): Unit = {length += end - begin}
+    def whitespace(begin: Int, end: Int): Unit = {length += end - begin}
+  }
+~
+                                                                }
+                                                              }
+                                                            }

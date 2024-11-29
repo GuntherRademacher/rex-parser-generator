@@ -1,0 +1,124 @@
+// rex CodeTemplate.ebnf -cpp -a rex
+                                                            <?rex
+                                                              #include <vector>
+                                                              class CodeFragment
+                                                              {
+                                                              public:
+                                                                typedef enum {TARGET = 0, HOST = 1, VARIABLE = 2} FragmentType;
+
+                                                                CodeFragment(FragmentType t, int b, int e)
+                                                                : type(t), begin(b), end(e), next(0)
+                                                                {}
+
+                                                                FragmentType type;
+                                                                int begin;
+                                                                int end;
+                                                                CodeFragment *next;
+                                                              };
+
+                                                              class CodeTemplate
+                                                              {
+                                                              public:
+                                                                CodeTemplate() : fragmentList(0)
+                                                                {
+                                                                  initialize(0);
+                                                                }
+
+                                                                ~CodeTemplate()
+                                                                {
+                                                                  clear();
+                                                                }
+
+                                                                CodeFragment *parse(const wchar_t *templat)
+                                                                {
+                                                                  initialize(templat);
+                                                                  parse_Template();
+                                                                  return fragmentList;
+                                                                }
+
+                                                                int lineNo(int lf)
+                                                                {
+                                                                  int lo = 0, hi = (int) lfLocation.size() - 1;
+                                                                  for (int m = hi >> 1; lo <= hi; m = (hi + lo) >> 1)
+                                                                  {
+                                                                                   if (lfLocation[m] > lf) hi = m - 1;
+                                                                    else           if (lfLocation[m] < lf) lo = m + 1;
+                                                                    else         {return m + 1;  break;}
+                                                                  }
+                                                                  return lo + 1;
+                                                                }
+
+                                                              private:
+                                                                void clear()
+                                                                {
+                                                                  CodeFragment *f = fragmentList;
+                                                                  for (CodeFragment *next; f; f = next == fragmentList ? 0 : next)
+                                                                  {
+                                                                    next = f->next;
+                                                                    delete f;
+                                                                  }
+                                                                  fragmentList = 0;
+                                                                  fragmentType = CodeFragment::TARGET;
+                                                                }
+
+                                                                void enqueue(int b, int e)
+                                                                {
+                                                                  if (b != e)
+                                                                  {
+                                                                    CodeFragment *f = new CodeFragment(fragmentType, b, e);
+                                                                    if (fragmentList == 0)
+                                                                    {
+                                                                      f->next = f;
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      f->next = fragmentList->next;
+                                                                      fragmentList->next = f;
+                                                                    }
+                                                                    fragmentList = f;
+                                                                  }
+                                                                }
+
+                                                                CodeFragment *fragmentList;
+                                                                CodeFragment::FragmentType fragmentType;
+                                                                std::vector<int> lfLocation;
+                                                            ?>
+Template        ::=                                         <?rex clear();?>
+                    CodeFragment?
+                    ( ('~' | '^')                           <?rex fragmentType = (CodeFragment::FragmentType) (1 - fragmentType);?>
+                      CodeFragment?
+                    )*
+                    EOF                                     <?rex
+                                                              CodeFragment *f = fragmentList->next;
+                                                              fragmentList->next = 0;
+                                                              fragmentList = f;
+                                                            ?>
+CodeFragment    ::= ( '~~'                                  <?rex enqueue(b0, e0 - 1);?>
+                    | '^^'                                  <?rex enqueue(b0, e0 - 1);?>
+                    | FragmentWithoutLF                     <?rex enqueue(b0, e0);?>
+                    | FragmentWithLF                        <?rex
+                                                              enqueue(b0, e0);
+                                                              lfLocation.push_back(e0 - 1);
+                                                            ?>
+                    | BeginVariable
+                      Whitespace? '$' VariableName          <?rex
+                                                              fragmentType = CodeFragment::VARIABLE;
+                                                              enqueue(b0, e0);
+                                                              fragmentType = CodeFragment::HOST;
+                                                            ?>
+                      Whitespace?
+                      EndVariable
+                    )+
+<?TOKENS?>
+
+FragmentWithoutLF
+                ::= [^~^#xA]+
+FragmentWithLF  ::= [^~^#xA]* #xA
+BeginVariable   ::= &( Whitespace? '$' VariableName Whitespace? Separator )
+Whitespace      ::= [ #x9#xA#xD]+
+VariableName    ::= 'REX_' [a-zA-Z] [-_a-zA-Z0-9]*
+Separator       ::= $ | '^' ( $ | [^^] ) | '~' ( $ | [^~] )
+EndVariable     ::= &Separator
+EOF             ::= $
+
+// EoF

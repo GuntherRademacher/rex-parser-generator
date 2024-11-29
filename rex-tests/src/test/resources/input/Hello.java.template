@@ -1,0 +1,26 @@
+~
+                                            public class Hello
+                                            {
+                                              private static StringBuilder output = new StringBuilder();
+                                              private static void append(String text) {output.append(text);}
+
+                                              private static String escape(String text)
+                                              {
+                                                return text.replaceAll("\"", "&quot;").replaceAll("<", "&lt;");
+                                              }
+
+                                              public static void main(String args[])
+                                              {
+~<?xml version="1.0"?>
+<messages>~                                     for (String content : new String[]{"hello", "goodbye"})
+                                                  for (String recipient : new String[]{"uli", "world"})
+                                                {
+~
+  <message recipient="~                           append(escape(recipient));
+                      ~">~                        append(escape(content));
+                         ~</message>~           }
+~
+</messages>
+~                                               System.out.println(output.toString());
+                                              }
+                                            }

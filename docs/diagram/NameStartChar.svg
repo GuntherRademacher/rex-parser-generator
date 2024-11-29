@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="255" height="653">
+   <defs>
+      <style type="text/css">
+    @namespace "http://www.w3.org/2000/svg";
+    .line                 {fill: none; stroke: #132E1A; stroke-width: 1;}
+    .bold-line            {stroke: #060E08; shape-rendering: crispEdges; stroke-width: 2;}
+    .thin-line            {stroke: #0E060C; shape-rendering: crispEdges}
+    .filled               {fill: #132E1A; stroke: none;}
+    text.terminal         {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #060E08;
+                            font-weight: bold;
+                          }
+    text.nonterminal      {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #06080E;
+                            font-weight: normal;
+                          }
+    text.regexp           {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #0E060C;
+                            font-weight: normal;
+                          }
+    rect, circle, polygon {fill: #132E1A; stroke: #132E1A;}
+    rect.terminal         {fill: #C6E7CE; stroke: #132E1A; stroke-width: 1;}
+    rect.nonterminal      {fill: #C6CEE7; stroke: #132E1A; stroke-width: 1;}
+    rect.text             {fill: none; stroke: none;}
+    polygon.regexp        {fill: #E7C6DF; stroke: #132E1A; stroke-width: 1;}
+  </style>
+   </defs>
+   <polygon points="9 17 1 13 1 21"/>
+   <polygon points="17 17 9 13 9 21"/>
+   <polygon points="51 19 58 3 106 3 113 19 106 35 58 35"/>
+   <polygon points="49 17 56 1 104 1 111 17 104 33 56 33" class="regexp"/>
+   <text class="regexp" x="64" y="21">[A-Z]</text>
+   <rect x="51" y="47" width="28" height="32" rx="10"/>
+   <rect x="49"
+         y="45"
+         width="28"
+         height="32"
+         class="terminal"
+         rx="10"/>
+   <text class="terminal" x="59" y="65">_</text>
+   <polygon points="51 107 58 91 104 91 111 107 104 123 58 123"/>
+   <polygon points="49 105 56 89 102 89 109 105 102 121 56 121" class="regexp"/>
+   <text class="regexp" x="64" y="109">[a-z]</text>
+   <polygon points="51 151 58 135 158 135 165 151 158 167 58 167"/>
+   <polygon points="49 149 56 133 156 133 163 149 156 165 56 165" class="regexp"/>
+   <text class="regexp" x="64" y="153">[#xC0-#xD6]</text>
+   <polygon points="51 195 58 179 156 179 163 195 156 211 58 211"/>
+   <polygon points="49 193 56 177 154 177 161 193 154 209 56 209" class="regexp"/>
+   <text class="regexp" x="64" y="197">[#xD8-#xF6]</text>
+   <polygon points="51 239 58 223 160 223 167 239 160 255 58 255"/>
+   <polygon points="49 237 56 221 158 221 165 237 158 253 56 253" class="regexp"/>
+   <text class="regexp" x="64" y="241">[#xF8-#x2FF]</text>
+   <polygon points="51 283 58 267 172 267 179 283 172 299 58 299"/>
+   <polygon points="49 281 56 265 170 265 177 281 170 297 56 297" class="regexp"/>
+   <text class="regexp" x="64" y="285">[#x370-#x37D]</text>
+   <polygon points="51 327 58 311 176 311 183 327 176 343 58 343"/>
+   <polygon points="49 325 56 309 174 309 181 325 174 341 56 341" class="regexp"/>
+   <text class="regexp" x="64" y="329">[#x37F-#x1FFF]</text>
+   <polygon points="51 371 58 355 190 355 197 371 190 387 58 387"/>
+   <polygon points="49 369 56 353 188 353 195 369 188 385 56 385" class="regexp"/>
+   <text class="regexp" x="64" y="373">[#x200C-#x200D]</text>
+   <polygon points="51 415 58 399 186 399 193 415 186 431 58 431"/>
+   <polygon points="49 413 56 397 184 397 191 413 184 429 56 429" class="regexp"/>
+   <text class="regexp" x="64" y="417">[#x2070-#x218F]</text>
+   <polygon points="51 459 58 443 186 443 193 459 186 475 58 475"/>
+   <polygon points="49 457 56 441 184 441 191 457 184 473 56 473" class="regexp"/>
+   <text class="regexp" x="64" y="461">[#x2C00-#x2FEF]</text>
+   <polygon points="51 503 58 487 186 487 193 503 186 519 58 519"/>
+   <polygon points="49 501 56 485 184 485 191 501 184 517 56 517" class="regexp"/>
+   <text class="regexp" x="64" y="505">[#x3001-#xD7FF]</text>
+   <polygon points="51 547 58 531 186 531 193 547 186 563 58 563"/>
+   <polygon points="49 545 56 529 184 529 191 545 184 561 56 561" class="regexp"/>
+   <text class="regexp" x="64" y="549">[#xF900-#xFDCF]</text>
+   <polygon points="51 591 58 575 184 575 191 591 184 607 58 607"/>
+   <polygon points="49 589 56 573 182 573 189 589 182 605 56 605" class="regexp"/>
+   <text class="regexp" x="64" y="593">[#xFDF0-#xFFFD]</text>
+   <polygon points="51 635 58 619 200 619 207 635 200 651 58 651"/>
+   <polygon points="49 633 56 617 198 617 205 633 198 649 56 649" class="regexp"/>
+   <text class="regexp" x="64" y="637">[#x10000-#xEFFFF]</text>
+   <path class="line"
+         d="m17 17 h2 m20 0 h10 m62 0 h10 m0 0 h94 m-196 0 h20 m176 0 h20 m-216 0 q10 0 10 10 m196 0 q0 -10 10 -10 m-206 10 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m28 0 h10 m0 0 h128 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m60 0 h10 m0 0 h96 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m114 0 h10 m0 0 h42 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m112 0 h10 m0 0 h44 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m116 0 h10 m0 0 h40 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m128 0 h10 m0 0 h28 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m132 0 h10 m0 0 h24 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m146 0 h10 m0 0 h10 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m142 0 h10 m0 0 h14 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m142 0 h10 m0 0 h14 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m142 0 h10 m0 0 h14 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m142 0 h10 m0 0 h14 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m140 0 h10 m0 0 h16 m-186 -10 v20 m196 0 v-20 m-196 20 v24 m196 0 v-24 m-196 24 q0 10 10 10 m176 0 q10 0 10 -10 m-186 10 h10 m156 0 h10 m23 -616 h-3"/>
+   <polygon points="245 17 253 13 253 21"/>
+   <polygon points="245 17 237 13 237 21"/>
+</svg>

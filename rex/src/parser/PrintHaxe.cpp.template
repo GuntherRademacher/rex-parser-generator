@@ -1,0 +1,1604 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintHaxe.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include "../common/CompressedMap.hpp"
+
+                                                            void PrintHaxe::openClass()
+                                                            {
+                                                              if (hasProlog)
+                                                              {
+~
+~                                                             }
+                                                              else
+                                                              {
+                                                                if (! packageName.empty())
+                                                                {
+~
+package ~                                                        print(packageName.c_str());
+        ~;
+~                                                               }
+                                                                if (main || performanceTest)
+                                                                {
+~
+import haxe.io.Bytes;
+import sys.io.File;~                                              if (performanceTest)
+                                                                  {
+~
+import sys.FileSystem;~                                           }
+~
+~                                                               }
+                                                              }
+                                                              if (useGlr)
+                                                              {
+                                                                openStackNode();
+                                                                printCountMethod();
+                                                                closeStackNode();
+                                                                openThread();
+                                                                increaseIndent();
+                                                                printThreadBody1();
+                                                                print(lexerInstanceCode);
+                                                                currentStaticPrefix = L"";
+~}
+~                                                             }
+                                                              if (! hasProlog)
+                                                              {
+~
+class ~                                                         print(className.c_str());
+                                                                if (! interfaceName.empty())
+                                                                {
+      ~ implements ~                                              print(interfaceName.c_str());
+                                                                }
+      ~
+{~                                                            }
+                                                              if (performanceTest)
+                                                              {
+                                                                printFileProcessor();
+                                                              }
+                                                              if (main)
+                                                              {
+~
+  public static function main()
+  {
+    var args = Sys.args();
+
+    if (args.length == 0)
+    {
+      Sys.println("Usage: ~                                     print(className.c_str());
+                                                                if (tree)
+                                                                {
+                          ~ [-i]~                               }
+                          ~ INPUT...\n");
+      Sys.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");~
+                                                                if (tree)
+                                                                {
+~
+      Sys.println("");
+      Sys.println("  Option:");
+      Sys.println("    -i     indented parse tree");~           }
+~
+    }
+    else
+    {
+      var indent = false;
+      for (arg in args)
+      {~                                                        if (tree)
+                                                                {
+~
+        if (arg == "-i")
+        {
+          indent = true;
+          continue;
+        }
+~                                                               }
+~
+        var input = read(arg);~                                 if (tree)
+                                                                {
+~
+        var s = new XmlSerializer(indent);~                       if (isLrParser)
+                                                                  {
+~
+        var b = new ParseTreeBuilder();~                          }
+                                                                }
+~
+        var parser = new ~                                      print(className.c_str());
+                         ~(input~                               if (tree)
+                                                                {
+                                ~, ~                              if (isLrParser)
+                                                                  {
+                                   ~b~                            }
+                                                                  else
+                                                                  {
+                                   ~s~                            }
+                                                                }
+                                     ~);
+        try
+        {~                                                      if (trace)
+                                                                {
+  ~
+          trace("<trace>");~
+                                                                }
+  ~
+          parser.~                                              print(methodPrefixParse);
+                                                                print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                 ~();~                                          if (trace)
+                                                                {
+  ~
+          trace("</trace>");~                                   }
+                                                                if (tree && isLrParser)
+                                                                {
+  ~
+          b.serialize(s);~                                      }
+  ~
+        }
+        catch (pe: ParseException)
+        {~                                                      if (useGlr && tree)
+                                                                {
+~
+          if (pe.isAmbiguousInput())
+          {
+            pe.serialize(s);
+            Sys.println("");
+          }~                                                    }
+~
+          throw "ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe);
+        }
+      }
+    }
+  }
+~                                                             }
+                                                              printReadMethod();
+                                                              if (! hasProlog)
+                                                              {
+~
+  public function new(string~                                   if (noLexer)
+                                                                {
+                            ~, lexer~                           }
+                                                                if (tree)
+                                                                {
+                            ~, t~                               }
+                                ~)
+  {
+    initialize(string~                                          if (noLexer)
+                                                                {
+                     ~, lexer~                                  }
+                                                                if (tree)
+                                                                {
+                     ~, t~                                      }
+                     ~);
+  }
+~                                                             }
+                                                              /*
+~
+  public function getInput()
+  {
+    return input.toString();
+  }
+
+  public function getTokenOffset()
+  {
+    return b0;
+  }
+
+  public function getTokenEnd()
+  {
+    return e0;
+  }
+~                                                             */
+                                                              if (useGlr)
+                                                              {
+                                                                beginPublic();
+                                                              }
+                                                            }
+
+                                                            void PrintHaxe::openStackNode()
+                                                            {
+                                                              currentStaticPrefix = classNamePrefix;
+~
+private class StackNode
+{
+  public var state: Int;~                                     if (grammar->states->hasLookback)
+                                                              {
+~
+  public var code: Int;~                                      }
+~
+  public var pos: Int;
+  public var link: StackNode;
+
+  public function new(state: Int, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                                  ~code: Int, ~               }
+                                              ~pos: Int, link: StackNode)
+  {
+    this.state = state;~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+~
+    this.code = code;~                                        }
+~
+    this.pos = pos;
+    this.link = link;
+  }
+
+  public function equals(rhs: StackNode): Bool
+  {
+    var lhs: StackNode = this;
+    while (lhs != null && rhs != null)
+    {
+      if (lhs == rhs) return true;
+      if (lhs.state != rhs.state) return false;~              if (grammar->states->hasLookback)
+                                                              {
+~
+      if (lhs.code != rhs.code) return false;~                }
+~
+      if (lhs.pos != rhs.pos) return false;
+      lhs = lhs.link;
+      rhs = rhs.link;
+    }
+    return lhs == rhs;
+  }
+~                                                             increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintHaxe::closeStackNode()
+                                                            {
+                                                              decreaseIndent();
+~
+}
+
+private class Heap
+{
+  private var array: Array<ParsingThread>;
+  private var size: Int;
+
+  public function new()
+  {
+    array = [];
+    size = 0;
+  }
+
+  public function offer(value: ParsingThread): Bool
+  {
+    var index = size++;
+    while (index != 0)
+    {
+      var parentIndex = (index - 1) >> 1;
+      if (array[parentIndex].compareTo(value) <= 0)
+        break;
+      array[index] = array[parentIndex];
+      index = parentIndex;
+    }
+    array[index] = value;
+    return true;
+  }
+
+  public function poll(): ParsingThread
+  {
+    if (size == 0)
+      return null;
+    var min = array[0];
+    if (--size > 0)
+    {
+      var value = array[size];
+      var index = 0;
+      var child: Int;
+      while (true)
+      {
+        child = (index << 1) + 2;
+        if (child < size)
+        {
+          var otherChild = child - 1;
+          if (otherChild < size && array[child].compareTo(array[otherChild]) > 0)
+            child = otherChild;
+        }
+        else if (--child >= size)
+        {
+          break;
+        }
+        if (value.compareTo(array[child]) <= 0)
+        {
+          break;
+        }
+        array[index] = array[child];
+        index = child;
+      }
+      array[index] = value;
+    }
+    return min;
+  }
+
+  public function isEmpty(): Bool
+  {
+    return size == 0;
+  }
+
+  public function peek(): ParsingThread
+  {
+    return size == 0 ? null : array[0];
+  }
+}
+~                                                             beginNonpublic();
+                                                              if (hasCustomCode)
+                                                              {
+~
+private class DeferredCode
+{
+  public var link: DeferredCode;
+  public var codeId: Int;
+  public var b0: Int;
+  public var e0: Int;
+
+  public function new(link: DeferredCode, codeId: Int, b0: Int, e0: Int)
+  {
+    this.link = link;
+    this.codeId = codeId;
+    this.b0 = b0;
+    this.e0 = e0;
+  }
+}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+private class DeferredEvent
+{
+  public var link: DeferredEvent;
+  public var name: String;
+  public var begin: Int;
+  public var end: Int;
+
+  public function new(link: DeferredEvent, name: String, begin: Int, end: Int)
+  {
+    this.link = link;
+    this.name = name;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public function execute(eventHandler: BottomUpEventHandler): Void {}
+
+  public function release(eventHandler: BottomUpEventHandler): Void
+  {
+    var current: DeferredEvent = this;
+    var predecessor: DeferredEvent = current.link;
+    current.link = null;
+    while (predecessor != null)
+    {
+      var next: DeferredEvent = predecessor.link;
+      predecessor.link = current;
+      current = predecessor;
+      predecessor = next;
+    }
+    do
+    {
+      current.execute(eventHandler);
+      current = current.link;
+    }
+    while (current != null);
+  }
+
+  public function show(eventHandler: BottomUpEventHandler): Void
+  {
+    var stack = new Array<DeferredEvent>();
+    var current = this;
+    while (current != null)
+    {
+      stack.push(current);
+      current = current.link;
+    }
+    while (stack.length > 0)
+    {
+      stack.pop().execute(eventHandler);
+    }
+  }
+}
+
+private class TerminalEvent extends DeferredEvent
+{
+  public function new(link: DeferredEvent, name: String , begin: Int, end: Int)
+  {
+    super(link, name, begin, end);
+  }
+
+  public override function execute(eventHandler: BottomUpEventHandler): Void
+  {
+    eventHandler.terminal(name, begin, end);
+  }
+}
+
+private class NonterminalEvent extends DeferredEvent
+{
+  public var count: Int;
+
+  public function new(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int)
+  {
+    super(link, name, begin, end);
+    this.count = count;
+  }
+
+  public override function execute(eventHandler: BottomUpEventHandler): Void
+  {
+    eventHandler.nonterminal(name, begin, end, count);
+  }
+}
+~                                                             }
+                                                            }
+
+                                                            void PrintHaxe::openThread()
+                                                            {
+~
+private class ParsingThread
+{
+  public var parser: ~                                        print(className.c_str());
+                     ~;
+  public var threads: Heap;
+  public var accepted: Bool;
+  public var stack: StackNode ;
+  public var state: Int;
+  public var action: Int;
+  public var target: Int;~                                    if (tree)
+                                                              {
+~
+  public var deferredEvent: DeferredEvent;~                   }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  public var deferredCode: DeferredCode;~                     }
+~
+  public var id: Int;
+
+  public function new()
+  {
+  }
+
+  public function open(initialState: Int~                     if (tree)
+                                                              {
+                         ~, eh: BottomUpEventHandler~         }
+                         ~, t: Int): Heap
+  {
+    accepted = false;
+    target = t;~                                              if (tree)
+                                                              {
+~
+    eventHandler = eh;
+    if (eventHandler != null)
+    {
+      eventHandler.reset(parser.input);
+    }
+    deferredEvent = null;~                                    }
+                                                              if (hasCustomCode && useGlr)
+                                                              {
+~
+    deferredCode = null;~                                     }
+~
+    stack = new StackNode(-1, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                              ~0, ~                           }
+                              ~e0, null);
+    state = initialState;
+    action = predict(initialState);~                          if (tree)
+                                                              {
+~
+    es = e0;~                                                 }
+~
+    bw = e0;
+    bs = e0;
+    threads = new Heap();
+    threads.offer(this);
+    return threads;
+  }
+
+  public function copy(other: ParsingThread , action: Int): ParsingThread
+  {
+    this.parser = other.parser;
+    accepted = other.accepted;
+    this.action = action;
+    target = other.target;
+    bs = other.bs;
+    bw = other.bw;~                                           if (tree)
+                                                              {
+~
+    es = other.es;
+    eventHandler = other.eventHandler;
+    deferredEvent = other.deferredEvent;~                     }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    deferredCode = other.deferredCode;~                       }
+~
+    id = ++parser.maxId;
+    threads = other.threads;
+    state = other.state;
+    stack = other.stack;
+    b0 = other.b0;
+    e0 = other.e0;~                                           for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    l~                                                          print(iString);
+     ~ = other.l~                                               print(iString);
+                ~;
+    b~                                                          print(iString);
+     ~ = other.b~                                               print(iString);
+                ~;
+    e~                                                          print(iString);
+     ~ = other.e~                                               print(iString);
+                ~;~                                           }
+~
+    end = other.end;
+    return this;
+  }
+
+  public function compareTo(other: ParsingThread): Int
+  {
+    if (accepted != other.accepted)
+      return accepted ? 1 : -1;
+    var comp = e0 - other.e0;
+    return comp == 0 ? id - other.id : comp;
+  }
+
+  public function equals(other: ParsingThread): Bool
+  {
+    if (accepted != other.accepted) return false;
+    if (b1 != other.b1) return false;
+    if (e1 != other.e1) return false;
+    if (l1 != other.l1) return false;
+    if (state != other.state) return false;
+    if (action != other.action) return false;
+    if (! stack.equals(other.stack)) return false;
+    return true;
+  }
+
+  public function parse(): Int
+  {~                                                          increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintHaxe::printGlrParseMethod()
+                                                            {
+~
+public static var PARSING = 0;
+public static var ACCEPTED = 1;
+public static var ERROR = 2;
+
+public function parse(target: Int, initialState: Int, ~       if (tree)
+                                                              {
+                                                      ~eventHandler: BottomUpEventHandler, ~
+                                                              }
+                                                      ~thread: ParsingThread): ParsingThread
+{
+  var threads: Heap = thread.open(initialState~
+                                                              if (tree)
+                                                              {
+                                              ~, eventHandler~
+                                                              }
+                                              ~, target);
+  while (true)
+  {
+    thread = threads.poll();
+    if (thread.accepted)
+    {
+      var other: ParsingThread = null;
+      while (! threads.isEmpty())
+      {
+        other = threads.poll();
+        if (thread.e0 < other.e0)
+        {
+          thread = other;
+          other = null;
+        }
+      }
+      if (other != null)
+      {
+        rejectAmbiguity(thread.stack.pos, thread.e0~                                                      if (tree)
+                                                              {
+                ~, thread.deferredEvent, other.deferredEvent~ }
+                ~);
+      }~
+                                                              if (tree)
+                                                              {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.executeDeferredCode();~                          }
+~
+      return thread;
+    }
+
+    if (! threads.isEmpty())
+    {
+      if (threads.peek().equals(thread))
+      {
+        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
+                                                              {
+       ~, thread.deferredEvent, threads.peek().deferredEvent~ }
+       ~);
+      }
+    }~                                                        if (tree || hasCustomCode)
+                                                              {
+~
+    else
+    {~                                                          if (tree)
+                                                                {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.executeDeferredCode();~                            }
+~
+    }~                                                        }
+~
+
+    var status = PARSING;
+    while (true)
+    {
+      if ((status = thread.parse()) != PARSING) break;
+      if (! threads.isEmpty()) break;
+    }
+
+    if (status != ERROR)
+    {
+      threads.offer(thread);
+    }
+    else if (threads.isEmpty())
+    {
+      throw new ParseException(thread.b1,
+                               thread.e1,
+                               TOKENSET[thread.state] + 1,
+                               thread.l1,
+                               -1
+                              );
+    }
+  }
+}
+
+private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
+                                                              {
+              ~, first: DeferredEvent, second: DeferredEvent~ }
+              ~): Void
+{~                                                            if (tree)
+                                                              {
+~
+  var treeBuilder = new ParseTreeBuilder();
+  treeBuilder.reset(input);
+  second.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  var secondTree = treeBuilder.pop(1)[0];
+  first.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.push(secondTree);
+  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
+                                                              }
+~
+  var exception = new ParseException(begin, end, -1, -1, -1);
+  exception.setAmbiguousInput(~                               if (tree)
+                                                              {
+                              ~treeBuilder~                   }
+                              ~);
+  throw exception;
+}
+
+private var thread: ParsingThread;~                           if (tree)
+                                                              {
+~
+private var eventHandler: BottomUpEventHandler;~              }
+~
+public var input: Bytes = null;
+public var size = 0;
+public var maxId = 0;~                                        setIndent(1);
+                                                            }
+
+                                                            void PrintHaxe::openMethod(const wchar_t *type,
+                                                                                       const wchar_t *prefix,
+                                                                                       const wchar_t *name,
+                                                                                       const wchar_t *args,
+                                                                                       bool constant,
+                                                                                       const wchar_t *clazz)
+                                                            {
+~
+~                                                             print(visibility);
+~ ~                                                           print(prefix);
+  ~function ~                                                 print(name);
+            ~(~                                               bool ignore = true;
+                                                              for (const wchar_t *a = args; *a; ++a)
+                                                              {
+                                                                if (! ignore)
+                                                                {
+                                                                  print(*a);
+                                                                }
+                                                                if (*a == ' ')
+                                                                {
+                                                                  ignore = ! ignore;
+                                                                }
+                                                              }
+              ~)~                                             if (*type) // && wcscmp(type, L"void "))
+                                                              {
+                ~: ~                                            print(towupper(*type));
+                                                                print(type + 1);
+                                                              }
+                                                            }
+
+                                                            void PrintHaxe::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+~
+  private function lookaheadString()
+  {
+    var result = "";
+    if (~                                                       print(thiz());
+        ~l1 > 0)
+    {
+      result += ~                                               print(staticPrefix());
+                ~TOKEN[~                                        print(thiz());
+                       ~l1];~                                   for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+~
+      if (~                                                       print(thiz());
+          ~l~                                                     print(format.toString<wchar_t>(i));
+            ~ > 0)
+      {
+        result += " " + ~                                         print(staticPrefix());
+                        ~TOKEN[~                                  print(thiz());
+                               ~l~                                print(format.toString<wchar_t>(i));
+                                 ~];~                             increaseIndent();
+                                                                }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+      }~                                                        }
+~
+    }
+    return result;
+  }
+~                                                             }
+
+                                                              if (memoization)
+                                                              {
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+  private function memoize(i, e, v)
+  {
+    memo.set((e << ~                                            print(format.toString<wchar_t>(bits));
+                   ~) + i, v);
+  }
+
+  private function memoized(i, e): Int
+  {
+    var v = memo.get((e << ~                                    print(format.toString<wchar_t>(bits));
+                           ~) + i);
+    return v == null ? 0 : v;
+  }
+~                                                             }
+~
+  ~                                                           if (! isLrParser && (grammar->k > 1 ||
+                                                                                   memoization ||
+                                                                                   ! grammar->decisionPoints.empty()))
+                                                              {
+  ~private var lk: Int; ~                                     }
+                                                              else if (! useGlr)
+                                                              {
+  ~                     ~                                     }
+                                                              else
+                                                              {
+  ~                    ~                                      }
+                                                              const wchar_t *visibility = useGlr ? L"public" : L"private";
+                                                              print(visibility);
+  ~ var b0: Int; ~                                            print(visibility);
+                 ~ var e0: Int;~                              for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  ~                                                             print(visibility);
+  ~ var l~                                                      print(asString);
+         ~: Int; ~                                              print(visibility);
+                 ~ var b~                                       print(asString);
+                        ~: Int; ~                               print(visibility);
+                                ~ var e~                        print(asString);
+                                       ~: Int;~               }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  private var bx: Int;
+  private var ex: Int;
+  private var sx: Int;
+  private var lx: Int;
+  private var tx: Int;~                                       }
+                                                              if (isLrParser && ! useGlr)
+                                                              {
+~
+  private var iStack = [];
+  private var top = -1;~                                      }
+                                                              if (useGlr)
+                                                              {
+~
+  private var bw: Int;
+  private var bs: Int;~                                       }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+~
+  private var es: Int;~                                           }
+~
+  private var eventHandler: BottomUpEventHandler = null;~       }
+                                                                else
+                                                                {
+~
+  private var eventHandler: EventHandler = null;~               }
+                                                              }
+                                                              if (memoization)
+                                                              {
+~
+  private var memo: Map<Int, Int>  = new Map();~
+                                                                if (grammar->noThrow)
+                                                                {
+~
+  private var viable: Bool;~                                    }
+                                                              }
+                                                            }
+
+                                                            void PrintHaxe::printFileProcessor()
+                                                            {
+~
+  private static var quiet = false;
+  private static var parsed = 0;
+  private static var errorCount = 0;
+  private static var parsers = new List<ParseJob>();
+
+  public static function main()
+  {
+    var args = Sys.args();
+
+    if (args.length == 0)
+    {
+      Sys.println("Usage: ~                                   print(className.c_str());
+                          ~ [-q] [-r N] [-t N] ENDING...\n");
+      Sys.println("  parse all files that have names ending with ENDING, in current dir and below,");
+      Sys.println("  and display performance summary.\n");
+      Sys.println("  -q     do not show file names");
+      Sys.println("  -r N   repeat N times");
+      Sys.println("  -t N   repeat until N seconds have elapsed");
+    }
+    else
+    {
+      var repeat = 1;
+      var timeout = 0;
+      var i = 0;
+      while (i < args.length && StringTools.startsWith(args[i], "-"))
+      {
+        switch (args[i].length == 2 ? args[i].charAt(1) : ' ')
+        {
+        case 'q':
+          quiet = true;
+        case 'r':
+          repeat = Std.parseInt(args[++i]);
+          timeout = 0;
+        case 't':
+          repeat = 0;
+          timeout = 1000 * Std.parseInt(args[++i]);
+        default:
+          throw "invalid option: " + args[i];
+        }
+        ++i;
+      }
+
+      var start = Date.now().getTime();
+
+      while (i < args.length)
+      {
+        findFiles(".", args[i]);
+        ++i;
+      }
+
+      if (! parsers.isEmpty())
+      {
+        var msec = Date.now().getTime() - start;
+
+        if (! quiet) Sys.println("");
+        Sys.println("loaded " + parsers.length + " file" +
+                    (parsers.length == 1 ? "" : "s") + " in " +
+                    msec + " msec");
+        if (! quiet) Sys.println("");
+
+        start = Date.now().getTime();
+        i = 0;
+        while (true)
+        {
+          if (repeat != 0 && i >= repeat) break;
+          if (timeout != 0 && Date.now().getTime() - start >= timeout) break;
+
+          for (job in parsers)
+          {
+            if (job.parser != null)
+            {
+              try
+              {
+                if (! quiet) Sys.print("parsing " + job.name);
+                job.parser~                                       if (useGlr)
+                                                                  {
+                          ~.thread~                               }
+                          ~.reset(0, 0, 0);
+                job.parser.~                                      print(methodPrefixParse);
+                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                           ~();
+                if (! quiet) Sys.println("");~                    if (tree)
+                                                                  {
+                                                                    if (isLrParser)
+                                                                    {
+~
+                job.parseTreeBuilder.serialize(job.contentCounter);~
+                                                                    }
+~
+                if (job.contentCounter.getLength() != job.input.length)
+                {
+                  throw "content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length;
+                }~                                                }
+~
+                parsed += job.input.length;
+              }
+              catch (pe: ParseException)
+              {
+                ++errorCount;
+                if (quiet) Sys.print("parsing " + job.name);
+                Sys.println(": error: " + job.parser.getErrorMessage(pe));
+                job.parser = null;
+              }
+            }
+          }
+          ++i;
+        }
+        msec = Date.now().getTime() - start;
+        var mbPerSec = msec == 0
+                     ? null
+                     : Math.round(parsed / 1024e0 / 1024e0 * 1000e0 / msec * 100e0) / 100e0;
+
+        if (! quiet) Sys.println("");
+        Sys.print("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
+                  " in " + msec + " msec");
+        if (mbPerSec != null)
+        {
+          Sys.print(" (" + mbPerSec + " MB/sec)");
+        }
+        Sys.println("");
+        Sys.println(errorCount + " error" + (errorCount == 1 ? "" : "s"));
+      }
+    }
+  }
+
+  private static function collectInput(name, content)
+  {
+    if (! quiet) Sys.println("loading " + name);
+    parsers.add(new ParseJob(name, content));
+  }
+
+  private static function findFiles(f, filter)
+  {
+    if (FileSystem.isDirectory(f))
+    {
+      var files = FileSystem.readDirectory(f);
+      if (files != null)
+      {
+        for (file in files)
+        {
+          findFiles(f + "/" + file, filter);
+        }
+      }
+    }
+    else if (StringTools.endsWith(f.toLowerCase(), filter.toLowerCase()))
+    {
+      collectInput(f, read(f));
+    }
+  }
+~
+                                                            }
+
+                                                            void PrintHaxe::printReadMethod()
+                                                            {
+                                                              if (main || performanceTest)
+                                                              {
+~
+  private static function read(input)
+  {
+    if (~                                                       print(L"~~/^^");
+        ~\{.*\}$/g.match(input))
+    {
+      return input.substring(1, input.length - 1);
+    }
+    else
+    {
+      var content = File.getContent(input);
+      return content.length > 0 && content.charCodeAt(0) == 0xFEFF
+           ? content.substring(1)
+           : content;
+    }
+  }
+~
+//      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
+//      {
+//        content = content.substring(1);
+//      }
+//      return content.replace("\r\n", "\n");
+                                                              }
+                                                            }
+
+                                                            void PrintHaxe::printInterface()
+                                                            {
+                                                              if (! packageName.empty())
+                                                              {
+~
+package ~                                                       print(packageName.c_str());
+~;
+~                                                             }
+                                                              if (tree)
+                                                              {
+                                                                if (main)
+                                                                {
+~
+import java.io.IOException;
+import java.io.Writer;
+~                                                               }
+                                                              }
+~
+public interface ~                                            print(className.c_str());
+~
+{
+  public void initialize(CharSequence input~                  if (tree)
+                                                              {
+                                           ~, EventHandler eh~}
+                                           ~);
+  public void parse();
+  public void reset();
+  public String getErrorMessage(ParseException e);
+~                                                             printParseException();
+~}
+~                                                           }
+
+                                                            void PrintHaxe::printParseException()
+                                                            {
+~
+class ParseException
+{
+  private var begin: Int;
+  private var end: Int;
+  private var state: Int;
+  private var offending: Int;
+  private var expected: Int;~                                 if (useGlr)
+                                                              {
+~
+  private var ambiguousInput: Bool;~                            if (tree)
+                                                                {
+~
+  private var ambiguityDescriptor: ParseTreeBuilder;~           }
+                                                              }
+~
+
+  public function new(b, e, s, o, x)
+  {
+    begin = b;
+    end = e;
+    state = s;
+    offending = o;
+    expected = x;
+  }
+~                                                             if (useGlr)
+                                                              {
+~
+  public function setAmbiguousInput(~                           if (tree)
+                                                                {
+                                    ~a~                         }
+                                    ~)
+  {
+    ambiguousInput = true;~                                     if (tree)
+                                                                {
+~
+    ambiguityDescriptor = a;~                                   }
+~
+  }
+~                                                             }
+~
+  public function getBegin() {return begin;}
+  public function getEnd() {return end;}
+  public function getState() {return state;}
+  public function getExpected() {return expected;}
+  public function getOffending() {return offending;}
+  public function isAmbiguousInput() {return ~                if (useGlr)
+                                                              {
+                                             ~ambiguousInput~ }
+                                                              else
+                                                              {
+                                             ~false~
+                                                              }
+                                             ~;}
+
+  public function getMessage()
+  {
+    return ~                                                  if (useGlr)
+                                                              {
+           ~ambiguousInput
+         ? "ambiguous input"
+         : ~                                                  }
+           ~offending < 0
+         ? "lexical analysis failed"
+         : "syntax error";
+  }~                                                          if (useGlr && tree)
+                                                              {
+~
+
+  public function serialize(eventHandler)
+  {
+    ambiguityDescriptor.serialize(eventHandler);
+  }~                                                          }
+~
+}
+~                                                             if (noLexer)
+                                                              {
+~
+  public class Token
+  {
+    public int code;
+    public int begin;
+    public int end;
+  }
+
+  public interface Lexer
+  {
+    void reset(CharSequence input);
+    void match(int tokenset, Token token);
+  }
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+interface EventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function startNonterminal(tag: String, begin: Int): Void;
+  public function endNonterminal(tag: String, end: Int): Void;
+  public function terminal(tag: String, begin: Int, end: Int): Void;
+  public function whitespace(begin: Int, end: Int): Void;
+}
+~
+                                                                if (isLrParser)
+                                                                {
+~
+interface BottomUpEventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function nonterminal(name: String, begin: Int, end: Int, count: Int): Void;
+  public function terminal(name: String , begin: Int, end: Int): Void;
+}
+~                                                               }
+                                                                #if EXPATH_EXTENSION_FUNCTION
+~
+class XmlTreeBuilder implements EventHandler
+{
+  var input: Bytes = null;
+  var node: Xml;
+
+  public function new() {}
+
+  public function getTree()
+  {
+    return node;
+  }
+
+  public function reset(bytes)
+  {
+    input = bytes;
+    node = Xml.createDocument();
+  }
+
+  public function startNonterminal(tag, begin)
+  {
+    var element = Xml.createElement(tag);
+    node.addChild(element);
+    node = element;
+  }
+
+  public function endNonterminal(tag: String, end: Int): Void
+  {
+    node = node.parent;
+  }
+
+  public function terminal(tag: String, begin: Int, end: Int): Void
+  {
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    startNonterminal(tag, begin);
+    characters(begin, end);
+    endNonterminal(tag, end);
+  }
+
+  public function whitespace(begin: Int, end: Int): Void
+  {
+    characters(begin, end);
+  }
+
+  private function characters(begin, end): Void
+  {
+    node.addChild(Xml.createPCData(input.getString(begin, end - begin)));
+  }
+}
+~
+                                                                #endif
+                                                                if (main)
+                                                                {
+                                                                }
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+
+~
+class ParseJob
+{
+  public var name: String;
+  public var input: String;
+  public var parser: ~                                          print(className.c_str());
+                     ~;~                                        if (tree)
+                                                                {
+~
+  public var contentCounter: ContentCounter;~                     if (isLrParser)
+                                                                  {
+~
+  public var parseTreeBuilder: ParseTreeBuilder;~                 }
+                                                                }
+~
+  public function new(s: String, i: String)
+  {
+    name = s;
+    input = i;~                                                 if (tree)
+                                                                {
+~
+    contentCounter = new ContentCounter();~                       if (isLrParser)
+                                                                  {
+~
+    parseTreeBuilder = new ParseTreeBuilder();~                   }
+                                                                }
+~
+    parser = new ~                                              print(className.c_str());
+                 ~(input~                                       if (noLexer)
+                                                                {
+                        ~, null~                                }
+                                                                if (tree)
+                                                                {
+                                                                  if (isLrParser)
+                                                                  {
+                        ~, parseTreeBuilder~                      }
+                                                                  else
+                                                                  {
+                        ~, contentCounter~                        }
+                                                                }
+                        ~);
+  }
+}
+~
+                                                              }
+                                                            }
+
+                                                            void PrintHaxe::printEventHandlerImplementation()
+                                                            {
+                                                              if (tree)
+                                                              {
+                                                                if (main)
+                                                                {
+~
+class XmlSerializer implements EventHandler
+{
+  var input: Bytes = null;
+  var delayedTag: String = null;
+  var indent = false;
+  var hasChildElement = false;
+  var depth = 0;
+
+  public function new(indent)
+  {
+    this.indent = indent;
+  }
+
+  public function reset(bytes)
+  {
+    Sys.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    input = bytes;
+    delayedTag = null;
+    hasChildElement = false;
+    depth = 0;
+  }
+
+  public function startNonterminal(tag, begin)
+  {
+    if (delayedTag != null)
+    {
+      Sys.print("<");
+      Sys.print(delayedTag);
+      Sys.print(">");
+    }
+    delayedTag = tag;
+    if (indent)
+    {
+      Sys.print("\n");
+      for (i in 0...depth)
+      {
+        Sys.print("  ");
+      }
+    }
+    hasChildElement = false;
+    ++depth;
+  }
+
+  public function endNonterminal(tag, end)
+  {
+    --depth;
+    if (delayedTag != null)
+    {
+      delayedTag = null;
+      Sys.print("<");
+      Sys.print(tag);
+      Sys.print("/>");
+    }
+    else
+    {
+      if (indent)
+      {
+        if (hasChildElement)
+        {
+          Sys.print("\n");
+          for (i in 0...depth)
+          {
+            Sys.print("  ");
+          }
+        }
+      }
+      Sys.print("</");
+      Sys.print(tag);
+      Sys.print(">");
+    }
+    hasChildElement = true;
+  }
+
+  public function terminal(tag: String, begin, end)
+  {
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    startNonterminal(tag, begin);
+    characters(begin, end);
+    endNonterminal(tag, end);
+  }
+
+  public function whitespace(begin, end)
+  {
+    characters(begin, end);
+  }
+
+  private function characters(begin, end)
+  {
+    if (begin < end)
+    {
+      if (delayedTag != null)
+      {
+        Sys.print("<");
+        Sys.print(delayedTag);
+        Sys.print(">");
+        delayedTag = null;
+      }
+      Sys.print(~~/>/g.replace(
+                ~~/</g.replace(
+                ~~/&/g.replace(input.getString(begin, end - begin), "&amp;")
+                                                                  , "&lt;")
+                                                                  , "&gt;"));
+    }
+  }
+}
+~
+                                                                }
+                                                                if (performanceTest)
+                                                                {
+~
+class ContentCounter implements EventHandler
+{
+  private var length = 0;
+  public function new() {}
+  public function getLength() {return length;}
+  public function reset(string) {length = 0;}
+  public function startNonterminal(name, begin) {}
+  public function endNonterminal(name, end) {}
+  public function terminal(name, begin, end) {length += end - begin;}
+  public function whitespace(begin, end) {length += end - begin;}
+}
+~                                                               }
+~
+class TopDownTreeBuilder implements EventHandler
+{
+  private var input: Bytes;
+  private var stack: Array<Nonterminal>;
+
+  public function new()
+  {
+    input = null;
+    stack = null;
+  }
+
+  public function reset(i)
+  {
+    input = i;
+    stack = [];
+  };
+
+  public function startNonterminal(name, begin)
+  {
+    var nonterminal = new Nonterminal(name, begin, begin, new Array<Symbol>());
+    if (stack.length > 0) addChild(nonterminal);
+    stack.push(nonterminal);
+  }
+
+  public function endNonterminal(name, end)
+  {
+    stack[stack.length - 1].end = end;
+    if (stack.length > 1) stack.pop();
+  }
+
+  public function terminal(name, begin, end)
+  {
+    addChild(new Terminal(name, begin, end));
+  }
+
+  public function whitespace(begin, end)
+  {
+  }
+
+  private function addChild(s)
+  {
+    var current = stack[stack.length - 1];
+    current.children.push(s);
+  }
+
+  public function serialize(e: EventHandler)
+  {
+    e.reset(input);
+    stack[0].send(e);
+  }
+}
+
+class Symbol
+{
+  public var name: String;
+  public var begin: Int;
+  public var end: Int;
+
+  private function new(name, begin, end)
+  {
+    this.name = name;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public function send(e: EventHandler) {}
+}
+
+class Terminal extends Symbol
+{
+  public function new(name, begin, end)
+  {
+    super(name, begin, end);
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.terminal(name, begin, end);
+  }
+}
+
+class Nonterminal extends Symbol
+{
+  public var children: Array<Symbol>;
+
+  public function new(name, begin, end, children)
+  {
+    super(name, begin, end);
+    this.children = children;
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.startNonterminal(name, begin);
+    var pos = begin;
+    for (c in children)
+    {
+      if (pos < c.begin) e.whitespace(pos, c.begin);
+      c.send(e);
+      pos = c.end;
+    }
+    if (pos < end) e.whitespace(pos, end);
+    e.endNonterminal(name, end);
+  }
+}
+~                                                               if (isLrParser)
+                                                                {
+~
+class ParseTreeBuilder implements BottomUpEventHandler
+{
+  var input : Bytes;
+  var stack = new Array<Symbol>();
+  var top = -1;
+
+  public function new() {}
+
+  public function reset(input: Bytes)
+  {
+    this.input = input;
+    top = -1;
+  }
+~                                                                 if (useGlr)
+                                                                  {
+~
+  public function getStack() {return stack;}
+  public function getTop() {return top;}
+~                                                                 }
+~
+  public function nonterminal(name: String, begin: Int, end: Int, count: Int)
+  {~                                                              if (useGlr)
+                                                                  {
+~
+    if (count > top + 1)
+    {
+      var content = pop(top + 1);
+      nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+      for (symbol in content)
+      {
+        push(symbol);
+      }
+      count = top + 1;
+    }~
+                                                                  }
+~
+    push(new Nonterminal(name, begin, end, pop(count)));
+  }
+
+  public function terminal(name: String, begin: Int, end: Int)
+  {
+    push(new Terminal(name, begin, end));
+  }
+
+  public function serialize(e: EventHandler)
+  {
+    e.reset(input);
+    var i = 0;
+    while (i <= top)
+    {
+      stack[i].send(e);
+      ++i;
+    }
+  }
+
+  public function push(s: Symbol)
+  {
+    stack[++top] = s;
+  }
+
+  public function pop(count: Int)
+  {
+     top -= count;
+     return stack.slice(top + 1, top + count + 1);
+  }
+}
+~                                                               }
+                                                              }
+                                                            }

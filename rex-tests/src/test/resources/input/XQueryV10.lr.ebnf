@@ -1,0 +1,675 @@
+Goal       ::= XQuery
+
+XQuery     ::= Module EOF
+Module     ::= Module_1 Module_2
+  Module_1   ::=
+           | VersionDecl
+Module_2   ::= LibraryModule
+           | MainModule
+VersionDecl
+           ::= 'xquery' 'version' StringLiteral VersionDecl_1 Separator
+VersionDecl_1
+           ::=
+           | 'encoding' StringLiteral
+MainModule
+           ::= Prolog QueryBody
+LibraryModule
+           ::= ModuleDecl Prolog
+ModuleDecl
+           ::= 'module' 'namespace' NCName '=' URILiteral Separator
+Prolog     ::= Prolog_1 Prolog_3
+Prolog_1   ::=
+           | Prolog_1 Prolog_2 Separator
+Prolog_2   ::= DefaultNamespaceDecl
+           | Setter
+           | NamespaceDecl
+           | Import
+Prolog_3   ::=
+           | Prolog_3 Prolog_4 Separator
+Prolog_4   ::= VarDecl
+           | FunctionDecl
+           | OptionDecl
+Setter     ::= BoundarySpaceDecl
+           | DefaultCollationDecl
+           | BaseURIDecl
+           | ConstructionDecl
+           | OrderingModeDecl
+           | EmptyOrderDecl
+           | CopyNamespacesDecl
+Import     ::= SchemaImport
+           | ModuleImport
+Separator
+           ::= ';'
+NamespaceDecl
+           ::= 'declare namespace' NCName '=' URILiteral
+BoundarySpaceDecl
+           ::= 'declare boundary-space' BoundarySpaceDecl_1
+BoundarySpaceDecl_1
+           ::= 'preserve'
+           | 'strip'
+DefaultNamespaceDecl
+           ::= 'declare default' DefaultNamespaceDecl_1 'namespace' URILiteral
+DefaultNamespaceDecl_1
+           ::= 'element'
+           | 'function'
+OptionDecl
+           ::= 'declare option' QName StringLiteral
+OrderingModeDecl
+           ::= 'declare ordering' OrderingModeDecl_1
+OrderingModeDecl_1
+           ::= 'ordered'
+           | 'unordered'
+EmptyOrderDecl
+           ::= 'declare default' 'order' 'empty' EmptyOrderDecl_1
+EmptyOrderDecl_1
+           ::= 'greatest'
+           | 'least'
+CopyNamespacesDecl
+           ::= 'declare copy-namespaces' PreserveMode ',' InheritMode
+PreserveMode
+           ::= 'preserve'
+           | 'no-preserve'
+InheritMode
+           ::= 'inherit'
+           | 'no-inherit'
+DefaultCollationDecl
+           ::= 'declare default' 'collation' URILiteral
+BaseURIDecl
+           ::= 'declare base-uri' URILiteral
+SchemaImport
+           ::= 'import' 'schema' SchemaImport_1 URILiteral SchemaImport_2
+SchemaImport_1
+           ::=
+           | SchemaPrefix
+SchemaImport_2
+           ::=
+           | 'at' URILiteral SchemaImport_3
+SchemaImport_3
+           ::=
+           | SchemaImport_3 ',' URILiteral
+SchemaPrefix
+           ::= 'namespace' NCName '='
+           | 'default' 'element' 'namespace'
+ModuleImport
+           ::= 'import' 'module' ModuleImport_1 URILiteral ModuleImport_2
+ModuleImport_1
+           ::=
+           | 'namespace' NCName '='
+ModuleImport_2
+           ::=
+           | 'at' URILiteral ModuleImport_3
+ModuleImport_3
+           ::=
+           | ModuleImport_3 ',' URILiteral
+VarDecl    ::= 'declare variable' '$' QName VarDecl_1 VarDecl_2
+VarDecl_1
+           ::=
+           | TypeDeclaration
+VarDecl_2
+           ::= ':=' ExprSingle
+           | 'external'
+ConstructionDecl
+           ::= 'declare construction' ConstructionDecl_1
+ConstructionDecl_1
+           ::= 'strip'
+           | 'preserve'
+FunctionDecl
+           ::= 'declare function' QName '(' FunctionDecl_1 ')' FunctionDecl_2 FunctionDecl_3
+FunctionDecl_1
+           ::=
+           | ParamList
+FunctionDecl_2
+           ::=
+           | 'as' SequenceType
+FunctionDecl_3
+           ::= EnclosedExpr
+           | 'external'
+ParamList
+           ::= Param ParamList_1
+ParamList_1
+           ::=
+           | ParamList_1 ',' Param
+Param      ::= '$' QName Param_1
+Param_1    ::=
+           | TypeDeclaration
+EnclosedExpr
+           ::= '{' Expr '}'
+QueryBody
+           ::= Expr
+Expr       ::= ExprSingle Expr_1
+Expr_1     ::=
+           | Expr_1 ',' ExprSingle
+ExprSingle
+           ::= FLWORExpr
+           | QuantifiedExpr
+           | TypeswitchExpr
+           | IfExpr
+           | OrExpr
+FLWORExpr
+           ::= FLWORExpr_1 FLWORExpr_3 FLWORExpr_4 'return' ExprSingle
+FLWORExpr_1
+           ::= FLWORExpr_2
+           | FLWORExpr_1 FLWORExpr_2
+FLWORExpr_2
+           ::= ForClause
+           | LetClause
+FLWORExpr_3
+           ::=
+           | WhereClause
+FLWORExpr_4
+           ::=
+           | OrderByClause
+ForClause
+           ::= 'for' '$' VarName ForClause_1 ForClause_2 'in' ExprSingle ForClause_3
+ForClause_1
+           ::=
+           | TypeDeclaration
+ForClause_2
+           ::=
+           | PositionalVar
+ForClause_3
+           ::=
+           | ForClause_3 ',' '$' VarName ForClause_4 ForClause_5 'in' ExprSingle
+ForClause_4
+           ::=
+           | TypeDeclaration
+ForClause_5
+           ::=
+           | PositionalVar
+PositionalVar
+           ::= 'at' '$' VarName
+LetClause
+           ::= 'let' '$' VarName LetClause_1 ':=' ExprSingle LetClause_2
+LetClause_1
+           ::=
+           | TypeDeclaration
+LetClause_2
+           ::=
+           | LetClause_2 ',' '$' VarName LetClause_3 ':=' ExprSingle
+LetClause_3
+           ::=
+           | TypeDeclaration
+WhereClause
+           ::= 'where' ExprSingle
+OrderByClause
+           ::= OrderByClause_1 OrderSpecList
+OrderByClause_1
+           ::= 'order' 'by'
+           | 'stable' 'order' 'by'
+OrderSpecList
+           ::= OrderSpec OrderSpecList_1
+OrderSpecList_1
+           ::=
+           | OrderSpecList_1 ',' OrderSpec
+OrderSpec
+           ::= ExprSingle OrderModifier
+OrderModifier
+           ::= OrderModifier_1 OrderModifier_2 OrderModifier_4
+OrderModifier_1
+           ::=
+           | 'ascending'
+           | 'descending'
+OrderModifier_2
+           ::=
+           | 'empty' OrderModifier_3
+OrderModifier_3
+           ::= 'greatest'
+           | 'least'
+OrderModifier_4
+           ::=
+           | 'collation' URILiteral
+QuantifiedExpr
+           ::= QuantifiedExpr_1 '$' VarName QuantifiedExpr_2 'in' ExprSingle QuantifiedExpr_3 'satisfies' ExprSingle
+QuantifiedExpr_1
+           ::= 'some'
+           | 'every'
+QuantifiedExpr_2
+           ::=
+           | TypeDeclaration
+QuantifiedExpr_3
+           ::=
+           | QuantifiedExpr_3 ',' '$' VarName QuantifiedExpr_4 'in' ExprSingle
+QuantifiedExpr_4
+           ::=
+           | TypeDeclaration
+TypeswitchExpr
+           ::= 'typeswitch' '(' Expr ')' TypeswitchExpr_1 'default' TypeswitchExpr_2 'return' ExprSingle
+TypeswitchExpr_1
+           ::= CaseClause
+           | TypeswitchExpr_1 CaseClause
+TypeswitchExpr_2
+           ::=
+           | '$' VarName
+CaseClause
+           ::= 'case' CaseClause_1 SequenceType 'return' ExprSingle
+CaseClause_1
+           ::=
+           | '$' VarName 'as'
+IfExpr     ::= 'if' '(' Expr ')' 'then' ExprSingle 'else' ExprSingle
+OrExpr     ::= AndExpr OrExpr_1
+OrExpr_1   ::=
+           | OrExpr_1 'or' AndExpr
+AndExpr    ::= ComparisonExpr AndExpr_1
+AndExpr_1
+           ::=
+           | AndExpr_1 'and' ComparisonExpr
+ComparisonExpr
+           ::= RangeExpr ComparisonExpr_1
+ComparisonExpr_1
+           ::=
+           | ComparisonExpr_2 RangeExpr
+ComparisonExpr_2
+           ::= ValueComp
+           | GeneralComp
+           | NodeComp
+RangeExpr
+           ::= AdditiveExpr RangeExpr_1
+RangeExpr_1
+           ::=
+           | 'to' AdditiveExpr
+AdditiveExpr
+           ::= MultiplicativeExpr AdditiveExpr_1
+AdditiveExpr_1
+           ::=
+           | AdditiveExpr_1 AdditiveExpr_2 MultiplicativeExpr
+AdditiveExpr_2
+           ::= '+'
+           | '-'
+MultiplicativeExpr
+           ::= UnionExpr MultiplicativeExpr_1
+MultiplicativeExpr_1
+           ::=
+           | MultiplicativeExpr_1 MultiplicativeExpr_2 UnionExpr
+MultiplicativeExpr_2
+           ::= '*'
+           | 'div'
+           | 'idiv'
+           | 'mod'
+UnionExpr
+           ::= IntersectExceptExpr UnionExpr_1
+UnionExpr_1
+           ::=
+           | UnionExpr_1 UnionExpr_2 IntersectExceptExpr
+UnionExpr_2
+           ::= 'union'
+           | '|'
+IntersectExceptExpr
+           ::= InstanceofExpr IntersectExceptExpr_1
+IntersectExceptExpr_1
+           ::=
+           | IntersectExceptExpr_1 IntersectExceptExpr_2 InstanceofExpr
+IntersectExceptExpr_2
+           ::= 'intersect'
+           | 'except'
+InstanceofExpr
+           ::= TreatExpr InstanceofExpr_1
+InstanceofExpr_1
+           ::=
+           | 'instance' 'of' SequenceType
+TreatExpr
+           ::= CastableExpr TreatExpr_1
+TreatExpr_1
+           ::=
+           | 'treat' 'as' SequenceType
+CastableExpr
+           ::= CastExpr CastableExpr_1
+CastableExpr_1
+           ::=
+           | 'castable' 'as' SingleType
+CastExpr   ::= UnaryExpr CastExpr_1
+CastExpr_1
+           ::=
+           | 'cast' 'as' SingleType
+UnaryExpr
+           ::= UnaryExpr_1 ValueExpr
+UnaryExpr_1
+           ::=
+           | UnaryExpr_1 UnaryExpr_2
+UnaryExpr_2
+           ::= '-'
+           | '+'
+ValueExpr
+           ::= ValidateExpr
+           | PathExpr
+           | ExtensionExpr
+GeneralComp
+           ::= '='
+           | '!='
+           | '<'
+           | '<='
+           | '>'
+           | '>='
+ValueComp
+           ::= 'eq'
+           | 'ne'
+           | 'lt'
+           | 'le'
+           | 'gt'
+           | 'ge'
+NodeComp   ::= 'is'
+           | '<<'
+           | '>>'
+ValidateExpr
+           ::= 'validate' ValidateExpr_1 '{' Expr '}'
+ValidateExpr_1
+           ::=
+           | ValidationMode
+ValidationMode
+           ::= 'lax'
+           | 'strict'
+ExtensionExpr
+           ::= ExtensionExpr_1 '{' ExtensionExpr_2 '}'
+ExtensionExpr_1
+           ::= Pragma
+           | ExtensionExpr_1 Pragma
+ExtensionExpr_2
+           ::=
+           | Expr
+Pragma     ::= '(#' Pragma_1 QName Pragma_2 '#)'
+
+Pragma_1   ::=
+           | S
+
+Pragma_2   ::=
+           | S PragmaContents
+
+PathExpr   ::= '/' RelativePathExpr
+//          | '/'
+           | '//' RelativePathExpr
+           | RelativePathExpr
+RelativePathExpr
+           ::= StepExpr RelativePathExpr_1
+RelativePathExpr_1
+           ::=
+           | RelativePathExpr_1 RelativePathExpr_2 StepExpr
+RelativePathExpr_2
+           ::= '/'
+           | '//'
+StepExpr   ::= FilterExpr
+           | AxisStep
+AxisStep   ::= AxisStep_1 PredicateList
+AxisStep_1
+           ::= ReverseStep
+           | ForwardStep
+ForwardStep
+           ::= ForwardAxis NodeTest
+           | AbbrevForwardStep
+ForwardAxis
+           ::= 'child' '::'
+           | 'descendant' '::'
+           | 'attribute' '::'
+           | 'self' '::'
+           | 'descendant-or-self' '::'
+           | 'following-sibling' '::'
+           | 'following' '::'
+AbbrevForwardStep
+           ::= NodeTest
+           | '@' NodeTest
+ReverseStep
+           ::= ReverseAxis NodeTest
+           | AbbrevReverseStep
+ReverseAxis
+           ::= 'parent' '::'
+           | 'ancestor' '::'
+           | 'preceding-sibling' '::'
+           | 'preceding' '::'
+           | 'ancestor-or-self' '::'
+AbbrevReverseStep
+           ::= '..'
+NodeTest   ::= KindTest
+           | NameTest
+NameTest   ::= QName
+           | Wildcard
+FilterExpr
+           ::= PrimaryExpr PredicateList
+PredicateList
+           ::=
+           | PredicateList Predicate
+Predicate
+           ::= '[' Expr ']'
+PrimaryExpr
+           ::= Literal
+           | VarRef
+           | ParenthesizedExpr
+           | ContextItemExpr
+           | FunctionCall
+           | OrderedExpr
+           | UnorderedExpr
+           | Constructor
+Literal    ::= NumericLiteral
+           | StringLiteral
+NumericLiteral
+           ::= IntegerLiteral
+           | DecimalLiteral
+           | DoubleLiteral
+VarRef     ::= '$' VarName
+VarName    ::= QName
+ParenthesizedExpr
+           ::= '(' ParenthesizedExpr_1 ')'
+ParenthesizedExpr_1
+           ::=
+           | Expr
+ContextItemExpr
+           ::= '.'
+OrderedExpr
+           ::= 'ordered' '{' Expr '}'
+UnorderedExpr
+           ::= 'unordered' '{' Expr '}'
+FunctionCall
+           ::= QName '(' FunctionCall_1 ')'
+FunctionCall_1
+           ::=
+           | ExprSingle FunctionCall_2
+FunctionCall_2
+           ::=
+           | FunctionCall_2 ',' ExprSingle
+Constructor
+           ::= DirectConstructor
+           | ComputedConstructor
+DirectConstructor
+           ::= DirElemConstructor
+           | DirCommentConstructor
+           | DirPIConstructor
+DirElemConstructor
+           ::= '<' QName DirAttributeList DirElemConstructor_1
+
+DirElemConstructor_1
+           ::= '/>'
+           | '>' DirElemConstructor_2 '</' QName DirElemConstructor_3 '>'
+
+DirElemConstructor_2
+           ::=
+           | DirElemConstructor_2 DirElemContent
+
+DirElemConstructor_3
+           ::=
+           | S
+
+DirAttributeList
+           ::=
+           | DirAttributeList S DirAttributeList_1
+
+DirAttributeList_1
+           ::=
+           | QName DirAttributeList_2 '=' DirAttributeList_3 DirAttributeValue
+
+DirAttributeList_2
+           ::=
+           | S
+
+DirAttributeList_3
+           ::=
+           | S
+
+DirAttributeValue
+           ::= '"' DirAttributeValue_1 '"'
+           | "'" DirAttributeValue_3 "'"
+
+DirAttributeValue_1
+           ::=
+           | DirAttributeValue_1 DirAttributeValue_2
+
+DirAttributeValue_2
+           ::= EscapeQuot
+           | QuotAttrValueContent
+
+DirAttributeValue_3
+           ::=
+           | DirAttributeValue_3 DirAttributeValue_4
+
+DirAttributeValue_4
+           ::= EscapeApos
+           | AposAttrValueContent
+
+QuotAttrValueContent
+           ::= QuotAttrContentChar
+           | CommonContent
+AposAttrValueContent
+           ::= AposAttrContentChar
+           | CommonContent
+DirElemContent
+           ::= DirectConstructor
+           | CDataSection
+           | CommonContent
+           | ElementContentChar
+CommonContent
+           ::= PredefinedEntityRef
+           | CharRef
+           | '{{'
+           | '}}'
+           | EnclosedExpr
+DirCommentConstructor
+           ::= '<!--' DirCommentContents '-->'
+
+DirPIConstructor
+           ::= '<?' PITarget DirPIConstructor_1 '?>'
+
+DirPIConstructor_1
+           ::=
+           | S DirPIContents
+
+ComputedConstructor
+           ::= CompDocConstructor
+           | CompElemConstructor
+           | CompAttrConstructor
+           | CompTextConstructor
+           | CompCommentConstructor
+           | CompPIConstructor
+CompDocConstructor
+           ::= 'document' '{' Expr '}'
+CompElemConstructor
+           ::= 'element' CompElemConstructor_1 '{' CompElemConstructor_2 '}'
+CompElemConstructor_1
+           ::= QName
+           | '{' Expr '}'
+CompElemConstructor_2
+           ::=
+           | ContentExpr
+ContentExpr
+           ::= Expr
+CompAttrConstructor
+           ::= 'attribute' CompAttrConstructor_1 '{' CompAttrConstructor_2 '}'
+CompAttrConstructor_1
+           ::= QName
+           | '{' Expr '}'
+CompAttrConstructor_2
+           ::=
+           | Expr
+CompTextConstructor
+           ::= 'text' '{' Expr '}'
+CompCommentConstructor
+           ::= 'comment' '{' Expr '}'
+CompPIConstructor
+           ::= 'processing-instruction' CompPIConstructor_1 '{' CompPIConstructor_2 '}'
+CompPIConstructor_1
+           ::= NCName
+           | '{' Expr '}'
+CompPIConstructor_2
+           ::=
+           | Expr
+SingleType
+           ::= AtomicType SingleType_1
+SingleType_1
+           ::=
+           | '?'
+TypeDeclaration
+           ::= 'as' SequenceType
+SequenceType
+           ::= 'empty-sequence' '(' ')'
+           | ItemType SequenceType_1
+SequenceType_1
+           ::=
+           | OccurrenceIndicator
+OccurrenceIndicator
+           ::= '?'
+           | StarOccurreneIndicator
+           | PlusOccurreneIndicator
+ItemType   ::= KindTest
+           | 'item' '(' ')'
+           | AtomicType
+AtomicType
+           ::= QName
+KindTest   ::= DocumentTest
+           | ElementTest
+           | AttributeTest
+           | SchemaElementTest
+           | SchemaAttributeTest
+           | PITest
+           | CommentTest
+           | TextTest
+           | AnyKindTest
+AnyKindTest
+           ::= 'node' '(' ')'
+DocumentTest
+           ::= 'document-node' '(' DocumentTest_1 ')'
+DocumentTest_1
+           ::=
+           | ElementTest
+           | SchemaElementTest
+TextTest   ::= 'text' '(' ')'
+CommentTest
+           ::= 'comment' '(' ')'
+PITest     ::= 'processing-instruction' '(' PITest_1 ')'
+PITest_1   ::=
+           | NCName
+           | StringLiteral
+AttributeTest
+           ::= 'attribute' '(' AttributeTest_1 ')'
+AttributeTest_1
+           ::=
+           | AttribNameOrWildcard AttributeTest_2
+AttributeTest_2
+           ::=
+           | ',' TypeName
+AttribNameOrWildcard
+           ::= AttributeName
+           | '*'
+SchemaAttributeTest
+           ::= 'schema-attribute' '(' AttributeDeclaration ')'
+AttributeDeclaration
+           ::= AttributeName
+ElementTest
+           ::= 'element' '(' ElementTest_1 ')'
+ElementTest_1
+           ::=
+           | ElementNameOrWildcard ElementTest_2
+ElementTest_2
+           ::=
+           | ',' TypeName ElementTest_3
+ElementTest_3
+           ::=
+           | '?'
+ElementNameOrWildcard
+           ::= ElementName
+           | '*'
+SchemaElementTest
+           ::= 'schema-element' '(' ElementDeclaration ')'
+ElementDeclaration
+           ::= ElementName
+AttributeName
+           ::= QName
+ElementName
+           ::= QName
+TypeName   ::= QName
+URILiteral
+           ::= StringLiteral

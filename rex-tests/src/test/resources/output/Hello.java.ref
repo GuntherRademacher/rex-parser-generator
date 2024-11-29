@@ -1,0 +1,44 @@
+// This file was generated on Mon Nov 1, 2021 10:22 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: Hello.java.template
+                                            // line 2 "Hello.java.template"
+                                            public class Hello
+                                            {
+                                              private static StringBuilder output = new StringBuilder();
+                                              private static void append(String text) {output.append(text);}
+
+                                              private static String escape(String text)
+                                              {
+                                                return text.replaceAll("\"", "&quot;").replaceAll("<", "&lt;");
+                                              }
+
+                                              public static void main(String args[])
+                                              {
+                                            // line 17 "Hello.java"
+  append("<?xml version=\"1.0\"?>\n");
+  append("<messages>");
+                                            // line 15 "Hello.java.template"
+                                                for (String content : new String[]{"hello", "goodbye"})
+                                                  for (String recipient : new String[]{"uli", "world"})
+                                                {
+                                            // line 24 "Hello.java"
+  append("\n");
+  append("  <message recipient=\"");
+                                            // line 19 "Hello.java.template"
+                                                  append(escape(recipient));
+                                            // line 29 "Hello.java"
+  append("\">");
+                                            // line 20 "Hello.java.template"
+                                                  append(escape(content));
+                                            // line 33 "Hello.java"
+  append("</message>");
+                                            // line 21 "Hello.java.template"
+                                                }
+                                            // line 37 "Hello.java"
+  append("\n");
+  append("</messages>\n");
+                                            // line 24 "Hello.java.template"
+                                                System.out.println(output.toString());
+                                              }
+                                            }
+
+// End

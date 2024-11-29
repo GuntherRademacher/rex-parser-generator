@@ -1,0 +1,1072 @@
+~                                                           // generate CodeGeneratorJava.cpp using this command:
+                                                            //
+                                                            //   REx CodeGeneratorJava.cpp.template
+
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "CodeGenerator.hpp"
+
+                                                            void CodeGeneratorJava::generateStaticCode()
+                                                            {
+                                                              const char *prefix = variable("useGlr").boolean() && targetLanguage != JAVA
+                                                                                 ? "parser."
+                                                                                 : "";
+                                                              if (! variable("append").boolean() && ! variable("embedded").boolean())
+                                                              {
+                                                                if (*variable("package").string())
+                                                                {
+~
+package ~                                                         print(variable("package").string());
+        ~;
+~                                                               }
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+~                                                               }
+~
+public class ~                                                  print(variable("classname").string());
+             ~
+{
+~                                                             }
+                                                              if (variable("useGlr").boolean())
+                                                              {
+                                                                ++indent;
+                                                              }
+                                                              else
+                                                              {
+~  private ~                                                    if (targetLanguage == JAVA)
+                                                                {
+           ~CharSequence~                                       }
+                                                                else
+                                                                {
+           ~String~                                             }
+
+           ~ input = null;~                                     if (! variable("nolexer").boolean())
+                                                                {
+~
+  private int size = 0;~                                        }
+                                                              }
+~
+  private int begin = 0;
+  private int end = 0;~                                       if (variable("nolexer").boolean())
+                                                              {
+~
+  private Lexer lexer = null;
+  private Token token = new Token();~                         }
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  private int state = 0;~                                     }
+                                                              if (variable("trace").boolean() && ! variable("useGlr").boolean())
+                                                              {
+                                                                if (targetLanguage == JAVA)
+                                                                {
+~
+  private Writer err;
+  {
+    try
+    {
+      err = new OutputStreamWriter(System.err, "UTF-8");
+    }
+    catch (UnsupportedEncodingException uee)
+    {}
+  }~                                                            }
+                                                                else
+                                                                {
+~
+  private TextWriter err = Console.Error;~                      }
+                                                              }
+~
+~
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  public void init(String string)
+  {
+    input = string;
+    size = string.length();
+    end = 0;
+  }
+
+  public int getOffset() {return begin;}
+  public int getSize()   {return end - begin;}
+  public int getState()  {return state;}
+
+  public int match(int tokenSetId, String string)
+  {
+    init(string);
+    return match(tokenSetId);
+  }
+
+  public~                                                     }
+                                                              else
+                                                              {
+                                                                if (variable("lrparser").boolean() ||
+                                                                    variable("tables").boolean())
+                                                                {
+~
+  ~                                                               print(variable("useGlr").boolean() ? "public" : "private");
+  ~ int predict(int dpi)~                                         predict();
+                                                                }
+~
+  private~
+                                                              }
+         ~ int match(int tokenSetId)
+  {~                                                          if (variable("nolexer").boolean())
+                                                              {
+~
+    token.begin = end;
+    lexer.match(tokenSetId, token);
+    begin = token.begin;
+    end = token.end;
+    return token.code >= 0
+         ? token.code
+         : error(begin, end, - tokenSetId, -1, -1);
+  }
+~                                                             }
+                                                              else
+                                                              {
+                                                                int lookahead = variable("maxcontextlength").integer();
+                                                                bool hasFixedTokenLength = variable("hasfixedtokenlength").boolean();
+                                                                int lowBits;
+                                                                const char *flags = getenv("FLAGS");
+                                                                bool hack = flags && strchr(flags, 'H');
+
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+    ~parser.~                                                     }
+    ~writeTrace("  <tokenize ~
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                             ~thread=\"" + id + "\" ~             }
+                             ~tokenset=\"" + tokenSetId + "\">\n");
+~                                                               }
+                                                                if (lookahead)
+                                                                {
+                                                                  if (targetLanguage == JAVA)
+                                                                  {
+~
+    boolean nonbmp = false;~                                      }
+                                                                  else
+                                                                  {
+~
+    bool nonbmp = false;~                                         }
+                                                                }
+~
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];~                          if (variable("embedded").boolean() && (variable("trace").boolean() || ! variable("useGlr").boolean()))
+                                                                {
+~
+    int state = 0;~                                             }
+~
+~                                                               if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+    ~parser.~                                                     }
+    ~writeTrace("    <next state=\"" + (result & ~                print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                 ~) + "\"");~   }
+~
+    for (int code = result & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                             ~; code != 0; )
+    {
+      int charclass;
+      int c0 = current < ~                                      print(prefix);
+                         ~size ? ~                                      print(prefix);
+                                 ~input~                        if (targetLanguage == JAVA)
+                                                                {
+                                       ~.charAt(current)~       }
+                                                                else
+                                                                {
+                                       ~[current]~              }
+                                       ~ : 0;~                  if (variable("trace").boolean())
+                                                                {
+~
+      ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+      ~parser.~                                                   }
+      ~writeTrace(" offset=\"" + current + "\"");~              }
+~
+      ++current;
+      if (c0 < 0x~                                              print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+                 ~)
+      {~
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+        if (c0 >= 32 && c0 <= 126)
+        {
+          ~                                                       if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+          ~parser.~                                               }
+          ~writeTrace(" char=\"" + xmlEscape(~                    if (targetLanguage == JAVA)
+                                                                  {
+                                             ~String.valueOf((char) c0)~
+                                                                  }
+                                                                  else
+                                                                  {
+                                             ~((char) c0).ToString()~
+                                                                  }
+                                             ~) + "\"");
+        }~                                                      }
+~
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0x~                                         print(format.toString<char>(variable("uncompressedMapSize").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+                      ~)
+      {
+~                                                               compressedMapAccessor(8, "c", "charclass = ", "MAP1", &variable("m1bits").integer());
+~
+      }
+      else
+      {~                                                        if (variable("m2").size == 0)
+                                                                {
+       ~
+        charclass = 0;~                                         }
+                                                                else
+                                                                {
+       ~
+        if (~                                                     if (variable("uncompressedMapSize").integer() != 0xd800)
+                                                                  {
+            ~c0 >= 0xd800 && ~                                    }
+                             ~c0 < 0xdc00)
+        {
+          int c1 = current < ~                                    print(prefix);
+                             ~size ? ~                            print(prefix);
+                                     ~input~                      if (targetLanguage == JAVA)
+                                                                  {
+                                           ~.charAt(current)~     }
+                                                                  else
+                                                                  {
+                                           ~[current]~            }
+                                           ~ : 0;
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {~                                                      if (lookahead)
+                                                                  {
+~
+            nonbmp = true;~                                       }
+~
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+
+        int lo = 0, hi = ~                                        print(variable("m2").size / 3 - 1);
+                         ~;
+        for (int m = ~                                            print((variable("m2").size / 3) >> 1);
+                     ~; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) {hi = m - 1;}
+          else if (MAP2[~                                         print(variable("m2").size / 3);
+                        ~ + m] < c0) {lo = m + 1;}
+          else {charclass = MAP2[~                                print(variable("m2").size / 3 * 2);
+                                 ~ + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }~                                                      }
+~
+      }~                                                        if (variable("trace").boolean())
+                                                                {
+~
+      ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+      ~parser.~                                                   }
+      ~writeTrace(" codepoint=\"" + c0 + "\" class=\"" + charclass + "\"");~
+                                                                }
+~
+~                                                               if (variable("trace").boolean() || ! variable("useGlr").boolean())
+                                                                {
+~
+      state = code;~                                            }
+~
+~                                                               compressedMap2dAccessor("code - 1", "charclass", variable("a1cols").integer(),
+                                                                                           6, "i", "code = ", "TRANSITION", &variable("a1bits").integer());
+~
+
+      if (code > ~                                              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                 ~)
+      {
+        result = code;~                                         if (variable("trace").boolean())
+                                                                {
+~
+        ~                                                         if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+        ~parser.~                                                 }
+        ~writeTrace(" result=\"" + xmlEscape(TOKEN[((result >> ~   print(variable("stateCodeBits").integer());
+                                                                  ~) & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                                                  ~) - 1]) + "\"");~
+                                                                  if (lookahead || hasFixedTokenLength)
+                                                                  {
+                                                                    int contextOffset = variable("stateCodeBits").integer()
+                                                                                      + variable("tokencodeBits").integer();
+                                                                    int sizeOffset = contextOffset
+                                                                                   + (hasFixedTokenLength ? 1 : 0);
+                                                                    if (hasFixedTokenLength)
+                                                                    {
+~
+        if ((result & ~                                               print(Math::powerof(2, contextOffset));
+                      ~) > 0)
+        {
+          ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                      {
+          ~parser.~                                                   }
+          ~writeTrace(" token-size=\"" + (result >> ~                 print(sizeOffset);
+                                                    ~) + "\"");
+        }
+        else ~                                                      }
+                                                                    else
+                                                                    {
+~
+        ~                                                           }
+        ~if ((result >> ~                                           print(sizeOffset);
+                        ~) > 0)
+        {
+          ~                                                         if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                    {
+          ~parser.~                                                 }
+          ~writeTrace(" trailing-context-size=\"" + (result >> ~    print(sizeOffset);
+                                                               ~) + "\"");
+        }~                                                        }
+                                                                }
+~
+        code &= ~                                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                ~;
+        end = current;
+      }~                                                        if (variable("trace").boolean())
+                                                                {
+~
+      ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+      ~parser.~                                                   }
+      ~writeTrace("/>\n");
+      if (code != 0)
+      {
+        ~                                                         if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+        ~parser.~                                                 }
+        ~writeTrace("    <next state=\"" + code + "\"");
+      }~                                                        }
+~
+    }
+
+    result >>= ~                                                print(variable("stateCodeBits").integer());
+               ~;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < ~                                          print(prefix);
+                     ~size ? ~                                  print(prefix);
+                             ~input~                            if (targetLanguage == JAVA)
+                                                                {
+                                   ~.charAt(end)~               }
+                                                                else
+                                                                {
+                                   ~[end]~                      }
+                                   ~ : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }~                                                        if (variable("trace").boolean())
+                                                                {
+~
+      ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+      ~parser.~                                                   }
+      ~writeTrace("    <fail begin=\"" + begin + "\" end=\"" + end + "\" state=\"" + state + "\"/>\n");
+      ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+      ~parser.~                                                   }
+      ~writeTrace("  </tokenize>\n");~                          }
+                                                                if (variable("embedded").boolean())
+                                                                {
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+~
+      end = begin;
+      return -1;~                                                 }
+                                                                  else
+                                                                  {
+~
+      return error(begin, end, state, -1, -1);~                   }
+                                                                }
+~
+    }~                                                          lowBits = variable("tokencodeBits").integer();
+                                                                if (hasFixedTokenLength && ! lookahead)
+                                                                {
+~
+    else if ((result & ~                                          print(Math::powerof(2, lowBits));
+                                                                  ++lowBits;
+                       ~) != 0)
+    {
+      end = begin;
+    }~                                                          }
+                                                                else
+                                                                {
+                                                                  if (hasFixedTokenLength)
+                                                                  {
+~
+    else if ((result & ~                                            print(Math::powerof(2, lowBits));
+                                                                    ++lowBits;
+                       ~) != 0)
+    {
+      end = begin;
+      if (nonbmp)
+      {
+        for (int i = result >> ~                                    print(lowBits);
+                               ~; i > 0; --i)
+        {
+          int c1 = end < ~                                          print(prefix);
+                         ~size ? ~                                  print(prefix);
+                                 ~input~                            if (targetLanguage == JAVA)
+                                                                    {
+                                       ~.charAt(end)~               }
+                                                                    else
+                                                                    {
+                                       ~[end]~                      }
+                                       ~ : 0;
+          ++end;
+          if (c1 >= 0xd800 && c1 < 0xdc000)
+          {
+            ++end;
+          }
+        }
+      }
+      else
+      {
+        end += (result >> ~                                         print(lowBits);
+                          ~);
+      }
+    }~                                                            }
+                                                                  if (lookahead)
+                                                                  {
+~
+    else if (nonbmp)
+    {
+      for (int i = result >> ~                                      print(lowBits);
+                             ~; i > 0; --i)
+      {
+        --end;
+        int c1 = end < ~                                            print(prefix);
+                       ~size ? ~                                    print(prefix);
+                               ~input~                              if (targetLanguage == JAVA)
+                                                                    {
+                                     ~.charAt(end)~                 }
+                                                                    else
+                                                                    {
+                                     ~[end]~                        }
+                                     ~ : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000)
+        {
+          --end;
+        }
+      }
+    }
+    else
+    {
+      end -= result >> ~                                            print(lowBits);
+                       ~;
+    }~                                                            }
+                                                                }
+~
+~
+~
+    if (end > ~                                                 print(prefix);
+              ~size) end = ~                                    print(prefix);
+                           ~size;~                              if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+    ~parser.~                                                     }
+    ~writeTrace("    <done result=\"" + xmlEscape(TOKEN[(result & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                                                  ~) - 1]) + "\" begin=\"" + begin + "\" end=\"" + end + "\"/>\n");
+    ~                                                             if (variable("useGlr").boolean() && targetLanguage != JAVA)
+                                                                  {
+    ~parser.~                                                     }
+    ~writeTrace("  </tokenize>\n");~                            }
+                                                                if (hack)
+                                                                {
+~
+    return hack((result & ~                                       print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                          ~) - 1);
+  }
+~                                                               }
+                                                                else
+                                                                {
+~
+    return (result & ~                                            print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                     ~) - 1;
+  }
+~                                                               }
+                                                              }
+
+                                                              if (variable("useGlr").boolean())
+                                                              {
+~
+}
+~                                                               --indent;
+                                                                if (targetLanguage != JAVA)
+                                                                {
+~
+  private class Heap<T> where T : IComparable<T>
+  {
+    private Object[] array = new Object[16];
+    private int size = 0;
+
+    public bool offer(T value)
+    {
+      int index = size;
+      if (++size >= array.Length)
+      {
+        Array.Resize(ref array, array.Length << 1);
+      }
+      while (index != 0)
+      {
+        int parentIndex = (index - 1) >> 1;
+        if (((T) array[parentIndex]).CompareTo(value) <= 0)
+          break;
+        array[index] = (T) array[parentIndex];
+        index = parentIndex;
+      }
+      array[index] = value;
+      return true;
+    }
+
+    public T poll()
+    {
+      if (size == 0)
+        return default (T);
+      T min = (T) array[0];
+      if (--size > 0)
+      {
+        T value = (T) array[size];
+        int index = 0;
+        for (int child;;)
+        {
+          child = (index << 1) + 2;
+          if (child < size)
+          {
+            int otherChild = child - 1;
+            if (otherChild < size && ((T) array[child]).CompareTo((T) array[otherChild]) > 0)
+                child = otherChild;
+          }
+          else if (--child >= size)
+          {
+            break;
+          }
+          if (value.CompareTo((T) array[child]) <= 0)
+          {
+            break;
+          }
+          array[index] = (T) array[child];
+          index = child;
+        }
+        array[index] = value;
+      }
+      return min;
+    }
+
+    public bool isEmpty()
+    {
+      return size == 0;
+    }
+
+    public T peek()
+    {
+      return (T) (size == 0 ? null : array[0]);
+    }
+  }
+~                                                               }
+                                                              }
+
+                                                              if (defined("gtbits"))
+                                                              {
+~
+  private static int goTo(int nonterminal, int state)
+  {
+~                                                               compressedMap2dAccessor("nonterminal", "state", variable("gtcols").integer(),
+                                                                                           4, "i", "return ", "GOTO", &variable("gtbits").integer());
+~
+  }
+~                                                             }
+
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  public String[] getExpectedTokenSet()
+  {
+    return getTokenSet(- state);
+  }
+~                                                             }
+                                                              if (variable("trace").boolean())
+                                                              {
+~
+  private static String xmlEscape(String s)
+  {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.~                                     if (targetLanguage == JAVA)
+                                                                {
+                          ~length()~                            }
+                                                                else
+                                                                {
+                          ~Length~                              }
+                          ~; ++i)
+    {~
+                                                                if (targetLanguage == JAVA)
+                                                                {
+~
+      char c = s.charAt(i);~                                    }
+                                                                else
+                                                                {
+~
+      char c = s[i];~                                           }
+~
+      switch (c)
+      {
+      case '<': sb.~                                            print(targetLanguage == JAVA ? "a" : "A");
+                   ~ppend("&lt;"); break;
+      case '"': sb.~                                            print(targetLanguage == JAVA ? "a" : "A");
+                   ~ppend("&quot;"); break;
+      case '&': sb.~                                            print(targetLanguage == JAVA ? "a" : "A");
+                   ~ppend("&amp;"); break;~
+                                                                if (targetLanguage == JAVA)
+                                                                {
+~
+      default : sb.append(c); break;~                           }
+                                                                else
+                                                                {
+~
+      default : sb.Append(c.ToString()); break;~                }
+~
+      }
+    }~
+                                                                if (targetLanguage == JAVA)
+                                                                {
+~
+    return sb.toString();~                                      }
+                                                                else
+                                                                {
+~
+    return sb.ToString();~                                      }
+~
+  }
+~                                                               if (targetLanguage == JAVA)
+                                                                {
+~
+  public void setTraceWriter(Writer w)
+  {
+    err = w;
+  }
+
+  private void writeTrace(String content)
+  {
+    try
+    {
+      err.write(content);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+~                                                                 if (variable("embedded").boolean())
+                                                                  {
+~
+  private void flushTrace()
+  {
+    try
+    {
+      err.flush();
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+~                                                                 }
+                                                                }
+                                                                else
+                                                                {
+~
+  public void setTraceWriter(TextWriter w)
+  {
+    err = w;
+  }
+
+  private void writeTrace(String content)
+  {
+    err.Write(content);
+  }
+~                                                                 if (variable("embedded").boolean())
+                                                                  {
+~
+  private void flushTrace()
+  {
+    err.Flush();
+  }
+~                                                                 }
+                                                                }
+                                                              }
+                                                              if (variable("nolexer").boolean())
+                                                              {
+~
+  public static int getTokenCount() {return ~                   print(variable("t1").size);
+                                            ~;}
+  public static String getTokenName(int code) {return code >= 0 && code < ~
+                                                                print(variable("t1").size);
+                                                                          ~ ? TOKEN[code] : null;}
+  public static int getTokenSetCount() {return ~                print(variable("entrycount").integer());
+                                               ~;}
+
+  public static String[] getTokenSet(int tokenSetId)~         }
+                                                              else
+                                                              {
+~
+  private static String[] getTokenSet(int tokenSetId)~        }
+~
+  {~
+                                                              if (targetLanguage == JAVA)
+                                                              {
+~
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();~
+                                                              }
+                                                              else
+                                                              {
+~
+    List<String> expected = new List<String>();~              }
+
+                                                              if (! variable("nolexer").boolean())
+                                                              {
+~
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & ~
+                                                              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                                  ~;~
+                                                              }
+~
+    for (int i = 0; i < ~                                     print(variable("t1").size);
+                        ~; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * ~                                   print(variable("transitionStateCount").integer());
+                          ~ + ~                               if (variable("nolexer").boolean())
+                                                              {
+                          ~tokenSetId~                        }
+                                                              else
+                                                              {
+                          ~s - 1~                             }
+                          ~;
+~                                                             const char *varName;
+                                                              const char *shift;
+                                                              const char *add;
+                                                              const char *toArray;
+                                                              if (targetLanguage == JAVA)
+                                                              {
+                                                                varName = "int f = ";
+                                                                shift = ">>>=";
+                                                                add = "add";
+                                                                toArray = "toArray(new String[]{})";
+                                                              }
+                                                              else
+                                                              {
+                                                                varName = "uint f = ";
+                                                                shift = ">>=";
+                                                                add = "Add";
+                                                                toArray = "ToArray()";
+                                                              }
+                                                              compressedMapAccessor(6, "i", varName, "EXPECTED", &variable("t0bits").integer());
+~
+      for ( ; f != 0; f ~                                     print(shift);
+                        ~ 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.~                                          print(add);
+                   ~(TOKEN[j]);
+        }
+      }
+    }
+    return expected.~                                         print(toArray);
+                    ~;
+  }~                                                          generateData();
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+
+  public enum Token
+  {
+    ~                                                           const CGVariable &token = variable("token");
+                                                                int w = (int) Format::width(token.size);
+                                                                for (size_t i = 0; i < token.size; ++i)
+                                                                {
+                                                                  if (i)
+                                                                  {
+    ~,
+    ~                                                             }
+    ~/* ~                                                         print(format.toString<char>(i, 10, w));
+    ~ */ ~                                                        print(token.string(i));
+                                                                }
+    ~
+  };~
+                                                              }
+                                                              if (variable("selfTest").boolean())
+                                                              {
+~
+
+  private void selfTest(int set, int tokenId)
+  {
+    String tokenString = TOKEN[tokenId];
+    if (tokenString.startsWith("'"))
+    {
+      System.out.print("testing(" + set + ", " + tokenId + ")...");
+      tokenString = tokenString.substring(1, tokenString.length() - 1).replace("''", "'");
+      if (tokenString.trim().equals(""))
+      {
+        System.out.println("  skipped");
+      }
+      else
+      {
+        int result = match(set, tokenString + " ");
+        int resultSize = getSize();
+        if (result != tokenId || resultSize != tokenString.length())
+        {
+          System.out.println();
+          System.out.println("  tested: " + tokenString);
+          System.out.println("  result: " + result);
+          System.out.println("    size: " + resultSize);
+          System.exit(1);
+        }
+        else
+        {
+          System.out.println("  OK");
+        }
+      }
+    }
+  }
+
+  public static void main(String[] args)
+  {
+    ~                                                         print(variable("classname").string());
+    ~ testee = new ~                                          print(variable("classname").string());
+                   ~();
+    for (int e = 0; e < ~                                     print(variable("a0").size);
+                        ~; ++e)
+    {
+      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                           ~;
+      for (int i = 0; i < ~                                   print(variable("t1").size);
+                          ~; i += 32)
+      {
+        int j = i;
+        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+                            ~ + s - 1;
+~                                                             compressedMapAccessor(8, "i", "int f = ", "EXPECTED", &variable("t0bits").integer());
+~
+        for ( ; f != 0; f >>>= 1, ++j)
+        {
+          if ((f & 1) != 0)
+          {
+            testee.selfTest(e, j);
+          }
+        }
+      }
+    }
+  }~                                                          }
+~
+~                                                             if (! variable("embedded").boolean())
+                                                              {
+~}
+~                                                             }
+                                                            }
+
+                                                            void CodeGeneratorJava::generateCompressedMap()
+                                                            {
+~
+public class ~                                                print(variable("classname").string());
+~
+{
+  public static int get(int i0)
+  {
+    if (i0 < 0 || i0 >= ~                                     print(variable("size").integer());
+                        ~)
+      return 0;~
+                                                              size_t i = 4;
+                                                              if (variable("rm").size > 0)
+                                                              {
+                                                                i += 2;
+~
+    if (i0 < 0x30000)
+    {~                                                        }
+~
+~                                                             compressedMapAccessor(i, "i", "return ", "LOW", &variable("dtbits").integer());
+                                                              if (variable("rm").size > 0)
+                                                              {
+~
+    }
+    else
+    {~                                                          indent += 3;
+                                                                generateBinarySearch("i0", "return ", "", "HIGH", variable("rm").size);
+                                                                indent -= 3;
+~
+    }~                                                        }
+~
+  }~                                                          generateData();
+~
+}
+~                                                           }
+
+                                                            void CodeGeneratorJava::generateData()
+                                                            {
+                                                              size_t total = 0;
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (   a->isArray()
+                                                                    && strlen(a->name) == 2
+                                                                    && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED)))
+                                                              {
+                                                                total += a->size;
+                                                              }
+                                                              bool asString = targetLanguage == JAVA
+                                                                           && total > 8192;
+                                                              size_t limit = total <= 99821
+                                                                           ? 119
+                                                                           : 4095;
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (   a->isArray()
+                                                                    && a->size > 0
+                                                                    && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
+                                                                    && strlen(a->name) == 2)
+                                                              {
+~
+
+  private static ~                                              if (targetLanguage == JAVA)
+                                                                {
+                 ~final~                                        }
+                                                                else
+                                                                {
+                 ~readonly~                                     }
+                 ~ ~                                            if (a->hasType(CGVariable::UNSIGNED))
+                                                                {
+                   ~u~                                          }
+                   ~int[] ~                                     print(a->longName);
+                          ~ =~                                  if (asString)
+                                                                {
+                             ~ new int[~                          print(a->size);
+                                       ~];
+  static
+  {
+    final String s1[] =
+    {~                                                          }
+                                                                else
+                                                                {
+~
+  {~                                                            }
+                                                                int w = (int) Format::width(a->size);
+                                                                for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j == 0 || lineLength() + Format::width(a->integer(j)) + (asString ? 3 : 2) > limit)
+                                                                  {
+                                                                    if (j) print(asString ? "\"," : ",");
+   ~
+~                                                                   if (asString) print("  ");
+~    /* ~                                                           print(format.toString<char>(j, 10, w));
+       ~ */ ~                                                       if (asString) print("\"");
+                                                                  }
+                                                                  else
+                                                                  {
+   ~, ~                                                           }
+                                                                  if (a->hasType(CGVariable::UNSIGNED))
+                                                                  {
+                                                                    print(format.toString<char>((unsigned) a->integer(j)));
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    print(a->integer(j));
+                                                                  }
+                                                                }
+                                                                if (asString)
+                                                                {
+   ~"
+    };
+    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
+    for (int i = 0; i < ~                                         print(a->size);
+                        ~; ++i) {~                                print(a->longName);
+                                 ~[i] = Integer.parseInt(s2[i]);}
+  }~                                                            }
+                                                                else
+                                                                {
+~
+  };~                                                           }
+                                                              }
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
+                                                              {
+~
+
+  private static ~                                              if (targetLanguage == JAVA)
+                                                                {
+                 ~final~                                        }
+                                                                else
+                                                                {
+                 ~readonly~                                     }
+                 ~ String[] ~                                   print(a->longName);
+                            ~ =
+  {
+~                                                               for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j)
+                                                                  {
+    ~,
+~                                                                 }
+~    "~                                                           const char *s = a->string(j);
+                                                                  const char *c = s;
+                                                                  for (; *c; ++c)
+                                                                  {
+                                                                    if (*c == '"' || *c == '\\')
+                                                                    {
+                                                                      print(s, c - s);
+                                                                      s = c;
+                                                                      print("\\");
+                                                                    }
+                                                                  }
+                                                                  print(s, c - s);
+    ~"~                                                         }
+~
+  };~                                                         }
+                                                            }
+
+                                                            void CodeGeneratorJava::generateBinarySearch(const char *input, const char *outputPrefix, const char *outputSuffix, const char *map, size_t size)
+                                                            {
+~
+int lo = 0, hi = ~                                            print(size / 3 - 1);
+                 ~;
+for (int m = ~                                                print((size / 3) >> 1);
+             ~; ; m = (hi + lo) >> 1)
+{
+  if (~                                                       print(map);
+      ~[m] > ~                                                print(input);
+             ~) {hi = m - 1;}
+  else if (~                                                  print(map);
+           ~[~                                                print(size / 3);
+             ~ + m] < ~                                       print(input);
+                      ~) {lo = m + 1;}
+  else {~                                                     print(outputPrefix);
+                                                              print(map);
+        ~[~                                                   print(size / 3 * 2);
+          ~ + m]~                                             print(outputSuffix);
+                ~;}
+  if (lo > hi) {~                                             print(outputPrefix);
+                ~0~                                           print(outputSuffix);
+                  ~;}
+}~                                                          }

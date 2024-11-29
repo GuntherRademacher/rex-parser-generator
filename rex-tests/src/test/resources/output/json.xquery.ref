@@ -1,0 +1,834 @@
+xquery version "1.0" encoding "UTF-8";
+
+(: This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: REx command line: -q json.ebnf -xquery -a xquery -tree :)
+
+                                                                      (: line 44 "json.ebnf" :)
+                                                                      declare namespace saxon="http://saxon.sf.net/";
+                                                                      declare namespace p="json";
+
+                                                                      declare option saxon:output "indent=yes";
+                                                                      (: line 12 "json.xquery" :)
+(:~
+ : The index of the lexer state for accessing the combined
+ : (i.e. level > 1) lookahead code.
+ :)
+declare variable $p:lk as xs:integer := 1;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the token that has been consumed.
+ :)
+declare variable $p:b0 as xs:integer := 2;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the token that has been consumed.
+ :)
+declare variable $p:e0 as xs:integer := 3;
+
+(:~
+ : The index of the lexer state for accessing the code of the
+ : level-1-lookahead token.
+ :)
+declare variable $p:l1 as xs:integer := 4;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the level-1-lookahead token.
+ :)
+declare variable $p:b1 as xs:integer := 5;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the level-1-lookahead token.
+ :)
+declare variable $p:e1 as xs:integer := 6;
+
+(:~
+ : The index of the lexer state for accessing the token code that
+ : was expected when an error was found.
+ :)
+declare variable $p:error as xs:integer := 7;
+
+(:~
+ : The index of the lexer state that points to the first entry
+ : used for collecting action results.
+ :)
+declare variable $p:result as xs:integer := 8;
+
+(:~
+ : The codepoint to charclass mapping for 7 bit codepoints.
+ :)
+declare variable $p:MAP0 as xs:integer+ :=
+(
+  29, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2,
+  2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13, 12, 2, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 2, 17, 18, 12, 12, 19, 20, 2, 2, 2, 2, 2, 21,
+  2, 22, 2, 2, 2, 23, 24, 25, 26, 2, 2, 2, 2, 2, 27, 2, 28, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints below the surrogate block.
+ :)
+declare variable $p:MAP1 as xs:integer+ :=
+(
+  54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+  58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 90, 122, 181, 212,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 29, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13,
+  12, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 17, 18, 12, 12, 19, 20, 2, 2, 2, 2,
+  2, 21, 2, 22, 2, 2, 2, 23, 24, 25, 26, 2, 2, 2, 2, 2, 27, 2, 28, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints above the surrogate block.
+ :)
+declare variable $p:MAP2 as xs:integer+ :=
+(
+  57344, 65536, 65533, 1114111, 2, 2
+);
+
+(:~
+ : The token-set-id to DFA-initial-state mapping.
+ :)
+declare variable $p:INITIAL as xs:integer+ :=
+(
+  1, 2, 3, 4, 5, 6, 7, 8
+);
+
+(:~
+ : The DFA transition table.
+ :)
+declare variable $p:TRANSITION as xs:integer+ :=
+(
+  129, 129, 129, 129, 120, 127, 129, 129, 129, 137, 129, 129, 147, 178, 128, 129, 129, 137, 167, 129, 248, 137, 129,
+  129, 139, 137, 167, 129, 129, 188, 129, 129, 129, 137, 128, 129, 324, 201, 214, 222, 288, 230, 214, 222, 321, 137,
+  129, 129, 129, 137, 348, 235, 129, 243, 170, 235, 193, 137, 129, 129, 129, 256, 128, 129, 277, 137, 129, 129, 129,
+  266, 348, 235, 129, 137, 154, 235, 129, 243, 170, 338, 180, 137, 154, 235, 129, 137, 272, 285, 258, 137, 128, 129,
+  129, 296, 128, 129, 129, 137, 129, 304, 306, 137, 128, 129, 129, 314, 332, 129, 206, 137, 129, 129, 161, 137, 129,
+  129, 346, 129, 129, 129, 329, 329, 329, 329, 329, 329, 329, 329, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0,
+  11, 11, 0, 10, 0, 10, 0, 0, 10, 10, 0, 0, 0, 0, 0, 29, 0, 0, 0, 896, 0, 896, 0, 0, 25, 0, 0, 0, 0, 0, 0, 29, 19, 0,
+  192, 0, 0, 0, 0, 0, 0, 14, 14, 0, 10, 0, 18, 18, 0, 0, 0, 0, 0, 0, 512, 512, 0, 10, 268, 0, 269, 0, 0, 0, 0, 0, 0,
+  832, 832, 0, 280, 281, 0, 0, 0, 29, 280, 281, 0, 0, 0, 31, 0, 32, 10, 0, 10, 269, 0, 269, 0, 0, 0, 0, 31, 0, 32, 10,
+  0, 10, 0, 19, 19, 0, 0, 0, 0, 384, 384, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 15, 15, 0, 10, 0, 0, 0, 20, 0, 0, 0, 26, 27, 0,
+  0, 0, 0, 576, 0, 0, 576, 0, 0, 704, 0, 0, 0, 0, 0, 0, 269, 269, 0, 10, 0, 0, 0, 0, 0, 22, 0, 30, 0, 0, 0, 0, 0, 0, 16,
+  16, 0, 10, 0, 0, 0, 0, 21, 0, 0, 448, 0, 0, 0, 0, 0, 0, 268, 268, 23, 0, 0, 0, 0, 28, 0, 0, 0, 768, 31, 640, 32, 10,
+  128, 0, 0, 0, 0, 0, 0, 0, 29, 0
+);
+
+(:~
+ : The DFA-state to expected-token-set mapping.
+ :)
+declare variable $p:EXPECTED as xs:integer+ :=
+(
+  8, 12, 16, 21, 17, 23, 21, 27, 18, 20, 80, 8212, 304, 8240, 7836, 8092, 16, 4, 8, 8, 512, 8, 512, 1024, 2048, 4, 8, 4,
+  512, 4, 4
+);
+
+(:~
+ : The token-string table.
+ :)
+declare variable $p:TOKEN as xs:string+ :=
+(
+  "(0)",
+  "eof",
+  "string",
+  "number",
+  "whitespace",
+  "','",
+  "':'",
+  "'['",
+  "']'",
+  "'false'",
+  "'null'",
+  "'true'",
+  "'{'",
+  "'}'"
+);
+
+(:~
+ : Match next token in input string, starting at given index, using
+ : the DFA entry state for the set of tokens that are expected in
+ : the current context.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start in input string.
+ : @param $token-set the expected token set id.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:match($input as xs:string,
+                         $begin as xs:integer,
+                         $token-set as xs:integer) as xs:integer+
+{
+  let $result := $p:INITIAL[1 + $token-set]
+  return p:transition($input,
+                      $begin,
+                      $begin,
+                      $begin,
+                      $result,
+                      $result mod 64,
+                      0)
+};
+
+(:~
+ : The DFA state transition function. If we are in a valid DFA state, save
+ : it's result annotation, consume one input codepoint, calculate the next
+ : state, and use tail recursion to do the same again. Otherwise, return
+ : any valid result or a negative DFA state id in case of an error.
+ :
+ : @param $input the input string.
+ : @param $begin the begin index of the current token in the input string.
+ : @param $current the index of the current position in the input string.
+ : @param $end the end index of the result in the input string.
+ : @param $result the result code.
+ : @param $current-state the current DFA state.
+ : @param $previous-state the  previous DFA state.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:transition($input as xs:string,
+                              $begin as xs:integer,
+                              $current as xs:integer,
+                              $end as xs:integer,
+                              $result as xs:integer,
+                              $current-state as xs:integer,
+                              $previous-state as xs:integer)
+{
+  if ($current-state eq 0) then
+    let $result := $result idiv 64
+    let $end := if ($end gt string-length($input)) then string-length($input) + 1 else $end
+    return
+      if ($result ne 0) then
+      (
+        $result - 1,
+        $begin,
+        $end
+      )
+      else
+      (
+        - $previous-state,
+        $begin,
+        $current - 1
+      )
+  else
+    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]
+    let $c1 :=
+      if ($c0 < 128) then
+        $p:MAP0[1 + $c0]
+      else if ($c0 < 55296) then
+        let $c1 := $c0 idiv 32
+        let $c2 := $c1 idiv 32
+        return $p:MAP1[1 + $c0 mod 32 + $p:MAP1[1 + $c1 mod 32 + $p:MAP1[1 + $c2]]]
+      else
+        p:map2($c0, 1, 2)
+    let $current := $current + 1
+    let $i0 := 32 * $c1 + $current-state - 1
+    let $i1 := $i0 idiv 8
+    let $next-state := $p:TRANSITION[$i0 mod 8 + $p:TRANSITION[$i1 + 1] + 1]
+    return
+      if ($next-state > 63) then
+        p:transition($input, $begin, $current, $current, $next-state, $next-state mod 64, $current-state)
+      else
+        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)
+};
+
+(:~
+ : Recursively translate one 32-bit chunk of an expected token bitset
+ : to the corresponding sequence of token strings.
+ :
+ : @param $result the result of previous recursion levels.
+ : @param $chunk the 32-bit chunk of the expected token bitset.
+ : @param $base-token-code the token code of bit 0 in the current chunk.
+ : @return the set of token strings.
+ :)
+declare function p:token($result as xs:string*,
+                         $chunk as xs:integer,
+                         $base-token-code as xs:integer)
+{
+  if ($chunk = 0) then
+    $result
+  else
+    p:token
+    (
+      ($result, if ($chunk mod 2 != 0) then $p:TOKEN[$base-token-code] else ()),
+      if ($chunk < 0) then $chunk idiv 2 + 2147483648 else $chunk idiv 2,
+      $base-token-code + 1
+    )
+};
+
+(:~
+ : Calculate expected token set for a given DFA state as a sequence
+ : of strings.
+ :
+ : @param $state the DFA state.
+ : @return the set of token strings.
+ :)
+declare function p:expected-token-set($state as xs:integer) as xs:string*
+{
+  if ($state > 0) then
+    for $t in 0 to 0
+    let $i0 := $t * 32 + $state - 1
+    let $i1 := $i0 idiv 4
+    return p:token((), $p:EXPECTED[$i0 mod 4 + $p:EXPECTED[$i1 + 1] + 1], $t * 32 + 1)
+  else
+    ()
+};
+
+(:~
+ : Classify codepoint by doing a tail recursive binary search for a
+ : matching codepoint range entry in MAP2, the codepoint to charclass
+ : map for codepoints above the surrogate block.
+ :
+ : @param $c the codepoint.
+ : @param $lo the binary search lower bound map index.
+ : @param $hi the binary search upper bound map index.
+ : @return the character class.
+ :)
+declare function p:map2($c as xs:integer, $lo as xs:integer, $hi as xs:integer) as xs:integer
+{
+  if ($lo > $hi) then
+    0
+  else
+    let $m := ($hi + $lo) idiv 2
+    return
+      if ($p:MAP2[$m] > $c) then
+        p:map2($c, $lo, $m - 1)
+      else if ($p:MAP2[2 + $m] < $c) then
+        p:map2($c, $m + 1, $hi)
+      else
+        $p:MAP2[4 + $m]
+};
+
+(:~
+ : Parse the 1st loop of production array (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-array-1($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else
+    let $state := p:lookahead1W(4, $input, $state)          (: whitespace^token | ',' | ']' :)
+    return
+      if ($state[$p:l1] != 5) then                          (: ',' :)
+        $state
+      else
+        let $state := p:consume(5, $input, $state)          (: ',' :)
+        let $state := p:lookahead1W(6, $input, $state)      (: string | number | whitespace^token | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+        let $state := p:whitespace($input, $state)
+        let $state :=
+          if ($state[$p:error]) then
+            $state
+          else
+            p:parse-value($input, $state)
+        return p:parse-array-1($input, $state)
+};
+
+(:~
+ : Parse array.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-array($input as xs:string, $state as item()+) as item()+
+{
+  let $count := count($state)
+  let $begin := $state[$p:e0]
+  let $state := p:consume(7, $input, $state)                (: '[' :)
+  let $state := p:lookahead1W(7, $input, $state)            (: string | number | whitespace^token | '[' | ']' |
+                                                               'false' | 'null' | 'true' | '{' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] != 8) then                       (: ']' :)
+      let $state := p:whitespace($input, $state)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-value($input, $state)
+      let $state := p:parse-array-1($input, $state)
+      return $state
+    else
+      $state
+  let $state := p:consume(8, $input, $state)                (: ']' :)
+  let $end := $state[$p:e0]
+  return p:reduce($state, "array", $count, $begin, $end)
+};
+
+(:~
+ : Parse pair.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-pair($input as xs:string, $state as item()+) as item()+
+{
+  let $count := count($state)
+  let $begin := $state[$p:e0]
+  let $state := p:consume(2, $input, $state)                (: string :)
+  let $state := p:lookahead1W(2, $input, $state)            (: whitespace^token | ':' :)
+  let $state := p:consume(6, $input, $state)                (: ':' :)
+  let $state := p:lookahead1W(6, $input, $state)            (: string | number | whitespace^token | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+  let $state := p:whitespace($input, $state)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else
+      p:parse-value($input, $state)
+  let $end := $state[$p:e0]
+  return p:reduce($state, "pair", $count, $begin, $end)
+};
+
+(:~
+ : Parse the 1st loop of production object (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-object-1($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else
+    let $state := p:lookahead1W(5, $input, $state)          (: whitespace^token | ',' | '}' :)
+    return
+      if ($state[$p:l1] != 5) then                          (: ',' :)
+        $state
+      else
+        let $state := p:consume(5, $input, $state)          (: ',' :)
+        let $state := p:lookahead1W(1, $input, $state)      (: string | whitespace^token :)
+        let $state := p:whitespace($input, $state)
+        let $state :=
+          if ($state[$p:error]) then
+            $state
+          else
+            p:parse-pair($input, $state)
+        return p:parse-object-1($input, $state)
+};
+
+(:~
+ : Parse object.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-object($input as xs:string, $state as item()+) as item()+
+{
+  let $count := count($state)
+  let $begin := $state[$p:e0]
+  let $state := p:consume(12, $input, $state)               (: '{' :)
+  let $state := p:lookahead1W(3, $input, $state)            (: string | whitespace^token | '}' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] = 2) then                        (: string :)
+      let $state := p:whitespace($input, $state)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-pair($input, $state)
+      let $state := p:parse-object-1($input, $state)
+      return $state
+    else
+      $state
+  let $state := p:consume(13, $input, $state)               (: '}' :)
+  let $end := $state[$p:e0]
+  return p:reduce($state, "object", $count, $begin, $end)
+};
+
+(:~
+ : Parse value.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-value($input as xs:string, $state as item()+) as item()+
+{
+  let $count := count($state)
+  let $begin := $state[$p:e0]
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] = 2) then                        (: string :)
+      let $state := p:consume(2, $input, $state)            (: string :)
+      return $state
+    else if ($state[$p:l1] = 3) then                        (: number :)
+      let $state := p:consume(3, $input, $state)            (: number :)
+      return $state
+    else if ($state[$p:l1] = 12) then                       (: '{' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-object($input, $state)
+      return $state
+    else if ($state[$p:l1] = 7) then                        (: '[' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-array($input, $state)
+      return $state
+    else if ($state[$p:l1] = 11) then                       (: 'true' :)
+      let $state := p:consume(11, $input, $state)           (: 'true' :)
+      return $state
+    else if ($state[$p:l1] = 9) then                        (: 'false' :)
+      let $state := p:consume(9, $input, $state)            (: 'false' :)
+      return $state
+    else
+      let $state := p:consume(10, $input, $state)           (: 'null' :)
+      return $state
+  let $end := $state[$p:e0]
+  return p:reduce($state, "value", $count, $begin, $end)
+};
+
+(:~
+ : Parse json.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-json($input as xs:string, $state as item()+) as item()+
+{
+  let $count := count($state)
+  let $begin := $state[$p:e0]
+  let $state := p:lookahead1W(6, $input, $state)            (: string | number | whitespace^token | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+  let $state := p:whitespace($input, $state)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else
+      p:parse-value($input, $state)
+  let $state := p:lookahead1W(0, $input, $state)            (: eof | whitespace^token :)
+  let $state := p:consume(1, $input, $state)                (: eof :)
+  let $end := $state[$p:e0]
+  return p:reduce($state, "json", $count, $begin, $end)
+};
+
+(:~
+ : Create a textual error message from a parsing error.
+ :
+ : @param $input the input string.
+ : @param $error the parsing error descriptor.
+ : @return the error message.
+ :)
+declare function p:error-message($input as xs:string, $error as element(error)) as xs:string
+{
+  let $begin := xs:integer($error/@b)
+  let $context := string-to-codepoints(substring($input, 1, $begin - 1))
+  let $linefeeds := index-of($context, 10)
+  let $line := count($linefeeds) + 1
+  let $column := ($begin - $linefeeds[last()], $begin)[1]
+  return
+    string-join
+    (
+      (
+        if ($error/@o) then
+          ("syntax error, found ", $p:TOKEN[$error/@o + 1])
+        else
+          "lexical analysis failed",
+        "&#10;",
+        "while expecting ",
+        if ($error/@x) then
+          $p:TOKEN[$error/@x + 1]
+        else
+          let $expected := p:expected-token-set($error/@s)
+          return
+          (
+            "["[exists($expected[2])],
+            string-join($expected, ", "),
+            "]"[exists($expected[2])]
+          ),
+        "&#10;",
+        if ($error/@o or $error/@e = $begin) then
+          ()
+        else
+          ("after successfully scanning ", string($error/@e - $begin), " characters beginning "),
+        "at line ", string($line), ", column ", string($column), ":&#10;",
+        "...", substring($input, $begin, 64), "..."
+      ),
+      ""
+    )
+};
+
+(:~
+ : Consume one token, i.e. compare lookahead token 1 with expected
+ : token and in case of a match, shift lookahead tokens down such that
+ : l1 becomes the current token, and higher lookahead tokens move down.
+ : When lookahead token 1 does not match the expected token, raise an
+ : error by saving the expected token code in the error field of the
+ : lexer state.
+ :
+ : @param $code the expected token.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:consume($code as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:error]) then
+    $state
+  else if ($state[$p:l1] eq $code) then
+  (
+    subsequence($state, $p:l1, 3),
+    0, 0, 0,
+    subsequence($state, 7),
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    where $begin ne $end
+    return
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      },
+    let $token := $p:TOKEN[1 + $state[$p:l1]]
+    let $name := if (starts-with($token, "'")) then "TOKEN" else $token
+    let $begin := $state[$p:b1]
+    let $end := $state[$p:e1]
+    return
+      element {$name}
+      {
+        substring($input, $begin, $end - $begin)
+      }
+  )
+  else
+  (
+    subsequence($state, 1, $p:error - 1),
+    element error
+    {
+      attribute b {$state[$p:b1]},
+      attribute e {$state[$p:e1]},
+      if ($state[$p:l1] lt 0) then
+        attribute s {- $state[$p:l1]}
+      else
+        (attribute o {$state[$p:l1]}, attribute x {$code})
+    },
+    subsequence($state, $p:error + 1)
+  )
+};
+
+(:~
+ : Consume whitespace.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:whitespace($input as xs:string,
+                              $state as item()+) as item()+
+{
+  if ($state[$p:e0] = $state[$p:b1]) then
+    $state
+  else
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    return
+    (
+      0,
+      $state[$p:b0],
+      $end,
+      subsequence($state, $p:e0 + 1),
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      }
+    )
+};
+
+(:~
+ : Use p:match to fetch the next token, but skip any leading
+ : whitespace.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start.
+ : @param $token-set the valid token set id.
+ : @return a sequence of three values: the token code of the result
+ : token, with input string positions of token begin and end.
+ :)
+declare function p:matchW($input as xs:string,
+                          $begin as xs:integer,
+                          $token-set as xs:integer)
+{
+  let $match := p:match($input, $begin, $token-set)
+  return
+    if ($match[1] = 4) then                                 (: whitespace^token :)
+      p:matchW($input, $match[3], $token-set)
+    else
+      $match
+};
+
+(:~
+ : Lookahead one token on level 1 with whitespace skipping.
+ :
+ : @param $set the code of the DFA entry state for the set of valid tokens.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:lookahead1W($set as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:l1] ne 0) then
+    $state
+  else
+    let $match :=
+        p:matchW($input, $state[$p:e0], $set)
+    return
+    (
+      $match[1],
+      subsequence($state, $p:b0, 2),
+      $match,
+      subsequence($state, 7)
+    )
+};
+
+(:~
+ : Reduce the result stack, creating a nonterminal element. Pop
+ : $count elements off the stack, wrap them in a new element
+ : named $name, and push the new element.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $name the name of the result node.
+ : @param $count the number of child nodes.
+ : @param $begin the input index where the nonterminal begins.
+ : @param $end the input index where the nonterminal ends.
+ : @return the updated state.
+ :)
+declare function p:reduce($state as item()+, $name as xs:string, $count as xs:integer, $begin as xs:integer, $end as xs:integer) as item()+
+{
+  subsequence($state, 1, $count),
+  element {$name}
+  {
+    subsequence($state, $count + 1)
+  }
+};
+
+(:~
+ : Parse start symbol json from given string.
+ :
+ : @param $s the string to be parsed.
+ : @return the result as generated by parser actions.
+ :)
+declare function p:parse-json($s as xs:string) as item()*
+{
+  let $state := (0, 1, 1, 0, 0, 0, false())
+  let $state := p:parse-json($s, $state)
+  let $error := $state[$p:error]
+  return
+    if ($error) then
+      element ERROR {$error/@*, p:error-message($s, $error)}
+    else
+      subsequence($state, $p:result)
+};
+
+                                                                      (: line 100 "json.ebnf" :)
+                                                                      declare variable $inputs :=
+                                                                                                                (
+                                                                      '{
+                                                                        "Kreditkarte" : "Xema",
+                                                                        "Nummer"      : "1234-5678-9012-3456",
+                                                                        "Inhaber"       : {
+                                                                          "Name"        : "Reich",
+                                                                          "Vorname"     : "Rainer",
+                                                                          "Geschlecht"  : "\"männlich\"",
+                                                                          "Vorlieben"   : [
+                                                                            "Reiten",
+                                                                            "Schwimmen",
+                                                                            "Lesen"
+                                                                          ],
+                                                                          "Alter"       : null
+                                                                        },
+                                                                        "Deckung"     : 1e+6,
+                                                                        "Währung"     : "EURO"
+                                                                      }
+                                                                      '
+                                                                                                                ,
+                                                                      '{
+                                                                         "firstName": "John",
+                                                                         "lastName": "Smith",
+                                                                         "address": {
+                                                                             "streetAddress": "21 2nd Street",
+                                                                             "city": "New York",
+                                                                             "state": "NY",
+                                                                             "postalCode": 10021
+                                                                         },
+                                                                         "phoneNumbers": [
+                                                                             "212 732-1234",
+                                                                             "646 123-4567"
+                                                                         ]
+                                                                      }'
+                                                                                                                ,
+                                                                      '{"ResultSet":
+                                                                         {"LastUpdateDate":"1178683597",
+                                                                          "Result":[{"type":"construction",
+                                                                                     "Title":"Construction work, on I-5 NB at SENECA ST",
+                                                                                     "Description":"I 5 N Construction work, Left Lane Blocked on I 5 northbound from Seneca Street to Pine Street starting 11:00 PM, 05 08 07 for several days from 11:00pm to 05:00am on Tuesdays, Wednesdays and Thursdays . From milepost 165 to milepost 167",
+                                                                                     "Latitude":"47.614353",
+                                                                                     "Longitude":"-122.329586",
+                                                                                     "Direction":"NB",
+                                                                                     "Severity" :  2,
+                                                                                     "ReportDate":1178604000,
+                                                                                     "UpdateDate":1178608792,
+                                                                                     "EndDate":1178712000},
+                                                                                    {"type":"construction",
+                                                                                     "Title":"Construction work, on I-5 NB at UNIVERSITY ST",
+                                                                                     "Description":"I 5 N Construction work, On ramp Blocked on I 5 northbound at University Street starting 10:00 PM, 05 08 07 until further notice from 10:00pm to 05:00am on Tuesdays, Wednesdays and Thursdays . From milepost 165 to milepost 166",
+                                                                                     "Latitude":"47.615975",
+                                                                                     "Longitude":"-122.328988",
+                                                                                     "Direction":"NB",
+                                                                                     "Severity" : 2,
+                                                                                     "ReportDate":1178600400,
+                                                                                     "UpdateDate":1178608793,
+                                                                                     "EndDate":1178712000},
+                                                                                    {"type":"incident",
+                                                                                     "Title":"Lane closed, on WA-99 at 4TH AVE",
+                                                                                     "Description":"SR 99 Road construction, right lane closed on SR 99 in both directions from 4TH AVE W to 7TH AVE SE starting 8:00 PM, 05 07 07 for a week from 08:00pm to 06:00am on Mondays, Tuesdays, Wednesdays and Thursdays . From milepost 50 to milepost 51",
+                                                                                    "Latitude":"47.634877",
+                                                                                    "Longitude":"-122.344338",
+                                                                                    "Direction":"N\/A",
+                                                                                    "Severity":2,
+                                                                                    "ReportDate":1178506800,
+                                                                                    "UpdateDate":1178608788,
+                                                                                    "EndDate":1178715600}
+                                                                                  ]
+                                                                         }
+                                                                      }'
+                                                                                                                );
+
+                                                                                                                <result>
+                                                                                                                {
+                                                                                                                  for $input at $i in $inputs
+                                                                                                                  let $p := p:parse-json($input)
+                                                                                                                  return
+                                                                                                                    <parse i="{$i}" complete="{string($p) = $input}">
+                                                                                                                    {
+                                                                                                                      $p
+                                                                                                                    }
+                                                                                                                    </parse>
+                                                                                                                }
+                                                                                                                </result>
+                                                                      (: line 834 "json.xquery" :)
+(: End :)

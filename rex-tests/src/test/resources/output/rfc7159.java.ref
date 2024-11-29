@@ -1,0 +1,872 @@
+// This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q rfc7159.ebnf -java -performance -tree
+
+import java.util.Arrays;
+
+public class rfc7159
+{
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public void serialize(EventHandler eventHandler)
+    {
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  public interface EventHandler
+  {
+    public void reset(CharSequence string);
+    public void startNonterminal(String name, int begin);
+    public void endNonterminal(String name, int end);
+    public void terminal(String name, int begin, int end);
+    public void whitespace(int begin, int end);
+  }
+
+  public static class TopDownTreeBuilder implements EventHandler
+  {
+    private CharSequence input = null;
+    private Nonterminal[] stack = new Nonterminal[64];
+    private int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void startNonterminal(String name, int begin)
+    {
+      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      if (top >= 0) addChild(nonterminal);
+      if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
+      stack[top] = nonterminal;
+    }
+
+    @Override
+    public void endNonterminal(String name, int end)
+    {
+      stack[top].end = end;
+      if (top > 0) --top;
+    }
+
+    @Override
+    public void terminal(String name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    @Override
+    public void whitespace(int begin, int end)
+    {
+    }
+
+    private void addChild(Symbol s)
+    {
+      Nonterminal current = stack[top];
+      current.children = Arrays.copyOf(current.children, current.children.length + 1);
+      current.children[current.children.length - 1] = s;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      stack[0].send(e);
+    }
+  }
+
+  public static abstract class Symbol
+  {
+    public String name;
+    public int begin;
+    public int end;
+
+    protected Symbol(String name, int begin, int end)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void send(EventHandler e);
+  }
+
+  public static class Terminal extends Symbol
+  {
+    public Terminal(String name, int begin, int end)
+    {
+      super(name, begin, end);
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.terminal(name, begin, end);
+    }
+  }
+
+  public static class Nonterminal extends Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    {
+      super(name, begin, end);
+      this.children = children;
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.startNonterminal(name, begin);
+      int pos = begin;
+      for (Symbol c : children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(name, end);
+    }
+  }
+
+  public static class ContentCounter implements EventHandler
+  {
+    private int length = 0;
+    public int getLength() {return length;}
+    @Override
+    public void reset(CharSequence string) {length = 0;}
+    @Override
+    public void startNonterminal(String name, int begin) {}
+    @Override
+    public void endNonterminal(String name, int end) {}
+    @Override
+    public void terminal(String name, int begin, int end) {length += end - begin;}
+    @Override
+    public void whitespace(int begin, int end) {length += end - begin;}
+  }
+
+  private static boolean quiet = false;
+  private static long parsed = 0;
+  private static int errorCount = 0;
+  private static java.util.Collection<ParseJob> parsers = new java.util.ArrayList<>();
+
+  private static class ParseJob
+  {
+    public String name;
+    public String input;
+    public rfc7159 parser;
+    public ContentCounter contentCounter;
+
+    public ParseJob(String s, String i)
+    {
+      name = s;
+      input = i;
+      contentCounter = new ContentCounter();
+      parser = new rfc7159(input, contentCounter);
+    }
+  }
+
+  public static void main(String[] args) throws Exception
+  {
+    if (args.length == 0)
+    {
+      System.out.println("Usage: java rfc7159 [-q] [-r N] [-t N] ENDING...");
+      System.out.println();
+      System.out.println("  parse all files that have names ending with ENDING, in current dir and below,");
+      System.out.println("  and display performance summary.");
+      System.out.println();
+      System.out.println("  -q     do not show file names");
+      System.out.println("  -r N   repeat N times");
+      System.out.println("  -t N   repeat until N seconds have elapsed");
+    }
+    else
+    {
+      int repeat = 1;
+      int timeout = 0;
+      int i;
+      for (i = 0; i < args.length && args[i].startsWith("-"); ++i)
+      {
+        switch (args[i].length() == 2 ? args[i].charAt(1) : ' ')
+        {
+        case 'q':
+          quiet = true;
+          break;
+        case 'r':
+          repeat = Integer.parseInt(args[++i]);
+          timeout = 0;
+          break;
+        case 't':
+          repeat = 0;
+          timeout = 1000 * Integer.parseInt(args[++i]);
+          break;
+        default:
+          throw new RuntimeException("invalid option: " + args[i]);
+        }
+      }
+
+      long start = System.currentTimeMillis();
+
+      for (; i < args.length; ++i)
+      {
+        findFiles(new java.io.File("."), args[i]);
+      }
+
+      if (! parsers.isEmpty())
+      {
+        long msec = System.currentTimeMillis() - start;
+
+        if (! quiet) System.out.println();
+        System.out.println("loaded " + parsers.size() + " file" +
+                           (parsers.size() == 1 ? "" : "s") + " in " +
+                           msec + " msec");
+        if (! quiet) System.out.println();
+        System.out.flush();
+
+        start = System.currentTimeMillis();
+        for (i = 0; ; ++i)
+        {
+          if (repeat != 0 && i >= repeat) break;
+          if (timeout != 0 && System.currentTimeMillis() - start >= timeout) break;
+
+          for (ParseJob job : parsers)
+          {
+            if (job.parser != null)
+            {
+              try
+              {
+                if (! quiet) System.out.print("parsing " + job.name);
+                job.parser.reset(0, 0, 0);
+                job.parser.parse_JSON_text();
+                if (! quiet) System.out.println();
+                if (job.contentCounter.getLength() != job.input.length())
+                {
+                  throw new RuntimeException("content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length());
+                }
+                parsed += job.input.length();
+              }
+              catch (ParseException pe)
+              {
+                ++errorCount;
+                if (quiet) System.out.print("parsing " + job.name);
+                System.out.println(": error: " + job.parser.getErrorMessage(pe));
+                job.parser = null;
+              }
+            }
+          }
+        }
+        msec = System.currentTimeMillis() - start;
+        String mbPerSec = msec == 0
+                        ? null
+                        : new java.text.DecimalFormat("0.##").format(Double.valueOf(parsed / 1024e0 / 1024e0 * 1000e0 / msec));
+
+        if (! quiet) System.out.println();
+        System.out.print("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
+                         " in " + msec + " msec");
+        if (mbPerSec != null)
+        {
+          System.out.print(" (" + mbPerSec + " MB/sec)");
+        }
+        System.out.println();
+        System.out.println(errorCount + " error" + (errorCount == 1 ? "" : "s"));
+      }
+    }
+  }
+
+  private static void collectInput(String name, String content) throws Exception
+  {
+    if (! quiet) System.out.println("loading " + name);
+    parsers.add(new ParseJob(name, content));
+  }
+
+  private static void findFiles(java.io.File f, String filter) throws Exception
+  {
+    if (f.isDirectory())
+    {
+      java.io.File files[] = f.listFiles();
+      if (files != null)
+      {
+        for (java.io.File file : files)
+        {
+          findFiles(file, filter);
+        }
+      }
+    }
+    else if (f.getName().toLowerCase().endsWith(filter.toLowerCase()))
+    {
+      collectInput(f.getPath(), read(f.getPath()));
+    }
+  }
+
+  private static String read(String input) throws Exception
+  {
+    if (input.startsWith("{") && input.endsWith("}"))
+    {
+      return input.substring(1, input.length() - 1);
+    }
+    else
+    {
+      byte buffer[] = new byte[(int) new java.io.File(input).length()];
+      java.io.FileInputStream stream = new java.io.FileInputStream(input);
+      stream.read(buffer);
+      stream.close();
+      String content = new String(buffer, System.getProperty("file.encoding"));
+      return content.length() > 0 && content.charAt(0) == '\uFEFF'
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  public rfc7159(CharSequence string, EventHandler t)
+  {
+    initialize(string, t);
+  }
+
+  public void initialize(CharSequence source, EventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    l2 = 0; b2 = 0; e2 = 0;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_JSON_text()
+  {
+    eventHandler.startNonterminal("JSON-text", e0);
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    parse_value();
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    lookahead1(3);                  // EOF
+    consume(10);                    // EOF
+    eventHandler.endNonterminal("JSON-text", e0);
+  }
+
+  private void parse_begin_array()
+  {
+    eventHandler.startNonterminal("begin-array", e0);
+    consume(1);                     // ws
+    lookahead1(6);                  // '['
+    consume(13);                    // '['
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("begin-array", e0);
+  }
+
+  private void parse_begin_object()
+  {
+    eventHandler.startNonterminal("begin-object", e0);
+    consume(1);                     // ws
+    lookahead1(8);                  // '{'
+    consume(15);                    // '{'
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("begin-object", e0);
+  }
+
+  private void parse_end_array()
+  {
+    eventHandler.startNonterminal("end-array", e0);
+    consume(1);                     // ws
+    lookahead1(7);                  // ']'
+    consume(14);                    // ']'
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("end-array", e0);
+  }
+
+  private void parse_end_object()
+  {
+    eventHandler.startNonterminal("end-object", e0);
+    consume(1);                     // ws
+    lookahead1(9);                  // '}'
+    consume(16);                    // '}'
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("end-object", e0);
+  }
+
+  private void parse_name_separator()
+  {
+    eventHandler.startNonterminal("name-separator", e0);
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    lookahead1(5);                  // ':'
+    consume(12);                    // ':'
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("name-separator", e0);
+  }
+
+  private void parse_value_separator()
+  {
+    eventHandler.startNonterminal("value-separator", e0);
+    consume(1);                     // ws
+    lookahead1(4);                  // ','
+    consume(11);                    // ','
+    lookahead1(0);                  // ws
+    consume(1);                     // ws
+    eventHandler.endNonterminal("value-separator", e0);
+  }
+
+  private void parse_value()
+  {
+    eventHandler.startNonterminal("value", e0);
+    lookahead1(17);                 // ws | false | null | true | int | minus | string
+    switch (l1)
+    {
+    case 1:                         // ws
+      lookahead2(14);               // '[' | '{'
+      break;
+    default:
+      lk = l1;
+    }
+    switch (lk)
+    {
+    case 2:                         // false
+      consume(2);                   // false
+      break;
+    case 3:                         // null
+      consume(3);                   // null
+      break;
+    case 4:                         // true
+      consume(4);                   // true
+      break;
+    case 481:                       // ws '{'
+      parse_object();
+      break;
+    case 417:                       // ws '['
+      parse_array();
+      break;
+    case 9:                         // string
+      consume(9);                   // string
+      break;
+    default:
+      parse_number();
+    }
+    eventHandler.endNonterminal("value", e0);
+  }
+
+  private void parse_object()
+  {
+    eventHandler.startNonterminal("object", e0);
+    parse_begin_object();
+    lookahead1(11);                 // ws | string
+    if (l1 == 9)                    // string
+    {
+      parse_member();
+      for (;;)
+      {
+        lookahead1(0);              // ws
+        switch (l1)
+        {
+        case 1:                     // ws
+          lookahead2(13);           // ',' | '}'
+          break;
+        default:
+          lk = l1;
+        }
+        if (lk != 353)              // ws ','
+        {
+          break;
+        }
+        parse_value_separator();
+        parse_member();
+      }
+    }
+    parse_end_object();
+    eventHandler.endNonterminal("object", e0);
+  }
+
+  private void parse_member()
+  {
+    eventHandler.startNonterminal("member", e0);
+    lookahead1(2);                  // string
+    consume(9);                     // string
+    parse_name_separator();
+    parse_value();
+    eventHandler.endNonterminal("member", e0);
+  }
+
+  private void parse_array()
+  {
+    eventHandler.startNonterminal("array", e0);
+    parse_begin_array();
+    lookahead1(17);                 // ws | false | null | true | int | minus | string
+    switch (l1)
+    {
+    case 1:                         // ws
+      lookahead2(16);               // '[' | ']' | '{'
+      break;
+    default:
+      lk = l1;
+    }
+    if (lk != 449)                  // ws ']'
+    {
+      parse_value();
+      for (;;)
+      {
+        lookahead1(0);              // ws
+        switch (l1)
+        {
+        case 1:                     // ws
+          lookahead2(12);           // ',' | ']'
+          break;
+        default:
+          lk = l1;
+        }
+        if (lk != 353)              // ws ','
+        {
+          break;
+        }
+        parse_value_separator();
+        parse_value();
+      }
+    }
+    parse_end_array();
+    eventHandler.endNonterminal("array", e0);
+  }
+
+  private void parse_number()
+  {
+    eventHandler.startNonterminal("number", e0);
+    if (l1 == 8)                    // minus
+    {
+      consume(8);                   // minus
+    }
+    lookahead1(1);                  // int
+    consume(7);                     // int
+    lookahead1(15);                 // ws | exp | frac
+    if (l1 == 6)                    // frac
+    {
+      consume(6);                   // frac
+    }
+    lookahead1(10);                 // ws | exp
+    if (l1 == 5)                    // exp
+    {
+      consume(5);                   // exp
+    }
+    eventHandler.endNonterminal("number", e0);
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      eventHandler.terminal(TOKEN[l1], b1, e1);
+      b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
+      b1 = b2; e1 = e2; l2 = 0; }
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private void lookahead2(int tokenSetId)
+  {
+    if (l2 == 0)
+    {
+      l2 = match(tokenSetId);
+      b2 = begin;
+      e2 = end;
+    }
+    lk = (l2 << 5) | l1;
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int lk, b0, e0;
+  private int l1, b1, e1;
+  private int l2, b2, e2;
+  private EventHandler eventHandler = null;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 63; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = current < size ? input.charAt(current) : 0;
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+
+        int lo = 0, hi = 0;
+        for (int m = 0; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) {hi = m - 1;}
+          else if (MAP2[1 + m] < c0) {lo = m + 1;}
+          else {charclass = MAP2[2 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+
+      state = code;
+      int i0 = (charclass << 6) + code - 1;
+      code = TRANSITION[(i0 & 7) + TRANSITION[i0 >> 3]];
+
+      if (code > 63)
+      {
+        result = code;
+        code &= 63;
+        end = current;
+      }
+    }
+
+    result >>= 6;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 31) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 63;
+    for (int i = 0; i < 17; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 38 + s - 1;
+      int f = EXPECTED[(i0 & 15) + EXPECTED[i0 >> 4]];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 29, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4,
+    /*  35 */ 3, 3, 3, 3, 3, 3, 3, 3, 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 3, 3, 3, 3, 3, 3, 13,
+    /*  66 */ 13, 13, 13, 14, 13, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 15, 16, 17, 3, 3, 3, 18,
+    /*  98 */ 9, 3, 3, 19, 20, 3, 3, 3, 3, 3, 21, 3, 22, 3, 3, 3, 23, 24, 25, 26, 3, 3, 3, 3, 3, 27, 3, 28, 3, 3
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 90, 122, 181, 212, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149,
+    /*  74 */ 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 29, 0, 0, 0, 0, 0, 0, 0,
+    /*  98 */ 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 3, 3, 3, 3, 3, 3, 3, 3,
+    /* 133 */ 5, 6, 7, 8, 9, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+    /* 165 */ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 13, 13, 13, 13, 14, 13, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+    /* 198 */ 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 15, 16, 17, 3, 3, 18, 9, 3, 3, 19, 20, 3, 3, 3, 3, 3, 21, 3, 22, 3, 3, 3,
+    /* 230 */ 23, 24, 25, 26, 3, 3, 3, 3, 3, 27, 3, 28, 3, 3
+  };
+
+  private static final int[] MAP2 =
+  {
+    /* 0 */ 55296, 1114111, 3
+  };
+
+  private static final int[] INITIAL =
+  {
+    /*  0 */ 129, 2, 3, 4, 5, 6, 7, 8, 9, 10, 139, 140, 13, 14, 15, 144, 17, 146
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*   0 */ 319, 319, 319, 319, 319, 319, 319, 319, 318, 311, 317, 319, 319, 319, 319, 319, 318, 311, 240, 319, 319,
+    /*  21 */ 319, 319, 319, 319, 319, 363, 319, 319, 319, 319, 319, 364, 363, 431, 365, 319, 319, 319, 319, 319, 319,
+    /*  42 */ 358, 319, 319, 319, 319, 319, 435, 332, 363, 319, 319, 319, 319, 319, 319, 319, 252, 319, 319, 319, 319,
+    /*  63 */ 319, 319, 320, 363, 319, 319, 319, 319, 319, 319, 319, 363, 365, 319, 319, 319, 319, 265, 319, 275, 416,
+    /*  84 */ 305, 319, 319, 319, 289, 319, 299, 416, 305, 319, 319, 319, 244, 319, 363, 319, 319, 319, 319, 319, 319,
+    /* 105 */ 319, 363, 291, 305, 319, 319, 319, 319, 281, 363, 291, 305, 319, 319, 319, 402, 402, 328, 319, 319, 319,
+    /* 126 */ 319, 319, 319, 319, 469, 365, 319, 319, 319, 319, 267, 473, 340, 319, 319, 319, 319, 319, 319, 319, 345,
+    /* 147 */ 319, 319, 319, 319, 319, 319, 281, 363, 319, 353, 319, 319, 319, 319, 319, 464, 365, 319, 319, 319, 319,
+    /* 168 */ 319, 319, 363, 387, 373, 319, 319, 319, 319, 319, 382, 365, 319, 319, 319, 319, 319, 319, 363, 400, 319,
+    /* 189 */ 319, 319, 319, 319, 319, 363, 374, 319, 319, 319, 319, 319, 319, 410, 365, 319, 319, 319, 319, 319, 319,
+    /* 210 */ 257, 424, 319, 319, 319, 319, 319, 443, 449, 319, 319, 319, 319, 319, 319, 457, 363, 319, 319, 319, 319,
+    /* 231 */ 319, 392, 319, 319, 319, 319, 319, 319, 319, 0, 129, 0, 20, 0, 0, 0, 0, 0, 832, 0, 0, 0, 576, 0, 20, 27,
+    /* 257 */ 0, 0, 0, 20, 0, 0, 0, 29, 0, 512, 0, 0, 0, 0, 0, 0, 0, 960, 0, 512, 531, 20, 411, 470, 0, 0, 21, 0, 0, 0,
+    /* 287 */ 0, 21, 0, 531, 0, 0, 0, 0, 0, 0, 35, 0, 0, 531, 531, 20, 411, 470, 0, 0, 37, 0, 38, 20, 0, 0, 129, 129, 0,
+    /* 316 */ 0, 0, 129, 0, 0, 0, 0, 0, 0, 0, 0, 22, 896, 0, 0, 20, 0, 0, 0, 0, 768, 768, 0, 0, 960, 0, 0, 20, 0, 0, 0,
+    /* 347 */ 0, 20, 0, 0, 28, 0, 0, 320, 0, 192, 0, 0, 0, 0, 20, 27, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 256, 0, 0, 0, 0, 0,
+    /* 379 */ 0, 0, 36, 0, 24, 0, 20, 0, 0, 0, 0, 32, 33, 0, 0, 0, 704, 0, 0, 0, 0, 30, 20, 0, 0, 0, 0, 0, 0, 896, 0, 0,
+    /* 411 */ 25, 0, 20, 0, 0, 0, 0, 411, 0, 0, 0, 35, 0, 0, 31, 0, 0, 0, 34, 0, 0, 20, 0, 640, 0, 0, 0, 0, 768, 0, 0,
+    /* 442 */ 0, 1024, 0, 0, 0, 0, 0, 1024, 0, 0, 20, 0, 0, 0, 0, 0, 1088, 0, 0, 0, 1088, 0, 0, 23, 0, 20, 0, 0, 0, 0,
+    /* 472 */ 26, 0, 0, 0, 0, 960, 0, 0, 0
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /*  0 */ 3, 19, 31, 2, 128, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 34, 514, 18432, 67584, 40960, 98,
+    /* 19 */ 57344, 926, 128, 512, 32, 64, 4, 8, 16, 512, 32, 4, 8, 16, 512, 4, 512, 512
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "ws",
+    "'false'",
+    "'null'",
+    "'true'",
+    "exp",
+    "frac",
+    "int",
+    "'-'",
+    "string",
+    "EOF",
+    "','",
+    "':'",
+    "'['",
+    "']'",
+    "'{'",
+    "'}'"
+  };
+}
+
+// End

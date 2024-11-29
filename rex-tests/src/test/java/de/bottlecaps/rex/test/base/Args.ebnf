@@ -1,0 +1,60 @@
+                                                            <?test
+                                                              package de.bottlecaps.rex.test.base;
+
+                                                              import java.util.ArrayList;
+                                                              import java.util.List;
+
+                                                              public class Args
+                                                              {
+                                                                private List<String> args = new ArrayList<String>();
+
+                                                                private Args(String commandLine)
+                                                                {
+                                                                  initialize(commandLine);
+                                                                }
+
+                                                                public static List<String> list(String commandLine)
+                                                                {
+                                                                  Args parser = new Args(commandLine);
+                                                                  try
+                                                                  {
+                                                                    parser.parse_Args();
+                                                                    return parser.args;
+                                                                  }
+                                                                  catch (ParseException e)
+                                                                  {
+                                                                    throw new RuntimeException(parser.getErrorMessage(e));
+                                                                  }
+                                                                }
+                                                            ?>
+Args             ::= ( Arg                                  <?test args.add(input.subSequence(b0, e0).toString().replace("\"", ""));?>
+                     )* EOF
+
+<?TOKENS?>
+
+Arg              ::= NonQuoteNonSpace+
+                   | NonQuoteNonSpace* ( '"' NonQuote* '"' NonQuoteNonSpace* )+
+NonQuote         ::= [^"]
+NonQuoteNonSpace ::= [^" ]
+Whitespace       ::= ' '+
+                  /* ws: definition */
+EOF ::= $
+
+<?ENCORE?>
+
+<?test
+
+  public static void main(String[] args) throws Exception
+  {
+    java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+    while (reader.ready())
+    {
+      String line = reader.readLine();
+      list(line).forEach(arg -> {
+        System.out.println(arg);
+      });
+    }
+  }
+}
+
+?>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Mon Dec 19, 2016 10:29 (UTC+01) by REx v5.42 which is Copyright (c) 1979-2016 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: example.ebnf -xml -ff -rex -lr 1 -->
+<g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production id="2" name="S">
+    <g:ref id="3" name="A"/>
+    <g:ref id="4" reduce-id="5" reduce-count="2" first="EOF" name="EOF"/>
+  </g:production>
+  <g:production id="6" name="A">
+    <g:ref id="7" name="C"/>
+    <g:optional id="8" reduce-id="9" reduce-count="1" first="+ EPSILON">
+      <g:string id="10" first="+">+</g:string>
+      <g:ref id="11" reduce-id="12" reduce-count="3" name="C"/>
+    </g:optional>
+  </g:production>
+  <g:production id="13" name="C">
+    <g:choice id="14">
+      <g:string id="15" reduce-id="16" reduce-count="1" first="0">0</g:string>
+      <g:sequence id="17">
+        <g:string id="18" first="(">(</g:string>
+        <g:ref id="19" name="A"/>
+        <g:string id="20" reduce-id="21" reduce-count="3" first=")">)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <?TOKENS?>
+  <g:production id="22" name="EOF">
+    <g:endOfFile/>
+  </g:production>
+<parser>
+    <state id="0">
+      <item id="3" lookahead="END">S ::= <dot>.</dot> A EOF</item>
+      <item id="7" lookahead="EOF IMPLICIT">A ::= <dot>.</dot> C ( '+' C )?</item>
+      <item id="15" lookahead="+ EOF IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead="+ EOF IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <goto on="A" to="7"/>
+      <goto on="C" to="8"/>
+      <shift on="0" to="14"/>
+      <shift on="(" to="1"/>
+      <accept on="S"/>
+    </state>
+    <state id="1">
+      <item id="7" lookahead=") IMPLICIT">A ::= <dot>.</dot> C ( '+' C )?</item>
+      <item id="15" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <item id="19" lookahead="+ EOF IMPLICIT">C ::= '(' <dot>.</dot> A ')'</item>
+      <goto on="A" to="9"/>
+      <goto on="C" to="10"/>
+      <shift on="0" to="16"/>
+      <shift on="(" to="3"/>
+    </state>
+    <state id="2">
+      <item id="11" lookahead="EOF IMPLICIT">A ::= C ( '+' <dot>.</dot> C )?</item>
+      <item id="15" lookahead="EOF IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead="EOF IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <goto on="C" to="17"/>
+      <shift on="0" to="18"/>
+      <shift on="(" to="4"/>
+    </state>
+    <state id="3">
+      <item id="7" lookahead=") IMPLICIT">A ::= <dot>.</dot> C ( '+' C )?</item>
+      <item id="15" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <item id="19" lookahead=") + IMPLICIT">C ::= '(' <dot>.</dot> A ')'</item>
+      <goto on="A" to="11"/>
+      <goto on="C" to="10"/>
+      <shift on="0" to="16"/>
+      <shift on="(" to="3"/>
+    </state>
+    <state id="4">
+      <item id="7" lookahead=") IMPLICIT">A ::= <dot>.</dot> C ( '+' C )?</item>
+      <item id="15" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <item id="19" lookahead="EOF IMPLICIT">C ::= '(' <dot>.</dot> A ')'</item>
+      <goto on="A" to="12"/>
+      <goto on="C" to="10"/>
+      <shift on="0" to="16"/>
+      <shift on="(" to="3"/>
+    </state>
+    <state id="5">
+      <item id="11" lookahead=") IMPLICIT">A ::= C ( '+' <dot>.</dot> C )?</item>
+      <item id="15" lookahead=") IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead=") IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <goto on="C" to="20"/>
+      <shift on="0" to="21"/>
+      <shift on="(" to="6"/>
+    </state>
+    <state id="6">
+      <item id="7" lookahead=") IMPLICIT">A ::= <dot>.</dot> C ( '+' C )?</item>
+      <item id="15" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="18" lookahead=") + IMPLICIT">C ::= <dot>.</dot> '(' A ')'</item>
+      <item id="19" lookahead=") IMPLICIT">C ::= '(' <dot>.</dot> A ')'</item>
+      <goto on="A" to="13"/>
+      <goto on="C" to="10"/>
+      <shift on="0" to="16"/>
+      <shift on="(" to="3"/>
+    </state>
+    <state id="7">
+      <item id="4" lookahead="END">S ::= A <dot>.</dot> EOF</item>
+      <shift on="EOF" to="15"/>
+    </state>
+    <state id="8">
+      <item id="10" lookahead="EOF IMPLICIT">A ::= C ( <dot>.</dot> '+' C )?</item>
+      <item id="9" lookahead="EOF IMPLICIT">A ::= C ( '+' C )? <dot>.</dot></item>
+      <shift on="+" to="2"/>
+      <reduce on="EOF" symbol="A"/>
+    </state>
+    <state id="9">
+      <item id="20" lookahead="+ EOF IMPLICIT">C ::= '(' A <dot>.</dot> ')'</item>
+      <shift on=")" to="19"/>
+    </state>
+    <state id="10">
+      <item id="10" lookahead=") IMPLICIT">A ::= C ( <dot>.</dot> '+' C )?</item>
+      <item id="9" lookahead=") IMPLICIT">A ::= C ( '+' C )? <dot>.</dot></item>
+      <shift on="+" to="5"/>
+      <reduce on=")" symbol="A"/>
+    </state>
+    <state id="11">
+      <item id="20" lookahead=") + IMPLICIT">C ::= '(' A <dot>.</dot> ')'</item>
+      <shift on=")" to="22"/>
+    </state>
+    <state id="12">
+      <item id="20" lookahead="EOF IMPLICIT">C ::= '(' A <dot>.</dot> ')'</item>
+      <shift on=")" to="23"/>
+    </state>
+    <state id="13">
+      <item id="20" lookahead=") IMPLICIT">C ::= '(' A <dot>.</dot> ')'</item>
+      <shift on=")" to="24"/>
+    </state>
+    <state id="14">
+      <item id="16" lookahead="+ EOF IMPLICIT">C ::= '0' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="15">
+      <item id="5" lookahead="END">S ::= A EOF <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+    <state id="16">
+      <item id="16" lookahead=") + IMPLICIT">C ::= '0' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="17">
+      <item id="12" lookahead="EOF IMPLICIT">A ::= C ( '+' C <dot>.</dot> )?</item>
+      <reduce on="EPSILON" symbol="A"/>
+    </state>
+    <state id="18">
+      <item id="16" lookahead="EOF IMPLICIT">C ::= '0' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="19">
+      <item id="21" lookahead="+ EOF IMPLICIT">C ::= '(' A ')' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="20">
+      <item id="12" lookahead=") IMPLICIT">A ::= C ( '+' C <dot>.</dot> )?</item>
+      <reduce on="EPSILON" symbol="A"/>
+    </state>
+    <state id="21">
+      <item id="16" lookahead=") IMPLICIT">C ::= '0' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="22">
+      <item id="21" lookahead=") + IMPLICIT">C ::= '(' A ')' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="23">
+      <item id="21" lookahead="EOF IMPLICIT">C ::= '(' A ')' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="24">
+      <item id="21" lookahead=") IMPLICIT">C ::= '(' A ')' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+  </parser>
+  <triples>
+  </triples>
+</g:grammar>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Tue Jan 29, 2019 12:00 (UTC) by REx v5.49 which is Copyright (c) 1979-2019 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: example6.ebnf -xml -ff -rex -lr 1 -->
+<g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production id="2" name="S">
+    <g:ref id="3" name="A"/>
+    <g:ref id="4" reduce-id="5" reduce-count="2" first="EOF" name="EOF"/>
+  </g:production>
+  <g:production id="6" name="A">
+    <g:oneOrMore id="7" reduce-id="8" reduce-count="-1">
+      <g:choice id="9" first="(">
+        <g:sequence id="10" first="(">
+          <g:string id="11" first="(">(</g:string>
+          <g:ref id="12" name="A"/>
+          <g:string id="13" first=")">)</g:string>
+        </g:sequence>
+        <g:sequence id="14" first="(">
+          <g:string id="15" first="(">(</g:string>
+          <g:string id="16" first=")">)</g:string>
+        </g:sequence>
+      </g:choice>
+    </g:oneOrMore>
+  </g:production>
+  <?TOKENS?>
+  <g:production id="17" name="EOF">
+    <g:endOfFile/>
+  </g:production>
+<parser>
+    <state id="0">
+      <item id="3" lookahead="END">S ::= <dot>.</dot> A EOF</item>
+      <item id="11" lookahead="EOF IMPLICIT">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>
+      <item id="15" lookahead="EOF IMPLICIT">A ::= ( ( '(' A ')' | <dot>.</dot> '(' ')' ) )+</item>
+      <goto on="A" to="3"/>
+      <shift on="(" to="1" domino="4" dominoes="11-12 15-16"/>
+      <accept on="S"/>
+    </state>
+    <state id="1">
+      <item id="11" lookahead=") IMPLICIT">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>
+      <item id="12" lookahead="EOF IMPLICIT">A ::= ( ( '(' <dot>.</dot> A ')' | '(' ')' ) )+</item>
+      <item id="15" lookahead=") IMPLICIT">A ::= ( ( '(' A ')' | <dot>.</dot> '(' ')' ) )+</item>
+      <item id="16" lookahead="EOF IMPLICIT">A ::= ( ( '(' A ')' | '(' <dot>.</dot> ')' ) )+</item>
+      <goto on="A" to="4" domino="5" dominoes="12-13"/>
+      <shift on="(" to="2" domino="4" dominoes="11-12 15-16"/>
+      <shift on=")" to="5" domino="13" dominoes="16-8 16-11 16-15"/>
+    </state>
+    <state id="2">
+      <item id="11" lookahead=") IMPLICIT">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>
+      <item id="12" lookahead=") IMPLICIT">A ::= ( ( '(' <dot>.</dot> A ')' | '(' ')' ) )+</item>
+      <item id="15" lookahead=") IMPLICIT">A ::= ( ( '(' A ')' | <dot>.</dot> '(' ')' ) )+</item>
+      <item id="16" lookahead=") IMPLICIT">A ::= ( ( '(' A ')' | '(' <dot>.</dot> ')' ) )+</item>
+      <goto on="A" to="6" domino="5" dominoes="12-13"/>
+      <shift on="(" to="2" domino="4" dominoes="11-12 15-16"/>
+      <shift on=")" to="7" domino="13" dominoes="16-8 16-11 16-15"/>
+    </state>
+    <state id="3">
+      <item id="4" lookahead="END">S ::= A <dot>.</dot> EOF</item>
+      <shift on="EOF" to="8"/>
+    </state>
+    <state id="4">
+      <item id="13" lookahead="EOF IMPLICIT">A ::= ( ( '(' A <dot>.</dot> ')' | '(' ')' ) )+</item>
+      <shift on=")" to="5" domino="7" dominoes="13-8 13-11 13-15"/>
+    </state>
+    <state id="5">
+      <item id="11" lookahead="EOF IMPLICIT">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>
+      <item id="15" lookahead="EOF IMPLICIT">A ::= ( ( '(' A ')' | <dot>.</dot> '(' ')' ) )+</item>
+      <item id="8" lookahead="EOF IMPLICIT">A ::= ( ( '(' A ')' | '(' ')' ) )+ <dot>.</dot></item>
+      <shift on="(" to="1" domino="4" dominoes="11-12 15-16"/>
+      <reduce on="EOF" symbol="A" domino="2" dominoes="8"/>
+    </state>
+    <state id="6">
+      <item id="13" lookahead=") IMPLICIT">A ::= ( ( '(' A <dot>.</dot> ')' | '(' ')' ) )+</item>
+      <shift on=")" to="7" domino="7" dominoes="13-8 13-11 13-15"/>
+    </state>
+    <state id="7">
+      <item id="11" lookahead=") IMPLICIT">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>
+      <item id="15" lookahead=") IMPLICIT">A ::= ( ( '(' A ')' | <dot>.</dot> '(' ')' ) )+</item>
+      <item id="8" lookahead=") IMPLICIT">A ::= ( ( '(' A ')' | '(' ')' ) )+ <dot>.</dot></item>
+      <shift on="(" to="2" domino="4" dominoes="11-12 15-16"/>
+      <reduce on=")" symbol="A" domino="2" dominoes="8"/>
+    </state>
+    <state id="8">
+      <item id="5" lookahead="END">S ::= A EOF <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+  </parser>
+  <triples>
+    <triple from="4" to="5" valid="3"/>
+    <triple from="4" to="12" valid="11"/>
+    <triple from="4" to="13" valid="11"/>
+    <triple from="4" to="14" valid="11"/>
+    <triple from="4" to="15" valid="11"/>
+    <triple from="4" to="16" valid="11"/>
+    <triple from="5" to="6" valid="5"/>
+    <triple from="5" to="7" valid="5"/>
+    <triple from="5" to="8" valid="5"/>
+    <triple from="5" to="9" valid="5"/>
+    <triple from="5" to="10" valid="5"/>
+    <triple from="7" to="2" valid="6"/>
+    <triple from="7" to="3" valid="8"/>
+    <triple from="7" to="4" valid="9"/>
+    <triple from="7" to="11" valid="10"/>
+    <triple from="13" to="2" valid="12"/>
+    <triple from="13" to="3" valid="14"/>
+    <triple from="13" to="4" valid="15"/>
+    <triple from="13" to="11" valid="16"/>
+  </triples>
+</g:grammar>

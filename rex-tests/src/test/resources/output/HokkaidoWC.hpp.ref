@@ -1,0 +1,641 @@
+// This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q Hokkaido.ebnf -cpp -a cpp-wchar_t -name HokkaidoWC -trace
+
+#ifndef HOKKAIDOWC_HPP
+#define HOKKAIDOWC_HPP
+
+#include <string.h>
+#include <vector>
+#include <stdio.h>
+#include <string>
+#include <algorithm>
+
+class HokkaidoWC
+{
+public:
+  HokkaidoWC(const wchar_t *string)
+  {
+    initialize(string);
+  }
+
+  virtual ~HokkaidoWC()
+  {
+  }
+
+  class ParseException
+  {
+  private:
+    int begin, end, offending, expected, state;
+    friend class HokkaidoWC;
+
+  protected:
+    ParseException(int b, int e, int s, int o, int x)
+    : begin(b), end(e), offending(o), expected(x), state(s)
+    {
+    }
+
+  public:
+    const wchar_t *getMessage() const
+    {
+      return offending < 0
+           ? L"lexical analysis failed"
+           : L"syntax error";
+    }
+
+    int getBegin() const {return begin;}
+    int getEnd() const {return end;}
+    int getState() const {return state;}
+    int getOffending() const {return offending;}
+    int getExpected() const {return expected;}
+  };
+
+  void initialize(const wchar_t *source)
+  {
+    input = source;
+    reset(0, 0, 0);
+  }
+
+  const wchar_t *getInput() const
+  {
+    return input;
+  }
+
+  int getTokenOffset() const
+  {
+    return b0;
+  }
+
+  int getTokenEnd() const
+  {
+    return e0;
+  }
+
+  void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+  }
+
+  void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  static const wchar_t *getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? 0 : TOKEN[e.getOffending()];
+  }
+
+  static void getExpectedTokenSet(const ParseException &e, const wchar_t **set, int size)
+  {
+    if (e.expected < 0)
+    {
+      getTokenSet(- e.state, set, size);
+    }
+    else if (size == 1)
+    {
+      set[0] = 0;
+    }
+    else if (size > 1)
+    {
+      set[0] = TOKEN[e.expected];
+      set[1] = 0;
+    }
+  }
+
+  static std::wstring to_wstring(int i)
+  {
+    const wchar_t *sign = i < 0 ? L"-" : L"";
+    std::wstring a;
+    do
+    {
+      a += L'0' + abs(i % 10);
+      i /= 10;
+    }
+    while (i != 0);
+    a += sign;
+    std::reverse(a.begin(), a.end());
+    return a;
+  }
+
+  std::wstring getErrorMessage(const ParseException &e)
+  {
+    std::wstring message(e.getMessage());
+    const wchar_t *found = getOffendingToken(e);
+    if (found != 0)
+    {
+      message += L", found ";
+      message += found;
+    }
+    const wchar_t *expected[64];
+    getExpectedTokenSet(e, expected, sizeof expected / sizeof *expected);
+    message += L"\nwhile expecting ";
+    const wchar_t *delimiter(expected[1] ? L"[" : L"");
+    for (const wchar_t **x = expected; *x; ++x)
+    {
+      message += delimiter;
+      message += *x;
+      delimiter = L", ";
+    }
+    message += expected[1] ? L"]\n" : L"\n";
+    int size = e.getEnd() - e.getBegin();
+    if (size != 0 && found == 0)
+    {
+      message += L"after successfully scanning ";
+      message += to_wstring(size);
+      message += L" characters beginning ";
+    }
+    int line = 1;
+    int column = 1;
+    for (int i = 0; i < e.getBegin(); ++i)
+    {
+      if (input[i] == L'\n')
+      {
+        ++line;
+        column = 1;
+      }
+      else
+      {
+        ++column;
+      }
+    }
+    message += L"at line ";
+    message += to_wstring(line);
+    message += L", column ";
+    message += to_wstring(column);
+    message += L":\n...";
+    const wchar_t *w = input + e.getBegin();
+    for (int i = 0; i < 64 && *w; ++i)
+    {
+      message += *w++;
+    }
+    message += L"...";
+    return message;
+  }
+
+  void parse_Hokkaido()
+  {
+    traceNonterminal(L"parse", L"start", L"Hokkaido");
+    lookahead1(11);                 // H1 | H2
+    switch (l1)
+    {
+    case 1:                         // H1
+      consume(1);                   // H1
+      lookahead1(8);                // '北'
+      consume(11);                  // '北'
+      lookahead1(9);                // '海'
+      consume(12);                  // '海'
+      lookahead1(10);               // '道'
+      consume(13);                  // '道'
+      lookahead1(7);                // EOF
+      consume(10);                  // EOF
+      break;
+    default:
+      consume(2);                   // H2
+      lookahead1(0);                // CP49
+      consume(3);                   // CP49
+      lookahead1(1);                // CP55295
+      consume(4);                   // CP55295
+      lookahead1(2);                // CP57344
+      consume(5);                   // CP57344
+      lookahead1(3);                // CP65533
+      consume(6);                   // CP65533
+      lookahead1(4);                // CP65536
+      consume(7);                   // CP65536
+      lookahead1(5);                // CP1114111
+      consume(8);                   // CP1114111
+      lookahead1(6);                // CP50
+      consume(9);                   // CP50
+      lookahead1(7);                // EOF
+      consume(10);                  // EOF
+      break;
+    }
+    traceNonterminal(L"parse", L"end", L"Hokkaido");
+  }
+
+private:
+
+  void traceNonterminal(const wchar_t *method, const wchar_t *occasion, const wchar_t *name)
+  {
+    fprintf(stderr, "  <%s %snonterminal=\"%s\"", Utf8Encoder::encode(method).c_str(), Utf8Encoder::encode(occasion).c_str(), Utf8Encoder::encode(name).c_str());
+    if (l1 != 0)
+      fprintf(stderr, " input=\"%s\"", Utf8Encoder::encode(xmlEscape(lookaheadString().c_str(), 0).c_str()).c_str());
+    fprintf(stderr, "/>\n");
+  }
+
+  void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+      fprintf(stderr, "  <parse terminal=\"%s\"%s%s%s/>\n", Utf8Encoder::encode(xmlEscape(TOKEN[t], 0).c_str()).c_str(), (l1 == 0 ? "" : " input=\""),  (l1 == 0 ? "" : Utf8Encoder::encode(xmlEscape(lookaheadString().c_str(), 0).c_str()).c_str()), (l1 == 0 ? "" : "\""));
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  int error(int b, int e, int s, int l, int t)
+  {
+    throw ParseException(b, e, s, l, t);
+  }
+
+  int     b0, e0;
+  int l1, b1, e1;
+
+  const wchar_t *input;
+  int begin;
+  int end;
+
+  int match(int tokenSetId)
+  {
+    fprintf(stderr, "  <tokenize tokenset=\"%d\">\n", tokenSetId);
+
+    bool nonbmp = false;
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    fprintf(stderr, "    <next state=\"%d\"", result & 63);
+    for (int code = result & 63; code != 0; )
+    {
+      int charclass;
+      int c0 = input[current];
+      fprintf(stderr, " offset=\"%d\"", current);
+      ++current;
+      if (c0 < 0x80)
+      {
+        if (c0 >= 32 && c0 <= 126)
+        {
+          wchar_t c = (wchar_t) c0;
+          fprintf(stderr, " char=\"%s\"", Utf8Encoder::encode(xmlEscape(&c, 1).c_str()).c_str());
+        }
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 4;
+        charclass = MAP1[(c0 & 15) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = input[current];
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            nonbmp = true;
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+        int lo = 0, hi = 2;
+        for (int m = 1; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) hi = m - 1;
+          else if (MAP2[3 + m] < c0) lo = m + 1;
+          else {charclass = MAP2[6 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+      fprintf(stderr, " codepoint=\"%d\" class=\"%d\"", c0, charclass);
+
+      state = code;
+      int i0 = (charclass << 6) + code - 1;
+      code = TRANSITION[(i0 & 7) + TRANSITION[i0 >> 3]];
+      if (code > 63)
+      {
+        result = code;
+        fprintf(stderr, " result=\"%s\"", Utf8Encoder::encode(xmlEscape(TOKEN[((result >> 6) & 15) - 1], 0).c_str()).c_str());
+        if ((result & 1024) > 0)
+        {
+          fprintf(stderr, " token-size=\"%d\"", result >> 11);
+        }
+        else if ((result >> 11) > 0)
+        {
+          fprintf(stderr, " trailing-context-size=\"%d\"", result >> 11);
+        }
+        code &= 63;
+        end = current;
+      }
+      fprintf(stderr, "/>\n");
+      if (code != 0)
+      {
+        fprintf(stderr, "    <next state=\"%d\"", code);
+      }
+    }
+
+    result >>= 6;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = input[end];
+      if (c1 >= 0xdc00 && c1 < 0xe000) --end;
+      fprintf(stderr, "    <fail begin=\"%d\" end=\"%d\" state=\"%d\"/>\n", begin, end, state);
+      fprintf(stderr, "  </tokenize>\n");
+      return error(begin, end, state, -1, -1);
+    }
+
+    if ((result & 16) != 0)
+    {
+      end = begin;
+      if (nonbmp)
+      {
+        for (int i = result >> 5; i > 0; --i)
+        {
+          int c1 = input[end++];
+          if (c1 >= 0xd800 && c1 < 0xdc00) ++end;
+        }
+      }
+      else
+      {
+        end += (result >> 5);
+      }
+    }
+    else
+    {
+      if (nonbmp)
+      {
+        for (int i = result >> 5; i > 0; --i)
+        {
+          int c1 = input[--end];
+          if (c1 >= 0xdc00 && c1 < 0xe000) --end;
+        }
+      }
+      else
+      {
+        end -= result >> 5;
+      }
+    }
+
+    if (input[begin] == 0) end = begin;
+    fprintf(stderr, "    <done result=\"%s\" begin=\"%d\" end=\"%d\"/>\n", Utf8Encoder::encode(xmlEscape(TOKEN[(result & 15) - 1], 0).c_str()).c_str(), begin, end);
+    fprintf(stderr, "  </tokenize>\n");
+    return (result & 15) - 1;
+  }
+
+  std::wstring lookaheadString()
+  {
+    std::wstring result;
+    if (l1 > 0)
+    {
+      result += TOKEN[l1];
+    }
+    return result;
+  }
+
+  class MalformedInputException
+  {
+  public:
+    MalformedInputException(size_t offset) : offset(offset) {}
+    size_t getOffset() const {return offset;}
+
+  private:
+    size_t offset;
+  };
+
+  class Utf8Encoder
+  {
+  public:
+    static std::string encode(const wchar_t *unencoded)
+    {
+      return encode(unencoded, wcslen(unencoded));
+    }
+
+    static std::string encode(const wchar_t *unencoded, size_t size)
+    {
+      std::string encoded;
+      encoded.reserve(size + 3);
+
+      for (size_t i = 0; i < size; ++i)
+      {
+        if (encoded.size() + 4 >= encoded.capacity()) encoded.reserve(encoded.capacity() * 2);
+
+        int w = unencoded[i];
+        if (w < 0x80)
+        {
+          encoded += w;
+        }
+        else if (w < 0x800)
+        {
+          encoded += 0xc0 | (w >> 6);
+          encoded += 0x80 | (w & 0x3f);
+        }
+        else if (w < 0xd800)
+        {
+          encoded += 0xe0 | ( w          >> 12);
+          encoded += 0x80 | ((w & 0xfff) >>  6);
+          encoded += 0x80 | ( w &  0x3f       );
+        }
+        else if (w < 0xe000)
+        {
+          if (++i >= size)
+          {
+            throw MalformedInputException(i - 1);
+          }
+          int w2 = unencoded[i];
+          if (w2 < 0xdc00 || w2 > 0xdfff)
+          {
+            throw MalformedInputException(i - 1);
+          }
+          w = (((w  & 0x3ff) << 10) | (w2 & 0x3ff)) + 0x10000;
+          encoded += 0xf0 | ( w            >> 18);
+          encoded += 0x80 | ((w & 0x3ffff) >> 12);
+          encoded += 0x80 | ((w &   0xfff) >>  6);
+          encoded += 0x80 | ( w &    0x3f       );
+        }
+        else if (w < 0x10000)
+        {
+          encoded += 0xe0 | ( w          >> 12);
+          encoded += 0x80 | ((w & 0xfff) >>  6);
+          encoded += 0x80 | ( w &  0x3f       );
+        }
+        else if (w < 0x110000)
+        {
+          encoded += 0xf0 | ( w            >> 18);
+          encoded += 0x80 | ((w & 0x3ffff) >> 12);
+          encoded += 0x80 | ((w &   0xfff) >>  6);
+          encoded += 0x80 | ( w &    0x3f       );
+        }
+        else
+        {
+          throw MalformedInputException(i);
+        }
+      }
+      return encoded;
+    }
+  };
+
+  static std::wstring xmlEscape(const wchar_t *string, size_t size)
+  {
+    std::wstring result;
+    if (size == 0) size = wcslen(string);
+    for (size_t i = 0; i < size; ++i)
+    {
+      const wchar_t c = string[i];
+      switch (c)
+      {
+      case 0: break;
+      case '&': result += L"&amp;"; break;
+      case '<': result += L"&lt;"; break;
+      case '"': result += L"&quot;"; break;
+      default: result += c;
+      }
+    }
+    return result;
+  }
+
+  static void getTokenSet(int tokenSetId, const wchar_t **set, int size)
+  {
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 63;
+    for (int i = 0; i < 14; i += 32)
+    {
+      int j = i;
+      for (unsigned int f = ec(i >> 5, s); f != 0; f >>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          if (size > 1)
+          {
+            set[0] = TOKEN[j];
+            ++set;
+            --size;
+          }
+        }
+      }
+    }
+    if (size > 0)
+    {
+      set[0] = 0;
+    }
+  }
+
+  static int ec(int t, int s)
+  {
+    int i0 = t * 43 + s - 1;
+    return EXPECTED[(i0 & 3) + EXPECTED[i0 >> 2]];
+  }
+
+  static const int MAP0[];
+  static const int MAP1[];
+  static const int MAP2[];
+  static const int INITIAL[];
+  static const int TRANSITION[];
+  static const int EXPECTED[];
+  static const wchar_t *TOKEN[];
+};
+
+const int HokkaidoWC::MAP0[] =
+{
+/*   0 */ 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/*  36 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/*  73 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+const int HokkaidoWC::MAP1[] =
+{
+/*   0 */ 108, 150, 150, 151, 149, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150,
+/*  22 */ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 198, 150, 150,
+/*  44 */ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 117, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150,
+/*  66 */ 150, 150, 150, 150, 150, 150, 183, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150,
+/*  88 */ 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 230, 231,
+/* 110 */ 231, 248, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231,
+/* 132 */ 231, 231, 231, 231, 231, 231, 231, 231, 266, 231, 231, 231, 231, 231, 231, 231, 231, 282, 231, 231, 231, 231,
+/* 154 */ 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231,
+/* 176 */ 231, 231, 231, 231, 231, 231, 232, 231, 231, 231, 231, 231, 295, 231, 231, 231, 231, 231, 231, 231, 231, 231,
+/* 198 */ 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 257, 231, 231, 231, 231,
+/* 220 */ 231, 231, 231, 231, 231, 231, 231, 231, 231, 231, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1,
+/* 250 */ 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0,
+/* 287 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+const int HokkaidoWC::MAP2[] =
+{
+/* 0 */ 65533, 65536, 1114111, 65533, 65536, 1114111, 8, 9, 10
+};
+
+const int HokkaidoWC::INITIAL[] =
+{
+/*  0 */ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+};
+
+const int HokkaidoWC::TRANSITION[] =
+{
+/*   0 */ 97, 97, 97, 97, 97, 97, 97, 97, 96, 228, 97, 97, 97, 97, 97, 97, 153, 97, 106, 116, 123, 141, 97, 97, 151,
+/*  25 */ 187, 161, 97, 97, 97, 97, 97, 130, 133, 249, 172, 97, 97, 97, 97, 97, 183, 97, 97, 97, 97, 97, 97, 97, 195,
+/*  50 */ 245, 97, 97, 97, 97, 97, 97, 206, 97, 218, 97, 97, 97, 97, 223, 108, 175, 287, 97, 97, 97, 97, 232, 98, 143,
+/*  75 */ 210, 240, 97, 97, 97, 164, 97, 257, 198, 265, 97, 97, 97, 274, 97, 97, 97, 273, 282, 97, 97, 13, 0, 0, 0, 0,
+/* 101 */ 0, 0, 0, 0, 24, 0, 2624, 0, 0, 0, 0, 0, 0, 23, 0, 4608, 0, 0, 0, 0, 0, 6592, 0, 0, 0, 8576, 0, 0, 10560, 0, 0,
+/* 132 */ 15, 0, 0, 0, 0, 0, 22, 0, 0, 12544, 1259, 0, 0, 0, 0, 0, 0, 30, 0, 0, 14, 0, 0, 0, 0, 0, 0, 640, 0, 0, 0, 26,
+/* 164 */ 0, 0, 0, 0, 0, 18, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 29, 0, 0, 768, 0, 0, 20, 0, 0, 0, 0, 21, 0, 0, 0, 0, 832, 0,
+/* 198 */ 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 896, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 1185, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 19,
+/* 232 */ 0, 0, 0, 0, 17, 0, 0, 0, 0, 38, 0, 0, 40, 0, 0, 0, 27, 0, 0, 0, 0, 28, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 31, 0,
+/* 266 */ 0, 39, 0, 0, 41, 0, 42, 1152, 0, 0, 0, 0, 0, 0, 0, 704, 0, 0, 1216, 0, 0, 0, 0, 0, 34, 0, 0, 0, 37
+};
+
+const int HokkaidoWC::EXPECTED[] =
+{
+/*  0 */ 26, 11, 15, 26, 19, 26, 23, 27, 25, 33, 31, 128, 256, 512, 1024, 2048, 4096, 8192, 6, 128, 256, 4, 2, 128, 4,
+/* 25 */ 2, 8, 16, 32, 64, 4, 8, 4, 4, 8, 16, 4
+};
+
+const wchar_t *HokkaidoWC::TOKEN[] =
+{
+  L"(0)",
+  L"H1",
+  L"H2",
+  L"'1'",
+  L"CP55295",
+  L"CP57344",
+  L"CP65533",
+  L"CP65536",
+  L"CP1114111",
+  L"'2'",
+  L"EOF",
+  L"'北'",
+  L"'海'",
+  L"'道'"
+};
+
+                                                            #line 69 "Hokkaido.ebnf"
+                                                            int main(int argc, char **argv)
+                                                            {
+                                                              wprintf(L"<result>\n");
+                                                              HokkaidoWC(L"北海道").parse_Hokkaido();
+                                                              HokkaidoWC(L"1߿ࠀ�𐀀􏿿2").parse_Hokkaido();
+                                                              try
+                                                              {
+                                                                try
+                                                                {
+                                                                  HokkaidoWC(L"x").parse_Hokkaido();
+                                                                  wprintf(L"  <fail/>\n");
+                                                                }
+                                                                catch (HokkaidoWC::ParseException &)
+                                                                {
+                                                                  wprintf(L"  <pass/>\n");
+                                                                }
+                                                              }
+                                                              catch (HokkaidoWC::ParseException &)
+                                                              {
+                                                                printf("  <fail/>\n");
+                                                              }
+                                                              wprintf(L"</result>\n");
+                                                            }
+                                                            #line 639 "HokkaidoWC.hpp"
+#endif
+
+// End

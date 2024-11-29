@@ -1,0 +1,1940 @@
+// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q XmlParser.ebnf -cpp -a XmlEventHandler
+
+#ifndef XMLPARSER_HPP
+#define XMLPARSER_HPP
+
+#include <stdio.h>
+#include <string>
+#include <algorithm>
+                                                            #line 6 "XmlParser.ebnf"
+                                                            #include "XmlEventHandler.hpp"
+
+                                                            class XmlParser
+                                                            {
+                                                            public:
+                                                              XmlParser(const wchar_t *string, XmlEventHandler *xmleh = 0)
+                                                              : eh(xmleh)
+                                                              {
+                                                                if (eh == 0) eh = &dummyEH;
+                                                                initialize(string);
+                                                              }
+
+                                                              ~XmlParser()
+                                                              {
+                                                                terminate();
+                                                              }
+
+                                                            private:
+                                                              void attrName(const wchar_t *name, size_t length)
+                                                              {
+                                                                if (length == 5 && wcsncmp(name, L"xmlns", 5) == 0)
+                                                                {
+                                                                  attributeKind = DEFAULTNAMESPACE;
+                                                                }
+                                                                else if (length > 6 && wcsncmp(name, L"xmlns:", 6) == 0)
+                                                                {
+                                                                  attributeKind = NAMESPACEPREFIX;
+                                                                  attributeName = name + 6;
+                                                                  attributeNameLength = length - 6;
+                                                                }
+                                                                else
+                                                                {
+                                                                  attributeKind = ATTRIBUTE;
+                                                                  attributeName = name;
+                                                                  attributeNameLength = length;
+                                                                }
+                                                              }
+
+                                                              void attrValue(const wchar_t *value, size_t length)
+                                                              {
+                                                                switch (attributeKind)
+                                                                {
+                                                                case DEFAULTNAMESPACE:
+                                                                  eh->defaultNamespace(value, length);
+                                                                  break;
+                                                                case NAMESPACEPREFIX:
+                                                                  eh->namespacePrefix(attributeName, attributeNameLength, value, length);
+                                                                  break;
+                                                                default:
+                                                                  eh->attribute(attributeName, attributeNameLength, value, length);
+                                                                }
+                                                              }
+
+                                                              enum {DEFAULTNAMESPACE, NAMESPACEPREFIX, ATTRIBUTE} attributeKind;
+                                                              const wchar_t *attributeName;
+                                                              size_t attributeNameLength;
+                                                              size_t beginContent;
+                                                              XmlEventHandler dummyEH;
+                                                              XmlEventHandler *eh;
+                                                            #line 71 "XmlParser.hpp"
+public:
+  class ParseException
+  {
+  private:
+    int begin, end, offending, expected, state;
+    friend class XmlParser;
+
+  protected:
+    ParseException(int b, int e, int s, int o, int x)
+    : begin(b), end(e), offending(o), expected(x), state(s)
+    {
+    }
+
+  public:
+    const wchar_t *getMessage() const
+    {
+      return offending < 0
+           ? L"lexical analysis failed"
+           : L"syntax error";
+    }
+
+    int getBegin() const {return begin;}
+    int getEnd() const {return end;}
+    int getState() const {return state;}
+    int getOffending() const {return offending;}
+    int getExpected() const {return expected;}
+  };
+
+  void initialize(const wchar_t *source)
+  {
+    input = source;
+    reset(0, 0, 0);
+  }
+
+  const wchar_t *getInput() const
+  {
+    return input;
+  }
+
+  int getTokenOffset() const
+  {
+    return b0;
+  }
+
+  int getTokenEnd() const
+  {
+    return e0;
+  }
+
+  void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    l2 = 0; b2 = 0; e2 = 0;
+    l3 = 0; b3 = 0; e3 = 0;
+    end = e;
+  }
+
+  void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  static const wchar_t *getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? 0 : TOKEN[e.getOffending()];
+  }
+
+  static void getExpectedTokenSet(const ParseException &e, const wchar_t **set, int size)
+  {
+    if (e.expected < 0)
+    {
+      getTokenSet(- e.state, set, size);
+    }
+    else if (size == 1)
+    {
+      set[0] = 0;
+    }
+    else if (size > 1)
+    {
+      set[0] = TOKEN[e.expected];
+      set[1] = 0;
+    }
+  }
+
+  static std::wstring to_wstring(int i)
+  {
+    const wchar_t *sign = i < 0 ? L"-" : L"";
+    std::wstring a;
+    do
+    {
+      a += L'0' + abs(i % 10);
+      i /= 10;
+    }
+    while (i != 0);
+    a += sign;
+    std::reverse(a.begin(), a.end());
+    return a;
+  }
+
+  std::wstring getErrorMessage(const ParseException &e)
+  {
+    std::wstring message(e.getMessage());
+    const wchar_t *found = getOffendingToken(e);
+    if (found != 0)
+    {
+      message += L", found ";
+      message += found;
+    }
+    const wchar_t *expected[64];
+    getExpectedTokenSet(e, expected, sizeof expected / sizeof *expected);
+    message += L"\nwhile expecting ";
+    const wchar_t *delimiter(expected[1] ? L"[" : L"");
+    for (const wchar_t **x = expected; *x; ++x)
+    {
+      message += delimiter;
+      message += *x;
+      delimiter = L", ";
+    }
+    message += expected[1] ? L"]\n" : L"\n";
+    int size = e.getEnd() - e.getBegin();
+    if (size != 0 && found == 0)
+    {
+      message += L"after successfully scanning ";
+      message += to_wstring(size);
+      message += L" characters beginning ";
+    }
+    int line = 1;
+    int column = 1;
+    for (int i = 0; i < e.getBegin(); ++i)
+    {
+      if (input[i] == L'\n')
+      {
+        ++line;
+        column = 1;
+      }
+      else
+      {
+        ++column;
+      }
+    }
+    message += L"at line ";
+    message += to_wstring(line);
+    message += L", column ";
+    message += to_wstring(column);
+    message += L":\n...";
+    const wchar_t *w = input + e.getBegin();
+    for (int i = 0; i < 64 && *w; ++i)
+    {
+      message += *w++;
+    }
+    message += L"...";
+    return message;
+  }
+
+  void parse_document()
+  {
+                                                            #line 73 "XmlParser.ebnf"
+                                                            eh->startDocument();
+                                                            #line 231 "XmlParser.hpp"
+    parse_prolog();
+    parse_element();
+    for (;;)
+    {
+      lookahead1(56);               // EOF | S | Comment | PI
+      if (l1 == 1)                  // EOF
+      {
+        break;
+      }
+      parse_Misc();
+    }
+    consume(1);                     // EOF
+                                                            #line 74 "XmlParser.ebnf"
+                                                            eh->endDocument();
+                                                            #line 246 "XmlParser.hpp"
+  }
+
+private:
+
+  void parse_prolog()
+  {
+    lookahead1(66);                 // S | Comment | PI | '<' | '<!DOCTYPE' | '<?xml'
+    if (l1 == 40)                   // '<?xml'
+    {
+      parse_XMLDecl();
+    }
+    for (;;)
+    {
+      lookahead1(64);               // S | Comment | PI | '<' | '<!DOCTYPE'
+      if (l1 == 33                  // '<'
+       || l1 == 35)                 // '<!DOCTYPE'
+      {
+        break;
+      }
+      parse_Misc();
+    }
+    if (l1 == 35)                   // '<!DOCTYPE'
+    {
+      parse_doctypedecl();
+      for (;;)
+      {
+        lookahead1(59);             // S | Comment | PI | '<'
+        if (l1 == 33)               // '<'
+        {
+          break;
+        }
+        parse_Misc();
+      }
+    }
+  }
+
+  void parse_XMLDecl()
+  {
+    consume(40);                    // '<?xml'
+    parse_VersionInfo();
+    lookahead1(28);                 // S | '?>'
+    switch (l1)
+    {
+    case 2:                         // S
+      lookahead2(55);               // '?>' | 'encoding' | 'standalone'
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    if (lk == 7810)                 // S 'encoding'
+    {
+      parse_EncodingDecl();
+    }
+    lookahead1(28);                 // S | '?>'
+    switch (l1)
+    {
+    case 2:                         // S
+      lookahead2(40);               // '?>' | 'standalone'
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    if (lk == 8066)                 // S 'standalone'
+    {
+      parse_SDDecl();
+    }
+    lookahead1(28);                 // S | '?>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(17);                 // '?>'
+    consume(44);                    // '?>'
+  }
+
+  void parse_VersionInfo()
+  {
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(21);                 // 'version'
+    consume(64);                    // 'version'
+    parse_Eq();
+    lookahead1(33);                 // '"' | "'"
+    switch (l1)
+    {
+    case 24:                        // "'"
+      consume(24);                  // "'"
+      lookahead1(6);                // VersionNum
+      consume(13);                  // VersionNum
+      lookahead1(11);               // "'"
+      consume(24);                  // "'"
+      break;
+    default:
+      consume(17);                  // '"'
+      lookahead1(6);                // VersionNum
+      consume(13);                  // VersionNum
+      lookahead1(8);                // '"'
+      consume(17);                  // '"'
+      break;
+    }
+  }
+
+  void parse_Eq()
+  {
+    lookahead1(26);                 // S | '='
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(15);                 // '='
+    consume(41);                    // '='
+    lookahead1(58);                 // S | AttValue | '"' | "'"
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+  }
+
+  void parse_Misc()
+  {
+    switch (l1)
+    {
+    case 10:                        // Comment
+      consume(10);                  // Comment
+      break;
+    case 11:                        // PI
+      consume(11);                  // PI
+      break;
+    default:
+      consume(2);                   // S
+      break;
+    }
+  }
+
+  void parse_doctypedecl()
+  {
+    consume(35);                    // '<!DOCTYPE'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(48);                 // S | '>' | '['
+    switch (l1)
+    {
+    case 2:                         // S
+      lookahead2(63);               // '>' | 'PUBLIC' | 'SYSTEM' | '['
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    if (lk == 7298                  // S 'PUBLIC'
+     || lk == 7426)                 // S 'SYSTEM'
+    {
+      consume(2);                   // S
+      parse_ExternalID();
+    }
+    lookahead1(48);                 // S | '>' | '['
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(39);                 // '>' | '['
+    if (l1 == 59)                   // '['
+    {
+      consume(59);                  // '['
+      parse_intSubset();
+      consume(60);                  // ']'
+      lookahead1(27);               // S | '>'
+      if (l1 == 2)                  // S
+      {
+        consume(2);                 // S
+      }
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_DeclSep()
+  {
+    switch (l1)
+    {
+    case 15:                        // PEReference
+      consume(15);                  // PEReference
+      break;
+    default:
+      consume(2);                   // S
+      break;
+    }
+  }
+
+  void parse_intSubset()
+  {
+    for (;;)
+    {
+      lookahead1(70);               // S | Comment | PI | PEReference | '<!ATTLIST' | '<!ELEMENT' | '<!ENTITY' |
+                                    // '<!NOTATION' | ']'
+      if (l1 == 60)                 // ']'
+      {
+        break;
+      }
+      switch (l1)
+      {
+      case 2:                       // S
+      case 15:                      // PEReference
+        parse_DeclSep();
+        break;
+      default:
+        parse_markupdecl();
+        break;
+      }
+    }
+  }
+
+  void parse_markupdecl()
+  {
+    switch (l1)
+    {
+    case 36:                        // '<!ELEMENT'
+      parse_elementdecl();
+      break;
+    case 34:                        // '<!ATTLIST'
+      parse_AttlistDecl();
+      break;
+    case 37:                        // '<!ENTITY'
+      parse_EntityDecl();
+      break;
+    case 38:                        // '<!NOTATION'
+      parse_NotationDecl();
+      break;
+    case 11:                        // PI
+      consume(11);                  // PI
+      break;
+    default:
+      consume(10);                  // Comment
+      break;
+    }
+  }
+
+  void parse_SDDecl()
+  {
+    consume(2);                     // S
+    lookahead1(20);                 // 'standalone'
+    consume(63);                    // 'standalone'
+    parse_Eq();
+    lookahead1(33);                 // '"' | "'"
+    switch (l1)
+    {
+    case 24:                        // "'"
+      consume(24);                  // "'"
+      lookahead1(42);               // 'no' | 'yes'
+      switch (l1)
+      {
+      case 65:                      // 'yes'
+        consume(65);                // 'yes'
+        break;
+      default:
+        consume(62);                // 'no'
+        break;
+      }
+      lookahead1(11);               // "'"
+      consume(24);                  // "'"
+      break;
+    default:
+      consume(17);                  // '"'
+      lookahead1(42);               // 'no' | 'yes'
+      switch (l1)
+      {
+      case 65:                      // 'yes'
+        consume(65);                // 'yes'
+        break;
+      default:
+        consume(62);                // 'no'
+        break;
+      }
+      lookahead1(8);                // '"'
+      consume(17);                  // '"'
+      break;
+    }
+  }
+
+  void parse_element()
+  {
+    consume(33);                    // '<'
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+                                                            #line 92 "XmlParser.ebnf"
+                                                            int bn = b0;
+                                                            int ln = e0 - bn;
+                                                            eh->startElement(input + bn, ln);
+                                                            #line 539 "XmlParser.hpp"
+    for (;;)
+    {
+      lookahead1(47);               // S | '/>' | '>'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(50);             // Name | '/>' | '>'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk != 386)                // S Name
+      {
+        break;
+      }
+      consume(2);                   // S
+      parse_Attribute();
+    }
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+                                                            #line 96 "XmlParser.ebnf"
+                                                            eh->endAttributeList();
+                                                            #line 565 "XmlParser.hpp"
+    lookahead1(37);                 // '/>' | '>'
+    switch (l1)
+    {
+    case 31:                        // '/>'
+      {
+        consume(31);                // '/>'
+                                                            #line 97 "XmlParser.ebnf"
+                                                            eh->endElement(input + bn, ln, input + e0, 0);
+                                                            #line 574 "XmlParser.hpp"
+      }
+      break;
+    default:
+      {
+        consume(42);                // '>'
+                                                            #line 98 "XmlParser.ebnf"
+                                                            int bc = e0;
+                                                            #line 582 "XmlParser.hpp"
+        parse_content();
+                                                            #line 99 "XmlParser.ebnf"
+                                                            beginContent = bc;
+                                                            #line 586 "XmlParser.hpp"
+        parse_ETag();
+      }
+      break;
+    }
+  }
+
+  void parse_Attribute()
+  {
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+                                                            #line 108 "XmlParser.ebnf"
+                                                            attrName(input + b0, e0 - b0);
+                                                            #line 599 "XmlParser.hpp"
+    parse_Eq();
+    lookahead1(3);                  // AttValue
+    consume(6);                     // AttValue
+                                                            #line 109 "XmlParser.ebnf"
+                                                            attrValue(input + b0 + 1, e0 - b0 - 2);
+                                                            #line 605 "XmlParser.hpp"
+  }
+
+  void parse_ETag()
+  {
+    consume(39);                    // '</'
+                                                            #line 114 "XmlParser.ebnf"
+                                                            size_t contentLength = b0 - beginContent;
+                                                            #line 613 "XmlParser.hpp"
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+                                                            #line 115 "XmlParser.ebnf"
+                                                            eh->endElement(input + b0, e0 - b0, input + beginContent, contentLength);
+                                                            #line 618 "XmlParser.hpp"
+    lookahead1(27);                 // S | '>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_content()
+  {
+    lookahead1(69);                 // CharData | Comment | PI | CDSect | CharRef | '&' | '<' | '</'
+    if (l1 == 9)                    // CharData
+    {
+      consume(9);                   // CharData
+                                                            #line 119 "XmlParser.ebnf"
+                                                            eh->characters(input + b0, e0 - b0);
+                                                            #line 636 "XmlParser.hpp"
+    }
+    for (;;)
+    {
+      lookahead1(68);               // Comment | PI | CDSect | CharRef | '&' | '<' | '</'
+      if (l1 == 39)                 // '</'
+      {
+        break;
+      }
+      switch (l1)
+      {
+      case 33:                      // '<'
+        parse_element();
+        break;
+      case 12:                      // CDSect
+        consume(12);                // CDSect
+        break;
+      case 11:                      // PI
+        consume(11);                // PI
+        break;
+      case 10:                      // Comment
+        consume(10);                // Comment
+        break;
+      default:
+        parse_Reference();
+        break;
+      }
+      lookahead1(69);               // CharData | Comment | PI | CDSect | CharRef | '&' | '<' | '</'
+      if (l1 == 9)                  // CharData
+      {
+        consume(9);                 // CharData
+                                                            #line 127 "XmlParser.ebnf"
+                                                            eh->characters(input + b0, e0 - b0);
+                                                            #line 669 "XmlParser.hpp"
+      }
+    }
+  }
+
+  void parse_elementdecl()
+  {
+    consume(36);                    // '<!ELEMENT'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_contentspec();
+    lookahead1(27);                 // S | '>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_contentspec()
+  {
+    lookahead1(52);                 // '(' | 'ANY' | 'EMPTY'
+    switch (l1)
+    {
+    case 25:                        // '('
+      lookahead2(57);               // S | Name | '#PCDATA' | '('
+      switch (lk)
+      {
+      case 281:                     // '(' S
+        lookahead3(49);             // Name | '#PCDATA' | '('
+        break;
+      }
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    switch (lk)
+    {
+    case 47:                        // 'EMPTY'
+      consume(47);                  // 'EMPTY'
+      break;
+    case 45:                        // 'ANY'
+      consume(45);                  // 'ANY'
+      break;
+    case 2585:                      // '(' '#PCDATA'
+    case 327961:                    // '(' S '#PCDATA'
+      parse_Mixed();
+      break;
+    default:
+      parse_children();
+      break;
+    }
+  }
+
+  void parse_children()
+  {
+    parse_choiceOrSeq();
+    lookahead1(65);                 // S | '*' | '+' | '>' | '?'
+    if (l1 != 2                     // S
+     && l1 != 42)                   // '>'
+    {
+      switch (l1)
+      {
+      case 43:                      // '?'
+        consume(43);                // '?'
+        break;
+      case 28:                      // '*'
+        consume(28);                // '*'
+        break;
+      default:
+        consume(29);                // '+'
+        break;
+      }
+    }
+  }
+
+  void parse_cp()
+  {
+    lookahead1(30);                 // Name | '('
+    switch (l1)
+    {
+    case 3:                         // Name
+      consume(3);                   // Name
+      break;
+    default:
+      parse_choiceOrSeq();
+      break;
+    }
+    lookahead1(67);                 // S | ')' | '*' | '+' | ',' | '?' | '|'
+    if (l1 == 28                    // '*'
+     || l1 == 29                    // '+'
+     || l1 == 43)                   // '?'
+    {
+      switch (l1)
+      {
+      case 43:                      // '?'
+        consume(43);                // '?'
+        break;
+      case 28:                      // '*'
+        consume(28);                // '*'
+        break;
+      default:
+        consume(29);                // '+'
+        break;
+      }
+    }
+  }
+
+  void parse_choiceOrSeq()
+  {
+    consume(25);                    // '('
+    lookahead1(43);                 // S | Name | '('
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    parse_cp();
+    lookahead1(61);                 // S | ')' | ',' | '|'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(54);                 // ')' | ',' | '|'
+    switch (l1)
+    {
+    case 66:                        // '|'
+      for (;;)
+      {
+        consume(66);                // '|'
+        lookahead1(43);             // S | Name | '('
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+        parse_cp();
+        lookahead1(45);             // S | ')' | '|'
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+        lookahead1(35);             // ')' | '|'
+        if (l1 != 66)               // '|'
+        {
+          break;
+        }
+      }
+      break;
+    default:
+      for (;;)
+      {
+        lookahead1(34);             // ')' | ','
+        if (l1 != 30)               // ','
+        {
+          break;
+        }
+        consume(30);                // ','
+        lookahead1(43);             // S | Name | '('
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+        parse_cp();
+        lookahead1(44);             // S | ')' | ','
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+      }
+      break;
+    }
+    consume(26);                    // ')'
+  }
+
+  void parse_Mixed()
+  {
+    consume(25);                    // '('
+    lookahead1(25);                 // S | '#PCDATA'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(9);                  // '#PCDATA'
+    consume(20);                    // '#PCDATA'
+    lookahead1(60);                 // S | ')' | ')*' | '|'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(53);                 // ')' | ')*' | '|'
+    switch (l1)
+    {
+    case 26:                        // ')'
+      consume(26);                  // ')'
+      break;
+    default:
+      for (;;)
+      {
+        lookahead1(36);             // ')*' | '|'
+        if (l1 != 66)               // '|'
+        {
+          break;
+        }
+        consume(66);                // '|'
+        lookahead1(23);             // S | Name
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+        lookahead1(1);              // Name
+        consume(3);                 // Name
+        lookahead1(46);             // S | ')*' | '|'
+        if (l1 == 2)                // S
+        {
+          consume(2);               // S
+        }
+      }
+      consume(27);                  // ')*'
+      break;
+    }
+  }
+
+  void parse_AttlistDecl()
+  {
+    consume(34);                    // '<!ATTLIST'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    for (;;)
+    {
+      lookahead1(27);               // S | '>'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(31);             // Name | '>'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk != 386)                // S Name
+      {
+        break;
+      }
+      parse_AttDef();
+    }
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_AttDef()
+  {
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_AttType();
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_DefaultDecl();
+  }
+
+  void parse_AttType()
+  {
+    lookahead1(71);                 // '(' | 'CDATA' | 'ENTITIES' | 'ENTITY' | 'ID' | 'IDREF' | 'IDREFS' | 'NMTOKEN' |
+                                    // 'NMTOKENS' | 'NOTATION'
+    switch (l1)
+    {
+    case 46:                        // 'CDATA'
+      parse_StringType();
+      break;
+    case 25:                        // '('
+    case 56:                        // 'NOTATION'
+      parse_EnumeratedType();
+      break;
+    default:
+      parse_TokenizedType();
+      break;
+    }
+  }
+
+  void parse_StringType()
+  {
+    consume(46);                    // 'CDATA'
+  }
+
+  void parse_TokenizedType()
+  {
+    switch (l1)
+    {
+    case 50:                        // 'ID'
+      consume(50);                  // 'ID'
+      break;
+    case 51:                        // 'IDREF'
+      consume(51);                  // 'IDREF'
+      break;
+    case 52:                        // 'IDREFS'
+      consume(52);                  // 'IDREFS'
+      break;
+    case 49:                        // 'ENTITY'
+      consume(49);                  // 'ENTITY'
+      break;
+    case 48:                        // 'ENTITIES'
+      consume(48);                  // 'ENTITIES'
+      break;
+    case 54:                        // 'NMTOKEN'
+      consume(54);                  // 'NMTOKEN'
+      break;
+    default:
+      consume(55);                  // 'NMTOKENS'
+      break;
+    }
+  }
+
+  void parse_EnumeratedType()
+  {
+    switch (l1)
+    {
+    case 56:                        // 'NOTATION'
+      parse_NotationType();
+      break;
+    default:
+      parse_Enumeration();
+      break;
+    }
+  }
+
+  void parse_NotationType()
+  {
+    consume(56);                    // 'NOTATION'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(12);                 // '('
+    consume(25);                    // '('
+    lookahead1(23);                 // S | Name
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    for (;;)
+    {
+      lookahead1(45);               // S | ')' | '|'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(35);             // ')' | '|'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk != 66                  // '|'
+       && lk != 8450)               // S '|'
+      {
+        break;
+      }
+      if (l1 == 2)                  // S
+      {
+        consume(2);                 // S
+      }
+      lookahead1(22);               // '|'
+      consume(66);                  // '|'
+      lookahead1(23);               // S | Name
+      if (l1 == 2)                  // S
+      {
+        consume(2);                 // S
+      }
+      lookahead1(1);                // Name
+      consume(3);                   // Name
+    }
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(13);                 // ')'
+    consume(26);                    // ')'
+  }
+
+  void parse_Enumeration()
+  {
+    consume(25);                    // '('
+    lookahead1(24);                 // S | Nmtoken
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(2);                  // Nmtoken
+    consume(4);                     // Nmtoken
+    for (;;)
+    {
+      lookahead1(45);               // S | ')' | '|'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(35);             // ')' | '|'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk != 66                  // '|'
+       && lk != 8450)               // S '|'
+      {
+        break;
+      }
+      if (l1 == 2)                  // S
+      {
+        consume(2);                 // S
+      }
+      lookahead1(22);               // '|'
+      consume(66);                  // '|'
+      lookahead1(24);               // S | Nmtoken
+      if (l1 == 2)                  // S
+      {
+        consume(2);                 // S
+      }
+      lookahead1(2);                // Nmtoken
+      consume(4);                   // Nmtoken
+    }
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(13);                 // ')'
+    consume(26);                    // ')'
+  }
+
+  void parse_DefaultDecl()
+  {
+    lookahead1(62);                 // AttValue | '#FIXED' | '#IMPLIED' | '#REQUIRED'
+    switch (l1)
+    {
+    case 21:                        // '#REQUIRED'
+      consume(21);                  // '#REQUIRED'
+      break;
+    case 19:                        // '#IMPLIED'
+      consume(19);                  // '#IMPLIED'
+      break;
+    default:
+      if (l1 == 18)                 // '#FIXED'
+      {
+        consume(18);                // '#FIXED'
+        lookahead1(0);              // S
+        consume(2);                 // S
+      }
+      lookahead1(3);                // AttValue
+      consume(6);                   // AttValue
+      break;
+    }
+  }
+
+  void parse_Reference()
+  {
+    switch (l1)
+    {
+    case 23:                        // '&'
+      parse_EntityRef();
+      break;
+    default:
+      consume(14);                  // CharRef
+      break;
+    }
+  }
+
+  void parse_EntityRef()
+  {
+    consume(23);                    // '&'
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(14);                 // ';'
+    consume(32);                    // ';'
+  }
+
+  void parse_EntityDecl()
+  {
+    switch (l1)
+    {
+    case 37:                        // '<!ENTITY'
+      lookahead2(0);                // S
+      switch (lk)
+      {
+      case 293:                     // '<!ENTITY' S
+        lookahead3(29);             // Name | '%'
+        break;
+      }
+      break;
+    default:
+      lk = l1;
+      break;
+    }
+    switch (lk)
+    {
+    case 49445:                     // '<!ENTITY' S Name
+      parse_GEDecl();
+      break;
+    default:
+      parse_PEDecl();
+      break;
+    }
+  }
+
+  void parse_GEDecl()
+  {
+    consume(37);                    // '<!ENTITY'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_EntityDef();
+    lookahead1(27);                 // S | '>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_PEDecl()
+  {
+    consume(37);                    // '<!ENTITY'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(10);                 // '%'
+    consume(22);                    // '%'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_PEDef();
+    lookahead1(27);                 // S | '>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_EntityDef()
+  {
+    lookahead1(51);                 // EntityValue | 'PUBLIC' | 'SYSTEM'
+    switch (l1)
+    {
+    case 5:                         // EntityValue
+      consume(5);                   // EntityValue
+      break;
+    default:
+      parse_ExternalID();
+      lookahead1(27);               // S | '>'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(38);             // '>' | 'NDATA'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk == 6786)               // S 'NDATA'
+      {
+        parse_NDataDecl();
+      }
+      break;
+    }
+  }
+
+  void parse_PEDef()
+  {
+    lookahead1(51);                 // EntityValue | 'PUBLIC' | 'SYSTEM'
+    switch (l1)
+    {
+    case 5:                         // EntityValue
+      consume(5);                   // EntityValue
+      break;
+    default:
+      parse_ExternalID();
+      break;
+    }
+  }
+
+  void parse_ExternalID()
+  {
+    lookahead1(41);                 // 'PUBLIC' | 'SYSTEM'
+    switch (l1)
+    {
+    case 58:                        // 'SYSTEM'
+      consume(58);                  // 'SYSTEM'
+      lookahead1(0);                // S
+      consume(2);                   // S
+      lookahead1(4);                // SystemLiteral
+      consume(7);                   // SystemLiteral
+      break;
+    default:
+      consume(57);                  // 'PUBLIC'
+      lookahead1(0);                // S
+      consume(2);                   // S
+      lookahead1(5);                // PubidLiteral
+      consume(8);                   // PubidLiteral
+      lookahead1(0);                // S
+      consume(2);                   // S
+      lookahead1(4);                // SystemLiteral
+      consume(7);                   // SystemLiteral
+      break;
+    }
+  }
+
+  void parse_NDataDecl()
+  {
+    consume(2);                     // S
+    lookahead1(18);                 // 'NDATA'
+    consume(53);                    // 'NDATA'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+  }
+
+  void parse_EncodingDecl()
+  {
+    consume(2);                     // S
+    lookahead1(19);                 // 'encoding'
+    consume(61);                    // 'encoding'
+    parse_Eq();
+    lookahead1(33);                 // '"' | "'"
+    switch (l1)
+    {
+    case 17:                        // '"'
+      consume(17);                  // '"'
+      lookahead1(7);                // EncName
+      consume(16);                  // EncName
+      lookahead1(8);                // '"'
+      consume(17);                  // '"'
+      break;
+    default:
+      consume(24);                  // "'"
+      lookahead1(7);                // EncName
+      consume(16);                  // EncName
+      lookahead1(11);               // "'"
+      consume(24);                  // "'"
+      break;
+    }
+  }
+
+  void parse_NotationDecl()
+  {
+    consume(38);                    // '<!NOTATION'
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    lookahead1(1);                  // Name
+    consume(3);                     // Name
+    lookahead1(0);                  // S
+    consume(2);                     // S
+    parse_ExternalOrPublicID();
+    lookahead1(27);                 // S | '>'
+    if (l1 == 2)                    // S
+    {
+      consume(2);                   // S
+    }
+    lookahead1(16);                 // '>'
+    consume(42);                    // '>'
+  }
+
+  void parse_ExternalOrPublicID()
+  {
+    lookahead1(41);                 // 'PUBLIC' | 'SYSTEM'
+    switch (l1)
+    {
+    case 58:                        // 'SYSTEM'
+      consume(58);                  // 'SYSTEM'
+      lookahead1(0);                // S
+      consume(2);                   // S
+      lookahead1(4);                // SystemLiteral
+      consume(7);                   // SystemLiteral
+      break;
+    default:
+      consume(57);                  // 'PUBLIC'
+      lookahead1(0);                // S
+      consume(2);                   // S
+      lookahead1(5);                // PubidLiteral
+      consume(8);                   // PubidLiteral
+      lookahead1(27);               // S | '>'
+      switch (l1)
+      {
+      case 2:                       // S
+        lookahead2(32);             // SystemLiteral | '>'
+        break;
+      default:
+        lk = l1;
+        break;
+      }
+      if (lk == 898)                // S SystemLiteral
+      {
+        consume(2);                 // S
+        lookahead1(4);              // SystemLiteral
+        consume(7);                 // SystemLiteral
+      }
+      break;
+    }
+  }
+
+  void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
+      b1 = b2; e1 = e2; l2 = l3; if (l2 != 0) {
+      b2 = b3; e2 = e3; l3 = 0; }}
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  void lookahead2(int tokenSetId)
+  {
+    if (l2 == 0)
+    {
+      l2 = match(tokenSetId);
+      b2 = begin;
+      e2 = end;
+    }
+    lk = (l2 << 7) | l1;
+  }
+
+  void lookahead3(int tokenSetId)
+  {
+    if (l3 == 0)
+    {
+      l3 = match(tokenSetId);
+      b3 = begin;
+      e3 = end;
+    }
+    lk |= l3 << 14;
+  }
+
+  int error(int b, int e, int s, int l, int t)
+  {
+    throw ParseException(b, e, s, l, t);
+  }
+
+  int lk, b0, e0;
+  int l1, b1, e1;
+  int l2, b2, e2;
+  int l3, b3, e3;
+
+  const wchar_t *input;
+  int begin;
+  int end;
+
+  int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 511; code != 0; )
+    {
+      int charclass;
+      int c0 = input[current];
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 4;
+        charclass = MAP1[(c0 & 15) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = input[current];
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+        int lo = 0, hi = 4;
+        for (int m = 2; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) hi = m - 1;
+          else if (MAP2[5 + m] < c0) lo = m + 1;
+          else {charclass = MAP2[10 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+
+      state = code;
+      int i0 = (charclass << 9) + code - 1;
+      code = TRANSITION[(i0 & 15) + TRANSITION[i0 >> 4]];
+      if (code > 511)
+      {
+        result = code;
+        code &= 511;
+        end = current;
+      }
+    }
+
+    result >>= 9;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = input[end];
+      if (c1 >= 0xdc00 && c1 < 0xe000) --end;
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (input[begin] == 0) end = begin;
+    return (result & 127) - 1;
+  }
+
+  static void getTokenSet(int tokenSetId, const wchar_t **set, int size)
+  {
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 511;
+    for (int i = 0; i < 67; i += 32)
+    {
+      int j = i;
+      for (unsigned int f = ec(i >> 5, s); f != 0; f >>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          if (size > 1)
+          {
+            set[0] = TOKEN[j];
+            ++set;
+            --size;
+          }
+        }
+      }
+    }
+    if (size > 0)
+    {
+      set[0] = 0;
+    }
+  }
+
+  static int ec(int t, int s)
+  {
+    int i0 = t * 280 + s - 1;
+    int i1 = i0 >> 2;
+    return EXPECTED[(i0 & 3) + EXPECTED[(i1 & 63) + EXPECTED[i1 >> 6]]];
+  }
+
+  static const int MAP0[];
+  static const int MAP1[];
+  static const int MAP2[];
+  static const int INITIAL[];
+  static const int TRANSITION[];
+  static const int EXPECTED[];
+  static const wchar_t *TOKEN[];
+};
+
+const int XmlParser::MAP0[] =
+{
+/*   0 */ 71, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5,
+/*  36 */ 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 18, 18, 18, 18, 18, 18, 18, 18, 20, 21, 22, 23, 24, 25, 6,
+/*  65 */ 26, 27, 28, 29, 30, 31, 32, 32, 33, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 32, 32, 45, 46, 32, 47,
+/*  92 */ 48, 49, 48, 50, 48, 51, 52, 53, 54, 55, 52, 56, 32, 57, 32, 32, 58, 59, 60, 61, 32, 32, 62, 63, 64, 32, 65,
+/* 119 */ 32, 66, 67, 32, 48, 68, 48, 48, 48
+};
+
+const int XmlParser::MAP1[] =
+{
+/*   0 */ 108, 124, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 156, 181, 181, 181, 181, 181,
+/*  22 */ 214, 215, 213, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214,
+/*  44 */ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214,
+/*  66 */ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214,
+/*  88 */ 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 214, 247, 261,
+/* 110 */ 277, 293, 309, 325, 341, 357, 394, 394, 394, 386, 442, 434, 442, 434, 442, 442, 442, 442, 442, 442, 442, 442,
+/* 132 */ 442, 442, 442, 442, 442, 442, 442, 442, 411, 411, 411, 411, 411, 411, 411, 427, 442, 442, 442, 442, 442, 442,
+/* 154 */ 442, 442, 370, 394, 394, 395, 393, 394, 394, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442,
+/* 176 */ 442, 442, 442, 442, 442, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394,
+/* 198 */ 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 394, 441, 442, 442, 442, 442, 442, 442,
+/* 220 */ 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442, 442,
+/* 242 */ 442, 442, 442, 442, 394, 71, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 275 */ 0, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 18, 18, 18, 18, 18, 18, 18, 18, 20, 21,
+/* 305 */ 22, 23, 24, 25, 6, 26, 27, 28, 29, 30, 31, 32, 32, 33, 32, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 32, 32,
+/* 333 */ 45, 46, 32, 47, 48, 49, 48, 50, 48, 51, 52, 53, 54, 55, 52, 56, 32, 57, 32, 32, 58, 59, 60, 61, 32, 32, 62,
+/* 360 */ 63, 64, 32, 65, 32, 66, 67, 32, 48, 68, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 70, 70, 48, 48, 48,
+/* 387 */ 48, 48, 48, 48, 48, 48, 69, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 69, 69, 69, 69,
+/* 414 */ 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 69, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+/* 441 */ 48, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70
+};
+
+const int XmlParser::MAP2[] =
+{
+/*  0 */ 57344, 63744, 64976, 65008, 65536, 63743, 64975, 65007, 65533, 1114111, 48, 70, 48, 70, 48
+};
+
+const int XmlParser::INITIAL[] =
+{
+/*  0 */ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+/* 30 */ 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58,
+/* 58 */ 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72
+};
+
+const int XmlParser::TRANSITION[] =
+{
+/*    0 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*   18 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2304, 2323, 5215, 2322,
+/*   36 */ 2339, 4812, 4178, 2305, 2794, 2305, 2368, 2305, 5429, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305,
+/*   54 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2304, 2323, 5215, 2322, 2392, 4812, 4178, 2305,
+/*   72 */ 2794, 2305, 2368, 2305, 5429, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*   90 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4042, 4812, 2443, 2305, 2794, 2305, 2305, 2305,
+/*  108 */ 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  126 */ 2305, 2305, 4560, 2305, 2470, 2979, 4153, 3220, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305,
+/*  144 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 5447, 5447,
+/*  162 */ 2305, 2488, 4042, 4812, 5384, 2523, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/*  180 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4042, 4812,
+/*  198 */ 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  216 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3353, 3350, 2305, 2305, 3513, 2831, 4178, 2305, 2794, 2305,
+/*  234 */ 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  252 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4856, 2916, 2305, 2305, 2305, 2305, 2305, 2305, 3605, 2305,
+/*  270 */ 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  288 */ 3189, 2305, 2553, 3432, 5052, 3941, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137,
+/*  306 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2557, 2555, 2558, 2574,
+/*  324 */ 3695, 4812, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305,
+/*  342 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3789, 2305, 2600, 3891, 2650, 4812, 4178, 2305,
+/*  360 */ 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  378 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2635, 2584, 4178, 2305, 2794, 2305, 2305, 2305,
+/*  396 */ 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  414 */ 2305, 2305, 2305, 2305, 2305, 2305, 2696, 4812, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305,
+/*  432 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  450 */ 2736, 2742, 2665, 4812, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/*  468 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4809, 4803, 2305, 2305, 4942, 3376,
+/*  486 */ 4178, 2305, 2758, 4015, 2786, 2305, 2407, 2305, 2810, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  504 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4809, 4803, 2305, 2305, 4531, 3376, 4178, 2305, 4624, 4015,
+/*  522 */ 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  540 */ 2305, 2305, 2305, 2305, 2305, 2305, 3307, 3938, 4042, 4812, 2418, 2305, 2794, 2305, 2305, 2305, 3605, 2305,
+/*  558 */ 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  576 */ 4809, 4803, 2305, 2305, 4942, 3376, 4178, 2828, 4187, 2847, 5176, 3575, 2862, 3863, 3608, 2305, 2305, 3137,
+/*  594 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2890, 4803, 2305, 2305,
+/*  612 */ 4942, 3376, 4178, 2828, 4187, 2847, 5176, 3575, 2862, 3863, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305,
+/*  630 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2913, 2427, 5317, 2932, 4942, 4812, 4680, 2965,
+/*  648 */ 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  666 */ 2305, 2305, 2305, 2305, 2305, 2305, 2812, 2305, 2305, 2305, 4042, 4812, 4178, 2305, 3469, 3669, 5194, 2990,
+/*  684 */ 3683, 3402, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  702 */ 2305, 2305, 2305, 2305, 2305, 3770, 3033, 4812, 2305, 2305, 2305, 2305, 2305, 2305, 3605, 2305, 3608, 2305,
+/*  720 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 5281, 2897,
+/*  738 */ 2305, 2305, 4042, 4812, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/*  756 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3110, 3095, 3080, 3124, 3161,
+/*  774 */ 4178, 2305, 2305, 2305, 2305, 2305, 5311, 2305, 3217, 2615, 2305, 3461, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  792 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3236, 3240, 3241, 3257, 4812, 3296, 2305, 2794, 2305,
+/*  810 */ 3323, 2305, 5373, 2305, 3347, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  828 */ 2305, 2305, 2305, 2305, 3369, 2427, 5317, 3392, 4942, 3376, 4680, 3418, 3448, 4015, 4905, 3485, 3501, 3529,
+/*  846 */ 3545, 2305, 3059, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  864 */ 3369, 2427, 5317, 2932, 4942, 3376, 4680, 3561, 3006, 4015, 4905, 4970, 3501, 3863, 3608, 2305, 2305, 3137,
+/*  882 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932,
+/*  900 */ 5474, 3376, 4680, 3591, 3006, 4015, 5109, 4970, 3626, 5078, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305,
+/*  918 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3654, 2720, 2965,
+/*  936 */ 3711, 4459, 4905, 4970, 3749, 3863, 3786, 2305, 3805, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  954 */ 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 3853, 3201, 3376, 4680, 2965, 3879, 4015, 4905, 3907,
+/*  972 */ 3923, 3863, 3957, 3046, 3987, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/*  990 */ 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4002, 2965, 3006, 4015, 4905, 4970, 3501, 2680, 3608, 2305,
+/* 1008 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427,
+/* 1026 */ 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/* 1044 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 2770, 3376,
+/* 1062 */ 4073, 2965, 4031, 4015, 4655, 2619, 3819, 2305, 4058, 4374, 4398, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1080 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015,
+/* 1098 */ 4616, 2305, 3819, 4869, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1116 */ 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4086, 4757, 2305, 5041, 2305,
+/* 1134 */ 4102, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1152 */ 3369, 2427, 5317, 2932, 4942, 3376, 4126, 2965, 4142, 4015, 4616, 2305, 3819, 5145, 4169, 2305, 2305, 3137,
+/* 1170 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 4474, 4915, 2932,
+/* 1188 */ 2874, 4203, 4779, 2965, 4219, 4015, 4843, 2305, 3819, 2305, 3608, 4250, 2454, 3762, 2305, 2305, 2305, 2305,
+/* 1206 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 5264, 2965,
+/* 1224 */ 3006, 4015, 5415, 4247, 3819, 2305, 3608, 2472, 2305, 4266, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1242 */ 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 3837, 4290, 4942, 4306, 4680, 4350, 3006, 4015, 4366, 2305,
+/* 1260 */ 3819, 2305, 3608, 2305, 2503, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1278 */ 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4390, 2305, 3819, 2305, 3608, 2305,
+/* 1296 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427,
+/* 1314 */ 5317, 2932, 4942, 3376, 4321, 2965, 4414, 4015, 4616, 2305, 3819, 2305, 3608, 5120, 2305, 3137, 2305, 2305,
+/* 1332 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 2376, 4490, 4942, 3376,
+/* 1350 */ 4680, 4506, 3006, 4015, 4616, 2305, 3819, 2305, 4547, 2305, 3722, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1368 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 4585, 4601,
+/* 1386 */ 4640, 2305, 3971, 4671, 4696, 4569, 2305, 4718, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1404 */ 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 4742, 4680, 2965, 3006, 4015, 4616, 2305, 5000, 2305,
+/* 1422 */ 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1440 */ 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4795, 2305, 3819, 2305, 3608, 2305, 2305, 3137,
+/* 1458 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932,
+/* 1476 */ 4942, 4828, 4680, 4890, 3006, 4015, 4616, 2305, 4931, 2305, 4958, 5440, 5186, 3137, 2305, 2305, 2305, 2305,
+/* 1494 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2942, 2949, 3733, 4812, 4178, 2305,
+/* 1512 */ 4274, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2306, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1530 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3733, 4812, 4178, 2305, 2794, 2305, 2305, 2305,
+/* 1548 */ 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1566 */ 2305, 2305, 2305, 2305, 2305, 2305, 3638, 4812, 5255, 2305, 3331, 2305, 2305, 2305, 3605, 2305, 3608, 2305,
+/* 1584 */ 2305, 4770, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2913, 2427,
+/* 1602 */ 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/* 1620 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376,
+/* 1638 */ 4680, 4986, 3006, 4015, 4905, 4970, 3501, 5343, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1656 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015,
+/* 1674 */ 4905, 4970, 3501, 3863, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1692 */ 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 5027, 3006, 4015, 4905, 4970, 3501, 3863,
+/* 1710 */ 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1728 */ 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4905, 2352, 3501, 3863, 3608, 2305, 2305, 3137,
+/* 1746 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2537, 5317, 5068,
+/* 1764 */ 4942, 5094, 4680, 2965, 3006, 4015, 4905, 4970, 3501, 3863, 3608, 2305, 2305, 2711, 2305, 2305, 2305, 2305,
+/* 1782 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965,
+/* 1800 */ 3006, 4015, 4616, 2305, 3819, 2305, 3608, 3610, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1818 */ 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4616, 3064,
+/* 1836 */ 3819, 3145, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1854 */ 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4616, 2305, 4520, 2305, 3608, 5142,
+/* 1872 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427,
+/* 1890 */ 5317, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 5246, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/* 1908 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5126, 2932, 4942, 5161,
+/* 1926 */ 4680, 2965, 3006, 4429, 4616, 2305, 3819, 2305, 3608, 5210, 2507, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1944 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 5231, 4680, 2965, 3006, 4444,
+/* 1962 */ 4616, 2305, 3819, 4874, 3608, 2305, 5280, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 1980 */ 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 5297, 3006, 4015, 4616, 2305, 3819, 2305,
+/* 1998 */ 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2016 */ 3369, 4231, 4110, 5333, 4942, 3376, 4680, 5359, 3006, 4334, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137,
+/* 2034 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932,
+/* 2052 */ 4942, 5400, 4680, 2965, 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305,
+/* 2070 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3369, 3017, 5317, 2932, 4942, 3376, 4680, 2965,
+/* 2088 */ 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2106 */ 2305, 2305, 2305, 2305, 2305, 2305, 3369, 2427, 5317, 2932, 4942, 3376, 4680, 2965, 5463, 5490, 4616, 2305,
+/* 2124 */ 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2142 */ 2305, 2305, 3369, 2427, 4702, 2932, 4942, 3376, 4680, 2965, 3006, 4015, 4616, 2305, 3819, 2305, 3608, 2305,
+/* 2160 */ 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 3830,
+/* 2178 */ 3272, 3280, 3176, 4812, 4178, 2305, 2794, 2305, 2305, 2305, 3605, 2305, 3608, 2305, 2305, 3137, 2305, 2305,
+/* 2196 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4809, 4803, 2305, 2305, 5011, 4812,
+/* 2214 */ 4178, 2305, 4624, 4015, 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2232 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2913, 2427, 5317, 2932, 5011, 4812, 4680, 2965, 3006, 4015,
+/* 2250 */ 4616, 2305, 3819, 2305, 3608, 2305, 2305, 3137, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2268 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 4726, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2286 */ 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305, 2305,
+/* 2304 */ 1537, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 277, 1537, 0, 0, 0, 0, 0, 0, 0, 1537, 1537, 1537, 1537,
+/* 2334 */ 1537, 1537, 0, 0, 0, 1537, 1537, 1537, 1537, 0, 5224, 1537, 0, 0, 74, 75, 76, 77, 0, 0, 0, 0, 215, 0, 216, 0,
+/* 2360 */ 0, 218, 219, 0, 0, 0, 0, 223, 0, 0, 197, 0, 0, 0, 0, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 0, 2121, 0, 0, 0, 0,
+/* 2392 */ 1537, 1537, 1537, 1537, 0, 5224, 1537, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 0, 225, 197, 0, 0, 0, 0, 0, 163,
+/* 2418 */ 0, 0, 0, 0, 0, 0, 20480, 5224, 5224, 0, 0, 0, 0, 0, 0, 0, 2121, 2563, 0, 0, 0, 0, 2121, 2121, 2121, 0, 129,
+/* 2445 */ 0, 134, 134, 0, 137, 5224, 5224, 0, 140, 0, 0, 0, 0, 0, 0, 274, 0, 0, 0, 0, 29184, 0, 0, 0, 0, 76, 9216, 0,
+/* 2473 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 268, 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 82, 0, 0, 0, 0, 99, 0, 0, 0, 271,
+/* 2507 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 276, 0, 0, 0, 148, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 158, 0, 160, 0, 0, 0,
+/* 2540 */ 85, 0, 0, 0, 2121, 2563, 0, 0, 0, 0, 2121, 2121, 2121, 77, 12800, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 2569 */ 13312, 0, 0, 0, 0, 0, 13312, 0, 0, 13312, 0, 0, 0, 0, 13312, 0, 0, 0, 0, 0, 0, 0, 14336, 0, 0, 0, 0, 0, 94,
+/* 2598 */ 95, 0, 0, 0, 13824, 13824, 88, 0, 0, 0, 0, 0, 0, 0, 13824, 13824, 88, 0, 0, 0, 5632, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 2627 */ 0, 0, 0, 0, 221, 0, 0, 0, 0, 14848, 0, 14848, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 0, 13824, 0,
+/* 2655 */ 5224, 0, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 0, 15872, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 0,
+/* 2683 */ 26861, 0, 0, 215, 216, 0, 0, 0, 0, 0, 0, 223, 224, 0, 15360, 0, 15360, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 78,
+/* 2710 */ 79, 0, 0, 0, 32768, 277, 0, 277, 277, 0, 0, 0, 0, 0, 0, 0, 0, 5224, 5224, 139, 0, 141, 0, 26255, 0, 147, 0,
+/* 2737 */ 0, 15872, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15872, 0, 0, 0, 0, 0, 0, 15872, 0, 0, 162, 0, 0, 0, 0, 162, 0, 0, 162,
+/* 2767 */ 5224, 139, 162, 0, 0, 0, 0, 0, 5224, 0, 110, 2121, 74, 75, 76, 77, 78, 79, 0, 0, 196, 163, 0, 0, 0, 0, 163,
+/* 2794 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 5224, 0, 0, 0, 0, 0, 0, 244, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16896,
+/* 2827 */ 0, 0, 7282, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 123, 125, 0, 0, 180, 147, 182, 149, 0, 0, 0, 0, 0, 0,
+/* 2858 */ 0, 157, 191, 159, 193, 224, 0, 196, 197, 0, 0, 0, 0, 0, 163, 204, 0, 0, 0, 0, 0, 5224, 0, 111, 2121, 74, 75,
+/* 2885 */ 76, 77, 78, 79, 0, 0, 0, 2563, 0, 0, 0, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21504, 0, 0, 0, 0, 0, 0, 2121,
+/* 2915 */ 2563, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 124, 126, 0, 0, 2121, 2121, 0, 0, 0, 0, 0, 0, 2121, 0, 0, 0, 0,
+/* 2946 */ 0, 0, 0, 30720, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30720, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 157, 157,
+/* 2977 */ 159, 159, 0, 0, 0, 94, 0, 0, 0, 0, 0, 0, 9290, 0, 0, 0, 74, 0, 75, 0, 0, 0, 0, 0, 0, 0, 0, 94, 0, 0, 163, 0,
+/* 3009 */ 0, 0, 0, 163, 0, 0, 5224, 139, 0, 0, 0, 0, 0, 87, 0, 2121, 2563, 0, 0, 0, 0, 2121, 2121, 2121, 17508, 0,
+/* 3035 */ 17509, 0, 17511, 17511, 107, 0, 0, 0, 0, 76, 77, 0, 0, 0, 0, 258, 0, 0, 0, 0, 263, 0, 0, 266, 0, 0, 0, 0,
+/* 3063 */ 272, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 220, 0, 0, 0, 0, 22016, 0, 22016, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 3095 */ 22016, 0, 0, 0, 0, 22016, 22016, 22016, 0, 0, 0, 0, 0, 0, 0, 22016, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22016, 0,
+/* 3123 */ 0, 0, 22016, 0, 0, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 0, 0, 0, 0, 277, 0, 277, 277, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 3154 */ 241, 0, 0, 0, 0, 0, 0, 0, 0, 23040, 0, 0, 0, 0, 0, 16384, 0, 0, 0, 0, 94, 95, 0, 0, 0, 34304, 0, 5224, 0, 0,
+/* 3184 */ 0, 74, 75, 76, 77, 0, 0, 0, 75, 77, 79, 0, 0, 0, 0, 0, 12800, 0, 0, 0, 0, 0, 5224, 0, 109, 2121, 74, 75, 76,
+/* 3213 */ 77, 78, 79, 0, 196, 6144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3072, 95, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0,
+/* 3245 */ 0, 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22528, 0, 22528, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 0,
+/* 3275 */ 34304, 34304, 0, 0, 0, 0, 0, 0, 0, 0, 34304, 34304, 0, 0, 0, 0, 0, 34304, 34304, 0, 0, 0, 130, 0, 130, 135,
+/* 3301 */ 0, 130, 5224, 5224, 0, 130, 0, 0, 0, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 0, 0, 198, 0, 0, 0, 0, 198, 0,
+/* 3332 */ 0, 0, 0, 0, 0, 0, 0, 0, 5258, 0, 0, 0, 0, 0, 0, 196, 226, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11776, 0,
+/* 3365 */ 0, 0, 0, 0, 0, 2121, 2563, 0, 0, 0, 0, 8785, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 95, 0, 0, 2121, 2121, 0,
+/* 3396 */ 96, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 0, 74, 75, 0, 0, 0, 0, 0, 0, 94, 95, 149, 0, 0, 151, 0, 0, 0, 0, 0, 0,
+/* 3428 */ 157, 157, 159, 159, 0, 0, 0, 95, 0, 0, 0, 0, 0, 0, 12875, 0, 0, 0, 75, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0,
+/* 3457 */ 5224, 139, 172, 175, 0, 0, 0, 0, 277, 0, 277, 6656, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5224, 8192, 0, 0, 0, 0, 0, 0,
+/* 3486 */ 0, 214, 0, 215, 0, 216, 217, 27648, 0, 0, 0, 0, 0, 0, 223, 0, 224, 0, 196, 197, 0, 0, 0, 0, 0, 163, 204, 0,
+/* 3514 */ 0, 0, 0, 0, 5224, 106, 0, 0, 74, 75, 76, 77, 78, 79, 0, 0, 24064, 0, 0, 0, 0, 215, 216, 0, 0, 0, 0, 0, 0,
+/* 3543 */ 223, 224, 196, 197, 0, 0, 0, 0, 248, 0, 0, 0, 252, 0, 0, 0, 0, 10752, 149, 0, 0, 0, 0, 0, 0, 155, 0, 0, 157,
+/* 3572 */ 157, 159, 159, 0, 0, 0, 180, 215, 182, 216, 0, 0, 0, 0, 0, 0, 0, 191, 223, 149, 0, 150, 0, 0, 0, 0, 0, 0, 0,
+/* 3601 */ 157, 157, 159, 159, 0, 0, 0, 196, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31744, 0, 224, 0, 196,
+/* 3630 */ 197, 0, 0, 0, 0, 230, 163, 204, 0, 0, 0, 0, 0, 5225, 31232, 0, 0, 74, 75, 76, 77, 0, 0, 0, 8785, 0, 0, 116,
+/* 3658 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 95, 0, 0, 74, 0, 75, 0, 0, 0, 0, 0, 0, 0, 94, 0, 95, 0, 0, 196, 197, 0, 0, 0,
+/* 3691 */ 0, 0, 0, 7680, 0, 0, 0, 0, 0, 5224, 0, 13312, 0, 74, 75, 76, 77, 78, 79, 0, 0, 163, 0, 0, 0, 167, 163, 0, 0,
+/* 3720 */ 5224, 139, 0, 0, 0, 0, 0, 273, 0, 0, 0, 25088, 28672, 0, 0, 0, 0, 0, 5224, 0, 0, 0, 74, 75, 76, 77, 0, 0, 0,
+/* 3749 */ 0, 224, 0, 196, 197, 0, 0, 0, 0, 0, 163, 204, 231, 0, 0, 0, 0, 277, 19968, 277, 277, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 3778 */ 98, 0, 0, 17506, 0, 0, 0, 0, 196, 197, 9728, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13824, 0, 0, 0, 10240, 0,
+/* 3808 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11264, 0, 0, 0, 196, 197, 0, 0, 0, 0, 0, 163, 0, 0, 0, 0, 0, 0, 34304, 0, 0, 0,
+/* 3840 */ 0, 0, 0, 0, 0, 0, 90, 0, 2121, 0, 0, 0, 0, 0, 2121, 2121, 0, 97, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 0, 215,
+/* 3870 */ 216, 0, 0, 0, 0, 0, 0, 223, 224, 0, 163, 0, 0, 166, 0, 163, 0, 0, 5224, 139, 173, 0, 0, 0, 0, 0, 13912,
+/* 3897 */ 13824, 0, 0, 0, 0, 0, 13912, 13824, 0, 0, 212, 0, 0, 0, 215, 0, 216, 0, 0, 0, 0, 0, 0, 222, 0, 223, 0, 224,
+/* 3925 */ 0, 196, 197, 0, 227, 0, 0, 0, 163, 204, 0, 0, 233, 0, 0, 89, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 3072,
+/* 3956 */ 0, 196, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 254, 0, 0, 0, 196, 197, 0, 0, 0, 0, 0, 163, 0, 0, 232, 0, 234,
+/* 3987 */ 0, 0, 270, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18432, 0, 0, 131, 0, 0, 0, 0, 5224, 5224, 139, 0, 0, 0, 0, 0,
+/* 4017 */ 147, 0, 149, 0, 0, 0, 0, 0, 0, 0, 157, 0, 159, 0, 0, 163, 164, 0, 0, 0, 163, 0, 0, 5224, 139, 0, 0, 0, 0, 0,
+/* 4047 */ 5224, 0, 0, 0, 74, 75, 76, 77, 78, 79, 0, 196, 197, 0, 245, 246, 0, 0, 0, 0, 251, 0, 253, 0, 0, 255, 0, 0,
+/* 4075 */ 132, 0, 0, 0, 0, 5224, 5224, 139, 0, 0, 0, 0, 0, 147, 0, 149, 0, 0, 0, 0, 0, 189, 0, 157, 0, 159, 0, 196,
+/* 4103 */ 197, 0, 0, 0, 0, 0, 249, 0, 0, 0, 0, 0, 0, 0, 0, 86, 0, 0, 2121, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 5224,
+/* 4134 */ 5224, 139, 0, 0, 0, 0, 144, 147, 0, 163, 0, 165, 0, 0, 163, 0, 0, 5224, 139, 0, 0, 0, 0, 0, 5224, 0, 0, 0,
+/* 4162 */ 3584, 75, 4096, 77, 4608, 0, 0, 196, 197, 0, 0, 0, 0, 0, 0, 250, 0, 0, 0, 0, 0, 0, 0, 5224, 5224, 0, 0, 0, 0,
+/* 4191 */ 0, 0, 0, 169, 0, 5224, 139, 0, 0, 0, 0, 0, 8785, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 95, 127, 0, 163, 0,
+/* 4222 */ 0, 0, 0, 163, 0, 0, 5224, 139, 174, 0, 0, 0, 0, 86, 0, 0, 2121, 2563, 0, 0, 0, 0, 2121, 2121, 2121, 0, 213,
+/* 4249 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28427, 0, 0, 0, 0, 278, 0, 277, 0, 277, 277, 0, 0, 0, 0, 0, 0, 0,
+/* 4281 */ 0, 171, 5224, 0, 0, 0, 0, 0, 0, 0, 2121, 2121, 90, 0, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 90, 8785, 115, 0, 0,
+/* 4310 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 95, 0, 0, 133, 0, 0, 0, 0, 5224, 5224, 139, 0, 0, 0, 0, 0, 147, 0, 149, 0, 0,
+/* 4341 */ 0, 0, 188, 0, 0, 157, 0, 159, 0, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 157, 157, 159, 159, 0, 161, 0, 0, 163, 0,
+/* 4370 */ 200, 0, 0, 163, 0, 0, 0, 0, 0, 0, 0, 0, 262, 0, 0, 0, 0, 0, 0, 0, 0, 0, 163, 0, 0, 201, 0, 163, 0, 0, 0, 0,
+/* 4402 */ 0, 0, 0, 0, 275, 0, 0, 0, 0, 0, 0, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0, 5224, 139, 0, 0, 0, 177, 0, 0, 147, 0,
+/* 4433 */ 149, 0, 0, 0, 187, 0, 0, 0, 157, 0, 159, 0, 0, 147, 0, 149, 0, 0, 186, 0, 0, 0, 0, 157, 0, 159, 0, 0, 147, 0,
+/* 4463 */ 149, 184, 0, 0, 0, 0, 0, 0, 157, 0, 159, 0, 0, 84, 0, 0, 0, 0, 2121, 2563, 0, 0, 0, 0, 2121, 2121, 2121, 0,
+/* 4491 */ 2121, 2121, 91, 0, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 91, 149, 0, 0, 0, 0, 0, 0, 0, 156, 0, 157, 157, 159, 159,
+/* 4520 */ 0, 0, 0, 196, 197, 0, 0, 0, 0, 0, 21155, 0, 0, 0, 0, 0, 5224, 0, 0, 2121, 74, 75, 76, 77, 78, 79, 114, 196,
+/* 4548 */ 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27136, 0, 0, 0, 74, 76, 78, 0, 0, 9216, 0, 0, 0, 0, 0, 0, 0, 261, 0, 0,
+/* 4579 */ 264, 265, 0, 0, 0, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0, 5224, 139, 0, 0, 176, 0, 178, 179, 0, 147, 0, 149, 0,
+/* 4607 */ 185, 0, 0, 0, 0, 190, 157, 0, 159, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5224, 139, 0, 0, 0,
+/* 4638 */ 0, 0, 195, 0, 163, 0, 0, 0, 0, 163, 0, 0, 0, 206, 0, 0, 210, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0, 0, 0, 0, 0, 0,
+/* 4670 */ 211, 235, 0, 236, 0, 0, 239, 0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 5224, 5224, 139, 0, 0, 0, 0, 0, 147, 196, 197,
+/* 4698 */ 0, 0, 0, 247, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 93, 2121, 0, 0, 0, 0, 17920, 18944, 0, 0, 277, 0, 277, 277, 0, 0,
+/* 4728 */ 0, 0, 0, 0, 0, 0, 1024, 0, 0, 0, 0, 0, 0, 0, 8785, 0, 0, 0, 0, 0, 0, 0, 0, 120, 0, 0, 0, 94, 95, 0, 0, 163,
+/* 4760 */ 0, 0, 0, 0, 163, 0, 0, 0, 0, 207, 0, 0, 0, 0, 279, 0, 280, 280, 0, 0, 0, 0, 0, 0, 0, 0, 5224, 5224, 139, 0,
+/* 4790 */ 0, 142, 0, 0, 147, 0, 0, 163, 199, 0, 0, 0, 163, 0, 0, 0, 0, 0, 0, 0, 0, 2563, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 4822 */ 0, 0, 0, 94, 95, 0, 8785, 0, 0, 0, 0, 0, 0, 0, 0, 0, 121, 0, 0, 94, 95, 0, 0, 163, 0, 0, 0, 0, 163, 0, 0, 0,
+/* 4854 */ 0, 208, 0, 0, 0, 0, 12390, 12390, 0, 0, 0, 112, 113, 76, 77, 0, 0, 0, 0, 238, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 4884 */ 0, 243, 0, 0, 0, 0, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 157, 157, 159, 159, 23552, 0, 0, 163, 0, 0, 0, 0, 163, 0,
+/* 4914 */ 204, 0, 0, 0, 0, 0, 0, 84, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 0, 24576, 196, 197, 0, 0, 0, 0, 0, 163, 0, 0, 0,
+/* 4945 */ 0, 0, 5224, 0, 0, 2121, 74, 75, 76, 77, 78, 79, 0, 196, 197, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25600, 0, 0, 0, 0,
+/* 4974 */ 215, 0, 216, 0, 0, 0, 0, 0, 0, 0, 0, 223, 149, 0, 0, 0, 0, 153, 0, 0, 0, 0, 157, 157, 159, 159, 0, 0, 0, 196,
+/* 5004 */ 197, 0, 0, 0, 229, 0, 163, 0, 0, 0, 0, 0, 5224, 0, 0, 2121, 74, 75, 76, 77, 0, 0, 0, 149, 0, 0, 0, 152, 0, 0,
+/* 5034 */ 0, 0, 0, 157, 157, 159, 159, 0, 0, 0, 196, 197, 0, 0, 228, 0, 0, 163, 0, 0, 0, 0, 0, 5224, 0, 0, 0, 74, 3584,
+/* 5063 */ 76, 4096, 78, 4608, 0, 0, 2121, 2121, 0, 0, 0, 0, 85, 0, 2121, 0, 0, 0, 0, 0, 0, 215, 216, 0, 0, 0, 0, 29696,
+/* 5091 */ 0, 223, 224, 8785, 0, 0, 0, 0, 0, 119, 0, 0, 0, 0, 0, 122, 94, 95, 0, 0, 163, 0, 0, 0, 0, 163, 0, 204, 205,
+/* 5120 */ 0, 0, 0, 0, 0, 259, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 2121, 0, 0, 0, 0, 0, 257, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 5154 */ 0, 0, 0, 0, 30208, 0, 0, 8785, 0, 0, 0, 117, 0, 0, 0, 0, 0, 0, 0, 0, 94, 95, 0, 0, 163, 0, 0, 0, 0, 163, 169,
+/* 5185 */ 204, 0, 0, 0, 0, 0, 0, 0, 19456, 0, 0, 0, 0, 0, 0, 0, 0, 7680, 0, 0, 0, 0, 0, 0, 0, 256, 0, 33280, 0, 0, 0,
+/* 5216 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1537, 1537, 1537, 1537, 1537, 8785, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32256, 0, 94,
+/* 5245 */ 95, 0, 0, 163, 0, 0, 0, 0, 203, 0, 0, 0, 0, 0, 0, 0, 0, 5225, 5258, 0, 0, 0, 0, 0, 0, 0, 5224, 5224, 139, 0,
+/* 5275 */ 0, 0, 0, 145, 147, 269, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21504, 149, 0, 0, 0, 0, 0, 154, 0, 0, 0,
+/* 5307 */ 157, 157, 159, 159, 0, 0, 0, 196, 197, 6144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2121, 0, 0, 0, 0, 0, 2121,
+/* 5335 */ 2121, 0, 0, 0, 0, 86, 0, 2121, 0, 0, 0, 0, 0, 0, 215, 216, 0, 0, 242, 0, 0, 0, 223, 224, 149, 0, 0, 0, 0, 0,
+/* 5365 */ 0, 0, 0, 33792, 157, 157, 159, 159, 0, 0, 0, 196, 226, 0, 0, 0, 0, 0, 198, 0, 0, 0, 0, 0, 136, 0, 5224, 5224,
+/* 5393 */ 0, 0, 0, 0, 0, 0, 146, 8785, 0, 0, 0, 0, 118, 0, 0, 0, 0, 0, 0, 0, 94, 95, 0, 0, 163, 0, 0, 0, 202, 163, 0,
+/* 5424 */ 0, 0, 0, 0, 209, 0, 0, 0, 196, 197, 0, 0, 0, 0, 0, 197, 0, 0, 0, 0, 0, 0, 260, 0, 0, 0, 0, 0, 0, 0, 0, 0, 82,
+/* 5457 */ 0, 0, 0, 0, 0, 0, 0, 163, 0, 0, 0, 0, 168, 170, 0, 5224, 139, 0, 0, 0, 0, 0, 5224, 0, 108, 2121, 74, 75, 76,
+/* 5486 */ 77, 78, 79, 0, 0, 181, 147, 183, 149, 0, 0, 0, 0, 0, 0, 0, 157, 192, 159, 194
+};
+
+const int XmlParser::EXPECTED[] =
+{
+/*   0 */ 4, 68, 132, 188, 222, 206, 215, 303, 305, 211, 219, 241, 251, 231, 484, 255, 259, 271, 278, 285, 281, 300,
+/*  22 */ 244, 247, 209, 228, 232, 295, 312, 315, 291, 411, 225, 305, 294, 296, 267, 405, 319, 305, 413, 328, 305, 262,
+/*  44 */ 266, 336, 408, 305, 411, 414, 305, 294, 264, 381, 337, 410, 305, 412, 210, 294, 267, 385, 305, 458, 438, 384,
+/*  66 */ 305, 305, 335, 410, 305, 341, 305, 350, 305, 305, 305, 288, 360, 232, 357, 344, 322, 346, 354, 438, 370, 374,
+/*  88 */ 233, 274, 378, 389, 305, 305, 402, 363, 445, 424, 393, 399, 324, 418, 330, 443, 304, 425, 305, 395, 323, 431,
+/* 110 */ 437, 331, 444, 305, 423, 394, 237, 429, 435, 305, 362, 303, 421, 305, 395, 476, 430, 436, 442, 303, 305, 366,
+/* 132 */ 478, 449, 363, 365, 477, 462, 364, 476, 466, 473, 470, 482, 305, 305, 305, 305, 305, 452, 305, 305, 237, 457,
+/* 154 */ 234, 455, 305, 455, 305, 456, 237, 305, 305, 305, 305, 307, 305, 236, 305, 305, 305, 305, 305, 307, 235, 305,
+/* 176 */ 305, 305, 305, 305, 305, 305, 308, 305, 305, 305, 305, 305, 305, 305, 306, 305, 305, 305, 305, 305, 307, 305,
+/* 198 */ 305, 305, 305, 305, 305, 305, 305, 305, 128, 256, 8192, 65536, 1048576, 0, 0, 0, 12, 131072, 1048576, 4194304,
+/* 218 */ 16777216, 20, 1048580, 4, 4, 8, 16, 64, 8192, 1048576, 0, 0, 0, 134217728, (int) 0x80000000, 0, 0, 0, 2, 0, 0,
+/* 239 */ 0, 4, 4, 4194312, 33554440, 8, 64, 64, 128, 256, 256, 8192, 128, 16908288, 1140850688, 67108864, 1140850692,
+/* 256 */ 67108868, 134217732, -2147483644, 4, 34603016, -2147483640, 32, 32, 32, 32, 0, 1024, 2048, 262144, 524288,
+/* 271 */ 33554432, 201326592, 1140850688, 0, 0, 0, 234882048, 3078, 34603020, 16908356, 3076, 805306372, 3076,
+/* 284 */ 1946157060, 201326596, 1140850692, 2883648, 0, 0, 1, 512, 32768, 3072, 0, 0, 32, 32, 0, 0, 8412160, 8412672,
+/* 302 */ 35844, 33554432, 67108864, 0, 0, 0, 0, 1, 0, 0, 0, 3072, 2883584, 3072, 16384, 7168, 512, 5120, 512, 32768,
+/* 322 */ 1024, 0, 0, 0, 116, 16384, 64, 1048576, 0, 0, 0, 2097152, 536870912, 0, 524288, 2097152, 0, 2048, 16384, 0,
+/* 342 */ 2097152, 0, 4096, 0, 0, 1024, 2098176, 134218752, 4096, 0, 4096, 4096, -2147479552, 100663296, 1073741824, 0,
+/* 358 */ 0, 512, 1024, 4096, 2097152, 536870912, (int) 0x80000000, 0, 0, 8, 0, 4, 134218752, 0, 1024, 100663296, 40960,
+/* 375 */ 0, 0, -1610608640, 10, 3072, 266, 2048, 2048, 262144, 524288, 2097152, 0, 4096, 0, 130, 130, 268435572,
+/* 392 */ 31408128, 32768, 0, 0, 8, 256, 0, 264, 0, 128, 0, 0, 4096, 2097152, 1024, 2048, 16384, 16384, 4096, 0, 0, 0,
+/* 414 */ 64, 64, 64, 1048576, 196608, 1835008, 29360128, 0, 0, 32768, 0, 0, 0, 8192, 32768, 48, 64, 16384, 196608,
+/* 433 */ 1572864, 12582912, 1572864, 12582912, 16777216, 0, 0, 0, 1024, 0, 536870912, (int) 0x80000000, 0, 33554432,
+/* 447 */ 67108864, 1073741824, 1048576, 12582912, 16777216, 0, 1, 4, 0, 4, 4, 0, 0, 0, 1048576, 65536, 12582912,
+/* 464 */ 16777216, 536870912, 64, 65536, 8388608, 16777216, 4, 16, 64, (int) 0x80000000, 0, 8, 0, 4, 16, 32, 64,
+/* 481 */ 196608, 0, 64, 0, 0, 0, 33554444
+};
+
+const wchar_t *XmlParser::TOKEN[] =
+{
+  L"(0)",
+  L"EOF",
+  L"S",
+  L"Name",
+  L"Nmtoken",
+  L"EntityValue",
+  L"AttValue",
+  L"SystemLiteral",
+  L"PubidLiteral",
+  L"CharData",
+  L"Comment",
+  L"PI",
+  L"CDSect",
+  L"VersionNum",
+  L"CharRef",
+  L"PEReference",
+  L"EncName",
+  L"'\"'",
+  L"'#FIXED'",
+  L"'#IMPLIED'",
+  L"'#PCDATA'",
+  L"'#REQUIRED'",
+  L"'%'",
+  L"'&'",
+  L"''''",
+  L"'('",
+  L"')'",
+  L"')*'",
+  L"'*'",
+  L"'+'",
+  L"','",
+  L"'/>'",
+  L"';'",
+  L"'<'",
+  L"'<!ATTLIST'",
+  L"'<!DOCTYPE'",
+  L"'<!ELEMENT'",
+  L"'<!ENTITY'",
+  L"'<!NOTATION'",
+  L"'</'",
+  L"'<?xml'",
+  L"'='",
+  L"'>'",
+  L"'?'",
+  L"'?>'",
+  L"'ANY'",
+  L"'CDATA'",
+  L"'EMPTY'",
+  L"'ENTITIES'",
+  L"'ENTITY'",
+  L"'ID'",
+  L"'IDREF'",
+  L"'IDREFS'",
+  L"'NDATA'",
+  L"'NMTOKEN'",
+  L"'NMTOKENS'",
+  L"'NOTATION'",
+  L"'PUBLIC'",
+  L"'SYSTEM'",
+  L"'['",
+  L"']'",
+  L"'encoding'",
+  L"'no'",
+  L"'standalone'",
+  L"'version'",
+  L"'yes'",
+  L"'|'"
+};
+
+#endif
+
+// End

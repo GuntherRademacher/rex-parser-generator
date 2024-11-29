@@ -1,0 +1,7 @@
+H ::= "hello" "world"
+
+Whitespace ::= W /* ws: definition */
+
+<?TOKENS?>
+
+W ::= [ ]+

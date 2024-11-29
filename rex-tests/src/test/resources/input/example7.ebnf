@@ -1,0 +1,6 @@
+S ::= A EOF
+A ::=  'b'* 'a'* 'c' (A* A? A+ (A | A))* 'd'
+
+<?TOKENS?>
+
+EOF ::= $

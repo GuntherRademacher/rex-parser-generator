@@ -1,0 +1,114 @@
+Grammar  ::= Prolog SyntaxDefinition LexicalDefinition? Encore? EOF
+Prolog   ::= ProcessingInstruction*
+ProcessingInstruction
+         ::= '<?' Name ( Space+ DirPIContents? )? '?>'
+          /* ws: explicit */
+SyntaxDefinition
+         ::= SyntaxProduction+
+SyntaxProduction
+         ::= Name '::=' SyntaxChoice Option*
+SyntaxChoice
+         ::= SyntaxSequence ( ( '|' SyntaxSequence )+ | ( '/' SyntaxSequence )+ )?
+SyntaxSequence
+         ::= SyntaxItem*
+SyntaxItem
+         ::= SyntaxPrimary ( '?' | '*' | '+' )?
+SyntaxPrimary
+         ::= NameOrString
+           | '(' SyntaxChoice ')'
+           | ProcessingInstruction
+LexicalDefinition
+         ::= '<?TOKENS?>' ( LexicalProduction | Preference | Delimiter | Equivalence )*
+LexicalProduction
+         ::= ( Name | '.' ) '?'? '::=' ContextChoice Option*
+ContextChoice
+         ::= ContextExpression ( '|' ContextExpression )*
+LexicalChoice
+         ::= LexicalSequence ( '|' LexicalSequence )*
+ContextExpression
+         ::= LexicalSequence ( '&' LexicalItem )?
+LexicalSequence
+         ::=
+           | LexicalItem ( '-' LexicalItem | LexicalItem* )
+LexicalItem
+         ::= LexicalPrimary ( '?' | '*' | '+' )?
+LexicalPrimary
+         ::= ( Name | '.' )
+           | StringLiteral
+           | '(' LexicalChoice ')'
+           | '$'
+           | CharCode
+           | CharClass
+NameOrString
+         ::= Name Context?
+           | StringLiteral Context?
+Context  ::= CaretName
+CharClass
+         ::= ( '[' | '[^' ) ( Char | CharCode | CharRange | CharCodeRange )+ ']'
+          /* ws: explicit */
+Option   ::= '/*' Space* 'ws' ':' Space* ( 'explicit' | 'definition' ) Space* '*/'
+          /* ws: explicit */
+Preference
+         ::= NameOrString ( '>>' NameOrString+ | '<<' NameOrString+ )
+Delimiter
+         ::= Name '\\' NameOrString+
+Equivalence
+         ::= EquivalenceLookAhead EquivalenceCharRange '==' EquivalenceCharRange
+EquivalenceCharRange
+         ::= StringLiteral
+           | '[' ( Char | CharCode | CharRange | CharCodeRange ) ']'
+          /* ws: explicit */
+Encore   ::= '<?ENCORE?>' ProcessingInstruction*
+
+<?TOKENS?>
+
+NameStartChar
+         ::= [A-Z]
+           | '_'
+           | [a-z]
+           | [#xC0-#xD6]
+           | [#xD8-#xF6]
+           | [#xF8-#x2FF]
+           | [#x370-#x37D]
+           | [#x37F-#x1FFF]
+           | [#x200C-#x200D]
+           | [#x2070-#x218F]
+           | [#x2C00-#x2FEF]
+           | [#x3001-#xD7FF]
+           | [#xF900-#xFDCF]
+           | [#xFDF0-#xFFFD]
+           | [#x10000-#xEFFFF]
+NameChar ::= NameStartChar
+           | '-'
+           | '.'
+           | [0-9]
+           | #xB7
+           | [#x0300-#x036F]
+           | [#x203F-#x2040]
+Name     ::= NameStartChar NameChar*
+Space    ::= ( #x9 | #xD | #x20 )+
+           | #xA
+DirPIContents
+         ::= ( [^?#x9#xD#x20#xA] | '?'+ [^?>] ) ( [^?] | '?'+ [^?>] )* '?'* &'?>'
+StringLiteral
+         ::= '"' [^"#x9#xA#xD]* '"'
+           | "'" [^'#x9#xA#xD]* "'"
+CaretName
+         ::= '^' Name?
+CharCode ::= '#x' [0-9a-fA-F]+
+Char     ::= [^#x9#xA#xD#x23#x5D]
+           | '#' &[^0-9a-fA-F]
+CharRange
+         ::= Char '-' Char
+CharCodeRange
+         ::= CharCode '-' CharCode
+SingleLineComment
+         ::= '//' [^#xA]* #xA?
+MultiLineComment
+         ::= '/*' ( ( .* - ( .* '*/' .* ) ) - ( Space* 'ws' Space* ':' .* ) ) '*/'
+EOF      ::= $
+EquivalenceLookAhead
+         ::= &( '[' ( Char | CharCode | CharRange | CharCodeRange ) ']' Whitespace? '==' )
+Whitespace
+         ::= ( Space | SingleLineComment | MultiLineComment )+
+          /* ws: definition */

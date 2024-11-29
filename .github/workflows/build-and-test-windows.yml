@@ -1,0 +1,86 @@
+name: Build REx and run tests (Windows)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+
+      - name: Build C++ Project
+        run: |
+          cl
+          rex\scripts\build-msvc-x64.bat
+          Add-Content $env:GITHUB_PATH "$PWD\rex\build\bin"
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Haxe
+        run: |
+          choco install haxe -y
+          refreshenv
+        shell: cmd
+
+      - name: Install Scala
+        run: |
+          choco install scala -y
+          refreshenv
+        shell: cmd
+
+      - name: Install Mono
+        run: choco install mono -y
+        shell: cmd
+
+      - name: Remove Mono's csc
+        run: Remove-Item "C:\Program Files\Mono\bin\csc*" -Force
+
+      - name: Add Mono to PATH
+        run: Add-Content $env:GITHUB_PATH "C:\Program Files\Mono\bin"
+
+      - name: Check C# Compilers
+        run: |
+          which csc
+          which mcs
+          which mono
+
+      - name: Install TypeScript
+        run: npm install -g typescript
+
+      - name: Run Gradle Tests
+        working-directory: rex-tests
+        run: .\gradlew.bat test
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: rex-tests\build\test-results\test
+
+      - name: Upload JUnit HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: rex-tests\build\reports\tests\test
+
+      - name: Upload Test Summary
+        if: always()
+        run: |
+          $testSummary = Get-Content -Path 'rex-tests/build/test-results/test-summary.md' -Encoding UTF8
+          Write-Output $testSummary | Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY

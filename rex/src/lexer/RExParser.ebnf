@@ -1,0 +1,283 @@
+                                                            <?rex
+                                                              #include "LexerGeneratorImpl.hpp"
+                                                              #include <string>
+
+                                                              class RExParser : public LexerGeneratorImpl
+                                                              {
+                                                              public:
+                                                                void parse(std::string input)
+                                                                {
+                                                                  initialize(input.c_str());
+                                                                  try
+                                                                  {
+                                                                    parse_regular_grammar();
+                                                                  }
+                                                                  catch (ParseException &pe)
+                                                                  {
+                                                                    fprintf(stderr, "%s\n", getErrorMessage(pe).c_str());
+                                                                    noerrors++;
+                                                                    // TODO: continue parsing for reporting more syntax errors
+                                                                  }
+                                                                }
+
+                                                                CString getToken() const
+                                                                {
+                                                                  return CString(input + b0, e0 - b0);
+                                                                }
+                                                            ?>
+regular_grammar
+             ::=                                                     <?rex rbegin();?>
+                 rule_list EOF                                       <?rex finish();?>
+rule_list    ::= option_stmt_list rule ';'
+               | rule_list        rule ';'
+               | rule_list option_stmt
+rule         ::= nonterminal semantic_part nongreedy equ top_level_expression
+               | nonterminal               nongreedy equ top_level_expression
+               | nonterminal semantic_part           equ top_level_expression
+               | nonterminal                         equ top_level_expression
+               | nonterminal semantic_part nongreedy
+               | nonterminal               nongreedy
+               | nonterminal semantic_part
+               |                                                     <?rex setnt(0);?>
+                             semantic_part nongreedy equ top_level_expression
+               |                                                     <?rex setnt(0);?>
+                             semantic_part           equ top_level_expression
+nonterminal  ::= identifier                                          <?rex setnt(1);?>
+               | '.'                                                 <?rex setnt(1);?>
+semantic_part::= '(' token_code                   ')'
+               | '(' token_code ',' action_string ')'
+               | '('                action_string ')'
+nongreedy    ::= "?"                                                 <?rex assngr();?>
+token_code   ::= integer                          <?rex assignTokenId(getInteger());?>
+action_string::= action                                              <?rex assact();?>
+top_level_expression
+             ::=                                                     <?rex exopen();?>
+                 context_expression                                  <?rex exclos();?>
+               | top_level_expression or                             <?rex exopen();?>
+                                         context_expression          <?rex exclos();?>
+context_expression
+             ::= sequence
+               | sequence '/'                                   <?rex define(slash);?>
+                              sequence
+expression   ::=                                                     <?rex exopen();?>
+                 sequence                                            <?rex exclos();?>
+               | expression or                                       <?rex exopen();?>
+                               sequence                              <?rex exclos();?>
+sequence     ::=
+               | closed_item '-' closed_item                <?rex createExclusion();?>
+               | item_sequence
+item_sequence::=                   closed_item
+               | item_sequence     closed_item
+closed_item  ::= item                                            <?rex syclos(none);?>
+               | item '*'                                     <?rex syclos(closure);?>
+               | item '+'                             <?rex syclos(positiveclosure);?>
+               | item '?'                                    <?rex syclos(optional);?>
+               | item '{' quantity '}'
+quantity     ::= min              <?rex maxquantity = minquantity; syclos(quantity);?>
+               | min ','                   <?rex maxquantity = -1; syclos(quantity);?>
+               | min ',' max                                 <?rex syclos(quantity);?>
+min          ::= integer                           <?rex minquantity = getInteger();?>
+max          ::= integer                           <?rex maxquantity = getInteger();?>
+item         ::= identifier                               <?rex define(nonterminal);?>
+               | '.'                                      <?rex define(nonterminal);?>
+               | string                                    <?rex define(charstring);?>
+               |                                              <?rex define(charset);?>
+                 character_set
+               | '$'                                           <?rex define(dollar);?>
+               |                                             <?rex define(compound);?>
+                 '(' expression ')'
+character_set::= integer                           <?rex currentchar = getInteger();
+                                                            firstchar = currentchar;
+                                                             lastchar = currentchar;
+                                                                         addRange();
+                                                                          chclos(1);?>
+               | '['                      ']'                       <?rex chclos(1);?>
+               | '[' character_range_list ']'                       <?rex chclos(1);?>
+               | ']'                      '['                      <?rex chclos(-1);?>
+               | ']' character_range_list '['                      <?rex chclos(-1);?>
+character_range_list
+             ::= character_range                                   <?rex addRange();?>
+               | character_range_list ',' character_range          <?rex addRange();?>
+character_range
+             ::= low_character
+               | low_character '..' high_character
+low_character::= range_character                      <?rex firstchar = currentchar;
+                                                             lastchar = currentchar;?>
+high_character
+             ::= range_character                       <?rex lastchar = currentchar;?>
+range_character
+             ::= character                         <?rex CString token = getToken();
+                         currentchar = Decoder::decode_utf8_char(token.c_str() + 1);?>
+               | integer                           <?rex currentchar = getInteger();?>
+
+// options
+
+option_stmt_list
+             ::=
+               | option_stmt_list option_stmt
+option_stmt  ::= option_introducer option_list option_terminator
+               | entry_stmt ';'
+               | preference_stmt ';'
+               | delimiter_stmt ';'
+               | equivalence_stmt ';'
+option_introducer
+             ::= '#OPTION'
+               | '#OPTIONS'
+option_list  ::=             option_specifier
+               | option_list option_specifier
+option_specifier
+      ::= 'NOLIST'
+        | 'GRAMMAR'                                              <?rex grammar=true;?>
+        | 'NOGRAMMAR'                                           <?rex grammar=false;?>
+        | 'SYMBOLS'                                              <?rex symbols=true;?>
+        | 'NOSYMBOLS'                                           <?rex symbols=false;?>
+        | 'NFA'                                                  <?rex showNfa=true;?>
+        | 'NONFA'                                               <?rex showNfa=false;?>
+        | 'DFA'                                                  <?rex showDfa=true;?>
+        | 'NODFA'                                               <?rex showDfa=false;?>
+        | 'C'                                              <?rex targetLanguage = C;?>
+        | 'CPP'                                          <?rex targetLanguage = CPP;?>
+        | 'CSHARP'                                    <?rex targetLanguage = CSHARP;?>
+        | 'REX'                                          <?rex targetLanguage = REX;?>
+        | 'GO'                                            <?rex targetLanguage = GO;?>
+        | 'PYTHON'                                    <?rex targetLanguage = PYTHON;?>
+        | 'HAXE'                                        <?rex targetLanguage = HAXE;?>
+        | 'JAVA'                                        <?rex targetLanguage = JAVA;?>
+        | 'JAVASCRIPT'                            <?rex targetLanguage = JAVASCRIPT;?>
+        | 'TYPESCRIPT'                            <?rex targetLanguage = TYPESCRIPT;?>
+        | 'SCALA'                                      <?rex targetLanguage = SCALA;?>
+        | 'XQUERY'                                    <?rex targetLanguage = XQUERY;?>
+        | 'XSLT'                                        <?rex targetLanguage = XSLT;?>
+        | 'APPEND'                                              <?rex append = true;?>
+        | 'NOAPPEND'                                           <?rex append = false;?>
+        | 'OUTPUT'         equ string                <?rex targetFile = getString();?>
+        | 'PREFIX'         equ string                    <?rex prefix = getString();?>
+        | 'SUFFIX'         equ string                    <?rex suffix = getString();?>
+        | 'STRINGPREFIX'   equ string_e            <?rex stringPrefix = getString();
+                                                         stringPrefixDefined = true;?>
+        | 'STRINGSUFFIX'   equ string_e            <?rex stringSuffix = getString();
+                                                         stringSuffixDefined = true;?>
+        | 'TOKENPREFIX'    equ string
+                                 <?rex tokenDescriptors.setTokenPrefix(getString());?>
+        | 'STRINGTYPE'     equ string                <?rex stringType = getString();?>
+        | 'TOKENTABLENAME' equ string            <?rex tokenTableName = getString();?>
+        | 'TABLENAME'      equ string                 <?rex tableName = getString();?>
+        | 'PACKAGE'        equ string               <?rex packageName = getString();?>
+        | 'CLASS'          equ string                 <?rex className = getString();?>
+        | 'ABBREVIATIONS'                                  <?rex abbreviations=true;?>
+        | 'NOABBREVIATIONS'                               <?rex abbreviations=false;?>
+        | 'AMBIGUITIES'                                      <?rex ambiguities=true;?>
+        | 'NOAMBIGUITIES'                                   <?rex ambiguities=false;?>
+        | 'FULL'                                                    <?rex full=true;?>
+        | 'CLASSIFY'                                            <?rex classify=true;?>
+        | 'NOCLASSIFY'                                         <?rex classify=false;?>
+        | 'MINIMIZE'                                            <?rex minimize=true;?>
+        | 'NOMINIMIZE'                                         <?rex minimize=false;?>
+        | 'SELFTEST'                                            <?rex selfTest=true;?>
+        | 'NOSELFTEST'                                         <?rex selfTest=false;?>
+        | 'TRACE'                                                  <?rex trace=true;?>
+        | 'NOTRACE'                                               <?rex trace=false;?>
+        | 'FASTER'                                                <?rex faster=true;?>
+        | 'SMALLER'                                              <?rex smaller=true;?>
+        | 'TREE'                                                    <?rex tree=true;?>
+        | 'NOTREE'                                                 <?rex tree=false;?>
+        | 'LEXER'                                               <?rex nolexer=false;?>
+        | 'NOLEXER'                                              <?rex nolexer=true;?>
+        | 'CASE-SENSITIVE'                             <?rex setCaseSensitive(true);?>
+        | 'CASE-INSENSITIVE'                          <?rex setCaseSensitive(false);?>
+        | 'COMPRESS'       equ integer             <?rex compression = getInteger();?>
+        | 'ERROR'          equ integer
+                                  <?rex tokenDescriptors.setErrorCode(getInteger());?>
+
+entry_stmt   ::=                                                   <?rex newentry();?>
+                 '[' entry_list ']'
+entry_list   ::=                entry
+               | entry_list ',' entry
+entry        ::= used_token_ref         <?rex collectentry(tokenref); tokenref = 0;?>
+used_token_ref
+             ::= integer                         <?rex currenttoken = getInteger();
+                                                   tokenref = ref(tokencode, true);?>
+               | identifier                   <?rex tokenref = ref(tokenname, true);?>
+preference_stmt
+             ::= preferred '>' unused_token_ref
+                                <?rex preference(preferred, tokenref); tokenref = 0;?>
+preferred    ::= unused_token_ref                        <?rex preferred = tokenref;?>
+unused_token_ref
+             ::= integer                          <?rex currenttoken = getInteger();
+                                                   tokenref = ref(tokencode, false);?>
+               | identifier                  <?rex tokenref = ref(tokenname, false);?>
+
+delimiter_stmt
+             ::= delimiter '\' unused_token_ref
+                                 <?rex delimited(delimiter, tokenref); tokenref = 0;?>
+delimiter    ::= identifier                        <?rex CString token = getToken();
+                 delimiter = symbolTable->insertSymbol(token.c_str(), token.size());?>
+equivalence_stmt
+             ::= character_range
+                             <?rex firstcharLhs = firstchar; lastcharLhs = lastchar;?>
+                 '==' character_range                           <?rex equivalence();?>
+<?TOKENS?>
+
+// option noabbreviations
+
+equ          ::= [=:]
+or           ::= [!|]
+identifier   ::= name ('^' name?)*
+integer      ::= [0-9]+
+               | '0X' [0-9A-F]+
+action       ::= '<' [^>#xA]+ '>'
+               | '{' [^}#xA]+ '}'
+
+// characters and strings
+
+character    ::= "'" ("''" | [^'#xA])  "'"
+               | '"' ('""' | [^"#xA])  '"'
+string       ::= "'" ("''" | [^'#xA])+ "'"
+               | '"' ('""' | [^"#xA])+ '"'
+string_e     ::= "'" ("''" | [^'#xA])* "'"
+               | '"' ('""' | [^"#xA])* '"'
+
+// comments and spaces
+
+whitespace   ::= '#' ( [ #x9] [^#xA]* )?
+               | [ #x9]+
+               | #xA
+              /* ws: definition */
+option_terminator
+             ::= & ( '#' | $ )
+               | #xA
+
+// name definition as per https://www.w3.org/TR/xml/#d0e804 (except ':' is not a NameStartChar)
+
+NameStartChar
+             ::= [A-Z]
+               | "_"
+               | [a-z]
+               | [#xC0-#xD6]
+               | [#xD8-#xF6]
+               | [#xF8-#x2FF]
+               | [#x370-#x37D]
+               | [#x37F-#x1FFF]
+               | [#x200C-#x200D]
+               | [#x2070-#x218F]
+               | [#x2C00-#x2FEF]
+               | [#x3001-#xD7FF]
+               | [#xF900-#xFDCF]
+               | [#xFDF0-#xFFFD]
+               | [#x10000-#xEFFFF]
+NameChar     ::= NameStartChar
+               | "-"
+               | "."
+               | [0-9]
+               | #xB7
+               | [#x0300-#x036F]
+               | [#x203F-#x2040]
+name         ::= NameStartChar (NameChar)*
+
+EOF   ::= $
+
+// eof
+
+[A-Z] == [a-z]
+
+whitespace << option_terminator

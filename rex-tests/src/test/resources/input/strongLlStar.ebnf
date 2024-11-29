@@ -1,0 +1,80 @@
+// from http://www.tcs.informatik.uni-muenchen.de/lehre/WS08-09/SEP/Spezifikation/teil3.pdf
+
+Prg      ::= PrgSeq Eof
+PrgSeq   ::= PrgAtom (";" PrgAtom)*
+PrgAtom  ::= "skip"
+           | "walk"
+           | "turn" "(" IExp ")"
+           | "pickup"
+           | "drop"
+           | "leavescent" "(" IExp ")"
+           | "clearscent" "(" IExp ")"
+           | Identifier "=" IExp
+           | "{" PrgSeq "}"
+           | "if" IExp "then" PrgAtom "else" PrgAtom
+           | "while" IExp "do" PrgAtom
+IExp     ::= IExp1
+IExp1    ::= IExp2 (op1 IExp2)*
+IExp2    ::= IExp3 (op2 IExp3)*
+IExp3    ::= IExp4 (op3 IExp4)*
+IExp4    ::= IExp5 (op4 IExp5)*
+IExp5    ::= IExp6 (op5 IExp6)*
+IExp6    ::= "-" IExp6 | "!" IExp6 | "(" IExp1 ")" | IExpAtom
+IExpAtom ::= Identifier
+           | Number
+           | "true"
+           | "false"
+           | "rand"
+           | FOOD        "sense" "(" Where "," "food" ")"
+           | OBSTACLE    "sense" "(" Where "," "obstacle" ")"
+           | HOME        "sense" "(" Where "," "home" ")"
+           | FRIEND      "sense" "(" Where "," "friend" ")"
+           | FOE         "sense" "(" Where "," "foe" ")"
+           | FOEHOME     "sense" "(" Where "," "foehome" ")"
+           | CARRIESFOOD "sense" "(" Where "," "carriesfood" ")"
+           | FOESCENT    "sense" "(" Where "," "foescent" ")"
+           | OWNSCENT    "sense" "(" Where "," "ownscent" "," IExp ")"
+Where    ::= "here" | "ahead"
+op1      ::= "||"
+op2      ::= "&&"
+op3      ::= "==" | "<=" | "<" | "=" | ">=" | ">"
+op4      ::= "+" | "-"
+op5      ::= "*" | "/" | "%"
+
+Whitespace
+         ::= Whitespace^Token
+             /* ws: definition */
+
+<?TOKENS?>
+
+Identifier ::= Alpha (Alpha | Digit)*
+Alpha ::= [a-zA-Z]
+Digit ::= [0-9]
+Number ::= Digit+
+Eof ::= $
+Whitespace ::= [#x9#xa#xd#x20]+
+
+senseWhere  ::= "sense" Whitespace? "(" Whitespace? ("here" | "ahead") Whitespace? "," Whitespace?
+FOOD        ::= &( senseWhere "food")
+OBSTACLE    ::= &( senseWhere "obstacle")
+HOME        ::= &( senseWhere "home")
+FRIEND      ::= &( senseWhere "friend")
+FOE         ::= &( senseWhere "foe")
+FOEHOME     ::= &( senseWhere "foehome")
+CARRIESFOOD ::= &( senseWhere "carriesfood")
+FOESCENT    ::= &( senseWhere "foescent")
+OWNSCENT    ::= &( senseWhere "ownscent")
+
+Identifier << "clearscent"
+              "drop"
+              "false"
+              "if"
+              "leavescent"
+              "pickup"
+              "rand"
+              "sense"
+              "skip"
+              "true"
+              "turn"
+              "walk"
+              "while"

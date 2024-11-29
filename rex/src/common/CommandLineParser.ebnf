@@ -1,0 +1,120 @@
+                                        <?rex
+                                          #include "FileIO.hpp"
+                                          #include "OutputFile.hpp"
+                                          #include "WString.hpp"
+
+                                          class CommandLineParser
+                                          {
+                                          public:
+                                            typedef std::basic_string<char *> Arguments;
+
+                                            static void clearArguments(Arguments args)
+                                            {
+                                              for (size_t i = 0; i < args.size(); ++i)
+                                              {
+                                                free(args[i]);
+                                              }
+                                              args.clear();
+                                            }
+
+                                            static Arguments rewriteCommandLine(int argc, char *argv[], int &status)
+                                            {
+                                              status = 0;
+                                              char* content = 0;
+                                              Arguments args;
+                                              for (int i = 0; i < argc; ++i)
+                                              {
+                                                if (i == 0 || strcmp(argv[i], "-remake") != 0)
+                                                {
+                                                  char *commandLineArgument = strdup(argv[i]);
+                                                  args.append(&commandLineArgument, 1);
+                                                }
+                                                else
+                                                {
+                                                  if (++i >= argc)
+                                                  {
+                                                    fprintf(stdout, "missing -remake argument\n");
+                                                    status = 1;
+                                                    break;
+                                                  }
+                                                  content = FileIO::getContent(argv[i]);
+                                                  if (content == 0)
+                                                  {
+                                                    fprintf(stdout, "file not found: %s\n", argv[i]);
+                                                    status = 1;
+                                                    break;
+                                                  }
+                                                  char* commandLine = strstr(content, OutputFile::commandLineIntroducer());
+                                                  if (commandLine == 0)
+                                                  {
+                                                    fprintf(stdout, "cannot remake %s, command line not found\n", argv[i]);
+                                                    status = 1;
+                                                    break;
+                                                  }
+                                                  commandLine += strlen(OutputFile::commandLineIntroducer());
+                                                  CommandLineParser parser(commandLine);
+                                                  try
+                                                  {
+                                                    parser.parse_CommandLine();
+                                                  }
+                                                  catch (ParseException &)
+                                                  {
+                                                    clearArguments(parser.args);
+                                                  }
+                                                  if (parser.args.empty())
+                                                  {
+                                                    fprintf(stdout, "cannot remake %s, command line arguments not found\n", argv[i]);
+                                                    status = 1;
+                                                    break;
+                                                  }
+                                                  char **remakeArgs = (char **) parser.args.c_str();
+                                                  args.append(remakeArgs);
+                                                }
+                                              }
+                                              free(content);
+                                              return args;
+                                            }
+
+                                          private:
+                                            CommandLineParser(const char *string)
+                                            {
+                                              initialize(string);
+                                            }
+
+                                            virtual ~CommandLineParser()
+                                            {}
+
+                                            void append(int begin, int end)
+                                            {
+                                              CString arg;
+                                              for (int i = begin; i < end; ++i)
+                                              {
+                                                if (input[i] == '\\' && i + 1 < end && input[i + 1] == '"')
+                                                  ++i;
+                                                arg.append(input + i, 1);
+                                              }
+                                              char *copy = strdup(arg.c_str());
+                                              args.append(&copy, 1);
+                                            }
+
+                                            Arguments args;
+                                        ?>
+
+CommandLine ::= ( NONQUOTED             <?rex append(b0, e0);?>
+                | QUOTED                <?rex append(b0 + 1, e0 - 1);?>
+                )*
+                EOL
+<?TOKENS?>
+
+WHITESPACE  ::= [ #x9]+ /*ws:definition*/
+NONQUOTED   ::= [^" #x9#xD#xA]+
+QUOTED      ::= '"' ( [^"#xD#xA] | '\"' )* '"'
+EOL         ::= #xD* #xA
+              | ':)'
+              | '-->'
+
+EOL          >> NONQUOTED
+
+<?ENCORE?>
+                                        <?rex /* hi there */ ?>
+// END

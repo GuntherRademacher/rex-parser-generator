@@ -1,0 +1,14 @@
+// This grammar is LL(2), but not Strong-LL(2)
+
+    S ::= A a b d
+        | c A b c d
+    A ::= a
+        | b
+        |
+
+<?TOKENS?>
+
+    a ::= "a"
+    b ::= "b"
+    c ::= "c"
+    d ::= "d"

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Mon Dec 19, 2016 10:29 (UTC+01) by REx v5.42 which is Copyright (c) 1979-2016 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: LL3_but_not_LR2.ebnf -xml -ff -lalr 3 -->
+<g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production id="2" name="S">
+    <g:choice id="3">
+      <g:sequence id="4">
+        <g:ref id="5" first="a" first2="a~a" first3="a~a" name="a"/>
+        <g:ref id="6" reduce-id="7" reduce-count="2" first="a" first2="a" name="a"/>
+      </g:sequence>
+      <g:sequence id="8">
+        <g:ref id="9" first="a" first2="a~a" name="A"/>
+        <g:ref id="10" first="a" first2="a~a" first3="a~a~a" name="a"/>
+        <g:ref id="11" first="a" first2="a~a" name="a"/>
+        <g:ref id="12" reduce-id="13" reduce-count="4" first="a" name="a"/>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production id="14" first="EPSILON" first2="EPSILON" name="A">
+    <g:sequence id="15" reduce-id="16" reduce-count="0" first="EPSILON" first2="EPSILON">
+    </g:sequence>
+  </g:production>
+  <?TOKENS?>
+  <g:production id="17" name="a">
+    <g:string id="18">a</g:string>
+  </g:production>
+<parser>
+    <state id="0">
+      <item id="5" lookahead="END~END~END">S ::= <dot>.</dot> a a</item>
+      <item id="9" lookahead="END~END~END">S ::= <dot>.</dot> A a a a</item>
+      <item id="16" lookahead="IMPLICIT a~a~a">A ::= <dot>.</dot></item>
+      <goto on="A" to="2"/>
+      <shift on="a" to="3"/>
+      <reduce on="a~a~a" symbol="A"/>
+      <accept on="S"/>
+    </state>
+    <state id="2">
+      <item id="10" lookahead="END~END~END">S ::= A <dot>.</dot> a a a</item>
+      <shift on="a" to="4"/>
+    </state>
+    <state id="3">
+      <item id="6" lookahead="END~END~END">S ::= a <dot>.</dot> a</item>
+      <shift on="a" to="6"/>
+    </state>
+    <state id="4">
+      <item id="11" lookahead="END~END~END">S ::= A a <dot>.</dot> a a</item>
+      <shift on="a" to="5"/>
+    </state>
+    <state id="5">
+      <item id="12" lookahead="END~END~END">S ::= A a a <dot>.</dot> a</item>
+      <shift on="a" to="7"/>
+    </state>
+    <state id="6">
+      <item id="7" lookahead="END~END~END">S ::= a a <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+    <state id="7">
+      <item id="13" lookahead="END~END~END">S ::= A a a a <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+  </parser>
+  <triples>
+  </triples>
+</g:grammar>

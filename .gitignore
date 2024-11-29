@@ -1,0 +1,15 @@
+rex/.cproject
+rex/.project
+rex/.settings/
+rex/Debug/
+rex/Release/
+rex/build/
+
+rex-tests/.classpath
+rex-tests/.gradle
+rex-tests/.project
+rex-tests/.settings
+rex-tests/bin/
+rex-tests/build/
+
+tmp/

@@ -1,0 +1,486 @@
+// http://www.w3.org/TR/2010/WD-xquery-sx-10-20100408/#id-grammar
+
+                                                            <?java
+                                                              import java.io.File;
+                                                              import java.io.FileInputStream;
+                                                              import java.util.Arrays;
+
+                                                              public class XQuery_SX_10_20100408
+                                                              {
+                                                                private static String fileContent(String filename) throws Exception
+                                                                {
+                                                                  byte buffer[] = new byte[(int) new File(filename).length()];
+                                                                  new FileInputStream(filename).read(buffer);
+                                                                  String content = new String(buffer, System.getProperty("file.encoding"));
+                                                                  return content.length() > 0 && content.charAt(0) == '\uFEFF' ? content.substring(1) : content;
+                                                                }
+
+                                                                public static class ParseTreeException extends Exception
+                                                                {
+                                                                  private static final long serialVersionUID = 1L;
+                                                                  protected ParseTreeException(String message) {super(message);}
+                                                                }
+
+                                                                public static String parseTree(String query) throws ParseTreeException
+                                                                {
+                                                                  XQuery_SX_10_20100408 parser = new XQuery_SX_10_20100408(query);
+                                                                  try
+                                                                  {
+                                                                    String encoding = System.getProperty("file.encoding");
+                                                                    if (encoding.startsWith("Cp")) encoding = "windows-" + encoding.substring(2);
+                                                                    parser.output.append("<?xml version=\"1.0\" encoding=\"" + encoding + "\"?" + ">");
+                                                                    parser.parse_XQuery();
+                                                                  }
+                                                                  catch (ParseException pe)
+                                                                  {
+                                                                    parser.output.setLength(0);
+                                                                    String input = parser.getInput();
+                                                                    parser.output.append(pe.getMessage());
+                                                                    String found = getOffendingToken(pe);
+                                                                    if (found != null)
+                                                                    {
+                                                                      parser.output.append(", found " + found);
+                                                                    }
+                                                                    parser.output.append(" while expecting " + Arrays.toString(getExpectedTokenSet(pe)) + "\n");
+                                                                    parser.output.append("  scanned "
+                                                                        + (pe.getEnd() - pe.getBegin())
+                                                                        + " characters starting at offset "
+                                                                        + pe.getBegin()
+                                                                        + ": "
+                                                                        + input.substring(pe.getBegin(), Math.min(input.length(), pe.getBegin() + 64))
+                                                                        + "\n");
+                                                                    throw new ParseTreeException(parser.output.toString());
+                                                                  }
+                                                                  return parser.output.toString();
+                                                                }
+
+                                                                public static void main(String args[]) throws Exception
+                                                                {
+                                                                  for (String arg : args)
+                                                                  {
+                                                                    try
+                                                                    {
+                                                                      System.err.print("parsing " + arg);
+                                                                      arg = arg.startsWith("{") && arg.endsWith("}")
+                                                                          ? arg.substring(1, arg.length() - 1)
+                                                                          : fileContent(arg);
+                                                                      System.out.print(parseTree(arg));
+                                                                      System.err.println(": OK");
+                                                                    }
+                                                                    catch (ParseTreeException e)
+                                                                    {
+                                                                      System.err.println();
+                                                                      System.err.println(e.getMessage());
+                                                                    }
+                                                                    catch (Exception e)
+                                                                    {
+                                                                      System.err.println();
+                                                                      throw e;
+                                                                    }
+                                                                  }
+                                                                };
+
+                                                                private String escapeXml(String content)
+                                                                {
+                                                                  StringBuilder result = new StringBuilder();
+                                                                  if (content != null && ! content.equals(""))
+                                                                  {
+                                                                    if (   content.indexOf('<') < 0
+                                                                        && content.indexOf('>') < 0
+                                                                        && content.indexOf('&') < 0)
+                                                                    {
+                                                                       result.append(content);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      int size = content.length();
+                                                                      for (int i = 0; i < size; ++i)
+                                                                      {
+                                                                        char c = content.charAt(i);
+                                                                        switch (c)
+                                                                        {
+                                                                        case '<': result.append("&lt;" ); break;
+                                                                        case '>': result.append("&gt;" ); break;
+                                                                        case '&': result.append("&amp;"); break;
+                                                                        default:  result.append(c);
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                  return result.toString();
+                                                                }
+
+                                                                String delayedTag = null;
+                                                                StringBuilder output = new StringBuilder();
+
+                                                                private void open(String tag)
+                                                                {
+                                                                  if (delayedTag != null)
+                                                                  {
+                                                                    output.append("<" + delayedTag + ">");
+                                                                  }
+                                                                  delayedTag = tag;
+                                                                }
+
+                                                                private void close(String tag)
+                                                                {
+                                                                  if (delayedTag != null)
+                                                                  {
+                                                                    output.append("<" + tag + "/>");
+                                                                    delayedTag = null;
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    output.append("</" + tag + ">");
+                                                                  }
+                                                                }
+
+                                                                private void characters(int begin, int end)
+                                                                {
+                                                                  if (end <= size)
+                                                                  {
+                                                                    if (delayedTag != null)
+                                                                    {
+                                                                      output.append("<" + delayedTag + ">");
+                                                                      delayedTag = null;
+                                                                    }
+                                                                    output.append(escapeXml(input.substring(begin, end)));
+                                                                    delayedTag = null;
+                                                                  }
+                                                                }
+
+                                                                private void terminal(String tag, int begin, int end)
+                                                                {
+                                                                  if (tag.charAt(0) == '\'') tag = "TOKEN";
+                                                                  open(tag);
+                                                                  characters(begin, end);
+                                                                  close(tag);
+                                                                };
+                                                            ?>
+
+XQuery ::= Module EOF
+
+                        Module                     ::=                  VersionDecl? (LibraryModule  | MainModule)
+                        VersionDecl                ::=                  "xquery" "version" StringLiteral ("encoding" StringLiteral)? Separator
+                        MainModule                 ::=                  Prolog QueryBody
+                        LibraryModule              ::=                  ModuleDecl Prolog
+                        ModuleDecl                 ::=                  "module" "namespace" NCName "=" URILiteral Separator
+                        Prolog                     ::=                  ((DefaultNamespaceDecl | Setter | NamespaceDecl | Import) Separator)* ((VarDecl | FunctionDecl | OptionDecl) Separator)*
+                        Setter                     ::=                  BoundarySpaceDecl | DefaultCollationDecl | BaseURIDecl | ConstructionDecl | OrderingModeDecl | EmptyOrderDecl | RevalidationDecl | CopyNamespacesDecl
+                        Import                     ::=                  SchemaImport | ModuleImport
+                        Separator                  ::=                  ";"
+                        NamespaceDecl              ::=                  "declare" "namespace" NCName "=" URILiteral
+                        BoundarySpaceDecl          ::=                  "declare" "boundary-space" ("preserve" | "strip")
+                        DefaultNamespaceDecl       ::=                  "declare" "default" ("element" | "function") "namespace" URILiteral
+                        OptionDecl                 ::=                  "declare" "option" QName StringLiteral
+                        OrderingModeDecl           ::=                  "declare" "ordering" ("ordered" | "unordered")
+                        EmptyOrderDecl             ::=                  "declare" "default" "order" "empty" ("greatest" | "least")
+                        CopyNamespacesDecl         ::=                  "declare" "copy-namespaces" PreserveMode "," InheritMode
+                        PreserveMode               ::=                  "preserve" | "no-preserve"
+                        InheritMode                ::=                  "inherit" | "no-inherit"
+                        DefaultCollationDecl       ::=                  "declare" "default" "collation" URILiteral
+                        BaseURIDecl                ::=                  "declare" "base-uri" URILiteral
+                        SchemaImport               ::=                  "import" "schema" SchemaPrefix? URILiteral ("at" URILiteral ("," URILiteral)*)?
+                        SchemaPrefix               ::=                  ("namespace" NCName "=") | ("default" "element" "namespace")
+                        ModuleImport               ::=                  "import" "module" ("namespace" NCName "=")? URILiteral ("at" URILiteral ("," URILiteral)*)?
+                        VarDecl                    ::=                  "declare" ("unassignable"? | "assignable") "variable" "$" QName TypeDeclaration? ((":=" ExprSingle) | "external")
+                        ConstructionDecl           ::=                  "declare" "construction" ("strip" | "preserve")
+                        FunctionDecl               ::=                  ("declare" ("simple"? | "updating") "function" QName "(" ParamList? ")" ("as" SequenceType)? (EnclosedExpr | "external"))
+| ("declare" "sequential" "function" QName "(" ParamList? ")" ("as" SequenceType)? (Block | "external"))
+                        ParamList                  ::=                  Param ("," Param)*
+                        Param                      ::=                  "$" QName TypeDeclaration?
+                        EnclosedExpr               ::=                  "{" Expr "}"
+                        QueryBody                  ::=                  Expr
+                        Expr                       ::=                  ApplyExpr
+                        ApplyExpr                  ::=                  ConcatExpr (";" (ConcatExpr ";")*)?
+                        ConcatExpr                 ::=                  ExprSingle ("," ExprSingle)*
+                        ExprSingle                 ::=                  FLWORExpr
+| QuantifiedExpr
+| TypeswitchExpr
+| IfExpr
+| InsertExpr
+| DeleteExpr
+| RenameExpr
+| ReplaceExpr
+| TransformExpr
+| BlockExpr
+| AssignmentExpr
+| ExitExpr
+| WhileExpr
+| OrExpr
+                        FLWORExpr                  ::=                  (ForClause | LetClause)+ WhereClause? OrderByClause? "return" ExprSingle
+                        ForClause                  ::=                  "for" "$" VarName TypeDeclaration? PositionalVar? "in" ExprSingle ("," "$" VarName TypeDeclaration? PositionalVar? "in" ExprSingle)*
+                        PositionalVar              ::=                  "at" "$" VarName
+                        LetClause                  ::=                  "let" "$" VarName TypeDeclaration? ":=" ExprSingle ("," "$" VarName TypeDeclaration? ":=" ExprSingle)*
+                        WhereClause                ::=                  "where" ExprSingle
+                        OrderByClause              ::=                  (("order" "by") | ("stable" "order" "by")) OrderSpecList
+                        OrderSpecList              ::=                  OrderSpec ("," OrderSpec)*
+                        OrderSpec                  ::=                  ExprSingle OrderModifier
+                        OrderModifier              ::=                  ("ascending" | "descending")? ("empty" ("greatest" | "least"))? ("collation" URILiteral)?
+                        QuantifiedExpr             ::=                  ("some" | "every") "$" VarName TypeDeclaration? "in" ExprSingle ("," "$" VarName TypeDeclaration? "in" ExprSingle)* "satisfies" ExprSingle
+                        TypeswitchExpr             ::=                  "typeswitch" "(" Expr ")" CaseClause+ "default" ("$" VarName)? "return" ExprSingle
+                        CaseClause                 ::=                  "case" ("$" VarName "as")? SequenceType "return" ExprSingle
+                        IfExpr                     ::=                  "if" "(" Expr ")" "then" ExprSingle "else" ExprSingle
+                        OrExpr                     ::=                  AndExpr ( "or" AndExpr )*
+                        AndExpr                    ::=                  ComparisonExpr ( "and" ComparisonExpr )*
+                        ComparisonExpr             ::=                  RangeExpr ( (ValueComp
+| GeneralComp
+| NodeComp) RangeExpr )?
+                        RangeExpr                  ::=                  AdditiveExpr ( "to" AdditiveExpr )?
+                        AdditiveExpr               ::=                  MultiplicativeExpr ( ("+" | "-") MultiplicativeExpr )*
+                        MultiplicativeExpr         ::=                  UnionExpr ( ("*" | "div" | "idiv" | "mod") UnionExpr )*
+                        UnionExpr                  ::=                  IntersectExceptExpr ( ("union" | "|") IntersectExceptExpr )*
+                        IntersectExceptExpr        ::=                  InstanceofExpr ( ("intersect" | "except") InstanceofExpr )*
+                        InstanceofExpr             ::=                  TreatExpr ( "instance" "of" SequenceType )?
+                        TreatExpr                  ::=                  CastableExpr ( "treat" "as" SequenceType )?
+                        CastableExpr               ::=                  CastExpr ( "castable" "as" SingleType )?
+                        CastExpr                   ::=                  UnaryExpr ( "cast" "as" SingleType )?
+                        UnaryExpr                  ::=                  ("-" | "+")* ValueExpr
+                        ValueExpr                  ::=                  ValidateExpr | PathExpr | ExtensionExpr
+                        GeneralComp                ::=                  "=" | "!=" | "<" | "<=" | ">" | ">="
+                        ValueComp                  ::=                  "eq" | "ne" | "lt" | "le" | "gt" | "ge"
+                        NodeComp                   ::=                  "is" | "<<" | ">>"
+                        ValidateExpr               ::=                  "valid" ValidationMode? "{" Expr "}"
+                        ValidationMode             ::=                  "lax" | "strict"
+                        ExtensionExpr              ::=                  Pragma+ "{" Expr? "}"
+                        Pragma                     ::=                  "(#" S? QName (S PragmaContents)? "#)"          /* ws: explicit */
+
+                        PathExpr                   ::=                  ("/" (RelativePathExpr / ))
+| ("//" RelativePathExpr)
+| RelativePathExpr      /* gn: leading-lone-slashXQ */
+                        RelativePathExpr           ::=                  StepExpr (("/" | "//") StepExpr)*
+                        StepExpr                   ::=                  FilterExpr | AxisStep
+                        AxisStep                   ::=                  (ReverseStep | ForwardStep) PredicateList
+                        ForwardStep                ::=                  (ForwardAxis NodeTest) | AbbrevForwardStep
+                        ForwardAxis                ::=                  ("child" "::")
+| ("descendant" "::")
+| ("attribute" "::")
+| ("self" "::")
+| ("descendant-or-self" "::")
+| ("following-sibling" "::")
+| ("following" "::")
+                        AbbrevForwardStep          ::=                  "@"? NodeTest
+                        ReverseStep                ::=                  (ReverseAxis NodeTest) | AbbrevReverseStep
+                        ReverseAxis                ::=                  ("parent" "::")
+| ("ancestor" "::")
+| ("preceding-sibling" "::")
+| ("preceding" "::")
+| ("ancestor-or-self" "::")
+                        AbbrevReverseStep          ::=                  ".."
+                        NodeTest                   ::=                  KindTest | NameTest
+                        NameTest                   ::=                  QName | Wildcard
+
+                        FilterExpr                 ::=                  PrimaryExpr PredicateList
+                        PredicateList              ::=                  Predicate*
+                        Predicate                  ::=                  "[" Expr "]"
+                        PrimaryExpr                ::=                  Literal | VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall | OrderedExpr | UnorderedExpr | Constructor
+                        Literal                    ::=                  NumericLiteral | StringLiteral
+                        NumericLiteral             ::=                  IntegerLiteral | DecimalLiteral | DoubleLiteral
+                        VarRef                     ::=                  "$" VarName
+                        VarName                    ::=                  QName
+                        ParenthesizedExpr          ::=                  "(" Expr? ")"
+                        ContextItemExpr            ::=                  "."
+                        OrderedExpr                ::=                  "ordered" "{" Expr "}"
+                        UnorderedExpr              ::=                  "unordered" "{" Expr "}"
+                        FunctionCall               ::=                  FunctionName "(" (ExprSingle ("," ExprSingle)*)? ")"                    /* gn: sx-reserved-function-names */
+/* gn: parensXQ */
+                        Constructor                ::=                  DirectConstructor
+| ComputedConstructor
+                        DirectConstructor          ::=                  DirElemConstructor
+| DirCommentConstructor
+| DirPIConstructor
+                        DirElemConstructor         ::=                  "<" QName DirAttributeList ("/>" | (">" DirElemContent* "</" QName S? ">"))                     /* ws: explicit */
+                        DirAttributeList           ::=                  (S (QName S? "=" S? DirAttributeValue)?)*       /* ws: explicit */
+                        DirAttributeValue          ::=                  ('"' (EscapeQuot | QuotAttrValueContent)* '"')
+| ("'" (EscapeApos | AposAttrValueContent)* "'")                        /* ws: explicit */
+                        QuotAttrValueContent       ::=                  QuotAttrContentChar
+| CommonContent
+                        AposAttrValueContent       ::=                  AposAttrContentChar
+| CommonContent
+                        DirElemContent             ::=                  DirectConstructor
+| CDataSection
+| CommonContent
+| ElementContentChar
+                        CommonContent              ::=                  PredefinedEntityRef | CharRef | "{{" | "}}" | EnclosedExpr
+                        DirCommentConstructor      ::=                  "<!--" DirCommentContents "-->"                 /* ws: explicit */
+
+                        DirPIConstructor           ::=                  "<?" PITarget (S DirPIContents)? "?>"           /* ws: explicit */
+
+                        CDataSection               ::=                  "<![CDATA[" CDataSectionContents "]]>"          /* ws: explicit */
+
+                        ComputedConstructor        ::=                  CompDocConstructor
+| CompElemConstructor
+| CompAttrConstructor
+| CompTextConstructor
+| CompCommentConstructor
+| CompPIConstructor
+                        CompDocConstructor         ::=                  "document" "{" Expr "}"
+                        CompElemConstructor        ::=                  "element" (QName | ("{" Expr "}")) "{" ContentExpr? "}"
+                        ContentExpr                ::=                  Expr
+                        CompAttrConstructor        ::=                  "attribute" (QName | ("{" Expr "}")) "{" Expr? "}"
+                        CompTextConstructor        ::=                  "text" "{" Expr "}"
+                        CompCommentConstructor     ::=                  "comment" "{" Expr "}"
+                        CompPIConstructor          ::=                  "processing-instruction" (NCName | ("{" Expr "}")) "{" Expr? "}"
+                        SingleType                 ::=                  AtomicType "?"?
+                        TypeDeclaration            ::=                  "as" SequenceType
+                        SequenceType               ::=                  ("empty-sequence" "(" ")")
+| (ItemType OccurrenceIndicator?)
+                        OccurrenceIndicator        ::=                  "?" | "*"^OccurrenceIndicator | "+"^OccurrenceIndicator                 /* gn: occurrence-indicatorsXQ */
+                        ItemType                   ::=                  KindTest | ("item" "(" ")") | AtomicType
+                        AtomicType                 ::=                  QName
+                        KindTest                   ::=                  DocumentTest
+| ElementTest
+| AttributeTest
+| SchemaElementTest
+| SchemaAttributeTest
+| PITest
+| CommentTest
+| TextTest
+| AnyKindTest
+                        AnyKindTest                ::=                  "node" "(" ")"
+                        DocumentTest               ::=                  "document-node" "(" (ElementTest | SchemaElementTest)? ")"
+                        TextTest                   ::=                  "text" "(" ")"
+                        CommentTest                ::=                  "comment" "(" ")"
+                        PITest                     ::=                  "processing-instruction" "(" (NCName | StringLiteral)? ")"
+                        AttributeTest              ::=                  "attribute" "(" (AttribNameOrWildcard ("," TypeName)?)? ")"
+                        AttribNameOrWildcard       ::=                  AttributeName | "*"
+                        SchemaAttributeTest        ::=                  "schema-attribute" "(" AttributeDeclaration ")"
+                        AttributeDeclaration       ::=                  AttributeName
+                        ElementTest                ::=                  "element" "(" (ElementNameOrWildcard ("," TypeName "?"?)?)? ")"
+                        ElementNameOrWildcard      ::=                  ElementName | "*"
+                        SchemaElementTest          ::=                  "schema-element" "(" ElementDeclaration ")"
+                        ElementDeclaration         ::=                  ElementName
+                        AttributeName              ::=                  QName
+                        ElementName                ::=                  QName
+                        TypeName                   ::=                  QName
+                        URILiteral                 ::=                  StringLiteral
+                        RevalidationDecl           ::=                  "declare" "revalidation" ("strict" | "lax" | "skip")
+                        InsertExprTargetChoice     ::=                  (("as" ("first" | "last"))? "into")
+| "after"
+| "before"
+                        InsertExpr                 ::=                  "insert" ("node" | "nodes") SourceExpr InsertExprTargetChoice TargetExpr
+                        DeleteExpr                 ::=                  "delete" ("node" | "nodes") TargetExpr
+                        ReplaceExpr                ::=                  "replace" ("value" "of")? "node" TargetExpr "with" ExprSingle
+                        RenameExpr                 ::=                  "rename" "node" TargetExpr "as" NewNameExpr
+                        SourceExpr                 ::=                  ExprSingle
+                        TargetExpr                 ::=                  ExprSingle
+                        NewNameExpr                ::=                  ExprSingle
+                        TransformExpr              ::=                  "copy" "$" VarName ":=" ExprSingle ("," "$" VarName ":=" ExprSingle)* "modify" ExprSingle "return" ExprSingle
+                        BlockExpr                  ::=                  "block" Block
+                        Block                      ::=                  "{" BlockDecls BlockBody "}"
+                        BlockDecls                 ::=                  (BlockVarDecl ";")*
+                        BlockVarDecl               ::=                  "declare" "$" VarName TypeDeclaration? (":=" ExprSingle)? ("," "$" VarName TypeDeclaration? (":=" ExprSingle)?)*
+                        BlockBody                  ::=                  Expr
+                        AssignmentExpr             ::=                  "$" VarName ":=" ExprSingle
+                        ExitExpr                   ::=                  "exit" "returning" ExprSingle
+                        WhileExpr                  ::=                  "while" "(" ExprSingle ")" WhileBody
+                        WhileBody                  ::=                  Block
+
+                        Comment                    ::=                  "(:" (CommentContents | Comment)* ":)"          /* ws: explicit */
+/* gn: commentsXQ */
+
+QName ::= FunctionName
+        | "attribute"
+        | "comment"
+        | "document-node"
+        | "element"
+        | "empty-sequence"
+        | "if"
+        | "item"
+        | "node"
+        | "processing-instruction"
+        | "schema-attribute"
+        | "schema-element"
+        | "text"
+        | "typeswitch"
+| "while"
+
+FunctionName ::= QName^Token | "after" | "ancestor" | "ancestor-or-self" | "and" | "as" | "ascending" | "before" | "block" | "case" | "cast" | "castable" | "child" | "collation" | "copy" | "declare" | "default" | "delete" | "descendant" | "descendant-or-self" | "descending" | "div" | "document" | "else" | "empty" | "eq" | "every" | "except" | "exit" | "following" | "following-sibling" | "first" | "for" | "ge" | "gt" | "idiv" | "import" | "insert" | "instance" | "intersect" | "into" | "is" | "last" | "le" | "let" | "lt" | "mod" | "modify" | "module" | "ne" | "or" | "order" | "ordered" | "parent" | "preceding" | "preceding-sibling" | "rename" | "replace" | "return" | "satisfies" | "self" | "some" | "stable" | "to" | "treat" | "union" | "unordered" | "valid" | "validate" | "where" | "with" | "xquery"
+
+NCName ::= NCName^Token | "after" | "and" | "as" | "ascending" | "before" | "case" | "cast" | "castable" | "collation" | "default" | "descending" | "div" | "else" | "empty" | "eq" | "except" | "for" | "ge" | "gt" | "idiv" | "instance" | "intersect" | "into" | "is" | "le" | "let" | "lt" | "mod" | "modify" | "ne" | "or" | "order" | "return" | "satisfies" | "stable" | "to" | "treat" | "union" | "where" | "with"
+
+WhiteSpace ::= (S^WhiteSpace | Comment)+
+               /* ws: definition */
+
+<?TOKENS?>
+
+EOF ::= $
+
+                        PragmaContents             ::=                  (Char* - (Char* '#)' Char*)) & '#'
+                        Wildcard                   ::=                  "*"
+| (NCName ":" "*")
+| ("*" ":" NCName)      /* ws: explicit */
+                        DirCommentContents         ::=                  ((Char - '-') | ('-' (Char - '-')))*            /* ws: explicit */
+                        DirPIContents              ::=                  (Char* - (Char* '?>' Char*)) & '?'              /* ws: explicit */
+                        CDataSectionContents       ::=                  (Char* - (Char* ']]>' Char*)) & ']]'            /* ws: explicit */
+
+                        IntegerLiteral             ::=                  Digits
+                        DecimalLiteral             ::=                  ("." Digits) | (Digits "." [0-9]*)              /* ws: explicit */
+                        DoubleLiteral              ::=                  (("." Digits) | (Digits ("." [0-9]*)?)) [eE] [+-]? Digits               /* ws: explicit */
+                        StringLiteral              ::=                  ('"' (PredefinedEntityRef | CharRef | EscapeQuot | [^"&])* '"') | ("'" (PredefinedEntityRef | CharRef | EscapeApos | [^'&])* "'")               /* ws: explicit */
+                        PredefinedEntityRef        ::=                  "&" ("lt" | "gt" | "amp" | "quot" | "apos") ";"                         /* ws: explicit */
+                        EscapeQuot                 ::=                  '""'
+                        EscapeApos                 ::=                  "''"
+                        ElementContentChar         ::=                  Char - [{}<&]
+                        QuotAttrContentChar        ::=                  Char - ["{}<&]
+                        AposAttrContentChar        ::=                  Char - ['{}<&]
+
+// [173]                PITarget                   ::=                  [http://www.w3.org/TR/REC-xml#NT-PITarget]XML   /* gn: xml-versionXQ */
+// [174]                CharRef                    ::=                  [http://www.w3.org/TR/REC-xml#NT-CharRef]XML    /* gn: xml-versionXQ */
+// [175]                QName                      ::=                  [http://www.w3.org/TR/REC-xml-names/#NT-QName]Names                     /* gn: xml-versionXQ */
+// [176]                NCName                     ::=                  [http://www.w3.org/TR/REC-xml-names/#NT-NCName]Names                    /* gn: xml-versionXQ */
+// [177]                S                          ::=                  [http://www.w3.org/TR/REC-xml#NT-S]XML          /* gn: xml-versionXQ */
+// [178]                Char                       ::=                  [http://www.w3.org/TR/REC-xml#NT-Char]XML       /* gn: xml-versionXQ */
+
+                        PITarget                   ::=                   NCName - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
+                        NameStartChar              ::=                  ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+                        NameChar                   ::=                  NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+                        Name                       ::=                  NameStartChar  (NameChar)*
+
+                        CharRef                    ::=                  '&#' [0-9]+ ';'
+                                                                        | '&#x' [0-9a-fA-F]+ ';'
+
+                        QName                      ::=                  PrefixedName
+                                                                        | UnprefixedName
+                        NCName                     ::=                  Name - (Char* ':' Char*)                        /* An XML Name, minus the ":" */
+                        PrefixedName               ::=                  Prefix ':' LocalPart
+                        UnprefixedName             ::=                  LocalPart
+                        Prefix                     ::=                  NCName
+                        LocalPart                  ::=                  NCName
+
+                        S                          ::=                  (#x20 | #x9 | #xD | #xA)+
+
+                        Char                       ::=                  #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]  /* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
+
+// The following symbols are used only in the definition of terminal symbols; they are not terminal symbols in the grammar of [A EBNF for XQuery 1.0 Grammar with Scripting Extensions].
+
+                        Digits                     ::=                  [0-9]+
+                        CommentContents            ::=                  (Char+ - (Char* ('(:' | ':)') Char*)) & ('(:' | ':)')
+
+"*" << "*"^OccurrenceIndicator
+"+" << "+"^OccurrenceIndicator
+"*" << Wildcard
+
+QName^Token << "after" "ancestor" "ancestor-or-self" "and" "as" "ascending" "attribute" "before" "block" "case" "cast" "castable" "child" "collation" "comment" "copy" "declare" "default" "delete" "descendant" "descendant-or-self" "descending" "div" "document" "document-node" "element" "else" "empty" "empty-sequence" "eq" "every" "except" "exit" "first" "following" "following-sibling" "for" "ge" "gt" "idiv" "if" "import" "insert" "instance" "intersect" "into" "is" "item" "last" "le" "let" "lt" "mod" "modify" "module" "ne" "node" "or" "order" "ordered" "parent" "preceding" "preceding-sibling" "processing-instruction" "rename" "replace" "return" "satisfies" "schema-attribute" "schema-element" "self" "some" "stable" "text" "to" "treat" "typeswitch" "union" "unordered" "valid" "validate" "where" "while" "with" "xquery"
+
+NCName^Token << "after" "and" "as" "ascending" "before" "case" "cast" "castable" "collation" "default" "descending" "div" "else" "empty" "eq" "except" "for" "ge" "gt" "idiv" "instance" "intersect" "into" "is" "le" "let" "lt" "mod" "modify" "ne" "or" "order" "return" "satisfies" "stable" "to" "treat" "union" "where" "with"
+
+NonNCNameChar ::= $ | ":" | Char - NameChar
+
+NonNCNameChar \\ IntegerLiteral NCName^Token QName^Token DecimalLiteral DoubleLiteral "ancestor" "ancestor-or-self" "and" "as" "ascending" "at" "attribute" "base-uri" "boundary-space" "by" "case" "cast" "castable" "child" "collation" "comment" "construction" "copy-namespaces" "declare" "default" "descendant" "descendant-or-self" "descending" "div" "document" "document-node" "element" "else" "empty" "empty-sequence" "encoding" "eq" "every" "except" "external" "following" "following-sibling" "for" "function" "ge" "greatest" "gt" "idiv" "if" "import" "in" "inherit" "instance" "intersect" "is" "item" "lax" "le" "least" "let" "lt" "mod" "module" "namespace" "ne" "node" "no-inherit" "no-preserve" "of" "option" "or" "order" "ordered" "ordering" "parent" "preceding" "preceding-sibling" "preserve" "processing-instruction" "return" "satisfies" "schema" "schema-attribute" "schema-element" "self" "some" "stable" "strict" "strip" "text" "then" "to" "treat" "typeswitch" "union" "unordered" "validate" "variable" "version" "where" "xquery"
+"after"
+"before"
+"block"
+"copy"
+"delete"
+"exit"
+"first"
+"insert"
+"into"
+"last"
+"modify"
+"rename"
+"replace"
+"valid"
+"while"
+"with"

@@ -1,0 +1,1184 @@
+// This file was generated on Tue Oct 8, 2024 19:05 (UTC+02) by REx v5.58 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q -haxe -tree -main -glalr 1 LL2_but_not_strongLL2.ebnf
+
+import haxe.io.Bytes;
+import sys.io.File;
+
+private class StackNode
+{
+  public var state: Int;
+  public var pos: Int;
+  public var link: StackNode;
+
+  public function new(state: Int, pos: Int, link: StackNode)
+  {
+    this.state = state;
+    this.pos = pos;
+    this.link = link;
+  }
+
+  public function equals(rhs: StackNode): Bool
+  {
+    var lhs: StackNode = this;
+    while (lhs != null && rhs != null)
+    {
+      if (lhs == rhs) return true;
+      if (lhs.state != rhs.state) return false;
+      if (lhs.pos != rhs.pos) return false;
+      lhs = lhs.link;
+      rhs = rhs.link;
+    }
+    return lhs == rhs;
+  }
+
+}
+
+private class Heap
+{
+  private var array: Array<ParsingThread>;
+  private var size: Int;
+
+  public function new()
+  {
+    array = [];
+    size = 0;
+  }
+
+  public function offer(value: ParsingThread): Bool
+  {
+    var index = size++;
+    while (index != 0)
+    {
+      var parentIndex = (index - 1) >> 1;
+      if (array[parentIndex].compareTo(value) <= 0)
+        break;
+      array[index] = array[parentIndex];
+      index = parentIndex;
+    }
+    array[index] = value;
+    return true;
+  }
+
+  public function poll(): ParsingThread
+  {
+    if (size == 0)
+      return null;
+    var min = array[0];
+    if (--size > 0)
+    {
+      var value = array[size];
+      var index = 0;
+      var child: Int;
+      while (true)
+      {
+        child = (index << 1) + 2;
+        if (child < size)
+        {
+          var otherChild = child - 1;
+          if (otherChild < size && array[child].compareTo(array[otherChild]) > 0)
+            child = otherChild;
+        }
+        else if (--child >= size)
+        {
+          break;
+        }
+        if (value.compareTo(array[child]) <= 0)
+        {
+          break;
+        }
+        array[index] = array[child];
+        index = child;
+      }
+      array[index] = value;
+    }
+    return min;
+  }
+
+  public function isEmpty(): Bool
+  {
+    return size == 0;
+  }
+
+  public function peek(): ParsingThread
+  {
+    return size == 0 ? null : array[0];
+  }
+}
+
+private class DeferredEvent
+{
+  public var link: DeferredEvent;
+  public var name: String;
+  public var begin: Int;
+  public var end: Int;
+
+  public function new(link: DeferredEvent, name: String, begin: Int, end: Int)
+  {
+    this.link = link;
+    this.name = name;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public function execute(eventHandler: BottomUpEventHandler): Void {}
+
+  public function release(eventHandler: BottomUpEventHandler): Void
+  {
+    var current: DeferredEvent = this;
+    var predecessor: DeferredEvent = current.link;
+    current.link = null;
+    while (predecessor != null)
+    {
+      var next: DeferredEvent = predecessor.link;
+      predecessor.link = current;
+      current = predecessor;
+      predecessor = next;
+    }
+    do
+    {
+      current.execute(eventHandler);
+      current = current.link;
+    }
+    while (current != null);
+  }
+
+  public function show(eventHandler: BottomUpEventHandler): Void
+  {
+    var stack = new Array<DeferredEvent>();
+    var current = this;
+    while (current != null)
+    {
+      stack.push(current);
+      current = current.link;
+    }
+    while (stack.length > 0)
+    {
+      stack.pop().execute(eventHandler);
+    }
+  }
+}
+
+private class TerminalEvent extends DeferredEvent
+{
+  public function new(link: DeferredEvent, name: String , begin: Int, end: Int)
+  {
+    super(link, name, begin, end);
+  }
+
+  public override function execute(eventHandler: BottomUpEventHandler): Void
+  {
+    eventHandler.terminal(name, begin, end);
+  }
+}
+
+private class NonterminalEvent extends DeferredEvent
+{
+  public var count: Int;
+
+  public function new(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int)
+  {
+    super(link, name, begin, end);
+    this.count = count;
+  }
+
+  public override function execute(eventHandler: BottomUpEventHandler): Void
+  {
+    eventHandler.nonterminal(name, begin, end, count);
+  }
+}
+
+private class ParsingThread
+{
+  public var parser: LL2_but_not_strongLL2;
+  public var threads: Heap;
+  public var accepted: Bool;
+  public var stack: StackNode ;
+  public var state: Int;
+  public var action: Int;
+  public var target: Int;
+  public var deferredEvent: DeferredEvent;
+  public var id: Int;
+
+  public function new()
+  {
+  }
+
+  public function open(initialState: Int, eh: BottomUpEventHandler, t: Int): Heap
+  {
+    accepted = false;
+    target = t;
+    eventHandler = eh;
+    if (eventHandler != null)
+    {
+      eventHandler.reset(parser.input);
+    }
+    deferredEvent = null;
+    stack = new StackNode(-1, e0, null);
+    state = initialState;
+    action = predict(initialState);
+    es = e0;
+    bw = e0;
+    bs = e0;
+    threads = new Heap();
+    threads.offer(this);
+    return threads;
+  }
+
+  public function copy(other: ParsingThread , action: Int): ParsingThread
+  {
+    this.parser = other.parser;
+    accepted = other.accepted;
+    this.action = action;
+    target = other.target;
+    bs = other.bs;
+    bw = other.bw;
+    es = other.es;
+    eventHandler = other.eventHandler;
+    deferredEvent = other.deferredEvent;
+    id = ++parser.maxId;
+    threads = other.threads;
+    state = other.state;
+    stack = other.stack;
+    b0 = other.b0;
+    e0 = other.e0;
+    l1 = other.l1;
+    b1 = other.b1;
+    e1 = other.e1;
+    end = other.end;
+    return this;
+  }
+
+  public function compareTo(other: ParsingThread): Int
+  {
+    if (accepted != other.accepted)
+      return accepted ? 1 : -1;
+    var comp = e0 - other.e0;
+    return comp == 0 ? id - other.id : comp;
+  }
+
+  public function equals(other: ParsingThread): Bool
+  {
+    if (accepted != other.accepted) return false;
+    if (b1 != other.b1) return false;
+    if (e1 != other.e1) return false;
+    if (l1 != other.l1) return false;
+    if (state != other.state) return false;
+    if (action != other.action) return false;
+    if (! stack.equals(other.stack)) return false;
+    return true;
+  }
+
+  public function parse(): Int
+  {
+    var nonterminalId = -1;
+    while (true)
+    {
+      var argument = action >> 7;
+      var lookback = (action >> 3) & 15;
+      var shift = -1;
+      var reduce = -1;
+      var symbols = -1;
+      switch (action & 7)
+      {
+      case 1: // SHIFT
+        shift = argument;
+
+      case 2: // REDUCE
+        reduce = argument;
+        symbols = lookback;
+
+      case 4: // SHIFT+REDUCE
+        shift = state;
+        reduce = argument;
+        symbols = lookback + 1;
+
+      case 6: // ACCEPT
+        accepted = true;
+        action = 0;
+        return LL2_but_not_strongLL2.ACCEPTED;
+
+      case 7: // FORK
+        threads.offer(new ParsingThread().copy(this, LL2_but_not_strongLL2.APPENDIX[argument]));
+        action = LL2_but_not_strongLL2.APPENDIX[argument + 1];
+        return LL2_but_not_strongLL2.PARSING;
+
+      default: // ERROR
+        return LL2_but_not_strongLL2.ERROR;
+      }
+
+      if (shift >= 0)
+      {
+        if (nonterminalId < 0)
+        {
+          if (eventHandler != null)
+          {
+            if (isUnambiguous())
+            {
+              eventHandler.terminal(LL2_but_not_strongLL2.TOKEN[l1], b1, e1);
+            }
+            else
+            {
+              deferredEvent = new TerminalEvent(deferredEvent, LL2_but_not_strongLL2.TOKEN[l1], b1, e1);
+            }
+          }
+          es = e1;
+          stack = new StackNode(state, b1, stack);
+          consume(l1);
+        }
+        else
+        {
+          stack = new StackNode(state, bs, stack);
+        }
+        state = shift;
+      }
+
+      if (reduce < 0)
+      {
+        action = predict(state);
+        return LL2_but_not_strongLL2.PARSING;
+      }
+      else
+      {
+        nonterminalId = reduce;
+        if (symbols > 0)
+        {
+          for (i in 1...symbols)
+          {
+            stack = stack.link;
+          }
+          state = stack.state;
+          bs = stack.pos;
+          stack = stack.link;
+        }
+        else
+        {
+          bs = b1;
+          es = b1;
+        }
+        if (nonterminalId == target && stack.link == null)
+        {
+          bs = bw;
+          es = b1;
+          bw = b1;
+        }
+        if (eventHandler != null)
+        {
+          if (isUnambiguous())
+          {
+            eventHandler.nonterminal(LL2_but_not_strongLL2.NONTERMINAL[nonterminalId], bs, es, symbols);
+          }
+          else
+          {
+            deferredEvent = new NonterminalEvent(deferredEvent, LL2_but_not_strongLL2.NONTERMINAL[nonterminalId], bs, es, symbols);
+          }
+        }
+        action = LL2_but_not_strongLL2.goTo(nonterminalId, state);
+      }
+    }
+  }
+
+  public function isUnambiguous(): Bool
+  {
+    return threads.isEmpty();
+  }
+
+  public function reset(l, b, e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    parser.maxId = 0;
+    id = parser.maxId;
+  }
+
+  private function consume(t): Void
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private function error(b, e, s, l, t): Int
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+                      public var b0: Int; public var e0: Int;
+  public var l1: Int; public var b1: Int; public var e1: Int;
+  private var bw: Int;
+  private var bs: Int;
+  private var es: Int;
+  private var eventHandler: BottomUpEventHandler = null;
+  private var begin = 0;
+  private var end = 0;
+
+  private function predict(dpi: Int): Int
+  {
+    var d = dpi;
+    if (l1 == 0)
+    {
+      l1 = match(LL2_but_not_strongLL2.TOKENSET[d]);
+      b1 = begin;
+      e1 = end;
+    }
+    if (l1 < 0)
+      return 0;
+    var j10 = (d << 4) + l1;
+    var j11 = j10 >> 2;
+    var action = LL2_but_not_strongLL2.CASEID[(j10 & 3) + LL2_but_not_strongLL2.CASEID[(j11 & 1) + LL2_but_not_strongLL2.CASEID[j11 >> 1]]];
+    return action >> 1;
+  }
+
+  private function match(tokenSetId: Int): Int
+  {
+    begin = end;
+    var current = end;
+    var result = LL2_but_not_strongLL2.INITIAL[tokenSetId];
+    var state = 0;
+
+    var code = result & 3;
+    while (code != 0)
+    {
+      var charclass = 0;
+      var c0 = current < parser.size ? parser.input.get(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = LL2_but_not_strongLL2.MAP0[c0];
+      }
+      else
+      {
+        if      ((c0                            & 0xe0) == 0xc0
+              && (parser.input.get(current    ) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                            & 0x1f) << 6)
+             |  (parser.input.get(current    ) & 0x3f);
+          if (c0 < 0x80) c0 = -1; else ++current;
+        }
+        else if ((c0                            & 0xf0) == 0xe0
+              && (parser.input.get(current    ) & 0xc0) == 0x80
+              && (parser.input.get(current + 1) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                            & 0x0f) << 12)
+             | ((parser.input.get(current    ) & 0x3f) <<  6)
+             |  (parser.input.get(current + 1) & 0x3f);
+          if (c0 < 0x800) c0 = -1; else current += 2;
+        }
+        else if ((c0                            & 0xf8) == 0xf0
+              && (parser.input.get(current    ) & 0xc0) == 0x80
+              && (parser.input.get(current + 1) & 0xc0) == 0x80
+              && (parser.input.get(current + 2) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                            & 0x07) << 18)
+             | ((parser.input.get(current    ) & 0x3f) << 12)
+             | ((parser.input.get(current + 1) & 0x3f) <<  6)
+             | ( parser.input.get(current + 2) & 0x3f       );
+          if (c0 < 0x10000 || c0 > 0x10ffff) c0 = -1; else current += 3;
+        }
+
+        if (c0 < 0xd800)
+        {
+          var c1 = c0 >> 5;
+          charclass = LL2_but_not_strongLL2.MAP1[(c0 & 31) + LL2_but_not_strongLL2.MAP1[(c1 & 31) + LL2_but_not_strongLL2.MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+      }
+
+      state = code;
+      var i0 = (charclass << 2) + code - 1;
+      code = LL2_but_not_strongLL2.TRANSITION[(i0 & 1) + LL2_but_not_strongLL2.TRANSITION[i0 >> 1]];
+
+      if (code > 3)
+      {
+        result = code;
+        code &= 3;
+        end = current;
+      }
+    }
+
+    result >>= 2;
+    if (result == 0)
+    {
+      end = current - 1;
+      var c1 = end < parser.size ? parser.input.get(end) : 0;
+      if (c1 & 0xc0 == 0x80)
+      {
+        --end;
+      }
+      end = begin;
+      return -1;
+    }
+
+    if (end > parser.size) end = parser.size;
+    return (result & 3) - 1;
+  }
+}
+
+class LL2_but_not_strongLL2
+{
+  public static function main()
+  {
+    var args = Sys.args();
+
+    if (args.length == 0)
+    {
+      Sys.println("Usage: LL2_but_not_strongLL2 [-i] INPUT...\n");
+      Sys.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+      Sys.println("");
+      Sys.println("  Option:");
+      Sys.println("    -i     indented parse tree");
+    }
+    else
+    {
+      var indent = false;
+      for (arg in args)
+      {
+        if (arg == "-i")
+        {
+          indent = true;
+          continue;
+        }
+
+        var input = read(arg);
+        var s = new XmlSerializer(indent);
+        var b = new ParseTreeBuilder();
+        var parser = new LL2_but_not_strongLL2(input, b);
+        try
+        {
+          parser.parse_S();
+          b.serialize(s);
+        }
+        catch (pe: ParseException)
+        {
+          if (pe.isAmbiguousInput())
+          {
+            pe.serialize(s);
+            Sys.println("");
+          }
+          throw "ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe);
+        }
+      }
+    }
+  }
+
+  private static function read(input)
+  {
+    if (~/^\{.*\}$/g.match(input))
+    {
+      return input.substring(1, input.length - 1);
+    }
+    else
+    {
+      var content = File.getContent(input);
+      return content.length > 0 && content.charCodeAt(0) == 0xFEFF
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  public function new(string, t)
+  {
+    initialize(string, t);
+  }
+
+  public function initialize(source, parsingEventHandler): Void
+  {
+    eventHandler = parsingEventHandler;
+    input = Bytes.ofString(source);
+    size = source.length;
+    maxId = 0;
+    thread = new ParsingThread();
+    thread.parser = this;
+    thread.reset(0, 0, 0);
+  }
+
+  public static function getOffendingToken(e): String
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static function getExpectedTokenSet(e)
+  {
+    var expected;
+    if (e.getExpected() < 0)
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    else
+    {
+      expected = [TOKEN[e.getExpected()]];
+    }
+    return expected;
+  };
+
+  public function getErrorMessage(e: ParseException): String
+  {
+    var message = e.getMessage();
+    if (e.isAmbiguousInput())
+    {
+      message += "\n";
+    }
+    else
+    {
+      var found = getOffendingToken(e);
+      var tokenSet = getExpectedTokenSet(e);
+      var size = e.getEnd() - e.getBegin();
+      message += (found == null ? "" : ", found " + found)
+              + "\nwhile expecting "
+              + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
+              + "\n"
+              + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    }
+    var prefix = input.getString(0, e.getBegin());
+    var lines = prefix.split("\n");
+    var line = lines.length;
+    var column = lines[line - 1].length + 1;
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.getString(e.getBegin(), input.length < e.getBegin() + 64 ? input.length - e.getBegin() : 64)
+         + "...";
+  };
+
+  public function parse_S(): Void
+  {
+    thread = parse(0, 2, eventHandler, thread);
+  }
+
+  public static var PARSING = 0;
+  public static var ACCEPTED = 1;
+  public static var ERROR = 2;
+
+  public function parse(target: Int, initialState: Int, eventHandler: BottomUpEventHandler, thread: ParsingThread): ParsingThread
+  {
+    var threads: Heap = thread.open(initialState, eventHandler, target);
+    while (true)
+    {
+      thread = threads.poll();
+      if (thread.accepted)
+      {
+        var other: ParsingThread = null;
+        while (! threads.isEmpty())
+        {
+          other = threads.poll();
+          if (thread.e0 < other.e0)
+          {
+            thread = other;
+            other = null;
+          }
+        }
+        if (other != null)
+        {
+          rejectAmbiguity(thread.stack.pos, thread.e0, thread.deferredEvent, other.deferredEvent);
+        }
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+        return thread;
+      }
+
+      if (! threads.isEmpty())
+      {
+        if (threads.peek().equals(thread))
+        {
+          rejectAmbiguity(thread.stack.pos, thread.e0, thread.deferredEvent, threads.peek().deferredEvent);
+        }
+      }
+      else
+      {
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+      }
+
+      var status = PARSING;
+      while (true)
+      {
+        if ((status = thread.parse()) != PARSING) break;
+        if (! threads.isEmpty()) break;
+      }
+
+      if (status != ERROR)
+      {
+        threads.offer(thread);
+      }
+      else if (threads.isEmpty())
+      {
+        throw new ParseException(thread.b1,
+                                 thread.e1,
+                                 TOKENSET[thread.state] + 1,
+                                 thread.l1,
+                                 -1
+                                );
+      }
+    }
+  }
+
+  private function rejectAmbiguity(begin: Int, end: Int, first: DeferredEvent, second: DeferredEvent): Void
+  {
+    var treeBuilder = new ParseTreeBuilder();
+    treeBuilder.reset(input);
+    second.show(treeBuilder);
+    treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+    var secondTree = treeBuilder.pop(1)[0];
+    first.show(treeBuilder);
+    treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+    treeBuilder.push(secondTree);
+    treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);
+    var exception = new ParseException(begin, end, -1, -1, -1);
+    exception.setAmbiguousInput(treeBuilder);
+    throw exception;
+  }
+
+  private var thread: ParsingThread;
+  private var eventHandler: BottomUpEventHandler;
+  public var input: Bytes = null;
+  public var size = 0;
+  public var maxId = 0;
+
+  public static function goTo(nonterminal, state): Int
+  {
+    var i0 = (state << 3) + nonterminal;
+    return GOTO[(i0 & 3) + GOTO[i0 >> 2]];
+  }
+
+  private static function getTokenSet(tokenSetId)
+  {
+    var set = [];
+    var s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    var i = 0;
+    while (i < 3)
+    {
+      var j = i;
+      var i0 = (i >> 5) * 3 + s - 1;
+      var f = EXPECTED[i0];
+      while (f != 0)
+      {
+        if ((f & 1) != 0)
+        {
+          set.push(TOKEN[j]);
+        }
+        f >>>= 1;
+        ++j;
+      }
+      i += 32;
+    }
+    return set;
+  }
+
+  public static var MAP0 =
+  [
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  ];
+
+  public static var MAP1 =
+  [
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 93, 93, 93, 90, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93,
+    /*  78 */ 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 93, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  ];
+
+  public static var INITIAL =
+  [
+    /* 0 */ 1, 2, 3
+  ];
+
+  public static var TRANSITION =
+  [
+    /*  0 */ 7, 7, 8, 9, 6, 6, 12, 0, 0, 8, 0
+  ];
+
+  public static var EXPECTED =
+  [
+    /* 0 */ 4, 2, 6
+  ];
+
+  public static var CASEID =
+  [
+    /*  0 */ 14, 15, 17, 15, 19, 15, 21, 15, 23, 15, 25, 15, 25, 15, 30, 35, 35, 33, 35, 27, 35, 43, 35, 41, 35, 37, 35,
+    /* 27 */ 0, 274, 18, 0, 264, 260, 0, 14, 0, 0, 0, 0, 56, 0, 0, 1554, 0, 0, 1298, 0
+  ];
+
+  public static var TOKENSET =
+  [
+    /* 0 */ 2, 1, 2, 0, 1, 0, 0
+  ];
+
+  public static var APPENDIX =
+  [
+    /* 0 */ 130, 132
+  ];
+
+  public static var GOTO =
+  [
+    /*  0 */ 6, 14, 9, 14, 13, 14, 0, 393, 0, 0, 521, 0, 0, 6, 0, 0, 0, 0
+  ];
+
+  public static var TOKEN =
+  [
+    "(0)",
+    "'b'",
+    "'a'"
+  ];
+
+  public static var NONTERMINAL =
+  [
+    "S",
+    "A"
+  ];
+}
+
+class ParseException
+{
+  private var begin: Int;
+  private var end: Int;
+  private var state: Int;
+  private var offending: Int;
+  private var expected: Int;
+  private var ambiguousInput: Bool;
+  private var ambiguityDescriptor: ParseTreeBuilder;
+
+  public function new(b, e, s, o, x)
+  {
+    begin = b;
+    end = e;
+    state = s;
+    offending = o;
+    expected = x;
+  }
+
+  public function setAmbiguousInput(a)
+  {
+    ambiguousInput = true;
+    ambiguityDescriptor = a;
+  }
+
+  public function getBegin() {return begin;}
+  public function getEnd() {return end;}
+  public function getState() {return state;}
+  public function getExpected() {return expected;}
+  public function getOffending() {return offending;}
+  public function isAmbiguousInput() {return ambiguousInput;}
+
+  public function getMessage()
+  {
+    return ambiguousInput
+         ? "ambiguous input"
+         : offending < 0
+         ? "lexical analysis failed"
+         : "syntax error";
+  }
+
+  public function serialize(eventHandler)
+  {
+    ambiguityDescriptor.serialize(eventHandler);
+  }
+}
+
+interface EventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function startNonterminal(tag: String, begin: Int): Void;
+  public function endNonterminal(tag: String, end: Int): Void;
+  public function terminal(tag: String, begin: Int, end: Int): Void;
+  public function whitespace(begin: Int, end: Int): Void;
+}
+
+interface BottomUpEventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function nonterminal(name: String, begin: Int, end: Int, count: Int): Void;
+  public function terminal(name: String , begin: Int, end: Int): Void;
+}
+
+class XmlSerializer implements EventHandler
+{
+  var input: Bytes = null;
+  var delayedTag: String = null;
+  var indent = false;
+  var hasChildElement = false;
+  var depth = 0;
+
+  public function new(indent)
+  {
+    this.indent = indent;
+  }
+
+  public function reset(bytes)
+  {
+    Sys.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    input = bytes;
+    delayedTag = null;
+    hasChildElement = false;
+    depth = 0;
+  }
+
+  public function startNonterminal(tag, begin)
+  {
+    if (delayedTag != null)
+    {
+      Sys.print("<");
+      Sys.print(delayedTag);
+      Sys.print(">");
+    }
+    delayedTag = tag;
+    if (indent)
+    {
+      Sys.print("\n");
+      for (i in 0...depth)
+      {
+        Sys.print("  ");
+      }
+    }
+    hasChildElement = false;
+    ++depth;
+  }
+
+  public function endNonterminal(tag, end)
+  {
+    --depth;
+    if (delayedTag != null)
+    {
+      delayedTag = null;
+      Sys.print("<");
+      Sys.print(tag);
+      Sys.print("/>");
+    }
+    else
+    {
+      if (indent)
+      {
+        if (hasChildElement)
+        {
+          Sys.print("\n");
+          for (i in 0...depth)
+          {
+            Sys.print("  ");
+          }
+        }
+      }
+      Sys.print("</");
+      Sys.print(tag);
+      Sys.print(">");
+    }
+    hasChildElement = true;
+  }
+
+  public function terminal(tag: String, begin, end)
+  {
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    startNonterminal(tag, begin);
+    characters(begin, end);
+    endNonterminal(tag, end);
+  }
+
+  public function whitespace(begin, end)
+  {
+    characters(begin, end);
+  }
+
+  private function characters(begin, end)
+  {
+    if (begin < end)
+    {
+      if (delayedTag != null)
+      {
+        Sys.print("<");
+        Sys.print(delayedTag);
+        Sys.print(">");
+        delayedTag = null;
+      }
+      Sys.print(~/>/g.replace(
+                ~/</g.replace(
+                ~/&/g.replace(input.getString(begin, end - begin), "&amp;")
+                                                                  , "&lt;")
+                                                                  , "&gt;"));
+    }
+  }
+}
+
+class TopDownTreeBuilder implements EventHandler
+{
+  private var input: Bytes;
+  private var stack: Array<Nonterminal>;
+
+  public function new()
+  {
+    input = null;
+    stack = null;
+  }
+
+  public function reset(i)
+  {
+    input = i;
+    stack = [];
+  };
+
+  public function startNonterminal(name, begin)
+  {
+    var nonterminal = new Nonterminal(name, begin, begin, new Array<Symbol>());
+    if (stack.length > 0) addChild(nonterminal);
+    stack.push(nonterminal);
+  }
+
+  public function endNonterminal(name, end)
+  {
+    stack[stack.length - 1].end = end;
+    if (stack.length > 1) stack.pop();
+  }
+
+  public function terminal(name, begin, end)
+  {
+    addChild(new Terminal(name, begin, end));
+  }
+
+  public function whitespace(begin, end)
+  {
+  }
+
+  private function addChild(s)
+  {
+    var current = stack[stack.length - 1];
+    current.children.push(s);
+  }
+
+  public function serialize(e: EventHandler)
+  {
+    e.reset(input);
+    stack[0].send(e);
+  }
+}
+
+class Symbol
+{
+  public var name: String;
+  public var begin: Int;
+  public var end: Int;
+
+  private function new(name, begin, end)
+  {
+    this.name = name;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public function send(e: EventHandler) {}
+}
+
+class Terminal extends Symbol
+{
+  public function new(name, begin, end)
+  {
+    super(name, begin, end);
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.terminal(name, begin, end);
+  }
+}
+
+class Nonterminal extends Symbol
+{
+  public var children: Array<Symbol>;
+
+  public function new(name, begin, end, children)
+  {
+    super(name, begin, end);
+    this.children = children;
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.startNonterminal(name, begin);
+    var pos = begin;
+    for (c in children)
+    {
+      if (pos < c.begin) e.whitespace(pos, c.begin);
+      c.send(e);
+      pos = c.end;
+    }
+    if (pos < end) e.whitespace(pos, end);
+    e.endNonterminal(name, end);
+  }
+}
+
+class ParseTreeBuilder implements BottomUpEventHandler
+{
+  var input : Bytes;
+  var stack = new Array<Symbol>();
+  var top = -1;
+
+  public function new() {}
+
+  public function reset(input: Bytes)
+  {
+    this.input = input;
+    top = -1;
+  }
+
+  public function getStack() {return stack;}
+  public function getTop() {return top;}
+
+  public function nonterminal(name: String, begin: Int, end: Int, count: Int)
+  {
+    if (count > top + 1)
+    {
+      var content = pop(top + 1);
+      nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+      for (symbol in content)
+      {
+        push(symbol);
+      }
+      count = top + 1;
+    }
+    push(new Nonterminal(name, begin, end, pop(count)));
+  }
+
+  public function terminal(name: String, begin: Int, end: Int)
+  {
+    push(new Terminal(name, begin, end));
+  }
+
+  public function serialize(e: EventHandler)
+  {
+    e.reset(input);
+    var i = 0;
+    while (i <= top)
+    {
+      stack[i].send(e);
+      ++i;
+    }
+  }
+
+  public function push(s: Symbol)
+  {
+    stack[++top] = s;
+  }
+
+  public function pop(count: Int)
+  {
+     top -= count;
+     return stack.slice(top + 1, top + count + 1);
+  }
+}
+
+// End

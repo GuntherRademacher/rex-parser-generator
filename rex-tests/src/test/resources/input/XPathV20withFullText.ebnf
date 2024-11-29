@@ -1,0 +1,217 @@
+// http://www.w3.org/TR/xpath-full-text-10/#id-xpath-grammar
+
+Query ::= XPath EOF
+
+                        XPath                      ::=                  Expr
+                        Expr                       ::=                  ExprSingle ("," ExprSingle)*
+                        ExprSingle                 ::=                  ForExpr
+| QuantifiedExpr
+| IfExpr
+| OrExpr
+                        ForExpr                    ::=                  SimpleForClause "return" ExprSingle
+                        SimpleForClause            ::=                  "for" "$" VarName FTScoreVar? "in" ExprSingle ("," "$" VarName FTScoreVar? "in" ExprSingle)*
+                        FTScoreVar                 ::=                  "score" "$" VarName
+                        QuantifiedExpr             ::=                  ("some" | "every") "$" VarName "in" ExprSingle ("," "$" VarName "in" ExprSingle)* "satisfies" ExprSingle
+                        IfExpr                     ::=                  "if" "(" Expr ")" "then" ExprSingle "else" ExprSingle
+                        OrExpr                     ::=                  AndExpr ( "or" AndExpr )*
+                        AndExpr                    ::=                  ComparisonExpr ( "and" ComparisonExpr )*
+                        ComparisonExpr             ::=                  FTContainsExpr ( (ValueComp
+| GeneralComp
+| NodeComp) FTContainsExpr )?
+                        FTContainsExpr             ::=                  RangeExpr ( "ftcontains" FTSelection FTIgnoreOption? )?
+                        RangeExpr                  ::=                  AdditiveExpr ( "to" AdditiveExpr )?
+                        AdditiveExpr               ::=                  MultiplicativeExpr ( ("+" | "-") MultiplicativeExpr )*
+                        MultiplicativeExpr         ::=                  UnionExpr ( ("*" | "div" | "idiv" | "mod") UnionExpr )*
+                        UnionExpr                  ::=                  IntersectExceptExpr ( ("union" | "|") IntersectExceptExpr )*
+                        IntersectExceptExpr        ::=                  InstanceofExpr ( ("intersect" | "except") InstanceofExpr )*
+                        InstanceofExpr             ::=                  TreatExpr ( "instance" "of" SequenceType )?
+                        TreatExpr                  ::=                  CastableExpr ( "treat" "as" SequenceType )?
+                        CastableExpr               ::=                  CastExpr ( "castable" "as" SingleType )?
+                        CastExpr                   ::=                  UnaryExpr ( "cast" "as" SingleType )?
+                        UnaryExpr                  ::=                  ("-" | "+")* ValueExpr
+                        ValueExpr                  ::=                  PathExpr
+                        GeneralComp                ::=                  "=" | "!=" | "<" | "<=" | ">" | ">="
+                        ValueComp                  ::=                  "eq" | "ne" | "lt" | "le" | "gt" | "ge"
+                        NodeComp                   ::=                  "is" | "<<" | ">>"
+                        Pragma                     ::=                  "(#" S? QName (S PragmaContents)? "#)"          /* ws: explicit */
+                        PathExpr                   ::=                  ("/" (RelativePathExpr / ))
+                                | ("//" RelativePathExpr)
+                                | RelativePathExpr                      /* xgc: leading-lone-slashXP */
+                        RelativePathExpr           ::=                  StepExpr (("/" | "//") StepExpr)*
+                        StepExpr                   ::=                  FilterExpr | AxisStep
+                        AxisStep                   ::=                  (ReverseStep | ForwardStep) PredicateList
+                        ForwardStep                ::=                  (ForwardAxis NodeTest) | AbbrevForwardStep
+                        ForwardAxis                ::=                  ("child" "::")
+| ("descendant" "::")
+| ("attribute" "::")
+| ("self" "::")
+| ("descendant-or-self" "::")
+| ("following-sibling" "::")
+| ("following" "::")
+| ("namespace" "::")
+                        AbbrevForwardStep          ::=                  "@"? NodeTest
+                        ReverseStep                ::=                  (ReverseAxis NodeTest) | AbbrevReverseStep
+                        ReverseAxis                ::=                  ("parent" "::")
+| ("ancestor" "::")
+| ("preceding-sibling" "::")
+| ("preceding" "::")
+| ("ancestor-or-self" "::")
+                        AbbrevReverseStep          ::=                  ".."
+                        NodeTest                   ::=                  KindTest | NameTest
+                        NameTest                   ::=                  QName | Wildcard
+
+                        FilterExpr                 ::=                  PrimaryExpr PredicateList
+                        PredicateList              ::=                  Predicate*
+                        Predicate                  ::=                  "[" Expr "]"
+                        PrimaryExpr                ::=                  Literal | VarRef | ParenthesizedExpr | ContextItemExpr | FunctionCall
+                        Literal                    ::=                  NumericLiteral | StringLiteral
+                        NumericLiteral             ::=                  IntegerLiteral | DecimalLiteral | DoubleLiteral
+                        VarRef                     ::=                  "$" VarName
+                        VarName                    ::=                  QName
+                        ParenthesizedExpr          ::=                  "(" Expr? ")"
+                        ContextItemExpr            ::=                  "."
+                        FunctionCall               ::=                  QName "(" (ExprSingle ("," ExprSingle)*)? ")"   /* xgc: reserved-function-namesXP */
+                                                                                                /* gn: parensXP */
+                        SingleType                 ::=                  AtomicType "?"?
+                        SequenceType               ::=                  ("empty-sequence" "(" ")")
+| (ItemType OccurrenceIndicator?)
+                        OccurrenceIndicator        ::=                  "?" | "*"^OccurrenceIndicator | "+"^OccurrenceIndicator                 /* xgc: occurrence-indicatorsXP */
+                        ItemType                   ::=                  KindTest | ("item" "(" ")") | AtomicType
+                        AtomicType                 ::=                  QName
+                        KindTest                   ::=                  DocumentTest
+| ElementTest
+| AttributeTest
+| SchemaElementTest
+| SchemaAttributeTest
+| PITest
+| CommentTest
+| TextTest
+| AnyKindTest
+                        AnyKindTest                ::=                  "node" "(" ")"
+                        DocumentTest               ::=                  "document-node" "(" (ElementTest | SchemaElementTest)? ")"
+                        TextTest                   ::=                  "text" "(" ")"
+                        CommentTest                ::=                  "comment" "(" ")"
+                        PITest                     ::=                  "processing-instruction" "(" (NCName | StringLiteral)? ")"
+                        AttributeTest              ::=                  "attribute" "(" (AttribNameOrWildcard ("," TypeName)?)? ")"
+                        AttribNameOrWildcard       ::=                  AttributeName | "*"
+                        SchemaAttributeTest        ::=                  "schema-attribute" "(" AttributeDeclaration ")"
+                        AttributeDeclaration       ::=                  AttributeName
+                        ElementTest                ::=                  "element" "(" (ElementNameOrWildcard ("," TypeName "?"?)?)? ")"
+                        ElementNameOrWildcard      ::=                  ElementName | "*"
+                        SchemaElementTest          ::=                  "schema-element" "(" ElementDeclaration ")"
+                        ElementDeclaration         ::=                  ElementName
+                        AttributeName              ::=                  QName
+                        ElementName                ::=                  QName
+                        TypeName                   ::=                  QName
+                        URILiteral                 ::=                  StringLiteral
+                        FTSelection                ::=                  FTOr FTPosFilter*
+                        FTWeight                   ::=                  "weight" RangeExpr
+                        FTOr                       ::=                  FTAnd ( "ftor" FTAnd )*
+                        FTAnd                      ::=                  FTMildNot ( "ftand" FTMildNot )*
+                        FTMildNot                  ::=                  FTUnaryNot ( "not" "in" FTUnaryNot )*
+                        FTUnaryNot                 ::=                  ("ftnot")? FTPrimaryWithOptions
+                        FTPrimaryWithOptions       ::=                  FTPrimary FTMatchOptions? FTWeight?
+                        FTPrimary                  ::=                  (FTWords FTTimes?) | ("(" FTSelection ")") | FTExtensionSelection
+                        FTWords                    ::=                  FTWordsValue FTAnyallOption?
+                        FTWordsValue               ::=                  Literal | ("{" Expr "}")
+                        FTExtensionSelection       ::=                  Pragma+ "{" FTSelection? "}"
+                        FTAnyallOption             ::=                  ("any" "word"?) | ("all" "words"?) | "phrase"
+                        FTTimes                    ::=                  "occurs" FTRange "times"
+                        FTRange                    ::=                  ("exactly" AdditiveExpr)
+| ("at" "least" AdditiveExpr)
+| ("at" "most" AdditiveExpr)
+| ("from" AdditiveExpr "to" AdditiveExpr)
+                        FTPosFilter                ::=                  FTOrder | FTWindow | FTDistance | FTScope | FTContent
+                        FTOrder                    ::=                  "ordered"
+                        FTWindow                   ::=                  "window" AdditiveExpr FTUnit
+                        FTDistance                 ::=                  "distance" FTRange FTUnit
+                        FTUnit                     ::=                  "words" | "sentences" | "paragraphs"
+                        FTScope                    ::=                  ("same" | "different") FTBigUnit
+                        FTBigUnit                  ::=                  "sentence" | "paragraph"
+                        FTContent                  ::=                  ("at" "start") | ("at" "end") | ("entire" "content")
+                        FTMatchOptions             ::=                  FTMatchOption+
+                        FTMatchOption              ::=                  FTLanguageOption
+| FTWildCardOption
+| FTThesaurusOption
+| FTStemOption
+| FTCaseOption
+| FTDiacriticsOption
+| FTStopWordOption
+| FTExtensionOption
+                        FTCaseOption               ::=                  ("case" "insensitive")
+| ("case" "sensitive")
+| "lowercase"
+| "uppercase"
+                        FTDiacriticsOption         ::=                  ("diacritics" "insensitive")
+| ("diacritics" "sensitive")
+                        FTStemOption               ::=                  ("with" "stemming") | ("without" "stemming")
+                        FTThesaurusOption          ::=                  ("with" "thesaurus" (FTThesaurusID | "default"))
+| ("with" "thesaurus" "(" (FTThesaurusID | "default") ("," FTThesaurusID)* ")")
+| ("without" "thesaurus")
+                        FTThesaurusID              ::=                  "at" URILiteral ("relationship" StringLiteral)? (FTRange "levels")?
+                        FTStopWordOption           ::=                  ("with" "stop" "words" FTStopWords FTStopWordsInclExcl*)
+| ("without" "stop" "words")
+| ("with" "default" "stop" "words" FTStopWordsInclExcl*)
+                        FTStopWords                ::=                  ("at" URILiteral)
+| ("(" StringLiteral ("," StringLiteral)* ")")
+                        FTStopWordsInclExcl        ::=                  ("union" | "except") FTStopWords
+                        FTLanguageOption           ::=                  "language" StringLiteral
+                        FTWildCardOption           ::=                  ("with" "wildcards") | ("without" "wildcards")
+                        FTExtensionOption          ::=                  "option" QName StringLiteral
+                        FTIgnoreOption             ::=                  "without" "content" UnionExpr
+
+WhiteSpace ::= (S^WhiteSpace | Comment)+
+               /* ws: definition */
+                        Comment                    ::=                  "(:" (CommentContents | Comment)* ":)"          /* ws: explicit */
+                                                                                                /* gn: commentsXP */
+
+<?TOKENS?>
+
+                        PragmaContents             ::=                  (Char* - (Char* '#)' Char*))
+                        IntegerLiteral             ::=                  Digits
+                        DecimalLiteral             ::=                  ("." Digits) | (Digits "." [0-9]*)              /* ws: explicit */
+                        DoubleLiteral              ::=                  (("." Digits) | (Digits ("." [0-9]*)?)) [eE] [+-]? Digits               /* ws: explicit */
+                        StringLiteral              ::=                  ('"' (EscapeQuot | [^"])* '"') | ("'" (EscapeApos | [^'])* "'")         /* ws: explicit */
+                        EscapeQuot                 ::=                  '""'
+                        EscapeApos                 ::=                  "''"
+
+Wildcard                   ::=                  "*"
+| (NCName ":" "*")
+| ("*" ":" NCName)      /* ws: explicit */
+
+// [119]                QName                      ::=                  [http://www.w3.org/TR/REC-xml-names/#NT-QName]Names                     /* xgc: xml-versionXP */
+// [120]                NCName                     ::=                  [http://www.w3.org/TR/REC-xml-names/#NT-NCName]Names                    /* xgc: xml-versionXP */
+
+                        NameStartChar              ::=                  ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+                        NameChar                   ::=                  NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+                        Name                       ::=                  NameStartChar  (NameChar)*
+                        QName                      ::=                  PrefixedName
+                                                                        | UnprefixedName
+                        NCName                     ::=                  Name - (Char* ':' Char*)                        /* An XML Name, minus the ":" */
+                        PrefixedName               ::=                  Prefix ':' LocalPart
+                        UnprefixedName             ::=                  LocalPart
+                        Prefix                     ::=                  NCName
+                        LocalPart                  ::=                  NCName
+
+// [121]                S                          ::=                  [http://www.w3.org/TR/REC-xml#NT-S]XML          /* xgc: xml-versionXP */
+
+                        S                          ::=                  (#x20 | #x9 | #xD | #xA)+
+
+// [122]                Char                       ::=                  [http://www.w3.org/TR/REC-xml#NT-Char]XML       /* xgc: xml-versionXP */
+
+                        Char                       ::=                  #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]  /* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
+
+// The following symbols are used only in the definition of terminal symbols; they are not terminal symbols in the grammar of B EBNF for XPath 2.0 Grammar with Full-Text extensions.
+
+                        Digits                     ::=                  [0-9]+
+                        CommentContents            ::=                  (Char+ - (Char* ('(:' | ':)') Char*)) & ( '(:' | ':)' )
+
+EOF ::= $
+
+"*" << "*"^OccurrenceIndicator
+"+" << "+"^OccurrenceIndicator
+
+"*" << Wildcard
+
+QName << NCName "ancestor" "ancestor-or-self" "and" "at" "attribute" "cast" "castable" "child" "comment" "descendant" "descendant-or-self" "different" "distance" "div" "document-node" "element" "else" "empty-sequence" "entire" "eq" "every" "except" "following" "following-sibling" "for" "ftand" "ftcontains" "ftor" "ge" "gt" "idiv" "if" "instance" "intersect" "is" "item" "le" "levels" "lt" "mod" "namespace" "ne" "node" "not" "or" "ordered" "paragraphs" "parent" "preceding" "preceding-sibling" "processing-instruction" "return" "same" "satisfies" "schema-attribute" "schema-element" "self" "sentences" "some" "text" "times" "to" "treat" "union" "window" "without" "words"
+NCName << "ancestor" "ancestor-or-self" "and" "at" "attribute" "cast" "castable" "child" "comment" "descendant" "descendant-or-self" "different" "distance" "div" "document-node" "element" "else" "entire" "eq" "every" "except" "following" "following-sibling" "for" "ftand" "ftcontains" "ftor" "ge" "gt" "idiv" "if" "instance" "intersect" "is" "le" "levels" "lt" "mod" "namespace" "ne" "node" "not" "or" "ordered" "paragraphs" "parent" "preceding" "preceding-sibling" "processing-instruction" "return" "same" "satisfies" "schema-attribute" "schema-element" "self" "sentences" "some" "text" "times" "to" "treat" "union" "window" "without" "words"

@@ -1,0 +1,607 @@
+// This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q Lines.ebnf -csharp -tree -main
+
+using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+
+public class Lines
+{
+  public static int Main(string[] args)
+  {
+    if (args.Length == 0)
+    {
+      Console.Error.WriteLine("Usage: Lines [-i] INPUT...");
+      Console.Error.WriteLine();
+      Console.Error.WriteLine("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+      Console.Error.WriteLine();
+      Console.Error.WriteLine("  Option:");
+      Console.Error.WriteLine("    -i     indented parse tree");
+    }
+    else
+    {
+      bool indent = false;
+      for (int i = 0; i < args.Length; ++i)
+      {
+        string arg = args[i];
+        if (arg.Equals("-i"))
+        {
+          indent = true;
+          continue;
+        }
+        TextWriter w = Console.Out;
+        XmlSerializer s = new XmlSerializer(w, indent);
+        String input = read(arg);
+        Lines parser = new Lines(input, s);
+        try
+        {
+          parser.parse_File();
+        }
+        catch (ParseException pe)
+        {
+          Console.Error.WriteLine("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe));
+          return 1;
+        }
+        finally
+        {
+          w.Close();
+        }
+      }
+    }
+    return 0;
+  }
+
+  public class ParseException : Exception
+  {
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public void serialize(EventHandler eventHandler)
+    {
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public bool isAmbiguousInput() {return false;}
+  }
+
+  public interface EventHandler
+  {
+    void reset(String s);
+    void startNonterminal(String name, int begin);
+    void endNonterminal(String name, int end);
+    void terminal(String name, int begin, int end);
+    void whitespace(int begin, int end);
+  }
+
+  public class TopDownTreeBuilder : EventHandler
+  {
+    private String input = null;
+    private Nonterminal[] stack = new Nonterminal[64];
+    private int top = -1;
+
+    public void reset(String input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    public void startNonterminal(String name, int begin)
+    {
+      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      if (top >= 0) addChild(nonterminal);
+      if (++top >= stack.Length) Array.Resize(ref stack, stack.Length << 1);
+      stack[top] = nonterminal;
+    }
+
+    public void endNonterminal(String name, int end)
+    {
+      stack[top].end = end;
+      if (top > 0) --top;
+    }
+
+    public void terminal(String name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    public void whitespace(int begin, int end)
+    {
+    }
+
+    private void addChild(Symbol s)
+    {
+      Nonterminal current = stack[top];
+      Array.Resize(ref current.children, current.children.Length + 1);
+      current.children[current.children.Length - 1] = s;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      stack[0].send(e);
+    }
+  }
+
+  public abstract class Symbol
+  {
+    public String name;
+    public int begin;
+    public int end;
+
+    protected Symbol(String name, int begin, int end)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void send(EventHandler e);
+  }
+
+  public class Terminal : Symbol
+  {
+    public Terminal(String name, int begin, int end)
+    : base(name, begin, end)
+    {
+    }
+
+    public override void send(EventHandler e)
+    {
+      e.terminal(name, begin, end);
+    }
+  }
+
+  public class Nonterminal : Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    : base(name, begin, end)
+    {
+      this.children = children;
+    }
+
+    public override void send(EventHandler e)
+    {
+      e.startNonterminal(name, begin);
+      int pos = begin;
+      foreach (Symbol c in children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(name, end);
+    }
+  }
+
+  public class XmlSerializer : EventHandler
+  {
+    private String input;
+    private String delayedTag;
+    private TextWriter output;
+    private bool indent;
+    private bool hasChildElement;
+    private int depth;
+
+    public XmlSerializer(TextWriter w, bool indent)
+    {
+      input = null;
+      delayedTag = null;
+      output = w;
+      this.indent = indent;
+    }
+
+    public void reset(String s)
+    {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+      input = s;
+      hasChildElement = false;
+      depth = 0;
+    }
+
+    public void startNonterminal(String name, int begin)
+    {
+      if (delayedTag != null)
+      {
+        writeOutput("<");
+        writeOutput(delayedTag);
+        writeOutput(">");
+      }
+      delayedTag = name;
+      if (indent)
+      {
+        writeOutput("\n");
+        for (int i = 0; i < depth; ++i)
+        {
+          writeOutput("  ");
+        }
+      }
+      hasChildElement = false;
+      ++depth;
+    }
+
+    public void endNonterminal(String name, int end)
+    {
+      --depth;
+      if (delayedTag != null)
+      {
+        delayedTag = null;
+        writeOutput("<");
+        writeOutput(name);
+        writeOutput("/>");
+      }
+      else
+      {
+        if (indent)
+        {
+          if (hasChildElement)
+          {
+            writeOutput("\n");
+            for (int i = 0; i < depth; ++i)
+            {
+              writeOutput("  ");
+            }
+          }
+        }
+        writeOutput("</");
+        writeOutput(name);
+        writeOutput(">");
+      }
+      hasChildElement = true;
+    }
+
+    public void terminal(String name, int begin, int end)
+    {
+      if (name[0] == '\'')
+      {
+        name = "TOKEN";
+      }
+      startNonterminal(name, begin);
+      characters(begin, end);
+      endNonterminal(name, end);
+    }
+
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        if (delayedTag != null)
+        {
+          writeOutput("<");
+          writeOutput(delayedTag);
+          writeOutput(">");
+          delayedTag = null;
+        }
+        writeOutput(input.Substring(begin, end - begin)
+                         .Replace("&", "&amp;")
+                         .Replace("<", "&lt;")
+                         .Replace(">", "&gt;"));
+      }
+    }
+
+    public void writeOutput(String content)
+    {
+      output.Write(content);
+    }
+  }
+
+  private static String read(String input)
+  {
+    if (input.StartsWith("{") && input.EndsWith("}"))
+    {
+      return input.Substring(1, input.Length - 2);
+    }
+    else
+    {
+      return File.ReadAllText(input, Encoding.UTF8);
+    }
+  }
+
+  public Lines(String s, EventHandler t)
+  {
+    initialize(s, t);
+  }
+
+  public void initialize(String source, EventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.Length;
+    reset(0, 0, 0);
+  }
+
+  public String getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() < 0)
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    else
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.Length == 1 ? tokenSet[0] : ("[" + String.Join(", ", tokenSet) + "]"))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.Substring(0, e.getBegin());
+    int line = prefix.Length - prefix.Replace("\n", "").Length + 1;
+    int column = prefix.Length - prefix.LastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.Substring(e.getBegin(), Math.Min(input.Length, e.getBegin() + 64) - e.getBegin())
+         + "...";
+  }
+
+  public void parse_File()
+  {
+    eventHandler.startNonterminal("File", e0);
+    lookahead1(1);                  // Line | LF | EOF
+    if (l1 == 1)                    // Line
+    {
+      consume(1);                   // Line
+    }
+    for (;;)
+    {
+      lookahead1(0);                // LF | EOF
+      if (l1 != 2)                  // LF
+      {
+        break;
+      }
+      consume(2);                   // LF
+      lookahead1(1);                // Line | LF | EOF
+      if (l1 == 1)                  // Line
+      {
+        consume(1);                 // Line
+      }
+    }
+    consume(3);                     // EOF
+    eventHandler.endNonterminal("File", e0);
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      eventHandler.terminal(TOKEN[l1], b1, e1);
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int     b0, e0;
+  private int l1, b1, e1;
+  private EventHandler eventHandler = null;
+  private String input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 7; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input[current] : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        if (c0 < 0xdc00)
+        {
+          int c1 = current < size ? input[current] : 0;
+          if (c1 >= 0xdc00 && c1 < 0xe000)
+          {
+            ++current;
+            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
+          }
+        }
+
+        int lo = 0, hi = 1;
+        for (int m = 1; ; m = (hi + lo) >> 1)
+        {
+          if (MAP2[m] > c0) {hi = m - 1;}
+          else if (MAP2[2 + m] < c0) {lo = m + 1;}
+          else {charclass = MAP2[4 + m]; break;}
+          if (lo > hi) {charclass = 0; break;}
+        }
+      }
+
+      state = code;
+      int i0 = (charclass << 2) + code - 1;
+      code = TRANSITION[i0];
+
+      if (code > 7)
+      {
+        result = code;
+        code &= 7;
+        end = current;
+      }
+    }
+
+    result >>= 3;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input[end] : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    List<String> expected = new List<String>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 7;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 4 + s - 1;
+      uint f = EXPECTED[i0];
+      for ( ; f != 0; f >>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.Add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.ToArray();
+  }
+
+  private static readonly int[] MAP0 =
+  {
+    /*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+    /*  35 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /*  70 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /* 105 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  };
+
+  private static readonly int[] MAP1 =
+  {
+    /*   0 */ 54, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+    /*  26 */ 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+    /*  52 */ 55, 55, 87, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119,
+    /*  74 */ 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 119, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3,
+    /* 101 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    /* 136 */ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  };
+
+  private static readonly int[] MAP2 =
+  {
+    /* 0 */ 57344, 65536, 65533, 1114111, 1, 1
+  };
+
+  private static readonly int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static readonly int[] TRANSITION =
+  {
+    /*  0 */ 0, 0, 0, 0, 0, 20, 0, 20, 24, 24, 24, 0, 27, 27, 27, 0, 32, 32, 0, 0
+  };
+
+  private static readonly uint[] EXPECTED =
+  {
+    /* 0 */ 12, 14, 4, 2
+  };
+
+  private static readonly String[] TOKEN =
+  {
+    "(0)",
+    "Line",
+    "LF",
+    "EOF"
+  };
+}
+
+// End

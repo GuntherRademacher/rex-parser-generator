@@ -1,0 +1,1179 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintPython.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include "../common/CompressedMap.hpp"
+
+                                                            void PrintPython::openClass()
+                                                            {
+                                                              if (hasProlog)
+                                                              {
+~
+~                                                             }
+                                                              else
+                                                              {
+                                                                size_t s = size();
+                                                                /*
+~
+package ~                                                       if (main || packageName.empty())
+                                                                {
+        ~main~                                                  }
+                                                                else
+                                                                {
+                                                                  print(packageName.c_str());
+                                                                }
+                                                                */
+                                                                if (main || performanceTest)
+                                                                {
+~
+import sys~                                                     }
+                                                                if (performanceTest)
+                                                                {
+~
+import glob
+import time~                                                    }
+                                                                if (useGlr)
+                                                                {
+~
+import heapq~                                                   }
+                                                                if (s != size())
+                                                                {
+~
+~                                                               }
+~
+class ~                                                         print(className.c_str());
+      ~:
+~                                                             }
+                                                              increaseIndent();
+                                                              if (interfaceName.empty())
+                                                              {
+                                                                printParseException();
+                                                                printEventHandlerImplementation();
+                                                              }
+                                                              if (! hasProlog)
+                                                              {
+                                                                WString args;
+                                                                if (noLexer) args += L", lexer";
+                                                                if (tree) args += L", t";
+~
+def __init__(self, inputString~                                 print(args.c_str());
+                              ~):
+  self.initialize(inputString~                                  if (noLexer)
+                                                                {
+                             ~, lexer~                          }
+                                                                if (tree)
+                                                                {
+                             ~, t~                              }
+                             ~)
+~                                                             }
+                                                              decreaseIndent();
+                                                            }
+
+                                                            void PrintPython::openStackNode()
+                                                            {
+~
+class StackNode:
+
+  def __init__(self, state~                                   if (grammar->states->hasLookback)
+                                                              {
+                          ~, code~                            }
+                          ~, pos, link):
+    self.state = state~                                       if (grammar->states->hasLookback)
+                                                              {
+~
+    self.code = code~                                         }
+~
+    self.pos = pos
+    self.link = link
+
+  def equals(self, rhs):
+    lhs = self
+    while lhs != None and rhs != None:
+      if lhs == rhs:
+        return True
+      if lhs.state != rhs.state:
+        return False~                                         if (grammar->states->hasLookback)
+                                                              {
+~
+      if lhs.code != rhs.code:
+        return False~                                         }
+~
+      if lhs.pos != rhs.pos:
+        return False
+      lhs = lhs.link
+      rhs = rhs.link
+    return lhs == rhs
+~                                                             beginPublic();
+                                                              increaseIndent();
+                                                            }
+
+                                                            void PrintPython::closeStackNode()
+                                                            {
+                                                              decreaseIndent();
+                                                              beginNonpublic();
+                                                              if (hasCustomCode)
+                                                              {
+~
+class DeferredCode:
+
+  def __init__(self, link, codeId, b0, e0):
+    self.link = link
+    self.codeId = codeId
+    self.b0 = b0
+    self.e0 = e0
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+class DeferredEvent:
+
+  def __init__(self, link, name, begin, end):
+    self.link = link
+    self.name = name
+    self.begin = begin
+    self.end = end
+
+  def release(self, eventHandler):
+    current = self
+    predecessor = current.link
+    current.link = None
+    while predecessor != None:
+      nextEvent = predecessor.link
+      predecessor.link = current
+      current = predecessor
+      predecessor = nextEvent
+    while current != None:
+      current.execute(eventHandler)
+      current = current.link
+
+  def show(self, eventHandler):
+    stack = []
+    current = self
+    while current != None:
+      stack.append(current)
+      current = current.link
+    i = len(stack) - 1
+    while i >= 0:
+      stack[i].execute(eventHandler)
+      i -= 1
+
+class TerminalEvent(DeferredEvent):
+
+  def __init__(self, link, name, begin, end):
+    super().__init__(link, name, begin, end)
+
+  def execute(self, eventHandler):
+    eventHandler.terminal(self.name, self.begin, self.end)
+
+  def toString(self):
+    return "terminal(" + self.name + ", " + str(self.begin) + ", " + str(self.end) + ")"
+
+class NonterminalEvent(DeferredEvent):
+
+  def __init__(self, link, name, begin, end, count):
+    super().__init__(link, name, begin, end)
+    self.count = count
+
+  def execute(self, eventHandler):
+    eventHandler.nonterminal(self.name, self.begin, self.end, self.count)
+
+  def toString(self):
+    return "nonterminal(" + self.name + ", " + str(self.begin) + ", " + str(self.end) + ", " + str(self.count) + ")"
+~                                                             }
+~
+PARSING = 0
+ACCEPTED = 1
+ERROR = 2
+
+def parse(self, target, initialState, ~                       if (tree)
+                                                              {
+                                      ~eventHandler, ~
+                                                              }
+                                      ~thread):
+  threads = thread.open(initialState~                         if (tree)
+                                                              {
+                                     ~, eventHandler~         }
+                                     ~, target)
+  while True:
+    thread = heapq.heappop(threads)[3]
+    if thread.accepted:
+      other = None
+      while len(threads) != 0:
+        other = heapq.heappop(threads)[3]
+        if thread.e0 < other.e0:
+          thread = other
+          other = None
+      if other != None:
+        self.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+                        ~, thread.deferredEvent, other.deferredEvent~
+                                                              }
+                        ~)~                                   if (tree)
+                                                              {
+~
+      if thread.deferredEvent != None:
+        thread.deferredEvent.release(eventHandler)
+        thread.deferredEvent = None~                          }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.executeDeferredCode()~                           }
+~
+      return thread
+
+    if len(threads) != 0:
+      if threads[0][3].equals(thread):
+        self.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+                        ~, thread.deferredEvent, threads[0][3].deferredEvent~
+                                                              }
+                        ~)~                                   if (tree || hasCustomCode)
+                                                              {
+~
+    else:~                                                      if (tree)
+                                                                {
+~
+      if thread.deferredEvent != None:
+        thread.deferredEvent.release(eventHandler)
+        thread.deferredEvent = None~                            }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.executeDeferredCode()~                             }
+                                                              }
+~
+
+    while True:
+      status = thread.parse()
+      if status != ~                                          print(className.c_str());
+                   ~.PARSING:
+        break
+      if len(threads) != 0:
+        break
+
+    if status != ~                                            print(className.c_str());
+                 ~.ERROR:
+      heapq.heappush(threads, (thread.accepted, thread.e0, thread.id, thread))
+    elif len(threads) == 0:
+      raise ~                                                 print(className.c_str());
+            ~.ParseException(~                                size_t filler = column();
+                             ~thread.b1,~                     print(L"\n");
+                                                              filler -= column();
+                                                              print(filler, L" ");
+                             ~thread.e1,~                     print(L"\n");
+                                                              print(filler, L" ");
+                                                              print(className.c_str());
+                             ~.TOKENSET[thread.state] + 1,~   print(L"\n");
+                                                              print(filler, L" ");
+                             ~thread.l1,~                     print(L"\n");
+                                                              print(filler, L" ");
+                             ~-1)
+
+def rejectAmbiguity(self, begin, end~                         if (tree)
+                                                              {
+                             ~, first, second~                }
+                             ~):~                             if (tree)
+                                                              {
+~
+  treeBuilder = ~                                               print(className.c_str());
+                ~.ParseTreeBuilder()
+  treeBuilder.reset(self.input)
+  second.show(treeBuilder)
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
+  secondTree = treeBuilder.pop(1)[0]
+  first.show(treeBuilder)
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
+  treeBuilder.push(secondTree)
+  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, 2)~
+                                                              }
+~
+  raise ~                                                     print(className.c_str());
+        ~.ParseException(begin, end, 1, -1, -1, True~         if (tree)
+                                                              {
+                                   ~, treeBuilder~            }
+                                   ~)
+~                                                           }
+
+                                                            void PrintPython::openThread()
+                                                            {
+~
+class ParsingThread:
+
+  def open(self, initialState~                                if (tree)
+                                                              {
+                             ~, eh~                           }
+                             ~, t):
+    self.accepted = False
+    self.target = t~                                          if (tree)
+                                                              {
+~
+    self.eventHandler = eh
+    if self.eventHandler != None:
+      self.eventHandler.reset(self.parser.input)
+    self.deferredEvent = None~                                }
+                                                              if (hasCustomCode && useGlr)
+                                                              {
+~
+    self.deferredCode = None~                                 }
+~
+    self.stack = ~                                            print(className.c_str());
+                 ~.StackNode(-1, ~                            if (grammar->states->hasLookback)
+                                                              {
+                                 ~0, ~                        }
+                                 ~self.e0, None)
+    self.state = initialState
+    self.action = self.predict(initialState)~                 if (tree)
+                                                              {
+~
+    self.bw = self.e0
+    self.bs = self.e0
+    self.es = self.e0~                                        }
+~
+    self.threads = [(False, self.e0, self.id, self)]
+    return self.threads
+
+  def copy(self, other, action):
+    self.action = action
+    self.accepted = other.accepted
+    self.target = other.target
+    self.parser = other.parser~                               if (tree)
+                                                              {
+~
+    self.bs = other.bs
+    self.es = other.es
+    self.bw = other.bw
+    self.eventHandler = other.eventHandler
+    self.deferredEvent = other.deferredEvent~                 }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    self.deferredCode = other.deferredCode~                   }
+~
+    self.parser.maxId += 1
+    self.id = self.parser.maxId
+    self.threads = other.threads
+    self.state = other.state
+    self.stack = other.stack
+    self.b0 = other.b0
+    self.e0 = other.e0~                                       for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    self.l~                                                     print(iString);
+          ~ = other.l~                                          print(iString);
+                     ~
+    self.b~                                                     print(iString);
+          ~ = other.b~                                          print(iString);
+                     ~
+    self.e~                                                     print(iString);
+          ~ = other.e~                                          print(iString);
+                                                              }
+~
+    self.end = other.end
+    return self
+
+  def equals(self, other):
+    if self.accepted != other.accepted:
+      return False
+    if self.b1 != other.b1:
+      return False
+    if self.e1 != other.e1:
+      return False
+    if self.l1 != other.l1:
+      return False
+    if self.state != other.state:
+      return False
+    if self.action != other.action:
+      return False
+    if not self.stack.equals(other.stack):
+      return False
+    return True
+
+  def parse(self):~                                           increaseIndent();
+                                                              beginPublic();
+                                                            }
+
+                                                            void PrintPython::printFlush(int i, bool withinThread)
+                                                            {
+                                                              if (trace)
+                                                              {
+                                                                increaseIndent(i);
+~
+~                                                               print(className.c_str());
+~.flushTrace()~                                                 decreaseIndent(i);
+                                                              }
+                                                             }
+
+                                                            void PrintPython::openMethod(const wchar_t *type,
+                                                                                         const wchar_t *prefix,
+                                                                                         const wchar_t *name,
+                                                                                         const wchar_t *args,
+                                                                                         bool constant,
+                                                                                         const wchar_t *clazz)
+                                                            {
+~
+def ~                                                         print(name);
+    ~(self~                                                   if (*args != 0)
+                                                              {
+          ~, ~                                                  printArgNamesOnly(args);
+                                                              }
+             ~):~                                           }
+
+                                                            void PrintPython::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+                                                                increaseIndent();
+~
+def lookaheadString(self):
+  result = ""~                                                  for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+~
+  if self.l~                                                     print(format.toString<wchar_t>(i));
+           ~ > 0:
+    result += ~                                                   if (i != 1)
+                                                                  {
+              ~" " + ~                                            }
+                                                                  print(className.c_str());
+                     ~.TOKEN[self.l~                              print(format.toString<wchar_t>(i));
+                                  ~]~                             increaseIndent();
+                                                                }
+                                                                for (size_t i = 1; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+                                                                }
+~
+  return result
+~                                                               decreaseIndent();
+                                                              }
+                                                              if (memoization)
+                                                              {
+                                                                increaseIndent();
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+def memoize(self, i, e, v):
+  self.memo[(e << ~                                             print(format.toString<wchar_t>(bits));
+                  ~) + i] = v
+
+def memoized(self, i, e):
+  return self.memo.get((e << ~                                  print(format.toString<wchar_t>(bits));
+                             ~) + i, 0)
+~                                                               decreaseIndent();
+                                                              }
+                                                              if (useGlr)
+                                                              {
+                                                                decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintPython::printFileProcessor()
+                                                            {
+                                                              if (tree)
+                                                              {
+~
+class ContentCounter:
+  def getLength(self):
+    return self.length
+
+  def reset(self, _):
+    self.length = 0
+
+  def startNonterminal(self, name, begin):
+    pass
+
+  def endNonterminal(self, name, end):
+    pass
+
+  def terminal(self, _, begin, end):
+    self.length += end - begin
+
+  def whitespace(self, begin, end):
+    self.length += end - begin
+~                                                             }
+~
+class ParseJob:
+
+  def __init__(self, name, parser~                            if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                 ~, parseTreeBuilder~           }
+                                                                else
+                                                                {
+                                 ~, contentCounter~             }
+                                                              }
+                                                  ~):
+    self.name = name
+    self.parser = parser~                                     if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+~
+    self.parseTreeBuilder = parseTreeBuilder
+    self.contentCounter = ContentCounter()~                     }
+                                                                else
+                                                                {
+~
+    self.contentCounter = contentCounter~                       }
+                                                              }
+~
+
+def main(args):
+  if len(args) < 2:
+    sys.stderr.write("Usage: python ~                         print(className.c_str());
+                                    ~.py [-q] [-r N] [-t N] ENDING...\n")
+    sys.stderr.write("\n")
+    sys.stderr.write("  parse all files that have names ending with ENDING, in current dir and below,\n")
+    sys.stderr.write("  and display performance summary.\n")
+    sys.stderr.write("\n")
+    sys.stderr.write("  -q     do not show file names\n")
+    sys.stderr.write("  -r N   repeat N times\n")
+    sys.stderr.write("  -t N   repeat until N seconds have elapsed\n")
+  else:
+    quiet = False
+    parsed = 0
+    errorCount = 0
+    parsers = []
+    repeat = 1
+    timeout = 0
+    i = 1
+    while i < len(args) and args[i].startswith("-"):
+      opt = ' '
+      if len(args[i]) == 2:
+        opt = args[i][1]
+      if opt == 'q':
+        quiet = True
+      elif opt == 'r':
+        i += 1
+        repeat = int(args[i])
+        timeout = 0
+      elif opt == 't':
+        repeat = 0
+        i += 1
+        timeout = int(args[i])
+        timeout *= 1000
+      else:
+        raise Exception("invalid option: " + args[i])
+      i += 1
+
+    start = int(round(time.time() * 1000))
+    while i < len(args):
+      for path in glob.iglob("**/*", recursive=True):
+        if path.endswith(args[i]):
+          if not quiet:
+            print("loading " + path)~                         if (tree)
+                                                              {
+~
+          contentCounter = ContentCounter()~                    if (isLrParser)
+                                                                {
+~
+          parseTreeBuilder = ~                                    print(className.c_str());
+                             ~.ParseTreeBuilder()~              }
+                                                              }
+~
+          content = read(path)
+          parsers.append(ParseJob(path, ~                     print(className.c_str());
+                                        ~(content~
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                          ~, parseTreeBuilder~                  }
+                                                                else
+                                                                {
+                          ~, contentCounter~                    }
+                                                              }
+                          ~)~                                 if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                          ~, parseTreeBuilder~                  }
+                                                                else
+                                                                {
+                          ~, contentCounter~                    }
+                                                              }
+                          ~))
+      i += 1
+
+    if len(parsers) != 0:
+      msec = int(round(time.time() * 1000)) - start
+
+      if not quiet:
+        print()
+      plural = "" if len(parsers) == 1 else "s"
+      print("loaded " + str(len(parsers)) + " file" + plural + " in " + str(msec) + " msec")
+      if not quiet:
+        print()
+      print("", end="", flush=True)
+
+      start = int(round(time.time() * 1000))
+      i = 0
+      while True:
+        if repeat != 0 and i >= repeat:
+          break
+        if timeout != 0 and int(round(time.time() * 1000)) - start >= timeout:
+          break
+
+        for job in parsers:
+          if job.parser != None:
+            if not quiet:
+              print("parsing " + job.name, end="")
+            job.parser~                                           if (useGlr)
+                                                                  {
+                      ~.thread~                                   }
+                      ~.reset(0, 0, 0)
+            try:
+              pe = job.parser.parse_~                             print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                                    ~()
+            except ~                                              print(className.c_str());
+                   ~.ParseException as pe:
+              errorCount += 1
+              if quiet:
+                print("parsing " + job.name)
+              print(": error: " + job.parser.GetErrorMessage(pe))
+              job.parser = None
+            if not quiet:
+              print()~                                            if (tree)
+                                                                  {
+                                                                    if (isLrParser)
+                                                                    {
+~
+            job.parseTreeBuilder.serialize(job.contentCounter)~     }
+~
+            if job.contentCounter.getLength() != len(job.parser.input):
+              raise Exception("content counter saw " + str(job.contentCounter.getLength()) + ", but input length is " + str(len(job.parser.input)))~
+                                                                  }
+~
+            parsed += len(job.parser.input)
+        i += 1
+      msec = int(round(time.time() * 1000)) - start
+      mbPerSec = ""
+      if msec != 0:
+        mbPerSec = "%.2f" % (float(parsed) / 1024e0 / 1024e0 * 1000e0 / float(msec))
+
+      if not quiet:
+        print()
+      plural = "" if parsed == 1 else "s"
+      print("parsed " + str(parsed) + " byte" + plural +
+            " in " + str(msec) + " msec", end="")
+      if mbPerSec != "":
+        print(" (" + mbPerSec + " MB/sec)", end="")
+      print()
+      plural = "" if errorCount == 1 else "s"
+      print(str(errorCount) + " error" + plural)
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv))
+~
+                                                            }
+
+                                                            void PrintPython::printReadMethod()
+                                                            {
+~
+def read(arg):
+  if arg.startswith("{") and arg.endswith("}"):
+    return arg[1:len(arg) - 1]
+  else:
+    with open(arg, "r", encoding="utf-8") as file:
+      content = file.read()
+    if len(content) > 0 and content[0] == "\ufeff":
+      content = content[1:]
+    return content
+~                                                           }
+
+                                                            void PrintPython::printInterface()
+                                                            {
+                                                              if (! packageName.empty())
+                                                              {
+~
+package ~                                                       print(packageName.c_str());
+~;
+~                                                             }
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+import java.io.IOException;
+import java.io.Writer;
+~                                                               }
+~
+import java.util.Arrays;~                                     }
+~
+public interface ~                                            print(className.c_str());
+~
+{
+  public void initialize(CharSequence input~                  if (noLexer)
+                                                              {
+                                           ~, Lexer l~        }
+                                                              if (tree)
+                                                              {
+                                           ~, ~                 if (isLrParser)
+                                                                {
+                                              ~BottomUp~
+                                                                }
+                                              ~EventHandler eh~
+                                                              }
+                                           ~);
+  public void parse();
+  public void Reset();
+  public String getErrorMessage(ParseException e);
+~                                                             printParseException();
+                                                              printEventHandlerImplementation();
+~}
+~                                                           }
+
+                                                            void PrintPython::printParseException()
+                                                            {
+~
+class ParseException(Exception):
+~                                                             increaseIndent();
+~
+def __init__(self, b, e, s, o, x~                             if (useGlr)
+                                                              {
+                                ~, ambiguousInput = False~      if (tree)
+                                                                {
+                                ~, ambiguityDescriptor = None~  }
+                                                              }
+                                ~):
+  self.begin = b
+  self.end = e
+  self.state = s
+  self.offending = o
+  self.expected = x~                                          if (useGlr)
+                                                              {
+~
+  self.ambiguousInput = ambiguousInput~                         if (tree)
+                                                                {
+~
+  self.ambiguityDescriptor = ambiguityDescriptor~               }
+                                                              }
+~
+
+def error(self):
+  if ~                                                        if (useGlr)
+                                                              {
+     ~self.ambiguousInput:
+    return "ambiguous input"
+  elif ~                                                      }
+       ~self.offending < 0:
+    return "lexical analysis failed"
+  else:
+    return "syntax error"
+~                                                             if (tree)
+                                                              {
+~
+def serialize(self, eventHandler):~                             if (useGlr)
+                                                                {
+~
+  self.ambiguityDescriptor.serialize(eventHandler)~             }
+                                                                else
+                                                                {
+~
+  pass~                                                         }
+~
+~                                                             }
+~
+def getBegin(self):
+  return self.begin
+
+def getEnd(self):
+  return self.end
+
+def getState(self):
+  return self.state
+
+def getOffending(self):
+  return self.offending
+
+def getExpected(self):
+  return self.expected
+
+def isAmbiguousInput(self):
+  return ~                                                    if (useGlr)
+                                                              {
+         ~self.ambiguousInput~                                }
+                                                              else
+                                                              {
+         ~False~                                              }
+                                                              decreaseIndent();
+~
+~                                                             if (noLexer)
+                                                              {
+~
+  public static class Token
+  {
+    public int code;
+    public int begin;
+    public int end;
+  }
+
+  public interface Lexer
+  {
+    void Reset(CharSequence input);
+    void match(int tokenset, Token token);
+  }
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+class TopDownTreeBuilder:
+~                                                               increaseIndent();
+~
+def reset(self, inputString):
+  self.input = inputString
+  self.stack = []
+  self.top = -1
+
+def startNonterminal(self, name, begin):
+  nonterminal = ~                                               print(className.c_str());
+                ~.Nonterminal(name, begin, begin)
+  if self.top >= 0:
+    self.addChild(nonterminal)
+  self.top += 1
+  self.stack[self.top] = nonterminal
+
+def endNonterminal(self, _, end):
+  self.stack[self.top].end = end
+  if self.top > 0:
+    self.top -= 1
+
+def terminal(self, name, begin, end):
+  self.addChild(~                                               print(className.c_str());
+                ~.Terminal(name, begin, end))
+
+def whitespace(self, begin, end):
+  pass
+
+def addChild(self, s):
+  current = self.stack[self.top]
+  current.addChild(s)
+
+def serialize(self, e):
+  e.reset(self.input)
+  self.stack[0].send(e)
+~                                                               decreaseIndent();
+~
+class Symbol:
+~                                                               increaseIndent();
+~
+def __init__(self, name, begin, end):
+  self.name = name
+  self.begin = begin
+  self.end = end
+
+def getName(self):
+  return self.name
+
+def getBegin(self):
+  return self.begin
+
+def getEnd(self):
+  return self.end
+~                                                               decreaseIndent();
+~
+class Nonterminal(Symbol):
+~                                                               increaseIndent();
+~
+def __init__(self, name, begin, end, children):
+  super().__init__(name, begin, end)
+  self.children = children
+
+def addChild(self, s):
+  self.children = self.children.append(s)
+
+def send(self, e):
+  e.startNonterminal(self.getName(), self.getBegin())
+  pos = self.getBegin()
+  for c in self.children:
+    if pos < c.getBegin():
+      e.whitespace(pos, c.getBegin())
+    c.send(e)
+    pos = c.getEnd()
+  if pos < self.getEnd():
+    e.whitespace(pos, self.getEnd())
+  e.endNonterminal(self.getName(), self.getEnd())
+~                                                               decreaseIndent();
+~
+class Terminal(Symbol):
+~                                                               increaseIndent();
+~
+def __init__(self, name, begin, end):
+  super().__init__(name, begin, end)
+
+def send(self, e):
+  e.terminal(self.getName(), self.getBegin(), self.getEnd())
+~                                                               decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintPython::printEventHandlerImplementation()
+                                                            {
+                                                              if (tree)
+                                                              {
+                                                                if (main || useGlr)
+                                                                {
+~
+class XmlSerializer:
+~                                                                 increaseIndent();
+~
+def reset(self, inputString):
+  sys.stdout.reconfigure(encoding="utf-8")
+  print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", end="")
+  self.input = inputString
+  self.delayedTag = None
+  self.hasChildElement = False
+  self.depth = 0
+
+def startNonterminal(self, tag, _):
+  if self.delayedTag != None:
+    print("<", end="")
+    print(self.delayedTag, end="")
+    print(">", end="")
+  self.delayedTag = tag
+  if self.indent:
+    print()
+    for _ in range(self.depth):
+      print("  ", end="")
+  self.hasChildElement = False
+  self.depth += 1
+
+def endNonterminal(self, tag, _):
+  self.depth -= 1
+  if self.delayedTag != None:
+    self.delayedTag = None
+    print("<", end="")
+    print(tag, end="")
+    print("/>", end="")
+  else:
+    if self.indent:
+      if self.hasChildElement:
+        print()
+        for _ in range(self.depth):
+          print("  ", end="")
+    print("</", end="")
+    print(tag, end="")
+    print(">", end="")
+  self.hasChildElement = True
+
+def whitespace(self, b, e):
+  self.characters(b, e)
+
+def characters(self, b, e):
+  if b < e:
+    if self.delayedTag != None:
+      print("<", end="")
+      print(self.delayedTag, end="")
+      print(">", end="")
+      self.delayedTag = None
+    i = b
+    while i < e:
+      c = self.input[i]
+      i += 1
+      if c == '&':
+        print("&amp;", end="")
+      elif c == '<':
+        print("&lt;", end="")
+      elif c == '>':
+        print("&gt;", end="")
+      else:
+        print(str(c), end="")
+
+def terminal(self, tag, b, e):
+  if tag[0] == '\'':
+    tag = "TOKEN"
+  self.startNonterminal(tag, b)
+  self.characters(b, e)
+  self.endNonterminal(tag, e)
+~                                                                 decreaseIndent();
+                                                                }
+                                                                if (isLrParser)
+                                                                {
+~
+class ParseTreeBuilder:
+~                                                                 increaseIndent();
+~
+def reset(self, inputString):
+  self.input = inputString
+  self.stack = []
+
+def nonterminal(self, name, begin, end, count):~
+                                                                  if (useGlr)
+                                                                  {
+~
+  if count > len(self.stack):
+    content = self.pop(len(self.stack))
+    e = end
+    if len(content) != 0:
+      e = content[0].getBegin()
+    self.nonterminal("UNAMBIGUOUS", begin, e, 0)
+    for symbol in content:
+      self.push(symbol)
+    count = len(self.stack)~                                      }
+~
+  self.push(~                                                     print(className.c_str());
+            ~.Nonterminal(name, begin, end, self.pop(count)))
+
+def terminal(self, name, begin, end):
+  self.push(~                                                     print(className.c_str());
+            ~.Terminal(name, begin, end))
+
+def serialize(self, e):
+  e.reset(self.input)
+  for symbol in self.stack:
+    symbol.send(e)
+
+def push(self, s):
+  self.stack.append(s)
+
+def pop(self, count):
+  if count == 0:
+    result = []
+  else:
+    result = self.stack[-count:]
+    self.stack = self.stack[: -count]
+  return result
+~                                                                 decreaseIndent();
+                                                                }
+                                                              }
+                                                            }
+
+                                                            void PrintPython::printTokenVars()
+                                                            {
+~
+  ~                                                           if (! isLrParser && (grammar->k > 1 ||
+                                                                                   memoization ||
+                                                                                   ! grammar->decisionPoints.empty()))
+                                                              {
+              ~lk,~                                           }
+                                                              else
+                                                              {
+              ~   ~                                           }
+              ~ b0, e0 int~                                   for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  l~                                                            print(asString);
+   ~, b~                                                        print(asString);
+       ~, e~                                                    print(asString);
+           ~ int~                                             }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  bx, ex, sx, lx, tx int~                                     }
+                                                              else if (isLrParser && ! useGlr)
+                                                              {
+~
+  iStack []int
+  top int~                                                    }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+~
+  bw, bs, es int~                                                 }
+~
+  eventHandler BottomUpEventHandler~                            }
+                                                                else
+                                                                {
+~
+  eventHandler EventHandler~                                    }
+                                                              }
+                                                              else if (useGlr)
+                                                              {
+~
+  bw, bs int~                                                 }
+                                                            }
+
+                                                            void PrintPython::printSimpleMain()
+                                                            {
+~
+def main(args):
+  if len(args) < 2:
+    sys.stderr.write("Usage: python ~                         print(className.c_str());
+                                    ~.py ~                    if (tree)
+                                                              {
+                                         ~[-i] ~              }
+                                         ~INPUT...\n")
+    sys.stderr.write("\n")
+    sys.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n")~
+                                                              if (tree)
+                                                              {
+~
+    sys.stderr.write("\n")
+    sys.stderr.write("  Option:\n")
+    sys.stderr.write("    -i     indented parse tree\n")~
+                                                              }
+~
+  else:~                                                      if (tree)
+                                                              {
+~
+    indent = False~                                           }
+~
+    for arg in args[1:]:~                                     if (tree)
+                                                              {
+~
+      if arg == "-i":
+        indent = True
+        continue
+      s = ~                                                     print(className.c_str());
+          ~.XmlSerializer()
+      s.indent = indent~                                        if (isLrParser)
+                                                                {
+~
+      b = ~                                                       print(className.c_str());
+          ~.ParseTreeBuilder()~                                 }
+                                                              }
+~
+      inputString = read(arg)
+      parser = ~                                              print(className.c_str());
+               ~(inputString~                                 if (noLexer)
+                                                              {
+                            ~, ~                                print(className.c_str());
+                               ~Lexer()~                      }
+                                                              if (tree)
+                                                              {
+                                       ~, ~                     if (isLrParser)
+                                                                {
+                                          ~b~                   }
+                                                                else
+                                                                {
+                                          ~s~                   }
+                                                              }
+                                            ~)~               if (trace)
+                                                              {
+~
+      sys.stderr.reconfigure(encoding="utf-8")
+      ~                                                         print(className.c_str());
+      ~.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n")~
+                                                              }
+~
+      try:
+        parser.~                                              print(visibilityMethodPrefix());
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+               ~()~                                           if (trace)
+                                                              {
+~
+        ~                                                       print(className.c_str());
+        ~.writeTrace("</trace>\n")~                           }
+                                                              if (tree && isLrParser)
+                                                              {
+~
+        b.serialize(s)~                                       }
+~
+      except ~                                                print(className.c_str());
+             ~.ParseException as pe:~                         if (useGlr && tree)
+                                                              {
+~
+        if pe.isAmbiguousInput():
+          pe.serialize(s)
+          print()~                                            }
+~
+        raise Exception ("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe)) from pe
+
+if __name__ == '__main__':
+  sys.exit(main(sys.argv))
+~                                                           }

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="387" height="71">
+   <defs>
+      <style type="text/css">
+    @namespace "http://www.w3.org/2000/svg";
+    .line                 {fill: none; stroke: #132E1A; stroke-width: 1;}
+    .bold-line            {stroke: #060E08; shape-rendering: crispEdges; stroke-width: 2;}
+    .thin-line            {stroke: #0E060C; shape-rendering: crispEdges}
+    .filled               {fill: #132E1A; stroke: none;}
+    text.terminal         {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #060E08;
+                            font-weight: bold;
+                          }
+    text.nonterminal      {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #06080E;
+                            font-weight: normal;
+                          }
+    text.regexp           {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #0E060C;
+                            font-weight: normal;
+                          }
+    rect, circle, polygon {fill: #132E1A; stroke: #132E1A;}
+    rect.terminal         {fill: #C6E7CE; stroke: #132E1A; stroke-width: 1;}
+    rect.nonterminal      {fill: #C6CEE7; stroke: #132E1A; stroke-width: 1;}
+    rect.text             {fill: none; stroke: none;}
+    polygon.regexp        {fill: #E7C6DF; stroke: #132E1A; stroke-width: 1;}
+  </style>
+   </defs>
+   <polygon points="9 51 1 47 1 55"/>
+   <polygon points="17 51 9 47 9 55"/>
+   <rect x="31" y="37" width="112" height="32" rx="10"/>
+   <rect x="29"
+         y="35"
+         width="112"
+         height="32"
+         class="terminal"
+         rx="10"/>
+   <text class="terminal" x="39" y="55">&lt;?ENCORE?&gt;</text>
+   <a xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="#ProcessingInstruction"
+      xlink:title="ProcessingInstruction">
+      <rect x="183" y="3" width="156" height="32"/>
+      <rect x="181" y="1" width="156" height="32" class="nonterminal"/>
+      <text class="nonterminal" x="191" y="21">ProcessingInstruction</text>
+   </a>
+   <path class="line"
+         d="m17 51 h2 m0 0 h10 m112 0 h10 m20 0 h10 m0 0 h166 m-196 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -14 q0 -10 10 -10 m176 34 l20 0 m-20 0 q10 0 10 -10 l0 -14 q0 -10 -10 -10 m-176 0 h10 m156 0 h10 m23 34 h-3"/>
+   <polygon points="377 51 385 47 385 55"/>
+   <polygon points="377 51 369 47 369 55"/>
+</svg>

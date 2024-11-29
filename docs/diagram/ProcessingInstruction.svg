@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="557" height="101">
+   <defs>
+      <style type="text/css">
+    @namespace "http://www.w3.org/2000/svg";
+    .line                 {fill: none; stroke: #132E1A; stroke-width: 1;}
+    .bold-line            {stroke: #060E08; shape-rendering: crispEdges; stroke-width: 2;}
+    .thin-line            {stroke: #0E060C; shape-rendering: crispEdges}
+    .filled               {fill: #132E1A; stroke: none;}
+    text.terminal         {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #060E08;
+                            font-weight: bold;
+                          }
+    text.nonterminal      {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #06080E;
+                            font-weight: normal;
+                          }
+    text.regexp           {font-family: Verdana, Sans-serif;
+                            font-size: 12px;
+                            fill: #0E060C;
+                            font-weight: normal;
+                          }
+    rect, circle, polygon {fill: #132E1A; stroke: #132E1A;}
+    rect.terminal         {fill: #C6E7CE; stroke: #132E1A; stroke-width: 1;}
+    rect.nonterminal      {fill: #C6CEE7; stroke: #132E1A; stroke-width: 1;}
+    rect.text             {fill: none; stroke: none;}
+    polygon.regexp        {fill: #E7C6DF; stroke: #132E1A; stroke-width: 1;}
+  </style>
+   </defs>
+   <polygon points="9 33 1 29 1 37"/>
+   <polygon points="17 33 9 29 9 37"/>
+   <rect x="31" y="19" width="38" height="32" rx="10"/>
+   <rect x="29"
+         y="17"
+         width="38"
+         height="32"
+         class="terminal"
+         rx="10"/>
+   <text class="terminal" x="39" y="37">&lt;?</text>
+   <a xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="#Name"
+      xlink:title="Name">
+      <rect x="89" y="19" width="56" height="32"/>
+      <rect x="87" y="17" width="56" height="32" class="nonterminal"/>
+      <text class="nonterminal" x="97" y="37">Name</text>
+   </a>
+   <a xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="#Space"
+      xlink:title="Space">
+      <rect x="205" y="19" width="58" height="32"/>
+      <rect x="203" y="17" width="58" height="32" class="nonterminal"/>
+      <text class="nonterminal" x="213" y="37">Space</text>
+   </a>
+   <a xmlns:xlink="http://www.w3.org/1999/xlink"
+      xlink:href="#DirPIContents"
+      xlink:title="DirPIContents">
+      <rect x="323" y="51" width="108" height="32"/>
+      <rect x="321" y="49" width="108" height="32" class="nonterminal"/>
+      <text class="nonterminal" x="331" y="69">DirPIContents</text>
+   </a>
+   <rect x="491" y="19" width="38" height="32" rx="10"/>
+   <rect x="489"
+         y="17"
+         width="38"
+         height="32"
+         class="terminal"
+         rx="10"/>
+   <text class="terminal" x="499" y="37">?&gt;</text>
+   <path class="line"
+         d="m17 33 h2 m0 0 h10 m38 0 h10 m0 0 h10 m56 0 h10 m40 0 h10 m58 0 h10 m-98 0 l20 0 m-1 0 q-9 0 -9 -10 l0 -12 q0 -10 10 -10 m78 32 l20 0 m-20 0 q10 0 10 -10 l0 -12 q0 -10 -10 -10 m-78 0 h10 m0 0 h68 m40 32 h10 m0 0 h118 m-148 0 h20 m128 0 h20 m-168 0 q10 0 10 10 m148 0 q0 -10 10 -10 m-158 10 v12 m148 0 v-12 m-148 12 q0 10 10 10 m128 0 q10 0 10 -10 m-138 10 h10 m108 0 h10 m-286 -32 h20 m286 0 h20 m-326 0 q10 0 10 10 m306 0 q0 -10 10 -10 m-316 10 v46 m306 0 v-46 m-306 46 q0 10 10 10 m286 0 q10 0 10 -10 m-296 10 h10 m0 0 h276 m20 -66 h10 m38 0 h10 m3 0 h-3"/>
+   <polygon points="547 33 555 29 555 37"/>
+   <polygon points="547 33 539 29 539 37"/>
+</svg>

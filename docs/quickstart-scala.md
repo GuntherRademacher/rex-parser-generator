@@ -1,0 +1,442 @@
+<link rel="stylesheet" href="markdown.css">
+
+[⇦ Previous page](quickstart-python.md) &nbsp;&nbsp;│&nbsp;&nbsp; [⇧ Back to index](../README.md#-rex-parser-generator) &nbsp;&nbsp;│&nbsp;&nbsp; [Next page ⇨ ](quickstart-typescript.md)
+
+&nbsp;
+# Quick Start Guide for Generating and Running a Parser in Scala with REx
+
+This tutorial will guide you through creating and running a parser in Scala for a simple arithmetic expression grammar using REx. It will also show how to visualize parse trees, trace parser operation, and spotlight some properties of the generated code. Finally it will show how to annotate the grammar with target language code in order to process the parser's input at runtime.
+
+## Prerequisites
+
+A Scala compiler will be neded, so ensure you have it installed on your machine, and if not installed, download and install it.
+
+The examples below have been tested with Scala 3.3.3, using the `scalac` compiler and the `scala` runner commands.
+
+## Step 1: Define the Grammar
+
+Create a text file named `Arithmetic.ebnf` and define the grammar for simple arithmetic expressions as follows:
+
+```
+Expression ::= Term (('+' | '-') Term)*
+Term       ::= Factor (('*' | '/') Factor)*
+Factor     ::= ('+' | '-')? Primary
+Primary    ::= Number
+             | '(' Expression ')'
+
+<?TOKENS?>
+
+Number     ::= [0-9]+
+Whitespace ::= [ #x9#xA]+
+               /*ws: definition*/
+```
+
+This grammar defines:
+
+  - basic arithmetic operations (`+`, `-`, `*`, `/`)
+  - integer numbers
+  - ignored whitespace
+
+We will use it to produce parse trees, trace parser and lexer execution, and evaluate actual arithmetic expressions to get their result.
+
+Two remarks on the grammar:
+
+ - Note that `<?TOKENS?>` separates syntax rules from lexical rules. While syntax rules describe the structure of the language, lexical rules define individual tokens. These sections have different allowances: syntax rules allow recursive patterns, whereas lexical rules are restricted to regular expressions.
+ - This grammar does not enforce end-of-input processing. As a result, a parser generated from it may accept input as valid once it reaches a stopping point, even if additional characters remain. This behavior could lead to subtle bugs, especially when input is expected to match the grammar entirely. To ensure complete processing, additional checks or rules should be added to handle end-of-input explicitly.
+
+## Step 2: Generate the Parser and Lexer
+
+Open a command prompt or terminal and navigate to the directory containing `Arithmetic.ebnf`. Run the following command to generate the parser and lexer code:
+
+```sh
+rex -scala -main -tree Arithmetic.ebnf
+```
+
+This command line asks REx for
+
+  - a parser and lexer in Scala (`-scala`),
+  - a simple main program for it (`-main`),
+  - code generation for parse tree production (`-tree`),
+  - using the grammar in file `Arithmetic.ebnf`.
+
+The result will be a Scala file named `Arithmetic.scala` in the current directory, containing the generated code.
+
+The command line is used to specify the generator's options. With the above command, we have applied for the default of LL for the parsing algorithm to be used, which would have read `-ll 3`, if it had been specified explicitly (the grammar being LL(1), though). In case an LR parser is preferred, `-lalr 1` could have been used as an alternative here.
+
+## Step 3: Compile the Generated Code
+
+The generated file is self-contained, i.e. it has in it everything that is needed and does not have any additional classpath requirement, besides the standard Scala runtime libraries, of course. So just compile it with the Scala compiler:
+
+```sh
+scalac Arithmetic.scala
+```
+
+## Step 4: Run the Generated Code
+
+You are now in a position to run the generated code. At this point it can be used to dump the parse tree in XML while parsing any input - this is the functionality of the main program, that was generated in response to REx option `-main`.
+
+Running it without any command line arguments,
+
+```sh
+scala Arithmetic
+```
+
+shows the usage text:
+
+```
+Usage: scala Arithmetic [-i] INPUT...
+
+  parse INPUT, which is either a filename or literal text enclosed in curly braces
+
+
+  Option:
+    -i     indented parse tree
+```
+
+Now run the generated class, passing command line arguments like this:
+
+```sh
+scala Arithmetic "{1 + 2 * 3}"
+```
+
+The actual input that is parsed in this case is `1 + 2 * 3`, the curly braces are there just to indicate that the input is a literal rather than a file, and the double quotes serve for making it a single command line argument.
+
+This results in the output of a lossless representation of the concrete parse tree, for the given input, in XML, to `Console.out`.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?><Expression><Term><Factor><Primary><Number>1</Number></Primary></Factor></Term> <TOKEN>+</TOKEN> <Term><Factor><Primary><Number>2</Number></Primary></Factor> <TOKEN>*</TOKEN> <Factor><Primary><Number>3</Number></Primary></Factor></Term></Expression>
+```
+
+It is lossless in the sense that it contains every single character of the input as content, where the parse tree structure has been inserted as markup. When using XML tooling, taking the string value of the XML document would regain the original input.
+
+For making it more readable, use the `-i` option to add extra whitespace and indentation:
+
+```sh
+scala Arithmetic -i "{1 + 2 * 3}"
+```
+
+results in
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Expression>
+  <Term>
+    <Factor>
+      <Primary>
+        <Number>1</Number>
+      </Primary>
+    </Factor>
+  </Term>
+  <TOKEN>+</TOKEN>
+  <Term>
+    <Factor>
+      <Primary>
+        <Number>2</Number>
+      </Primary>
+    </Factor>
+    <TOKEN>*</TOKEN>
+    <Factor>
+      <Primary>
+        <Number>3</Number>
+      </Primary>
+    </Factor>
+  </Term>
+</Expression>
+```
+
+Note that this is the concrete parse tree, containing nodes for each and every derivation step that was taken during parsing. Usually many of those are not needed for further processing, so it often makes sense to condense the parse tree before applying any further transformations to it. In the actual case, a tree like the following could be sufficient:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Expression>
+  <Number>1</Number>
+  <TOKEN>+</TOKEN>
+  <Term>
+    <Number>2</Number>
+    <TOKEN>*</TOKEN>
+    <Number>3</Number>
+  </Term>
+</Expression>
+```
+
+However condensing the tree must be performed on behalf of the application, REx does not provide means to support it.
+
+When looking at the generated Scala code, you will find this trait, that is used by parsing methods to communicate their operation:
+
+```scala
+  trait EventHandler {
+    def reset(string: String): Unit
+    def startNonterminal(name: String, begin: Int): Unit
+    def endNonterminal(name: String, end: Int): Unit
+    def terminal(name: String, begin: Int, end: Int): Unit
+    def whitespace(begin: Int, end: Int): Unit
+  }
+```
+
+Applications could extend and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
+
+```scala
+  class TopDownTreeBuilder extends EventHandler {
+    ...
+```
+
+When command line options `-tree` and `-main` are used together, REx also generates
+
+```scala
+  class XmlSerializer(val out: Writer, val indent: Boolean) extends EventHandler {
+    ...
+```
+
+This is what was used to produce the XML representation of the parse tree, that was shown before.
+
+## Step 5: Trace Lexer and Parser Execution
+
+For debugging grammars, it is often useful to see the actions that the lexer and parser are performing during execution. When using the `-trace` command line option, REx will generate additional code that writes a log of actions, in XML, to `Console.err`:
+
+```sh
+rex -scala -main -trace Arithmetic.ebnf
+scalac Arithmetic.scala
+scala Arithmetic "{1 + 2 * 3}"
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<trace>
+  <parse startnonterminal="Expression"/>
+  <tokenize tokenset="1">
+    <next state="2" offset="0" char="1" codepoint="49" class="7" result="Number"/>
+    <next state="4" offset="1" char=" " codepoint="32" class="8"/>
+    <done result="Number" begin="0" end="1"/>
+  </tokenize>
+  <parse startnonterminal="Term" input="Number"/>
+  <parse startnonterminal="Factor" input="Number"/>
+  <parse startnonterminal="Primary" input="Number"/>
+  <parse terminal="Number"/>
+  <parse endnonterminal="Primary"/>
+  <parse endnonterminal="Factor"/>
+  <tokenize tokenset="2">
+    <next state="3" offset="1" char=" " codepoint="32" class="8" result="Whitespace"/>
+    <next state="5" offset="2" char="+" codepoint="43" class="4"/>
+    <done result="Whitespace" begin="1" end="2"/>
+  </tokenize>
+  <tokenize tokenset="2">
+    <next state="3" offset="2" char="+" codepoint="43" class="4" result="'+'"/>
+    <done result="'+'" begin="2" end="3"/>
+  </tokenize>
+  <parse endnonterminal="Term" input="'+'"/>
+  <parse terminal="'+'"/>
+...
+```
+
+The `parse` actions show how the parser makes its way through the grammar rules by entering and leaving the code that corresponds to the grammar nonterminals, or consuming terminals.
+
+The `tokenize` actions show how the lexer assembles tokens from input characters.
+
+Some details in this trace may be understandable only by looking at some internals of the parser, but the trace can by useful anyway because it documents the course of action. As trace output may become huge, it is a good idea to isolate a problem to as small as possible a reproduction, before using a trace to analyze it.
+
+## Step 6: Annotate the Grammar with Scala code
+
+Usually you do not want to just see the parse tree, but rather compile and execute the language that is being parsed. In case of the grammar for arithmetic expressions, this could be evaluating the expressions to their result.
+
+While it is possible to do this evaluation based on a parse tree, it can also be done by omitting parse tree generation, and instead annotating the grammar with actions in Scala code, that will be triggered during parser execution. This is what we will be doing in this step.
+
+We use two stacks for keeping track of operators and values while the parser works through the input:
+
+```scala
+val valStack: Stack[Int] = Stack()
+val opStack: Stack[Char] = Stack()
+```
+
+For achieving evaluation, we will augment the grammar with the following actions, whose implementation details will be shown later:
+
+- `number`: calculate numeric value of most recently consumed token,
+- `valStack.push(number)`: push a number onto the value stack,
+- `opStack.push(operator)`: push an operator onto the operator stack,
+- `evaluate`: pop an operator off the operator stack and evaluate it with one or more operands popped off the value stack, pushing the result onto the value stack.
+
+For inserting an action in Scala into the EBNF grammar, it must be wrapped in a **processing instruction**, which
+
+- begins with `<?` and a name,
+- continues with some whitespace, and the actual Scala code,
+- terminates with `?>`.
+
+The Scala code of course must not contain the character sequence `?>`.
+
+A grammar may contain multiple action sets using different names, and an action is only included into the generated code, if its name is selected using the `-a` command line option to specify the name. We will use `aee` as the name of our set of actions, as an acronym for *A*rithmetic *E*xpression *E*valuator. Thus command line option `-a aee` must be used, and actions inserted into the grammar will look like this: `<?aee valStack.push(number)?>`.
+
+The actions are positioned in the grammar as follows:
+
+```
+Expression ::= Term (('+'                   <?aee opStack.push('+')?>
+                          | '-'             <?aee opStack.push('-')?>
+                               ) Term       <?aee evaluate?>
+                                      )*
+Term       ::= Factor (('*'                 <?aee opStack.push('*')?>
+                            | '/'           <?aee opStack.push('/')?>
+                                 ) Factor   <?aee evaluate?>
+                                         )*
+Factor     ::=                              <?aee opStack.push(' ')?>
+               ('+' | '-'                   <?aee
+                                              opStack.pop;
+                                              opStack.push('_')
+                                            ?>
+                          )? Primary        <?aee evaluate?>
+Primary    ::= Number                       <?aee valStack.push(number)?>
+             | '(' Expression ')'
+```
+
+Actions may be placed anywhere on the right hand side of the syntax rules, and they will be executed when the parser's control flow passes by the respective position. Note that actions can only be placed in the syntax definition, but not in the lexical definition.
+
+You are free in formatting the grammar as you like, but in the example above, actions have been aligned on the right hand side, in order to visually separate them from the pure grammar rules on the left hand side.
+
+Now for actually declaring the data structures and implementing the methods used in our actions, we need to add some more Scala code:
+
+```scala
+  val valStack: Stack[Int] = Stack()
+  val opStack: Stack[Char] = Stack()
+
+  def number: Int = {
+    input.substring(b0, e0).toInt
+  }
+
+  def evaluate: Unit = {
+    val rhs = valStack.pop;
+    opStack.pop match {
+    case '+' => valStack.push(valStack.pop() + rhs)
+    case '-' => valStack.push(valStack.pop() - rhs)
+    case '*' => valStack.push(valStack.pop() * rhs)
+    case '/' => valStack.push(valStack.pop() / rhs)
+    case '_' => valStack.push(- rhs)
+    case _ => valStack.push(rhs)
+    }
+  }
+```
+
+Also we will supply our own main program, that prints out a prompt, reads a line from `StdIn`, passes it to the parser, and prints the result:
+
+```scala
+  def main(args: Array[String]): Unit = {
+    print("Expr: ")
+    val input = scala.io.StdIn.readLine()
+    val parser = new Arithmetic(input)
+    try {
+      parser.parse_Expression
+      println(parser.valStack.pop)
+    }
+    catch {
+      case pe: ParseException =>
+        throw new RuntimeException("ParseException while processing " + input + ":\n" + parser.getErrorMessage(pe))
+    }
+  }
+```
+
+Both the code implementing the actions, and the main program, can be added to the grammar file, for having REx include it into the generated code. Such extra code can be added
+- at the very beginning of the grammar. In this case it must also contain any necessary `import` directives, the `class` declaration, and any constructors, which usually must call `initialize(input: String)`. This is where all instance methods should go.
+- at the end of the grammar, following an `<?ENCORE?>` indicator. When added at the end, it must also contain the curly brace `}` that closes the Scala class. This is where static methods should be added.
+
+We will add our action methods at the beginning, and the static main program to the end, such that the complete file `Arithmetic.ebnf` now looks as follows:
+
+```
+<?aee
+import java.io.OutputStreamWriter
+import java.io.Writer
+import collection.mutable.ArrayBuffer
+import scala.collection.mutable.Stack
+
+class Arithmetic {
+
+  def this(string: String) = {
+    this()
+    initialize(string)
+  }
+
+  val valStack: Stack[Int] = Stack()
+  val opStack: Stack[Char] = Stack()
+
+  def number: Int = {
+    input.substring(b0, e0).toInt
+  }
+
+  def evaluate: Unit = {
+    val rhs = valStack.pop;
+    opStack.pop match {
+    case '+' => valStack.push(valStack.pop() + rhs)
+    case '-' => valStack.push(valStack.pop() - rhs)
+    case '*' => valStack.push(valStack.pop() * rhs)
+    case '/' => valStack.push(valStack.pop() / rhs)
+    case '_' => valStack.push(- rhs)
+    case _ => valStack.push(rhs)
+    }
+  }
+?>
+
+Expression ::= Term (('+'                   <?aee opStack.push('+')?>
+                          | '-'             <?aee opStack.push('-')?>
+                               ) Term       <?aee evaluate?>
+                                      )*
+Term       ::= Factor (('*'                 <?aee opStack.push('*')?>
+                            | '/'           <?aee opStack.push('/')?>
+                                 ) Factor   <?aee evaluate?>
+                                         )*
+Factor     ::=                              <?aee opStack.push(' ')?>
+               ('+' | '-'                   <?aee
+                                              opStack.pop;
+                                              opStack.push('_')
+                                            ?>
+                          )? Primary        <?aee evaluate?>
+Primary    ::= Number                       <?aee valStack.push(number)?>
+             | '(' Expression ')'
+
+<?TOKENS?>
+
+Number     ::= [0-9]+
+Whitespace ::= [ #x9#xA]+
+               /*ws: definition*/
+
+<?ENCORE?>
+
+<?aee
+  def main(args: Array[String]): Unit = {
+    print("Expr: ")
+    val input = scala.io.StdIn.readLine()
+    val parser = new Arithmetic(input)
+    try {
+      parser.parse_Expression
+      println(parser.valStack.pop)
+    }
+    catch {
+      case pe: ParseException =>
+        throw new RuntimeException("ParseException while processing " + input + ":\n" + parser.getErrorMessage(pe))
+    }
+  }
+}
+?>
+```
+
+For knowing the `import` directives, required by the generated code, that had to be inserted above, we could have generated it once without adding our code,
+
+```sh
+rex -scala Arithmetic.ebnf
+```
+
+The `import` directives can then be grabbed from `Arithmetic.scala` and augmented with those required by our custom code.
+
+For having REx insert our newly added actions into the generated code, option `-a aee` must be added to the REx command line. Without that, there would be no difference in behavior, compared to the plain grammar that was used before.
+
+Generate a parser including the actions, and compile it, using these commands:
+
+```sh
+rex -scala -a aee Arithmetic.ebnf
+scalac -no-indent -color:never Arithmetic.scala
+```
+
+Now it can be run to actually evaluate arithmetic expressions entered after the `Expr:` prompt, e.g.
+
+```sh
+scala Arithmetic
+Expr: ( 42 * 17 + 6 ) / 8 - -9
+```
+
+&nbsp;
+---
+[⇦ Previous page](quickstart-python.md) &nbsp;&nbsp;│&nbsp;&nbsp; [⇧ Back to index](../README.md#-rex-parser-generator) &nbsp;&nbsp;│&nbsp;&nbsp; [Next page ⇨ ](quickstart-typescript.md)

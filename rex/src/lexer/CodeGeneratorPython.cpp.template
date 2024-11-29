@@ -1,0 +1,638 @@
+~                                                           // generate CodeGeneratorPython.cpp using this command:
+                                                            //
+                                                            //   REx CodeGeneratorPython.cpp.template
+
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "CodeGenerator.hpp"
+
+                                                            void CodeGeneratorPython::generateStaticCode()
+                                                            {
+                                                              isPython = true;
+
+                                                              const char *prefix = variable("useGlr").boolean()
+                                                                                 ? "self.parser."
+                                                                                 : "self.";
+                                                              if (! variable("append").boolean() && ! variable("embedded").boolean())
+                                                              {
+                                                                if (*variable("package").string())
+                                                                {
+~package ~                                                        print(variable("package").string());
+         ~;
+
+~                                                               }
+~public class ~                                                 print(variable("classname").string());
+              ~
+{
+~                                                             }
+                                                              ++indent;
+                                                              if (variable("useGlr").boolean())
+                                                              {
+                                                                ++indent;
+                                                              }
+                                                              const char *clazz = /* variable("useGlr").boolean() ? "ParsingThread" : */ variable("classname").string();
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+public void init(String string)
+{
+  input = string;
+  size = string.length();
+  end = 0;
+}
+
+public int getOffset() {return begin;}
+public int getSize()   {return end - begin;}
+public int getState()  {return state;}
+
+public int match(int tokenSetId, String string)
+{
+  init(string);
+  return match(tokenSetId);
+}
+
+public~                                                       }
+                                                              else
+                                                              {
+                                                                if (variable("lrparser").boolean() ||
+                                                                    variable("tables").boolean())
+                                                                {
+~
+def predict(self, dpi):~                                          predict();
+                                                                }
+                                                              }
+~
+def match(self, tokenSetId):~                                 if (variable("nolexer").boolean())
+                                                              {
+~
+  token.begin = end
+  lexer.match(tokenSetId, token)
+  begin = token.begin
+  end = token.end
+  return token.code >= 0
+       ? token.code
+       : error(begin, end, - tokenSetId, -1, -1)
+~
+                                                              }
+                                                              else
+                                                              {
+                                                                int lookahead = variable("maxcontextlength").integer();
+                                                                bool hasFixedTokenLength = variable("hasfixedtokenlength").boolean();
+                                                                int lowBits;
+                                                                const char *flags = getenv("FLAGS");
+                                                                bool hack = flags && strchr(flags, 'H');
+
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+  ~                                                               print(variable("classname").string());
+  ~.writeTrace("  <tokenize ~
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                            ~thread=\"" + str(self.id) + "\" ~    }
+                            ~tokenset=\"" + str(tokenSetId) + "\">\n")
+~                                                               }
+~
+  self.begin = self.end
+  current = self.end
+  result = ~                                                    print(clazz);
+           ~.INITIAL[tokenSetId]~                               if (variable("embedded").boolean() && (variable("trace").boolean() || ! variable("useGlr").boolean()))
+                                                                {
+~
+  state = 0~                                                    }
+~
+~                                                               if (variable("trace").boolean())
+                                                                {
+~
+  ~                                                               print(variable("classname").string());
+  ~.writeTrace("    <next state=\"" + str(result & ~              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                   ~) + "\"")~  }
+~
+  code = result & ~                                             print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                  ~
+  while code != 0:~                                             if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             print(variable("classname").string());
+    ~.writeTrace(" offset=\"" + str(current) + "\"")~           }
+~
+    if current < ~                                              print(prefix);
+                 ~size:
+      c0 = ord(~                                                print(prefix);
+               ~input[current])
+    else:
+      c0 = 0
+    current += 1~
+~
+    if c0 < 0x~                                                 print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+              ~:~
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+      if c0 >= 32 and c0 <= 126:
+        ~                                                         print(variable("classname").string());
+        ~.writeTrace(" char=\"" + ~                               print(clazz);
+                                  ~.xmlEscape(chr(c0)) + "\"")~ }
+~
+      charclass = ~                                             print(clazz);
+                  ~.MAP0[c0]
+    elif c0 < 0x~                                               print(format.toString<char>(variable("uncompressedMapSize").integer(), 16, 0, 0, 0, "0123456789abcdef"));
+                ~:
+~                                                               compressedMapAccessor(6, "c", "charclass = ", "MAP1", &variable("m1bits").integer());
+~
+    else:~                                                      if (variable("m2").size == 0)
+                                                                {
+~
+      charclass = 0~                                            }
+                                                                else
+                                                                {
+~
+      lo = 0
+      hi = ~                                                      print(variable("m2").size / 3 - 1);
+~
+      m = ~                                                       print((variable("m2").size / 3) >> 1);
+          ~
+      while True:
+        if ~                                                      print(clazz);
+           ~.MAP2[m] > int(c0):
+          hi = m - 1
+        elif ~                                                    print(clazz);
+             ~.MAP2[~                                             print(variable("m2").size / 3);
+                    ~ + m] < int(c0):
+          lo = m + 1
+        else:
+          charclass = ~                                           print(clazz);
+                      ~.MAP2[~                                    print(variable("m2").size / 3 * 2);
+                             ~ + m]
+          break
+        if lo > hi:
+          charclass = 0
+          break
+        m = (hi + lo) >> 1~                                     }
+                                                                if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             print(variable("classname").string());
+    ~.writeTrace(" codepoint=\"" + str(c0) + "\" class=\"" + str(charclass) + "\"")~
+                                                                }
+~
+~                                                               if (variable("trace").boolean() || ! variable("useGlr").boolean())
+                                                                {
+~
+    state = code~                                               }
+~
+~                                                               compressedMap2dAccessor("code - 1", "charclass", variable("a1cols").integer(),
+                                                                                           4, "i", "code = ", "TRANSITION", &variable("a1bits").integer());
+~
+    if code > ~                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+              ~:
+      result = code~                                            if (variable("trace").boolean())
+                                                                {
+~
+      ~                                                           print(variable("classname").string());
+      ~.writeTrace(" result=\"" + ~                               print(clazz);
+                                  ~.xmlEscape(~                   print(clazz);
+                                              ~.TOKEN[((result >> ~
+                                                                  print(variable("stateCodeBits").integer());
+                                              ~) & ~              print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                              ~) - 1]) + "\"")~   if (lookahead || hasFixedTokenLength)
+                                                                  {
+                                                                    int contextOffset = variable("stateCodeBits").integer()
+                                                                                      + variable("tokencodeBits").integer();
+                                                                    int sizeOffset = contextOffset
+                                                                                   + (hasFixedTokenLength ? 1 : 0);
+                                                                    if (hasFixedTokenLength)
+                                                                    {
+~
+      if result & ~                                                   print(Math::powerof(2, contextOffset));
+                  ~ > 0:
+        ~                                                             print(variable("classname").string());
+        ~.writeTrace(" token-size=\"" + str(result >> ~               print(sizeOffset);
+                                                    ~) + "\"")
+      el~                                                           }
+                                                                    else
+                                                                    {
+~
+      ~                                                             }
+      ~if (result >> ~                                              print(sizeOffset);
+                     ~) > 0:
+        ~                                                           print(variable("classname").string());
+        ~.writeTrace(" trailing-context-size=\"" + str(result >> ~  print(sizeOffset);
+                                                                 ~) + "\"")~
+                                                                  }
+                                                                }
+~
+      code &= ~                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+              ~
+      self.end = current~                                       if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             print(variable("classname").string());
+    ~.writeTrace("/>\n")
+    if code != 0:
+      ~                                                           print(variable("classname").string());
+      ~.writeTrace("    <next state=\"" + str(code) + "\"") ~   }
+~
+
+  result >>= ~                                                  print(variable("stateCodeBits").integer());
+             ~
+  if result == 0:
+    self.end = current - 1~                                     if (variable("trace").boolean())
+                                                                {
+~
+    ~                                                             print(variable("classname").string());
+    ~.writeTrace("    <fail begin=\"" + str(self.begin) + "\" end=\"" + str(self.end) + "\" state=\"" + str(state) + "\"/>\n")
+    ~                                                             print(variable("classname").string());
+    ~.writeTrace("  </tokenize>\n")~                            }
+                                                                if (variable("embedded").boolean())
+                                                                {
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+~
+    self.end = self.begin
+    return -1~                                                    }
+                                                                  else
+                                                                  {
+~
+    return self.error(self.begin, self.end, state, -1, -1)~       }
+                                                                }
+                                                                lowBits = variable("tokencodeBits").integer();
+                                                                if (hasFixedTokenLength && ! lookahead)
+                                                                {
+~
+  elif result & ~                                                 print(Math::powerof(2, lowBits));
+                                                                  ++lowBits;
+                ~ != 0:
+    self.end = self.begin~                                      }
+                                                                else
+                                                                {
+                                                                  if (hasFixedTokenLength)
+                                                                  {
+~
+  elif result & ~                                                   print(Math::powerof(2, lowBits));
+                                                                    ++lowBits;
+                ~ != 0:
+    self.end = self.begin
+    self.end += (result >> ~                                        print(lowBits);
+                           ~)~                                    }
+                                                                  if (lookahead)
+                                                                  {
+~
+  else:
+    self.end -= result >> ~                                         print(lowBits);
+                                                                  }
+                                                                }
+~
+~
+~
+  if self.end > ~                                               print(prefix);
+                ~size:
+    self.end = ~                                                print(prefix);
+               ~size~                                           if (variable("trace").boolean())
+                                                                {
+~
+  ~                                                               print(variable("classname").string());
+  ~.writeTrace("    <done result=\"" + ~                          print(clazz);
+                                       ~.xmlEscape(~              print(clazz);
+                                                   ~.TOKEN[(result & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+             ~) - 1]) + "\" begin=\"" + str(self.begin) + "\" end=\"" + str(self.end) + "\"/>\n")
+  ~                                                         print(variable("classname").string());
+  ~.writeTrace("  </tokenize>\n")~                              }
+                                                                if (hack)
+                                                                {
+~
+  return hack((result & ~                                         print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                        ~) - 1)
+~                                                               }
+                                                                else
+                                                                {
+~
+  return (result & ~                                              print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                   ~) - 1
+~                                                               }
+
+                                                                if (variable("useGlr").boolean())
+                                                                {
+                                                                  --indent;
+                                                                }
+                                                              }
+                                                              if (defined("gtbits"))
+                                                              {
+~
+@staticmethod
+def goTo(nonterminalId, state):
+~                                                               compressedMap2dAccessor("nonterminalId", "state", variable("gtcols").integer(),
+                                                                                        2, "i", "return ", "GOTO", &variable("gtbits").integer());
+~
+~                                                             }
+
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+  public String[] getExpectedTokenSet()
+  {
+    return getTokenSet(- state);
+  }
+~                                                             }
+                                                              if (variable("trace").boolean())
+                                                              {
+~
+@staticmethod
+def xmlEscape(s):
+  sb = ""
+  for i in range(len(s)):
+    c = s[i]
+    i += 1
+    if c == '<':
+      sb += "&lt;"
+    elif c == '"':
+      sb += "&quot;"
+    elif c == '&':
+      sb += "&amp;"
+    else:
+      sb += c
+  return sb
+
+@staticmethod
+def writeTrace(content):
+  sys.stderr.write(content)
+~                                                               if (variable("embedded").boolean())
+                                                                {
+~
+@staticmethod
+def flushTrace():
+  sys.stderr.flush()
+~                                                               }
+                                                              }
+                                                              if (variable("nolexer").boolean())
+                                                              {
+~
+  public static int getTokenCount() {return ~                   print(variable("t1").size);
+                                            ~;}
+  public static String getTokenName(int code) {return code >= 0 and code < ~
+                                                                print(variable("t1").size);
+                                              ~ ? ~             print(clazz);
+                                              ~.TOKEN[code] : null;}
+  public static int getTokenSetCount() {return ~                print(variable("entrycount").integer());
+                                               ~;}
+
+func GetTokenSet(tokenSetId int) []string {~                  }
+                                                              else
+                                                              {
+~
+@staticmethod
+def getTokenSet(tokenSetId):~                                 }
+                                                              if (! variable("nolexer").boolean())
+                                                              {
+~
+  if tokenSetId < 0:
+    s = - tokenSetId
+  else:
+    s = ~                                                       print(variable("classname").string());
+        ~.INITIAL[tokenSetId] & ~                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                              }
+~
+  tokenSet = []
+  size = 0
+  for i in range(0, ~                                         print(variable("t1").size);
+                    ~, 32):
+    j = i
+    i0 = (i >> 5) * ~                                         print(variable("transitionStateCount").integer());
+                    ~ + ~                                     if (variable("nolexer").boolean())
+                                                              {
+                    ~tokenSetId~                              }
+                                                              else
+                                                              {
+                    ~s - 1~                                   }
+~
+~                                                             compressedMapAccessor(4, "i", "f = ", "EXPECTED", &variable("t0bits").integer());
+~
+    while f != 0:
+      if (f & 1) != 0:
+        tokenSet.append(~                                     print(variable("classname").string());
+                        ~.TOKEN[j])
+        size += 1
+      j += 1
+      f >>= 1
+  return tokenSet~                                            generateData();
+                                                              indent--;
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~
+
+  public enum Token
+  {
+    ~                                                           const CGVariable &token = variable("token");
+                                                                int w = (int) Format::width(token.size);
+                                                                for (size_t i = 0; i < token.size; ++i)
+                                                                {
+                                                                  if (i)
+                                                                  {
+    ~,
+    ~                                                             }
+    ~/* ~                                                         print(format.toString<char>(i, 10, w));
+    ~ */ ~                                                        print(token.string(i));
+                                                                }
+    ~
+  };~
+                                                              }
+                                                              if (variable("selfTest").boolean())
+                                                              {
+~
+
+  private void selfTest(int set, int tokenId)
+  {
+    String tokenString = ~                                      print(clazz);
+                         ~.TOKEN[tokenId];
+    if (tokenString.startsWith("'"))
+    {
+      System.out.print("testing(" + set + ", " + tokenId + ")...");
+      tokenString = tokenString.substring(1, tokenString.length() - 1).replace("''", "'");
+      if (tokenString.trim().equals(""))
+      {
+        System.out.println("  skipped");
+      }
+      else
+      {
+        int result = match(set, tokenString + " ");
+        int resultSize = getSize();
+        if (result != tokenId || resultSize != tokenString.length())
+        {
+          System.out.println();
+          System.out.println("  tested: " + tokenString);
+          System.out.println("  result: " + result);
+          System.out.println("    size: " + resultSize);
+          System.exit(1);
+        }
+        else
+        {
+          System.out.println("  OK");
+        }
+      }
+    }
+  }
+
+  public static void main(String[] args)
+  {
+    ~                                                         print(variable("classname").string());
+    ~ testee = new ~                                          print(variable("classname").string());
+                   ~();
+    for (int e = 0; e < ~                                     print(variable("a0").size);
+                        ~; ++e)
+    {
+      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                           ~;
+      for (int i = 0; i < ~                                   print(variable("t1").size);
+                          ~; i += 32)
+      {
+        int j = i;
+        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+                            ~ + s - 1;
+~                                                             compressedMapAccessor(8, "i", "f = ", "EXPECTED", &variable("t0bits").integer());
+~
+        for ( ; f != 0; f >>>= 1, ++j)
+        {
+          if ((f & 1) != 0)
+          {
+            testee.selfTest(e, j);
+          }
+        }
+      }
+    }
+  }~                                                          }
+~
+~                                                             if (! variable("embedded").boolean())
+                                                              {
+~}
+~                                                             }
+                                                            }
+
+                                                            void CodeGeneratorPython::generateCompressedMap()
+                                                            {
+~
+public class ~                                                print(variable("classname").string());
+~
+{
+  public static int get(int i0)
+  {
+    if (i0 < 0x30000)
+    {
+~                                                             compressedMapAccessor(6, "i", "return ", "low", &variable("dtbits").integer());
+~
+    }
+    else
+    {~                                                        indent += 3;
+                                                              generateBinarySearch("i0", "return ", "", "HIGH", variable("rm").size);
+                                                              indent -= 3;
+~
+    }
+  }~                                                          generateData();
+~
+}
+~                                                           }
+
+                                                            void CodeGeneratorPython::generateData()
+                                                            {
+                                                              size_t size = 0;
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (   a->isArray()
+                                                                    && a->size > 0
+                                                                    && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
+                                                                    && strlen(a->name) == 2)
+                                                              {
+                                                                size = Math::max(size, Format::width(a->size));
+                                                              }
+                                                              size_t limit = 120 - size - 4;
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (   a->isArray()
+                                                                    && a->size > 0
+                                                                    && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
+                                                                    && strlen(a->name) == 2)
+                                                              {
+~
+
+~                                                               print(a->longName);
+    ~ = [~                                                      ++indent;
+                                                                for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j == 0 || lineLength() + Format::width(a->integer(j)) + 2 > limit)
+                                                                  {
+                                                                    if (j)
+                                                                    {
+~, ~                                                                }
+                                                                    print(limit + 2 - lineLength(), " ");
+~# ~                                                                print(format.toString<char>(j, 10, size));
+~
+~                                                                 }
+                                                                  else
+                                                                  {
+   ~, ~                                                           }
+                                                                  if (a->hasType(CGVariable::UNSIGNED))
+                                                                  {
+                                                                    print(format.toString<char>((unsigned) a->integer(j)));
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    print(a->integer(j));
+                                                                  }
+                                                                }
+~]~                                                             --indent;
+                                                              }
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
+                                                              {
+~
+
+~                                                               print(a->longName);
+~ = [
+~                                                               for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j)
+                                                                  {
+    ~,
+~                                                                 }
+~    "~                                                           const char *s = a->string(j);
+                                                                  const char *c = s;
+                                                                  for (; *c; ++c)
+                                                                  {
+                                                                    if (*c == '"' || *c == '\\')
+                                                                    {
+                                                                      print(s, c - s);
+                                                                      s = c;
+                                                                      print("\\");
+                                                                    }
+                                                                  }
+                                                                  print(s, c - s);
+    ~"~                                                         }
+~]~                                                           }
+                                                            }
+
+                                                            void CodeGeneratorPython::generateBinarySearch(const char *input, const char *outputPrefix, const char *outputSuffix, const char *map, size_t size)
+                                                            {
+~
+int lo = 0, hi = ~                                            print(size / 3 - 1);
+                 ~;
+for (int m = ~                                                print((size / 3) >> 1);
+             ~; ; m = (hi + lo) >> 1)
+{
+  if (~                                                       print(map);
+      ~[m] > ~                                                print(input);
+             ~) {hi = m - 1;}
+  elif ~                                                      print(map);
+       ~[~                                                    print(size / 3);
+         ~ + m] < ~                                           print(input);
+                  ~:
+    lo = m + 1
+  else:~                                                      print(outputPrefix);
+                                                              print(map);
+       ~[~                                                    print(size / 3 * 2);
+         ~ + m]~                                              print(outputSuffix);
+               ~;}
+  if (lo > hi) {~                                             print(outputPrefix);
+                ~0~                                           print(outputSuffix);
+                  ~;}
+}~                                                          }

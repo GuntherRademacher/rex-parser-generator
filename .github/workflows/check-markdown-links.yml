@@ -1,0 +1,19 @@
+name: Markdown Link Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 6"
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .lycheeignore file
+        run: echo "/www.bottlecaps.de/" >> .lycheeignore
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@v2

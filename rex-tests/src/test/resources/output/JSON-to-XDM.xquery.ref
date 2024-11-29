@@ -1,0 +1,910 @@
+xquery version "1.0" encoding "UTF-8";
+
+(: This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: REx command line: -q JSON-to-XDM.ebnf -xquery -a j2x :)
+
+                                                                      (: line 2 "JSON-to-XDM.ebnf" :)
+                                                                      declare namespace p="JSON-to-XML";
+                                                                      declare option saxon:output "indent=yes";
+                                                                      (: line 10 "JSON-to-XDM.xquery" :)
+(:~
+ : The index of the lexer state for accessing the combined
+ : (i.e. level > 1) lookahead code.
+ :)
+declare variable $p:lk as xs:integer := 1;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the token that has been consumed.
+ :)
+declare variable $p:b0 as xs:integer := 2;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the token that has been consumed.
+ :)
+declare variable $p:e0 as xs:integer := 3;
+
+(:~
+ : The index of the lexer state for accessing the code of the
+ : level-1-lookahead token.
+ :)
+declare variable $p:l1 as xs:integer := 4;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the level-1-lookahead token.
+ :)
+declare variable $p:b1 as xs:integer := 5;
+
+(:~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the level-1-lookahead token.
+ :)
+declare variable $p:e1 as xs:integer := 6;
+
+(:~
+ : The index of the lexer state for accessing the token code that
+ : was expected when an error was found.
+ :)
+declare variable $p:error as xs:integer := 7;
+
+(:~
+ : The index of the lexer state that points to the first entry
+ : used for collecting action results.
+ :)
+declare variable $p:result as xs:integer := 8;
+
+(:~
+ : The codepoint to charclass mapping for 7 bit codepoints.
+ :)
+declare variable $p:MAP0 as xs:integer+ :=
+(
+  28, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2,
+  2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13, 12, 2, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 2, 17, 12, 12, 12, 18, 19, 2, 2, 2, 2, 2, 20,
+  2, 21, 2, 2, 2, 22, 23, 24, 25, 2, 2, 2, 2, 2, 26, 2, 27, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints below the surrogate block.
+ :)
+declare variable $p:MAP1 as xs:integer+ :=
+(
+  54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+  58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 90, 122, 181, 212,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149, 149,
+  149, 149, 149, 149, 149, 149, 149, 149, 149, 28, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 2,
+  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 12, 12, 12, 12, 13,
+  12, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 14, 15, 16, 2, 2, 17, 12, 12, 12, 18, 19, 2, 2, 2, 2,
+  2, 20, 2, 21, 2, 2, 2, 22, 23, 24, 25, 2, 2, 2, 2, 2, 26, 2, 27, 2, 2
+);
+
+(:~
+ : The codepoint to charclass mapping for codepoints above the surrogate block.
+ :)
+declare variable $p:MAP2 as xs:integer+ :=
+(
+  57344, 65536, 65533, 1114111, 2, 2
+);
+
+(:~
+ : The token-set-id to DFA-initial-state mapping.
+ :)
+declare variable $p:INITIAL as xs:integer+ :=
+(
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+);
+
+(:~
+ : The DFA transition table.
+ :)
+declare variable $p:TRANSITION as xs:integer+ :=
+(
+  542, 542, 542, 542, 542, 542, 542, 542, 343, 232, 539, 542, 542, 542, 542, 542, 542, 541, 539, 542, 542, 542, 542,
+  542, 313, 244, 458, 542, 542, 542, 542, 542, 542, 541, 284, 542, 542, 542, 542, 542, 363, 541, 539, 542, 542, 542,
+  542, 542, 543, 254, 284, 542, 542, 542, 542, 542, 542, 265, 539, 542, 542, 542, 542, 542, 542, 541, 453, 542, 542,
+  542, 542, 542, 292, 300, 414, 533, 542, 542, 542, 542, 321, 329, 414, 533, 542, 542, 542, 542, 463, 541, 539, 542,
+  542, 542, 542, 542, 351, 360, 385, 502, 542, 542, 542, 542, 351, 371, 385, 278, 542, 542, 542, 542, 431, 379, 539,
+  542, 542, 542, 542, 542, 542, 399, 468, 542, 542, 542, 542, 542, 505, 408, 539, 542, 542, 542, 542, 542, 351, 422,
+  385, 502, 542, 542, 542, 542, 351, 371, 385, 519, 430, 542, 542, 542, 439, 447, 385, 502, 542, 542, 542, 542, 542,
+  541, 391, 476, 542, 542, 542, 542, 352, 484, 490, 542, 542, 542, 542, 542, 542, 541, 272, 542, 542, 542, 542, 542,
+  542, 541, 539, 257, 542, 542, 542, 542, 400, 513, 496, 542, 542, 542, 542, 542, 542, 541, 527, 307, 542, 542, 542,
+  542, 246, 551, 539, 542, 542, 542, 542, 542, 236, 541, 539, 542, 542, 542, 542, 542, 336, 542, 542, 542, 542, 542,
+  542, 542, 211, 396, 0, 396, 0, 0, 0, 0, 1472, 0, 1472, 0, 448, 448, 0, 0, 0, 0, 0, 0, 0, 1408, 211, 13, 0, 0, 0, 0, 0,
+  0, 33, 0, 0, 211, 0, 0, 0, 0, 22, 22, 0, 26, 211, 960, 0, 0, 0, 0, 256, 23, 0, 0, 0, 0, 211, 0, 0, 0, 29, 0, 11, 0, 0,
+  0, 0, 0, 0, 334, 211, 334, 21, 0, 334, 0, 335, 0, 32, 0, 0, 0, 0, 0, 0, 448, 0, 448, 0, 0, 448, 11, 0, 0, 0, 0, 0, 0,
+  335, 211, 335, 21, 0, 335, 0, 335, 0, 128, 0, 0, 0, 0, 0, 0, 396, 396, 396, 396, 396, 396, 396, 11, 0, 0, 0, 0, 0, 0,
+  0, 17, 211, 0, 21, 0, 0, 0, 0, 0, 512, 512, 0, 211, 0, 21, 0, 0, 23, 23, 0, 211, 640, 0, 0, 0, 0, 0, 0, 211, 0, 27, 0,
+  0, 0, 211, 0, 0, 0, 0, 30, 20, 0, 0, 0, 0, 0, 0, 0, 18, 211, 1152, 0, 0, 0, 0, 0, 0, 211, 0, 27, 348, 349, 0, 211, 0,
+  21, 0, 0, 0, 0, 24, 1216, 0, 0, 0, 0, 0, 0, 0, 640, 11, 0, 0, 0, 0, 0, 0, 16, 211, 16, 21, 0, 0, 0, 0, 0, 211, 768, 0,
+  0, 0, 0, 704, 0, 0, 0, 0, 576, 0, 0, 0, 0, 832, 0, 0, 0, 0, 31, 0, 0, 0, 0, 0, 1280, 0, 211, 17, 0, 0, 0, 0, 0, 0,
+  211, 896, 0, 0, 0, 0, 211, 1024, 0, 0, 0, 0, 256, 0, 0, 0, 0, 0, 1152, 0, 0, 211, 18, 0, 0, 0, 0, 0, 0, 256, 23, 0, 0,
+  0, 1344, 25, 0, 211, 1088, 0, 0, 0, 0, 256, 348, 349, 0, 0, 0, 211, 0, 0, 0, 0, 0, 0, 0, 0, 13, 211, 1408, 0, 0, 0, 0,
+  0, 0
+);
+
+(:~
+ : The DFA-state to expected-token-set mapping.
+ :)
+declare variable $p:EXPECTED as xs:integer+ :=
+(
+  8, 34, 96, 288, 4194400, 131232, 4194464, 3932784, 130116, 4063856, 8, 32, 16, 16, 16, 262144, 524288, 1048576, 4,
+  130048, 8, 16, 16, 262144, 524288, 1048576, 8, 16, 16, 262144, 524288, 1048576, 262144
+);
+
+(:~
+ : The token-string table.
+ :)
+declare variable $p:TOKEN as xs:string+ :=
+(
+  "(0)",
+  "eof",
+  "anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter",
+  "fourHexadecimalDigits",
+  "number",
+  "whitespace",
+  "'""'",
+  "','",
+  "':'",
+  "'['",
+  "'\""'",
+  "'\/'",
+  "'\\'",
+  "'\n'",
+  "'\r'",
+  "'\t'",
+  "'\u'",
+  "']'",
+  "'false'",
+  "'null'",
+  "'true'",
+  "'{'",
+  "'}'"
+);
+
+(:~
+ : Match next token in input string, starting at given index, using
+ : the DFA entry state for the set of tokens that are expected in
+ : the current context.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start in input string.
+ : @param $token-set the expected token set id.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:match($input as xs:string,
+                         $begin as xs:integer,
+                         $token-set as xs:integer) as xs:integer+
+{
+  let $result := $p:INITIAL[1 + $token-set]
+  return p:transition($input,
+                      $begin,
+                      $begin,
+                      $begin,
+                      $result,
+                      $result mod 64,
+                      0)
+};
+
+(:~
+ : The DFA state transition function. If we are in a valid DFA state, save
+ : it's result annotation, consume one input codepoint, calculate the next
+ : state, and use tail recursion to do the same again. Otherwise, return
+ : any valid result or a negative DFA state id in case of an error.
+ :
+ : @param $input the input string.
+ : @param $begin the begin index of the current token in the input string.
+ : @param $current the index of the current position in the input string.
+ : @param $end the end index of the result in the input string.
+ : @param $result the result code.
+ : @param $current-state the current DFA state.
+ : @param $previous-state the  previous DFA state.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:transition($input as xs:string,
+                              $begin as xs:integer,
+                              $current as xs:integer,
+                              $end as xs:integer,
+                              $result as xs:integer,
+                              $current-state as xs:integer,
+                              $previous-state as xs:integer)
+{
+  if ($current-state eq 0) then
+    let $result := $result idiv 64
+    let $end := if ($end gt string-length($input)) then string-length($input) + 1 else $end
+    return
+      if ($result ne 0) then
+      (
+        $result - 1,
+        $begin,
+        $end
+      )
+      else
+      (
+        - $previous-state,
+        $begin,
+        $current - 1
+      )
+  else
+    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]
+    let $c1 :=
+      if ($c0 < 128) then
+        $p:MAP0[1 + $c0]
+      else if ($c0 < 55296) then
+        let $c1 := $c0 idiv 32
+        let $c2 := $c1 idiv 32
+        return $p:MAP1[1 + $c0 mod 32 + $p:MAP1[1 + $c1 mod 32 + $p:MAP1[1 + $c2]]]
+      else
+        p:map2($c0, 1, 2)
+    let $current := $current + 1
+    let $i0 := 64 * $c1 + $current-state - 1
+    let $i1 := $i0 idiv 8
+    let $next-state := $p:TRANSITION[$i0 mod 8 + $p:TRANSITION[$i1 + 1] + 1]
+    return
+      if ($next-state > 63) then
+        p:transition($input, $begin, $current, $current, $next-state, $next-state mod 64, $current-state)
+      else
+        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)
+};
+
+(:~
+ : Recursively translate one 32-bit chunk of an expected token bitset
+ : to the corresponding sequence of token strings.
+ :
+ : @param $result the result of previous recursion levels.
+ : @param $chunk the 32-bit chunk of the expected token bitset.
+ : @param $base-token-code the token code of bit 0 in the current chunk.
+ : @return the set of token strings.
+ :)
+declare function p:token($result as xs:string*,
+                         $chunk as xs:integer,
+                         $base-token-code as xs:integer)
+{
+  if ($chunk = 0) then
+    $result
+  else
+    p:token
+    (
+      ($result, if ($chunk mod 2 != 0) then $p:TOKEN[$base-token-code] else ()),
+      if ($chunk < 0) then $chunk idiv 2 + 2147483648 else $chunk idiv 2,
+      $base-token-code + 1
+    )
+};
+
+(:~
+ : Calculate expected token set for a given DFA state as a sequence
+ : of strings.
+ :
+ : @param $state the DFA state.
+ : @return the set of token strings.
+ :)
+declare function p:expected-token-set($state as xs:integer) as xs:string*
+{
+  if ($state > 0) then
+    for $t in 0 to 0
+    let $i0 := $t * 33 + $state - 1
+    return p:token((), $p:EXPECTED[$i0 + 1], $t * 32 + 1)
+  else
+    ()
+};
+
+(:~
+ : Classify codepoint by doing a tail recursive binary search for a
+ : matching codepoint range entry in MAP2, the codepoint to charclass
+ : map for codepoints above the surrogate block.
+ :
+ : @param $c the codepoint.
+ : @param $lo the binary search lower bound map index.
+ : @param $hi the binary search upper bound map index.
+ : @return the character class.
+ :)
+declare function p:map2($c as xs:integer, $lo as xs:integer, $hi as xs:integer) as xs:integer
+{
+  if ($lo > $hi) then
+    0
+  else
+    let $m := ($hi + $lo) idiv 2
+    return
+      if ($p:MAP2[$m] > $c) then
+        p:map2($c, $lo, $m - 1)
+      else if ($p:MAP2[2 + $m] < $c) then
+        p:map2($c, $m + 1, $hi)
+      else
+        $p:MAP2[4 + $m]
+};
+
+(:~
+ : Parse the 1st loop of production array (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-array-1($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else
+    let $state := p:lookahead1W(5, $input, $state)          (: whitespace^token | ',' | ']' :)
+    return
+      if ($state[$p:l1] != 7) then                          (: ',' :)
+        $state
+      else
+        let $state := p:consume(7, $input, $state)          (: ',' :)
+                                                                      (: line 55 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state, <item/>)
+                                                                      (: line 346 "JSON-to-XDM.xquery" :)
+        let $state := p:lookahead1W(7, $input, $state)      (: number | whitespace^token | '"' | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+        let $state :=
+          if ($state[$p:error]) then
+            $state
+          else
+            p:parse-value($input, $state)
+        return p:parse-array-1($input, $state)
+};
+
+(:~
+ : Parse array.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-array($input as xs:string, $state as item()+) as item()+
+{
+                                                                      (: line 52 "JSON-to-XDM.ebnf" :)
+                                                                      let $count := count($state)
+                                                                      (: line 368 "JSON-to-XDM.xquery" :)
+  let $state := p:consume(9, $input, $state)                (: '[' :)
+  let $state := p:lookahead1W(9, $input, $state)            (: number | whitespace^token | '"' | '[' | ']' | 'false' |
+                                                               'null' | 'true' | '{' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] != 17) then                      (: ']' :)
+                                                                      (: line 53 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state, <item/>)
+                                                                      (: line 378 "JSON-to-XDM.xquery" :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-value($input, $state)
+      let $state := p:parse-array-1($input, $state)
+      return $state
+    else
+      $state
+  let $state := p:consume(17, $input, $state)               (: ']' :)
+                                                                      (: line 60 "JSON-to-XDM.ebnf" :)
+                                                                      let $state :=
+                                                                      (
+                                                                        $state[position() < $count],
+                                                                        element {node-name($state[$count])}
+                                                                        {
+                                                                          $state[$count]/@*,
+                                                                          attribute type {"array"},
+                                                                          $state[position() > $count]
+                                                                        }
+                                                                      )
+                                                                      (: line 400 "JSON-to-XDM.xquery" :)
+  return $state
+};
+
+(:~
+ : Parse pair.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-pair($input as xs:string, $state as item()+) as item()+
+{
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else
+      p:parse-string($input, $state)
+                                                                      (: line 45 "JSON-to-XDM.ebnf" :)
+                                                                      let $state :=
+                                                                      (
+                                                                        $state[position() < last()],
+                                                                        <pair name="{$state[last()]}"/>
+                                                                      )
+                                                                      (: line 424 "JSON-to-XDM.xquery" :)
+  let $state := p:lookahead1W(3, $input, $state)            (: whitespace^token | ':' :)
+  let $state := p:consume(8, $input, $state)                (: ':' :)
+  let $state := p:lookahead1W(7, $input, $state)            (: number | whitespace^token | '"' | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else
+      p:parse-value($input, $state)
+  return $state
+};
+
+(:~
+ : Parse the 1st loop of production object (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-object-1($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else
+    let $state := p:lookahead1W(6, $input, $state)          (: whitespace^token | ',' | '}' :)
+    return
+      if ($state[$p:l1] != 7) then                          (: ',' :)
+        $state
+      else
+        let $state := p:consume(7, $input, $state)          (: ',' :)
+        let $state := p:lookahead1W(2, $input, $state)      (: whitespace^token | '"' :)
+        let $state :=
+          if ($state[$p:error]) then
+            $state
+          else
+            p:parse-pair($input, $state)
+        return p:parse-object-1($input, $state)
+};
+
+(:~
+ : Parse object.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-object($input as xs:string, $state as item()+) as item()+
+{
+                                                                      (: line 31 "JSON-to-XDM.ebnf" :)
+                                                                      let $count := count($state)
+                                                                      (: line 476 "JSON-to-XDM.xquery" :)
+  let $state := p:consume(21, $input, $state)               (: '{' :)
+  let $state := p:lookahead1W(4, $input, $state)            (: whitespace^token | '"' | '}' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] = 6) then                        (: '"' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-pair($input, $state)
+      let $state := p:parse-object-1($input, $state)
+      return $state
+    else
+      $state
+  let $state := p:consume(22, $input, $state)               (: '}' :)
+                                                                      (: line 33 "JSON-to-XDM.ebnf" :)
+                                                                      let $state :=
+                                                                      (
+                                                                        $state[position() < $count],
+                                                                        element {node-name($state[$count])}
+                                                                        {
+                                                                          $state[$count]/@*,
+                                                                          attribute type {"object"},
+                                                                          $state[position() > $count]
+                                                                        }
+                                                                      )
+                                                                      (: line 504 "JSON-to-XDM.xquery" :)
+  return $state
+};
+
+(:~
+ : Parse the 1st loop of production string (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-string-1($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else
+    let $state := p:lookahead1(8, $input, $state)           (: anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter |
+                                                               '"' | '\"' | '\/' | '\\' | '\n' | '\r' | '\t' | '\u' :)
+    return
+      if ($state[$p:l1] = 6) then                           (: '"' :)
+        $state
+      else
+        let $state :=
+          if ($state[$p:error]) then
+            $state
+          else if ($state[$p:l1] = 2) then                  (: anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter :)
+            let $state := p:consume(2, $input, $state)      (: anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter :)
+                                                                      (: line 18 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], p:token($input, $state)))
+                                                                      (: line 534 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 10) then                 (: '\"' :)
+            let $state := p:consume(10, $input, $state)     (: '\"' :)
+                                                                      (: line 19 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], """"))
+                                                                      (: line 540 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 12) then                 (: '\\' :)
+            let $state := p:consume(12, $input, $state)     (: '\\' :)
+                                                                      (: line 20 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], "\"))
+                                                                      (: line 546 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 11) then                 (: '\/' :)
+            let $state := p:consume(11, $input, $state)     (: '\/' :)
+                                                                      (: line 21 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], "/"))
+                                                                      (: line 552 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 13) then                 (: '\n' :)
+            let $state := p:consume(13, $input, $state)     (: '\n' :)
+                                                                      (: line 24 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], "&#xA;"))
+                                                                      (: line 558 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 14) then                 (: '\r' :)
+            let $state := p:consume(14, $input, $state)     (: '\r' :)
+                                                                      (: line 25 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], "&#xD;"))
+                                                                      (: line 564 "JSON-to-XDM.xquery" :)
+            return $state
+          else if ($state[$p:l1] = 15) then                 (: '\t' :)
+            let $state := p:consume(15, $input, $state)     (: '\t' :)
+                                                                      (: line 26 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], "&#x9;"))
+                                                                      (: line 570 "JSON-to-XDM.xquery" :)
+            return $state
+          else
+            let $state := p:consume(16, $input, $state)     (: '\u' :)
+            let $state := p:lookahead1(0, $input, $state)   (: fourHexadecimalDigits :)
+            let $state := p:consume(3, $input, $state)      (: fourHexadecimalDigits :)
+                                                                      (: line 27 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state[position() < last()], concat($state[last()], p:unhex(p:token($input, $state))))
+                                                                      (: line 578 "JSON-to-XDM.xquery" :)
+            return $state
+        return p:parse-string-1($input, $state)
+};
+
+(:~
+ : Parse string.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-string($input as xs:string, $state as item()+) as item()+
+{
+  let $state := p:consume(6, $input, $state)                (: '"' :)
+                                                                      (: line 16 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state, "")
+                                                                      (: line 595 "JSON-to-XDM.xquery" :)
+  let $state := p:parse-string-1($input, $state)
+  let $state := p:consume(6, $input, $state)                (: '"' :)
+  return $state
+};
+
+(:~
+ : Parse value.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-value($input as xs:string, $state as item()+) as item()+
+{
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else if ($state[$p:l1] = 6) then                        (: '"' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-string($input, $state)
+                                                                      (: line 8 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := p:set-value($state[position() < last()], "string", $state[last()])
+                                                                      (: line 621 "JSON-to-XDM.xquery" :)
+      return $state
+    else if ($state[$p:l1] = 4) then                        (: number :)
+      let $state := p:consume(4, $input, $state)            (: number :)
+                                                                      (: line 9 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := p:set-value($state, "number", p:token($input, $state))
+                                                                      (: line 627 "JSON-to-XDM.xquery" :)
+      return $state
+    else if ($state[$p:l1] = 21) then                       (: '{' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-object($input, $state)
+      return $state
+    else if ($state[$p:l1] = 9) then                        (: '[' :)
+      let $state :=
+        if ($state[$p:error]) then
+          $state
+        else
+          p:parse-array($input, $state)
+      return $state
+    else if ($state[$p:l1] = 20) then                       (: 'true' :)
+      let $state := p:consume(20, $input, $state)           (: 'true' :)
+                                                                      (: line 12 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := p:set-value($state, "boolean", p:token($input, $state))
+                                                                      (: line 647 "JSON-to-XDM.xquery" :)
+      return $state
+    else if ($state[$p:l1] = 18) then                       (: 'false' :)
+      let $state := p:consume(18, $input, $state)           (: 'false' :)
+                                                                      (: line 13 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := p:set-value($state, "boolean", p:token($input, $state))
+                                                                      (: line 653 "JSON-to-XDM.xquery" :)
+      return $state
+    else
+      let $state := p:consume(19, $input, $state)           (: 'null' :)
+                                                                      (: line 14 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := p:set-value($state, "null", ())
+                                                                      (: line 659 "JSON-to-XDM.xquery" :)
+      return $state
+  return $state
+};
+
+(:~
+ : Parse json.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:parse-json($input as xs:string, $state as item()+) as item()+
+{
+                                                                      (: line 6 "JSON-to-XDM.ebnf" :)
+                                                                      let $state := ($state, <json/>)
+                                                                      (: line 675 "JSON-to-XDM.xquery" :)
+  let $state := p:lookahead1W(7, $input, $state)            (: number | whitespace^token | '"' | '[' | 'false' |
+                                                               'null' | 'true' | '{' :)
+  let $state :=
+    if ($state[$p:error]) then
+      $state
+    else
+      p:parse-value($input, $state)
+  let $state := p:lookahead1W(1, $input, $state)            (: eof | whitespace^token :)
+  let $state := p:consume(1, $input, $state)                (: eof :)
+  return $state
+};
+
+(:~
+ : Create a textual error message from a parsing error.
+ :
+ : @param $input the input string.
+ : @param $error the parsing error descriptor.
+ : @return the error message.
+ :)
+declare function p:error-message($input as xs:string, $error as element(error)) as xs:string
+{
+  let $begin := xs:integer($error/@b)
+  let $context := string-to-codepoints(substring($input, 1, $begin - 1))
+  let $linefeeds := index-of($context, 10)
+  let $line := count($linefeeds) + 1
+  let $column := ($begin - $linefeeds[last()], $begin)[1]
+  return
+    string-join
+    (
+      (
+        if ($error/@o) then
+          ("syntax error, found ", $p:TOKEN[$error/@o + 1])
+        else
+          "lexical analysis failed",
+        "&#10;",
+        "while expecting ",
+        if ($error/@x) then
+          $p:TOKEN[$error/@x + 1]
+        else
+          let $expected := p:expected-token-set($error/@s)
+          return
+          (
+            "["[exists($expected[2])],
+            string-join($expected, ", "),
+            "]"[exists($expected[2])]
+          ),
+        "&#10;",
+        if ($error/@o or $error/@e = $begin) then
+          ()
+        else
+          ("after successfully scanning ", string($error/@e - $begin), " characters beginning "),
+        "at line ", string($line), ", column ", string($column), ":&#10;",
+        "...", substring($input, $begin, 64), "..."
+      ),
+      ""
+    )
+};
+
+(:~
+ : Consume one token, i.e. compare lookahead token 1 with expected
+ : token and in case of a match, shift lookahead tokens down such that
+ : l1 becomes the current token, and higher lookahead tokens move down.
+ : When lookahead token 1 does not match the expected token, raise an
+ : error by saving the expected token code in the error field of the
+ : lexer state.
+ :
+ : @param $code the expected token.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:consume($code as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:error]) then
+    $state
+  else if ($state[$p:l1] eq $code) then
+  (
+    subsequence($state, $p:l1, 3),
+    0, 0, 0,
+    subsequence($state, 7)
+  )
+  else
+  (
+    subsequence($state, 1, $p:error - 1),
+    element error
+    {
+      attribute b {$state[$p:b1]},
+      attribute e {$state[$p:e1]},
+      if ($state[$p:l1] lt 0) then
+        attribute s {- $state[$p:l1]}
+      else
+        (attribute o {$state[$p:l1]}, attribute x {$code})
+    },
+    subsequence($state, $p:error + 1)
+  )
+};
+
+(:~
+ : Use p:match to fetch the next token, but skip any leading
+ : whitespace.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start.
+ : @param $token-set the valid token set id.
+ : @return a sequence of three values: the token code of the result
+ : token, with input string positions of token begin and end.
+ :)
+declare function p:matchW($input as xs:string,
+                          $begin as xs:integer,
+                          $token-set as xs:integer)
+{
+  let $match := p:match($input, $begin, $token-set)
+  return
+    if ($match[1] = 5) then                                 (: whitespace^token :)
+      p:matchW($input, $match[3], $token-set)
+    else
+      $match
+};
+
+(:~
+ : Lookahead one token on level 1 with whitespace skipping.
+ :
+ : @param $set the code of the DFA entry state for the set of valid tokens.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:lookahead1W($set as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:l1] ne 0) then
+    $state
+  else
+    let $match :=
+        p:matchW($input, $state[$p:e0], $set)
+    return
+    (
+      $match[1],
+      subsequence($state, $p:b0, 2),
+      $match,
+      subsequence($state, 7)
+    )
+};
+
+(:~
+ : Lookahead one token on level 1.
+ :
+ : @param $set the code of the DFA entry state for the set of valid tokens.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:lookahead1($set as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:l1] ne 0) then
+    $state
+  else
+    let $match :=
+        p:match($input, $state[$p:e0], $set)
+    return
+    (
+      $match[1],
+      subsequence($state, $p:b0, 2),
+      $match,
+      subsequence($state, 7)
+    )
+};
+
+(:~
+ : Parse start symbol json from given string.
+ :
+ : @param $s the string to be parsed.
+ : @return the result as generated by parser actions.
+ :)
+declare function p:parse-json($s as xs:string) as item()*
+{
+  let $state := (0, 1, 1, 0, 0, 0, false())
+  let $state := p:parse-json($s, $state)
+  let $error := $state[$p:error]
+  return
+    if ($error) then
+      element ERROR {$error/@*, p:error-message($s, $error)}
+    else
+      subsequence($state, $p:result)
+};
+
+                                                                      (: line 99 "JSON-to-XDM.ebnf" :)
+                                                                      declare function p:token($input, $state)
+                                                                      {
+                                                                        substring($input, $state[$p:b0], $state[$p:e0] - $state[$p:b0])
+                                                                      };
+
+                                                                      declare function p:unhex($codepoint as xs:integer*, $value as xs:integer) as xs:integer
+                                                                      {
+                                                                        if (empty($codepoint)) then
+                                                                          $value
+                                                                        else
+                                                                          p:unhex
+                                                                          (
+                                                                            $codepoint[position() > 1],
+                                                                            $codepoint[1] - (0, 0, 48, 55, 0, 87)[$codepoint[1] idiv 16] + $value * 16
+                                                                          )
+                                                                      };
+
+                                                                      declare function p:unhex($hex as xs:string) as xs:string
+                                                                      {
+                                                                        codepoints-to-string(p:unhex(string-to-codepoints($hex), 0))
+                                                                      };
+
+                                                                      declare function p:set-value($state, $type, $value)
+                                                                      {
+                                                                        $state[position() < last()],
+                                                                        element {node-name($state[last()])}
+                                                                        {
+                                                                          $state[last()]/@*,
+                                                                          attribute type {$type},
+                                                                          text {$value}
+                                                                        }
+                                                                      };
+
+                                                                      (:~
+                                                                       : The input filename, or string, if surrounded by curly braces.
+                                                                       :)
+                                                                      declare variable $input as xs:string external;
+
+                                                                      let $result :=
+                                                                        if (matches($input, "^\{.*\}$")) then
+                                                                          p:parse-json(substring($input, 2, string-length($input) - 2))
+                                                                        else
+                                                                          p:parse-json(unparsed-text($input))
+                                                                      return
+                                                                        if (empty($result/self::ERROR)) then
+                                                                          $result
+                                                                        else
+                                                                          error(xs:QName("p:parse-json"), concat("&#10;    ", replace($result, "&#10;", "&#10;    ")))
+                                                                      (: line 910 "JSON-to-XDM.xquery" :)
+(: End :)

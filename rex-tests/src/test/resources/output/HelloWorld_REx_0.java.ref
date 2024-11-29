@@ -1,0 +1,158 @@
+// This file was generated on Mon Nov 1, 2021 13:46 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: HelloWorld_REx_0.rex
+
+public class HelloWorld_REx_0
+{
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+  private int state = 0;
+
+  public void init(String string)
+  {
+    input = string;
+    size = string.length();
+    end = 0;
+  }
+
+  public int getOffset() {return begin;}
+  public int getSize()   {return end - begin;}
+  public int getState()  {return state;}
+
+  public int match(int tokenSetId, String string)
+  {
+    init(string);
+    return match(tokenSetId);
+  }
+
+  public int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+
+    for (int code = result & 15; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+
+      state = code;
+      int i0 = (charclass << 4) + code - 1;
+      code = TRANSITION[(i0 & 3) + TRANSITION[i0 >> 2]];
+
+      if (code > 15)
+      {
+        result = code;
+        code &= 15;
+        end = current;
+      }
+    }
+
+    result >>= 4;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  public String[] getExpectedTokenSet()
+  {
+    return getTokenSet(- state);
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 15;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 11 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3,
+    /* 105 */ 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 91, 90, 91, 123, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
+    /*  78 */ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0,
+    /* 144 */ 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 37, 37, 37, 37, 37, 37, 55, 37, 43, 37, 37, 37, 36, 37, 37, 37, 37, 62, 41, 37, 37, 47, 53, 37, 37, 49, 37,
+    /* 27 */ 37, 59, 37, 37, 37, 66, 37, 37, 37, 3, 0, 0, 0, 0, 11, 0, 0, 0, 6, 0, 7, 0, 0, 0, 9, 0, 0, 48, 0, 0, 64, 0,
+    /* 59 */ 0, 5, 0, 0, 8, 0, 10, 36, 36, 0, 36
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /*  0 */ 6, 10, 4, 2, 8, 4, 8, 4, 8, 4, 8
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "W",
+    "'hello'",
+    "'world'"
+  };
+
+  public enum Token
+  {
+    /* 0 */ _0,
+    /* 1 */ W,
+    /* 2 */ _2,
+    /* 3 */ _3
+  };
+}
+
+// EoF

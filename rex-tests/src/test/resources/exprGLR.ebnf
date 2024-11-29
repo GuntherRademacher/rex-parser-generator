@@ -1,0 +1,49 @@
+<?eval
+  declare namespace p="eval";
+  declare option saxon:output "method=text";
+?>
+
+input   ::= expr EOF
+          | begin_expr expr end_expr EOF
+begin_expr
+        ::=
+end_expr
+        ::= '$'
+expr    ::= term   (('+' | '-') term  )*
+term    ::= factor (('*' | '/') factor)*
+factor  ::= integer | '(' expr ')'
+
+<?TOKENS?>
+
+integer ::= [0-9]+
+EOF     ::= $
+ws      ::= ' ' /* ws:definition */
+
+<?ENCORE?>
+
+<?eval
+declare function local:eval($nodes)
+{
+  let $lhs := $nodes[last() - 1 > position()]
+  let $op  := $nodes[last() - 1]
+  let $rhs := $nodes[last()]
+  return
+    if (empty($op)) then
+      typeswitch ($rhs)
+      case element(integer) return xs:integer($rhs)
+      case element(factor)  return local:eval($rhs/(integer|expr))
+      case element(term)    return local:eval($nodes/*)
+      case element(expr)    return local:eval($nodes/*)
+      case element(input)   return local:eval($nodes/expr)
+      case element(ERROR)   return $rhs
+      default return error()
+    else if ($op = "+") then local:eval($lhs)  +  local:eval($rhs)
+    else if ($op = "-") then local:eval($lhs)  -  local:eval($rhs)
+    else if ($op = "*") then local:eval($lhs)  *  local:eval($rhs)
+    else if ($op = "/") then local:eval($lhs) div local:eval($rhs)
+    else error()
+};
+
+declare variable $input external;
+local:eval(p:parse-input($input))
+?>

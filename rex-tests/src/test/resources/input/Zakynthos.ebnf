@@ -1,0 +1,71 @@
+﻿// java: rex -trace -java -a java Zakynthos.ebnf
+// xquery: rex -trace -xquery -a xquery Zakynthos.ebnf
+                                <?xquery declare namespace module="Zakynthos.xquery";?>
+                                <?java
+                                  import java.io.IOException;
+                                  import java.io.OutputStreamWriter;
+                                  import java.io.UnsupportedEncodingException;
+                                  import java.io.Writer;
+
+                                  class Zakynthos
+                                  {
+                                    public Zakynthos(String string)
+                                    {
+                                      initialize(string);
+                                    }
+
+                                    public static void main(String args[])
+                                    {
+                                      System.out.println("<result>");
+                                      new Zakynthos("Ζάκυνθος2").parse_Zakynthos();
+                                      new Zakynthos("1߿ࠀ�𐀀􏿿21").parse_Zakynthos();
+                                      try
+                                      {
+                                        new Zakynthos("x").parse_Zakynthos();
+                                        System.out.println("  <fail/>");
+                                      }
+                                      catch (Zakynthos.ParseException e)
+                                      {
+                                        System.out.println("  <pass/>");
+                                      }
+                                      System.out.println("</result>");
+                                    }
+                                ?>
+Zakynthos  ::= Z1 Ζάκυνθος "1" EOF
+             | Z2 Ζάκυνθος "2" EOF
+Ζάκυνθος   ::= Ζ ά κ υ ν θ ο ς
+             | CP49 CP55295 CP57344 CP65533 CP65536 CP1114111 CP50
+<?TOKENS?>
+
+Z1 ::= &( ( "Ζάκυνθος" | CP49 CP55295 CP57344 CP65533 CP65536 CP1114111 CP50 ) "1" )
+Z2 ::= &( ( "Ζάκυνθος" | CP49 CP55295 CP57344 CP65533 CP65536 CP1114111 CP50 ) "2" )
+
+CP49      ::= "1" &( CP55295 CP57344 CP65533 CP65536 CP1114111 CP50 )
+CP55295   ::= "߿" &( CP57344 CP65533 CP65536 CP1114111 CP50 )
+CP57344   ::= "ࠀ" &( CP65533 CP65536 CP1114111 CP50 )
+CP65533   ::= "�" &( CP65536 CP1114111 CP50 )
+CP65536   ::= "𐀀" &( CP1114111 CP50 )
+CP1114111 ::= "􏿿" &CP50
+CP50      ::= "2"
+
+Ζ ::= "Ζ" &"άκυνθος"
+ά ::= "ά" &"κυνθος"
+κ ::= "κ" &"υνθος"
+υ ::= "υ" &"νθος"
+ν ::= "ν" &"θος"
+θ ::= "θ" &"ος"
+ο ::= "ο" &"ς"
+ς ::= "ς"
+
+EOF ::= $
+
+<?ENCORE?>
+                                <?xquery
+                                  <result>
+                                    {
+                                      module:parse_Zakynthos("Ζάκυνθος2"),
+                                      module:parse_Zakynthos("1߿ࠀ�𐀀􏿿21")
+                                    }
+                                    <pass/>
+                                  </result>
+                                ?>

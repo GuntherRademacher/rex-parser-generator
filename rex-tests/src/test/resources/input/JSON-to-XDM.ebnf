@@ -1,0 +1,147 @@
+                                                            <?j2x
+                                                              declare namespace p="JSON-to-XML";
+                                                              declare option saxon:output "indent=yes";
+                                                            ?>
+
+json     ::=                                                <?j2x let $state := ($state, <json/>)?>
+             value eof
+value    ::= string                                         <?j2x let $state := p:set-value($state[position() < last()], "string", $state[last()])?>
+           | number                                         <?j2x let $state := p:set-value($state, "number", p:token($input, $state))?>
+           | object
+           | array
+           | 'true'                                         <?j2x let $state := p:set-value($state, "boolean", p:token($input, $state))?>
+           | 'false'                                        <?j2x let $state := p:set-value($state, "boolean", p:token($input, $state))?>
+           | 'null'                                         <?j2x let $state := p:set-value($state, "null", ())?>
+
+string   ::= '"'                                            <?j2x let $state := ($state, "")?>
+             ( anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter
+                                                            <?j2x let $state := ($state[position() < last()], concat($state[last()], p:token($input, $state)))?>
+             | '\"'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], """"))?>
+             | '\\'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], "\"))?>
+             | '\/'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], "/"))?>
+/*           | '\b'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], codepoints-to-string( 8)))?> */
+/*           | '\f'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], codepoints-to-string(12)))?> */
+             | '\n'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], "&#xA;"))?>
+             | '\r'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], "&#xD;"))?>
+             | '\t'                                         <?j2x let $state := ($state[position() < last()], concat($state[last()], "&#x9;"))?>
+             | '\u' fourHexadecimalDigits                   <?j2x let $state := ($state[position() < last()], concat($state[last()], p:unhex(p:token($input, $state))))?>
+             )*
+             '"'
+          /* ws:explicit */
+object   ::=                                                <?j2x let $count := count($state)?>
+             '{' ( pair ( ',' pair )* )? '}'                <?j2x
+                                                              let $state :=
+                                                              (
+                                                                $state[position() < $count],
+                                                                element {node-name($state[$count])}
+                                                                {
+                                                                  $state[$count]/@*,
+                                                                  attribute type {"object"},
+                                                                  $state[position() > $count]
+                                                                }
+                                                              )
+                                                            ?>
+pair     ::= string                                         <?j2x
+                                                              let $state :=
+                                                              (
+                                                                $state[position() < last()],
+                                                                <pair name="{$state[last()]}"/>
+                                                              )
+                                                            ?>
+             ':' value
+array    ::=                                                <?j2x let $count := count($state)?>
+             '[' (                                          <?j2x let $state := ($state, <item/>)?>
+                   value
+                   ( ','                                    <?j2x let $state := ($state, <item/>)?>
+                     value
+                   )*
+                 )?
+             ']'                                            <?j2x
+                                                              let $state :=
+                                                              (
+                                                                $state[position() < $count],
+                                                                element {node-name($state[$count])}
+                                                                {
+                                                                  $state[$count]/@*,
+                                                                  attribute type {"array"},
+                                                                  $state[position() > $count]
+                                                                }
+                                                              )
+                                                            ?>
+whitespace
+         ::= whitespace^token
+          /* ws: definition */
+
+<?TOKENS?>
+
+eof      ::= $
+anyUnicodeCharactersExceptQuoteOrBackslashOrControlCharacter
+         ::= ( alphabet - ["#x005C] )+
+alphabet ::= #x0009
+           | #x000A
+           | #x000D
+           | [#x0020-#xD7FF]
+           | [#xE000-#xFFFD]
+           | [#x10000-#x10FFFF]
+hexadecimalDigit
+         ::= [0-9A-Fa-f]
+fourHexadecimalDigits
+         ::= hexadecimalDigit hexadecimalDigit hexadecimalDigit hexadecimalDigit
+number   ::= '-'? ( '0' | digitOneThroughNine digit* ) ( '.' digit+ )? ( ( 'e' | 'E' ) ( '+' | '-' )? digit+ )?
+digit    ::= [0-9]
+digitOneThroughNine
+         ::= digit - '0'
+whitespace
+         ::= [#x0009#x000A#x000D#x0020]+
+
+<?ENCORE?>
+                                                            <?j2x
+                                                              declare function p:token($input, $state)
+                                                              {
+                                                                substring($input, $state[$p:b0], $state[$p:e0] - $state[$p:b0])
+                                                              };
+
+                                                              declare function p:unhex($codepoint as xs:integer*, $value as xs:integer) as xs:integer
+                                                              {
+                                                                if (empty($codepoint)) then
+                                                                  $value
+                                                                else
+                                                                  p:unhex
+                                                                  (
+                                                                    $codepoint[position() > 1],
+                                                                    $codepoint[1] - (0, 0, 48, 55, 0, 87)[$codepoint[1] idiv 16] + $value * 16
+                                                                  )
+                                                              };
+
+                                                              declare function p:unhex($hex as xs:string) as xs:string
+                                                              {
+                                                                codepoints-to-string(p:unhex(string-to-codepoints($hex), 0))
+                                                              };
+
+                                                              declare function p:set-value($state, $type, $value)
+                                                              {
+                                                                $state[position() < last()],
+                                                                element {node-name($state[last()])}
+                                                                {
+                                                                  $state[last()]/@*,
+                                                                  attribute type {$type},
+                                                                  text {$value}
+                                                                }
+                                                              };
+
+                                                              (:~
+                                                               : The input filename, or string, if surrounded by curly braces.
+                                                               :)
+                                                              declare variable $input as xs:string external;
+
+                                                              let $result :=
+                                                                if (matches($input, "^\{.*\}$")) then
+                                                                  p:parse-json(substring($input, 2, string-length($input) - 2))
+                                                                else
+                                                                  p:parse-json(unparsed-text($input))
+                                                              return
+                                                                if (empty($result/self::ERROR)) then
+                                                                  $result
+                                                                else
+                                                                  error(xs:QName("p:parse-json"), concat("&#10;    ", replace($result, "&#10;", "&#10;    ")))
+                                                            ?>

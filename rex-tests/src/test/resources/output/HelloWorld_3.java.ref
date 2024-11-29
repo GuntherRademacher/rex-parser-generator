@@ -1,0 +1,438 @@
+// This file was generated on Mon Nov 1, 2021 16:07 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: HelloWorld.ebnf -name HelloWorld_3 -java -main -trace
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
+public class HelloWorld_3
+{
+  public static void main(String args[]) throws Exception
+  {
+    if (args.length == 0)
+    {
+      System.out.println("Usage: java HelloWorld_3 INPUT...");
+      System.out.println();
+      System.out.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+    }
+    else
+    {
+      for (String arg : args)
+      {
+        String input = read(arg);
+        HelloWorld_3 parser = new HelloWorld_3(input);
+        try
+        {
+          parser.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n");
+          parser.parse_H();
+          parser.writeTrace("</trace>\n");
+        }
+        catch (ParseException pe)
+        {
+          throw new RuntimeException("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe));
+        }
+        finally
+        {
+          parser.flushTrace();
+        }
+      }
+    }
+  }
+
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  private static String read(String input) throws Exception
+  {
+    if (input.startsWith("{") && input.endsWith("}"))
+    {
+      return input.substring(1, input.length() - 1);
+    }
+    else
+    {
+      byte buffer[] = new byte[(int) new java.io.File(input).length()];
+      java.io.FileInputStream stream = new java.io.FileInputStream(input);
+      stream.read(buffer);
+      stream.close();
+      String content = new String(buffer, System.getProperty("file.encoding"));
+      return content.length() > 0 && content.charAt(0) == '\uFEFF'
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  public HelloWorld_3(CharSequence string)
+  {
+    initialize(string);
+  }
+
+  public void initialize(CharSequence source)
+  {
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_H()
+  {
+    traceNonterminal("parse", "start", "H");
+    lookahead1W(0);                 // W | 'hello'
+    consume(2);                     // 'hello'
+    lookahead1W(1);                 // W | 'world'
+    consume(3);                     // 'world'
+    traceNonterminal("parse", "end", "H");
+    flushTrace();
+  }
+
+  private void traceNonterminal(String method, String occasion, String name)
+  {
+    writeTrace("  <" + method + " " + occasion + "nonterminal=\"" + name + "\"" + (l1 == 0 ? "" : " input=\"" + xmlEscape(lookaheadString()) + "\"") + "/>\n");
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+      writeTrace("  <parse terminal=\"" + xmlEscape(TOKEN[t]) + "\"" + (l1 == 0 ? "" : " input=\"" + xmlEscape(lookaheadString()) + "\"") + "/>\n");
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private int matchW(int tokenSetId)
+  {
+    int code;
+    for (;;)
+    {
+      code = match(tokenSetId);
+      if (code != 1)                // W
+      {
+        break;
+      }
+    }
+    return code;
+  }
+
+  private void lookahead1W(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = matchW(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    flushTrace();
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private String lookaheadString()
+  {
+    String result = "";
+    if (l1 > 0)
+    {
+      result += TOKEN[l1];
+    }
+    return result;
+  }
+
+  private int     b0, e0;
+  private int l1, b1, e1;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+  private Writer err;
+  {
+    try
+    {
+      err = new OutputStreamWriter(System.err, "UTF-8");
+    }
+    catch (UnsupportedEncodingException uee)
+    {}
+  }
+
+  private int match(int tokenSetId)
+  {
+    writeTrace("  <tokenize tokenset=\"" + tokenSetId + "\">\n");
+
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    writeTrace("    <next state=\"" + (result & 15) + "\"");
+    for (int code = result & 15; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      writeTrace(" offset=\"" + current + "\"");
+      ++current;
+      if (c0 < 0x80)
+      {
+        if (c0 >= 32 && c0 <= 126)
+        {
+          writeTrace(" char=\"" + xmlEscape(String.valueOf((char) c0)) + "\"");
+        }
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+      writeTrace(" codepoint=\"" + c0 + "\" class=\"" + charclass + "\"");
+
+      state = code;
+      int i0 = (charclass << 4) + code - 1;
+      code = TRANSITION[(i0 & 3) + TRANSITION[i0 >> 2]];
+
+      if (code > 15)
+      {
+        result = code;
+        writeTrace(" result=\"" + xmlEscape(TOKEN[((result >> 4) & 7) - 1]) + "\"");
+        code &= 15;
+        end = current;
+      }
+      writeTrace("/>\n");
+      if (code != 0)
+      {
+        writeTrace("    <next state=\"" + code + "\"");
+      }
+    }
+
+    result >>= 4;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      writeTrace("    <fail begin=\"" + begin + "\" end=\"" + end + "\" state=\"" + state + "\"/>\n");
+      writeTrace("  </tokenize>\n");
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    writeTrace("    <done result=\"" + xmlEscape(TOKEN[(result & 7) - 1]) + "\" begin=\"" + begin + "\" end=\"" + end + "\"/>\n");
+    writeTrace("  </tokenize>\n");
+    return (result & 7) - 1;
+  }
+
+  private static String xmlEscape(String s)
+  {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length(); ++i)
+    {
+      char c = s.charAt(i);
+      switch (c)
+      {
+      case '<': sb.append("&lt;"); break;
+      case '"': sb.append("&quot;"); break;
+      case '&': sb.append("&amp;"); break;
+      default : sb.append(c); break;
+      }
+    }
+    return sb.toString();
+  }
+
+  public void setTraceWriter(Writer w)
+  {
+    err = w;
+  }
+
+  private void writeTrace(String content)
+  {
+    try
+    {
+      err.write(content);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void flushTrace()
+  {
+    try
+    {
+      err.flush();
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 15;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 11 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3,
+    /* 105 */ 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 91, 90, 91, 123, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91,
+    /*  78 */ 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 91, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 3, 0, 0, 0, 4, 0, 0, 5, 0, 0, 6, 0, 0,
+    /* 144 */ 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 37, 37, 37, 37, 37, 37, 55, 37, 43, 37, 37, 37, 36, 37, 37, 37, 37, 62, 41, 37, 37, 47, 53, 37, 37, 49, 37,
+    /* 27 */ 37, 59, 37, 37, 37, 66, 37, 37, 37, 3, 0, 0, 0, 0, 11, 0, 0, 0, 6, 0, 7, 0, 0, 0, 9, 0, 0, 48, 0, 0, 64, 0,
+    /* 59 */ 0, 5, 0, 0, 8, 0, 10, 36, 36, 0, 36
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /*  0 */ 6, 10, 4, 2, 8, 4, 8, 4, 8, 4, 8
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "W",
+    "'hello'",
+    "'world'"
+  };
+}
+
+// End

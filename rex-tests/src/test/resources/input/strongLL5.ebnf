@@ -1,0 +1,70 @@
+// from http://www.tcs.informatik.uni-muenchen.de/lehre/WS08-09/SEP/Spezifikation/teil3.pdf
+
+Prg      ::= PrgSeq Eof
+PrgSeq   ::= PrgAtom (";" PrgAtom)*
+PrgAtom  ::= "skip"
+           | "walk"
+           | "turn" "(" IExp ")"
+           | "pickup"
+           | "drop"
+           | "leavescent" "(" IExp ")"
+           | "clearscent" "(" IExp ")"
+           | Identifier "=" IExp
+           | "{" PrgSeq "}"
+           | "if" IExp "then" PrgAtom "else" PrgAtom
+           | "while" IExp "do" PrgAtom
+IExp     ::= IExp1
+IExp1    ::= IExp2 (op1 IExp2)*
+IExp2    ::= IExp3 (op2 IExp3)*
+IExp3    ::= IExp4 (op3 IExp4)*
+IExp4    ::= IExp5 (op4 IExp5)*
+IExp5    ::= IExp6 (op5 IExp6)*
+IExp6    ::= "-" IExp6 | "!" IExp6 | "(" IExp1 ")" | IExpAtom
+IExpAtom ::= Identifier
+           | Number
+           | "true"
+           | "false"
+           | "rand"
+           | "sense" "(" Where "," "food" ")"
+           | "sense" "(" Where "," "obstacle" ")"
+           | "sense" "(" Where "," "home" ")"
+           | "sense" "(" Where "," "friend" ")"
+           | "sense" "(" Where "," "foe" ")"
+           | "sense" "(" Where "," "foehome" ")"
+           | "sense" "(" Where "," "carriesfood" ")"
+           | "sense" "(" Where "," "foescent" ")"
+           | "sense" "(" Where "," "ownscent" "," IExp ")"
+Where    ::= "here" | "ahead"
+op1      ::= "||"
+op2      ::= "&&"
+op3      ::= "==" | "<=" | "<" | "=" | ">=" | ">"
+op4      ::= "+" | "-"
+op5      ::= "*" | "/" | "%"
+
+Whitespace
+         ::= Whitespace^Token
+             /* ws: definition */
+
+<?TOKENS?>
+
+Identifier ::= Alpha (Alpha | Digit)*
+Alpha ::= [a-zA-Z]
+Digit ::= [0-9]
+Number ::= Digit+
+Eof ::= $
+Whitespace ::= [#x9#xa#xd#x20]+
+
+
+"clearscent"  << Identifier
+"drop"        << Identifier
+"false"       << Identifier
+"if"          << Identifier
+"leavescent"  << Identifier
+"pickup"      << Identifier
+"rand"        << Identifier
+"sense"       << Identifier
+"skip"        << Identifier
+"true"        << Identifier
+"turn"        << Identifier
+"walk"        << Identifier
+"while"       << Identifier

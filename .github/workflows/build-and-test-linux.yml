@@ -1,0 +1,62 @@
+name: Build REx and run tests (Linux)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Build C++ Project
+        run: |
+          g++ --version
+          rex/scripts/build-gpp.sh
+
+      - name: Add Executable to PATH
+        run: echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Haxe
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y haxe
+
+      - name: Install Scala
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y scala
+
+      - name: Run Gradle Tests
+        working-directory: rex-tests
+        run: ./gradlew test
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: rex-tests/build/test-results/test
+
+      - name: Upload JUnit HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: rex-tests/build/reports/tests/test
+
+      - name: Upload Test Summary
+        if: always()
+        run: cat rex-tests/build/test-results/test-summary.md >> $GITHUB_STEP_SUMMARY

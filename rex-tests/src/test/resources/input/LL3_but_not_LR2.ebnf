@@ -1,0 +1,6 @@
+S ::= a a | A a a a
+A ::=
+
+<?TOKENS?>
+
+a ::= 'a'

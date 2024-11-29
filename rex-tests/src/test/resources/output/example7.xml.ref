@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Mon Dec 19, 2016 10:29 (UTC+01) by REx v5.42 which is Copyright (c) 1979-2016 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: example7.ebnf -xml -ff -rex -lr 1 -->
+<g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production id="2" name="S">
+    <g:ref id="3" name="A"/>
+    <g:ref id="4" reduce-id="5" reduce-count="2" first="EOF" name="EOF"/>
+  </g:production>
+  <g:production id="6" first="a b c" name="A">
+    <g:zeroOrMore id="7" first="a b c">
+      <g:string id="8" first="b">b</g:string>
+    </g:zeroOrMore>
+    <g:zeroOrMore id="9" first="a c">
+      <g:string id="10" first="a">a</g:string>
+    </g:zeroOrMore>
+    <g:string id="11" first="c">c</g:string>
+    <g:zeroOrMore id="12" first="a b c d">
+      <g:zeroOrMore id="13" first="a b c">
+        <g:ref id="14" first="a b c" name="A"/>
+      </g:zeroOrMore>
+      <g:optional id="15" first="a b c">
+        <g:ref id="16" first="a b c" name="A"/>
+      </g:optional>
+      <g:oneOrMore id="17" first="a b c">
+        <g:ref id="18" first="a b c" name="A"/>
+      </g:oneOrMore>
+      <g:choice id="19" first="a b c">
+        <g:ref id="20" first="a b c" name="A"/>
+        <g:ref id="21" first="a b c" name="A"/>
+      </g:choice>
+    </g:zeroOrMore>
+    <g:string id="22" reduce-id="23" reduce-count="-1" first="d">d</g:string>
+  </g:production>
+  <?TOKENS?>
+  <g:production id="24" name="EOF">
+    <g:endOfFile/>
+  </g:production>
+<parser>
+    <state id="0">
+      <item id="3" lookahead="END">S ::= <dot>.</dot> A EOF</item>
+      <item id="8" lookahead="EOF IMPLICIT">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <goto on="A" to="10"/>
+      <shift on="b" to="11" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="12" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="1" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <accept on="S"/>
+    </state>
+    <state id="1">
+      <item id="8" lookahead="IMPLICIT a b c">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="22" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="2" domino="14" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21"/>
+      <shift on="b" to="13" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="14" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="3" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="18" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="2">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <goto on="A" to="4" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="3">
+      <item id="8" lookahead="IMPLICIT a b c">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="22" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="6" domino="14" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21"/>
+      <shift on="b" to="13" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="14" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="3" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="19" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="4">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <item id="22" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="4" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="18" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="5">
+      <item id="8" lookahead="IMPLICIT a b c">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="22" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="7" domino="14" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21"/>
+      <shift on="b" to="13" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="14" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="3" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="20" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="6">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <goto on="A" to="8" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="7">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <goto on="A" to="9" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="8">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <item id="22" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="8" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="19" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="9">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="14" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( <dot>.</dot> A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="16" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( <dot>.</dot> A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="18" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( <dot>.</dot> A )+ ( A | A ) )* 'd'</item>
+      <item id="20" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( <dot>.</dot> A | A ) )* 'd'</item>
+      <item id="21" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | <dot>.</dot> A ) )* 'd'</item>
+      <item id="22" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* <dot>.</dot> 'd'</item>
+      <goto on="A" to="9" domino="15" dominoes="14-14 14-16 14-18 16-18 18-18 18-20 18-21 20-14 20-16 20-18 20-22 21-14 21-16 21-18 21-22"/>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+      <shift on="d" to="20" domino="22" dominoes="22-23"/>
+    </state>
+    <state id="10">
+      <item id="4" lookahead="END">S ::= A <dot>.</dot> EOF</item>
+      <shift on="EOF" to="17"/>
+    </state>
+    <state id="11">
+      <item id="8" lookahead="EOF IMPLICIT">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="b" to="11" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="12" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="1" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="12">
+      <item id="10" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="a" to="12" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="1" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="13">
+      <item id="8" lookahead="IMPLICIT a b c">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="b" to="13" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="14" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="3" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="14">
+      <item id="10" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="a" to="14" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="3" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="15">
+      <item id="8" lookahead="IMPLICIT a b c d">A ::= ( <dot>.</dot> 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="b" to="15" domino="3" dominoes="8-8 8-10 8-11"/>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="16">
+      <item id="10" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( <dot>.</dot> 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <item id="11" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* <dot>.</dot> 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd'</item>
+      <shift on="a" to="16" domino="7" dominoes="10-10 10-11"/>
+      <shift on="c" to="5" domino="10" dominoes="11-14 11-16 11-18 11-22"/>
+    </state>
+    <state id="17">
+      <item id="5" lookahead="END">S ::= A EOF <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+    <state id="18">
+      <item id="23" lookahead="EOF IMPLICIT">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="A" domino="23" dominoes="23"/>
+    </state>
+    <state id="19">
+      <item id="23" lookahead="IMPLICIT a b c">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="A" domino="23" dominoes="23"/>
+    </state>
+    <state id="20">
+      <item id="23" lookahead="IMPLICIT a b c d">A ::= ( 'b' )* ( 'a' )* 'c' ( ( A )* ( A )? ( A )+ ( A | A ) )* 'd' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="A" domino="23" dominoes="23"/>
+    </state>
+  </parser>
+  <triples>
+    <triple from="3" to="2" valid="2"/>
+    <triple from="3" to="3" valid="2"/>
+    <triple from="3" to="4" valid="2"/>
+    <triple from="3" to="5" valid="2"/>
+    <triple from="3" to="6" valid="4"/>
+    <triple from="3" to="7" valid="4"/>
+    <triple from="3" to="8" valid="4"/>
+    <triple from="3" to="9" valid="5"/>
+    <triple from="3" to="10" valid="5"/>
+    <triple from="3" to="11" valid="5"/>
+    <triple from="3" to="12" valid="5"/>
+    <triple from="7" to="6" valid="6"/>
+    <triple from="7" to="7" valid="6"/>
+    <triple from="7" to="8" valid="6"/>
+    <triple from="7" to="9" valid="8"/>
+    <triple from="7" to="10" valid="8"/>
+    <triple from="7" to="11" valid="8"/>
+    <triple from="7" to="12" valid="8"/>
+    <triple from="10" to="13" valid="9"/>
+    <triple from="10" to="14" valid="9"/>
+    <triple from="10" to="15" valid="9"/>
+    <triple from="10" to="16" valid="9"/>
+    <triple from="10" to="17" valid="9"/>
+    <triple from="10" to="18" valid="9"/>
+    <triple from="10" to="19" valid="9"/>
+    <triple from="10" to="20" valid="11"/>
+    <triple from="10" to="22" valid="12"/>
+    <triple from="14" to="13" valid="13"/>
+    <triple from="14" to="14" valid="13"/>
+    <triple from="14" to="15" valid="14"/>
+    <triple from="14" to="16" valid="14"/>
+    <triple from="14" to="17" valid="14"/>
+    <triple from="14" to="18" valid="13"/>
+    <triple from="14" to="19" valid="14"/>
+    <triple from="14" to="20" valid="18"/>
+    <triple from="14" to="21" valid="20"/>
+    <triple from="15" to="13" valid="17"/>
+    <triple from="15" to="14" valid="17"/>
+    <triple from="15" to="15" valid="16"/>
+    <triple from="15" to="16" valid="16"/>
+    <triple from="15" to="17" valid="16"/>
+    <triple from="15" to="18" valid="17"/>
+    <triple from="15" to="19" valid="16"/>
+    <triple from="15" to="20" valid="19"/>
+    <triple from="15" to="21" valid="20"/>
+    <triple from="15" to="22" valid="21"/>
+    <triple from="22" to="23" valid="22"/>
+  </triples>
+</g:grammar>

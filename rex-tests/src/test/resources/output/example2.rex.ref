@@ -1,0 +1,25 @@
+﻿# This file was generated on Sun Jan 6, 2019 18:02 (UTC+01) by REx v5.48 which is Copyright (c) 1979-2018 by Gunther Rademacher <grd@gmx.net>
+# REx command line: example2.ebnf -xml -ff -rex -lr 1
+
+#option nogrammar
+#option noabbreviations
+#option noambiguities
+#option classify
+#option case-sensitive
+#option nosymbols
+#option rex
+#option class="example2"
+
+# lookahead sets
+
+# set 0
+          [EOF];
+# set 1
+          [EOF, 1];
+
+EOF (2)
+        : $ ;
+(1)
+        : "0" ;
+
+# End

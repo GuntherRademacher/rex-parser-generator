@@ -1,0 +1,628 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "CodeGenerator.hpp"
+
+                                                            void CodeGeneratorXQuery::compressedMap2dAccessor(const char *x,
+                                                                                                              const char *y,
+                                                                                                              int xCount,
+                                                                                                              size_t indent,
+                                                                                                              const char *index,
+                                                                                                              const char *result,
+                                                                                                              const char *map,
+                                                                                                              const int *bits)
+                                                            {
+                                                              print(indent, " ");
+~let ~                                                        print(index);
+     ~0 := ~                                                  print(format.toString<char>(xCount));
+           ~ * ~                                              print(y);
+               ~ + ~                                          print(x);
+                   ~
+~                                                             compressedMapAccessor(indent, index, result, map, bits);
+                                                            }
+
+                                                            void CodeGeneratorXQuery::compressedMapAccessor(size_t indent, const char *index, const char *result, const char *map, const int *bits)
+                                                            {
+                                                              size_t i = 0;
+                                                              for (i = 0; bits[i]; ++i)
+                                                              {
+                                                                print(indent, " ");
+~let ~                                                          print(index);
+                                                                print(i + 1);
+     ~ := ~                                                     print(index);
+                                                                print(i);
+          ~ idiv ~                                              print(Math::powerof(2, bits[i]));
+                 ~
+~                                                             }
+                                                              print(indent, " ");
+                                                              print(result);
+                                                              print(map);
+~[~                                                           for (i = 0; bits[i]; ++i)
+                                                              {
+                                                                print(index);
+                                                                print(i);
+  ~ mod ~                                                       print(Math::powerof(2, bits[i]));
+        ~ + ~                                                   print(map);
+            ~[~                                               }
+                                                              print(index);
+                                                              print(i);
+                                                              for (i = 0; bits[i]; ++i)
+                                                              {
+              ~ + 1]~                                         }
+                    ~ + 1]~                                 }
+
+                                                            void CodeGeneratorXQuery::generateStaticCode()
+                                                            {
+                                                              if (! variable("embedded").boolean())
+                                                              {
+~(:~~
+ : The tokenizer that was generated for the ~                   print(variable("classname").string());
+                                            ~ grammar.
+ :)
+module namespace p="~                                           print(variable("classname").string());
+                    ~";~                                      }
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (a->isArray() && a->size > 0 && a->hasType(CGVariable::INTEGER) && strlen(a->name) == 2)
+                                                              {
+~
+
+(:~~
+ : ~                                                            print(a->getDescription());
+   ~
+ :)
+declare variable $p:~                                           print(a->getLongName());
+                    ~ as xs:integer+ :=
+(
+ ~                                                              for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j)
+                                                                  {
+ ~,~                                                              }
+                                                                  if (lineLength() + Format::width(a->integer(j)) + 2 > 120)
+                                                                  {
+ ~
+ ~                                                                }
+ ~ ~                                                              print(a->integer(j));
+                                                                }
+ ~
+);~                                                           }
+                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+                                                                   a != varsInInsertionOrder.end(); ++a)
+                                                                if (a->isArray() && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
+                                                              {
+~
+
+(:~~
+ : ~                                                            print(a->getDescription());
+   ~
+ :)
+declare variable $p:~                                           print(a->getLongName());
+                    ~ as xs:string+ :=
+(
+  ~                                                             for (size_t j = 0; j < a->size; ++j)
+                                                                {
+                                                                  if (j)
+                                                                  {
+  ~,
+  ~
+                                                                  }
+  ~"~                                                             const char *s = a->string(j);
+                                                                  const char *c = s;
+                                                                  for (; *c; ++c)
+                                                                  {
+                                                                    if (*c == '"')
+                                                                    {
+                                                                      print(s, c - s);
+                                                                      print("\"\"");
+                                                                      s = c + 1;
+                                                                    }
+                                                                    else if (*c == '&')
+                                                                    {
+                                                                      print(s, c - s);
+                                                                      print("&amp;");
+                                                                      s = c + 1;
+                                                                    }
+                                                                  }
+                                                                  if (c != s) print(s, c - s);
+  ~"~                                                           }
+  ~
+);~                                                           }
+~
+~                                                             if (variable("trace").boolean())
+                                                              {
+~
+(:~~
+ : Pass a line to fn:trace, without generating a result. Actually,
+ : create an empty result, but make it somehow dependent on trace,
+ : so the optimizer does not eliminate the trace call.
+ :
+ : @param $line the line to be traced.
+ : @return the empty sequence.
+ :)
+declare function p:trace($line as xs:string) as empty-sequence()
+{
+  if (trace($line, "trace")) then () else ""[.]
+};
+
+(:~~
+ : Add escaping to a string for being placed in serialized
+ : XML attribute or element content.
+ :
+ : @param $s the string to be escaped.
+ : @return the escaped string.
+ :)
+declare function p:xml-escape($s as xs:string) as xs:string
+{
+  replace(
+  replace(
+  replace($s, "&amp;", "&amp;amp;"),
+              "<", "&amp;lt;"),
+              '"', "&amp;quot;")
+};
+~                                                             }
+                                                              if (   variable("embedded").boolean()
+                                                                  && variable("tables").boolean())
+                                                              {
+~
+(:~~
+ : Predict the decision for a given decision point based on current
+ : lookahead.
+ :
+ : @param $input the input string.
+ : @param $state the parser state.
+ : @param $dpi the decision point index.~                       if (variable("useGlr").boolean())
+                                                                {
+~
+ : @param $id the parsing thread id.~                           }
+~
+ : @return the updated parser state.
+ :)
+declare function p:predict($input as xs:string,
+                           $state as item()+,
+                           $dpi as xs:integer~                  if (variable("useGlr").boolean())
+                                                                {
+                                             ~,
+                           $id as xs:integer~                   }
+                                             ~) as item()+
+{~                                                              if (variable("lrparser").boolean())
+                                                                {
+~
+  let $state := p:lookahead1~                                     if (variable("anyWhitespace").boolean())
+                                                                  {
+                            ~W~                                   }
+                            ~($p:TOKENSET[$dpi + 1], $input, $state~
+                                                                if (variable("useGlr").boolean())
+                                                                {
+                                             ~, $id~            }
+                                             ~)
+  return~                                                         indent += 1;
+                                                                }
+~
+  if ($state[$p:l1] lt 0) then
+  (
+    0,
+    subsequence($state, $p:lk + 1~                              if (variable("useGlr").boolean())
+                                                                {
+                                 ~)~                            }
+                                                                else
+                                                                {
+                                 ~, $p:error - $p:lk - 1),
+    element error
+    {
+      attribute b {$state[$p:b1]},
+      attribute e {$state[$p:e1]},
+      attribute s {- $state[$p:l1]}
+    },
+    subsequence($state, $p:error + 1)~                          }
+~
+  )
+  else~                                                         indent += 1;
+~
+~                                                               int k = variable("k").integer();
+                                                                const char *action = "let $action := ";
+                                                                compressedMap2dAccessor("$state[$p:l1]", "$dpi", variable("cicols").integer(),
+                                                                                              2, "$j1", action, "$p:CASEID", &variable("cibits").integer());
+                                                                bool loop = k > 1 && variable("lrparser").boolean();
+                                                                for (int i = 2; i <= k; ++i)
+                                                                {
+~
+  return
+    if ($action mod 2 eq 0) then
+      ($action idiv 2, subsequence($state, $p:lk + 1))
+    else
+      let $state := p:lookahead~                                  print(format.toString<char>(i));
+                                                                  if (variable("anyWhitespace").boolean())
+                                                                  {
+                               ~W~                                }
+                               ~(~                                if (variable("unlimitedLookahead").boolean())
+                                                                  {
+                                 ~0, ~                            }
+                                 ~$action idiv 2, $input, $state)
+      return
+        if ($state[$p:l~                                          print(format.toString<char>(i));
+                       ~] lt 0) then
+          (0, subsequence($state, $p:lk + 1))
+        else~                                                     indent += 2;
+~
+~                                                                 CString li("$state[$p:l");
+                                                                  li += format.toString<char>(i);
+                                                                  li += "]";
+                                                                  CString ii("$i");
+                                                                  ii += format.toString<char>(i);
+                                                                  compressedMap2dAccessor(i == 2 ? "$state[$p:l1]" : "$lk", li.c_str(), variable("lxcols").integer(),
+                                                                                                6, ii.c_str(), "let $lk := ", "$p:LOOKAHEAD", &variable("lxbits").integer());
+      ~
+      return
+        if ($lk eq 0) then~                                       if (loop)
+                                                                  {
+~
+          p:predict($input, $state, $dpi + 1)~                    }
+                                                                  else
+                                                                  {
+~
+          (0, subsequence($state, $p:lk + 1))~                    }
+~
+        else~                                                     indent += 1;
+~
+~                                                                 CString ji("$j");
+                                                                  ji += format.toString<char>(i);
+                                                                  compressedMap2dAccessor("$lk", "$dpi", variable("cicols").integer(),
+                                                                                                8, ji.c_str(), "let $action := ", "$p:CASEID", &variable("cibits").integer());
+                                                                  indent += 3;
+                                                                }
+                                                                if (loop)
+                                                                {
+~
+  return
+    if ($action ne 0) then
+      ($action idiv 2, subsequence($state, $p:lk + 1))
+    else
+      p:predict($input, $state, $dpi + 1)~                      }
+                                                                else
+                                                                {
+~
+  return ($action idiv 2, subsequence($state, $p:lk + 1))~      }
+                                                                indent = 0;
+~
+};
+~                                                             }
+~
+(:~~
+ : Match next token in input string, starting at given index, using
+ : the DFA entry state for the set of tokens that are expected in
+ : the current context.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start in input string.
+ : @param $token-set the expected token set id.~                if (variable("useGlr").boolean())
+                                                                {
+~
+ : @param $id the parsing thread id.~                           }
+~
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:match($input as xs:string,
+                         $begin as xs:integer,
+                         $token-set as xs:integer~              if (variable("useGlr").boolean())
+                                                                {
+                                                 ~,
+                         $id as xs:integer~                     }
+                                                 ~) as xs:integer+
+{~                                                            if (variable("trace").boolean())
+                                                              {
+~
+  p:trace(concat("  <tokenize ~                                 if (variable("useGlr").boolean())
+                                                                {
+                              ~thread=""", $id, """ ~           }
+                              ~tokenset=""", $token-set, """>")),~
+                                                              }
+~
+  let $result := $p:INITIAL[1 + $token-set]
+  return p:transition($input,
+                      $begin,
+                      $begin,
+                      $begin,
+                      $result,
+                      $result mod ~                       print(Math::powerof(2, variable("stateCodeBits").integer()));
+                                      ~,
+                      0)
+};
+
+(:~~
+ : The DFA state transition function. If we are in a valid DFA state, save
+ : it's result annotation, consume one input codepoint, calculate the next
+ : state, and use tail recursion to do the same again. Otherwise, return
+ : any valid result or a negative DFA state id in case of an error.
+ :
+ : @param $input the input string.
+ : @param $begin the begin index of the current token in the input string.
+ : @param $current the index of the current position in the input string.
+ : @param $end the end index of the result in the input string.
+ : @param $result the result code.
+ : @param $current-state the current DFA state.
+ : @param $previous-state the  previous DFA state.
+ : @return a sequence of three: the token code of the result token,
+ : with input string begin and end positions. If there is no valid
+ : token, return the negative id of the DFA state that failed, along
+ : with begin and end positions of the longest viable prefix.
+ :)
+declare function p:transition($input as xs:string,
+                              $begin as xs:integer,
+                              $current as xs:integer,
+                              $end as xs:integer,
+                              $result as xs:integer,
+                              $current-state as xs:integer,
+                              $previous-state as xs:integer)
+{
+  if ($current-state eq 0) then
+    let $result := $result idiv ~                             print(Math::powerof(2, variable("stateCodeBits").integer()));
+                                                              if (0 == variable("maxcontextlength").integer())
+                                                              {
+                                                                if (variable("hasfixedtokenlength").boolean())
+                                                                {
+~
+    let $end := if ($result idiv ~                                print(Math::powerof(2, variable("tokencodeBits").integer()));
+                                 ~ ne 0) then $begin else $end~
+                                                                }
+                                                              }
+                                                              else if (! variable("hasfixedtokenlength").boolean())
+                                                              {
+~
+    let $end := $end - $result idiv ~                           print(Math::powerof(2, variable("tokencodeBits").integer()));
+                                                              }
+                                                              else
+                                                              {
+~
+    let $end :=
+      if ($result idiv ~                                        print(Math::powerof(2, variable("tokencodeBits").integer()));
+                       ~ mod 2 eq 1) then
+        $begin + $result idiv ~                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
+                              ~
+      else
+        $end - $result idiv ~                                   print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
+                                                              }
+~
+    let $end := if ($end gt string-length($input)) then string-length($input) + 1 else $end
+    return
+      if ($result ne 0) then
+      (~                                                      if (variable("trace").boolean())
+                                                              {
+~
+        p:trace(concat("    <done result=""", p:xml-escape($p:TOKEN[$result~
+                                                                if (   0 != variable("maxcontextlength").integer()
+                                                                    || variable("hasfixedtokenlength").boolean())
+                                                                {
+            ~ mod ~                                               print(Math::powerof(2, variable("tokencodeBits").integer()));
+                                                                }
+            ~]), """ begin=""", $begin, """ end=""", $end, """/>")),
+        p:trace("  </tokenize>"),~
+                                                              }
+                                                              if (0 == variable("maxcontextlength").integer() && ! variable("hasfixedtokenlength").boolean())
+                                                              {
+~
+        $result - 1,~                                         }
+                                                              else
+                                                              {
+~
+        $result mod ~                                           print(Math::powerof(2, variable("tokencodeBits").integer()));
+                    ~ - 1,~                                   }
+~
+        $begin,
+        $end
+      )
+      else
+      (~                                                      if (variable("trace").boolean())
+                                                              {
+~
+        p:trace(concat("    <fail begin=""", $begin, """ end=""", $current - 1, """ state=""", $previous-state, """/>")),
+        p:trace("  </tokenize>"),~                            }
+~
+        - $previous-state,
+        $begin,
+        $current - 1
+      )~
+~
+  else
+    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]
+    let $c1 :=
+      if ($c0 < ~                                             print(variable("simplifiedCodeMap").integer());
+                ~) then
+        $p:MAP0[1 + $c0]
+      else if ($c0 < ~                                        print(variable("uncompressedMapSize").integer());
+                     ~) then~                                 const int *m1bits = &variable("m1bits").integer();
+                                                              for (size_t i = 0; m1bits[i]; ++i)
+                                                              {
+                            ~
+        let $c~                                                 print(i + 1);
+              ~ := $c~                                          print(i);
+                     ~ idiv ~                                   print(Math::powerof(2, m1bits[i]));
+                                                              }
+                            ~
+        return $p:MAP1[1 + $c0~                          for (size_t i = 0; m1bits[i]; ++i)
+                                                              {
+                                 ~ mod ~                        print(Math::powerof(2, m1bits[i]));
+                                 ~ + $p:MAP1[1 + $c~       print(i + 1);
+                                                              }
+                                                              for (size_t i = 0; m1bits[i]; ++i)
+                                                              {
+                                ~]~
+                                                              }
+                                ~]
+      else~                                                   if (variable("m2").size == 0)
+                                                              {
+          ~
+        0~                                                    }
+                                                              else
+                                                              {
+          ~
+        p:map2($c0, 1, ~                                        print(variable("m2").size / 3);
+                       ~)~                                    }
+~
+    let $current := $current + 1
+~                                                             const int *a1bits = &variable("a1bits").integer();
+                                                              compressedMap2dAccessor("$current-state - 1", "$c1", variable("a1cols").integer(),
+                                                                                            4, "$i", "let $next-state := ", "$p:TRANSITION", a1bits);
+~
+    return~                                                   if (variable("trace").boolean())
+                                                              {
+~
+    (
+      p:trace
+      (
+        string-join
+        (
+          (
+            "    <next state=""", string($current-state), """",
+            " offset=""", string($current - 1), """",
+            if ($c0 lt 32 or $c0 gt 126) then
+              ()
+            else
+              (" char=""", p:xml-escape(substring($input, $current - 1, 1)), """"),
+            " codepoint=""", string($c0), """",
+            " class=""", string($c1), """",
+            if ($next-state lt ~                                print(Math::powerof(2, variable("stateCodeBits").integer()));
+                               ~) then
+              ()
+            else
+            (
+              " result=""",
+              p:xml-escape($p:TOKEN[$next-state idiv ~          print(Math::powerof(2, variable("stateCodeBits").integer()));
+                                                     ~ mod ~    print(Math::powerof(2, variable("tokencodeBits").integer()));
+                                                           ~]),
+              if ($next-state lt ~                              int contextOffset = variable("stateCodeBits").integer()
+                                                                                  + variable("tokencodeBits").integer();
+                                                                int sizeOffset = contextOffset
+                                                                               + (variable("hasfixedtokenlength").boolean() ? 1 : 0);
+                                                                print(Math::powerof(2, sizeOffset));
+                                 ~) then
+                ()
+              else
+                (""" trailing-context-size=""", string($next-state idiv ~
+                                                                print(Math::powerof(2, sizeOffset));
+                                                                        ~)),
+              """"
+            ),
+            "/>"
+          ),
+          ""
+        )
+      ),~                                                     }
+~
+      if ($next-state > ~                                          print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                   ~) then
+        p:transition($input, $begin, $current, $current, $next-state, $next-state mod ~
+                                                              print(Math::powerof(2, variable("stateCodeBits").integer()));
+                       ~, $current-state)
+      else
+        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)~
+                                                              if (variable("trace").boolean())
+                                                              {
+~
+    )~                                                        }
+~
+};
+
+(:~~
+ : Recursively translate one 32-bit chunk of an expected token bitset
+ : to the corresponding sequence of token strings.
+ :
+ : @param $result the result of previous recursion levels.
+ : @param $chunk the 32-bit chunk of the expected token bitset.
+ : @param $base-token-code the token code of bit 0 in the current chunk.
+ : @return the set of token strings.
+ :)
+declare function p:token($result as xs:string*,
+                         $chunk as xs:integer,
+                         $base-token-code as xs:integer)
+{
+  if ($chunk = 0) then
+    $result
+  else
+    p:token
+    (
+      ($result, if ($chunk mod 2 != 0) then $p:TOKEN[$base-token-code] else ()),
+      if ($chunk < 0) then $chunk idiv 2 + 2147483648 else $chunk idiv 2,
+      $base-token-code + 1
+    )
+};
+~                                                             if (defined("gtbits"))
+                                                              {
+~
+(:~~
+ : Get GOTO table entry for given nonterminal and parser state.
+ :
+ : @param $nonterminal the nonterminal.
+ : @param $state the LR parser state.
+ : @return the GOTO table entry.
+ :)
+declare function p:goto($nonterminal as xs:integer, $state as xs:integer) as xs:integer
+{
+~                                                               compressedMap2dAccessor("$nonterminal",
+                                                                                              "$state",
+                                                                                              variable("gtcols").integer(),
+                                                                                              2,
+                                                                                              "$i",
+                                                                                              "return ",
+                                                                                              "$p:GOTO",
+                                                                                              &variable("gtbits").integer());
+~
+};
+~                                                             }
+~
+(:~~
+ : Calculate expected token set for a given DFA state as a sequence
+ : of strings.
+ :
+ : @param $state the DFA state.
+ : @return the set of token strings.
+ :)
+declare function p:expected-token-set($state as xs:integer) as xs:string*
+{
+  if ($state > 0) then
+    for $t in 0 to ~                                          print((variable("t1").size - 1) / 32);
+                   ~
+    let $i0 := $t * ~                                         print(variable("transitionStateCount").integer());
+                    ~ + $state - 1
+~                                                             compressedMapAccessor(4, "$i", "return p:token((), ", "$p:EXPECTED", &variable("t0bits").integer());
+~, $t * 32 + 1)
+  else
+    ()
+};
+~                                                             if (variable("m2").size != 0)
+                                                              {
+~
+(:~~
+ : Classify codepoint by doing a tail recursive binary search for a
+ : matching codepoint range entry in MAP2, the codepoint to charclass
+ : map for codepoints above the surrogate block.
+ :
+ : @param $c the codepoint.
+ : @param $lo the binary search lower bound map index.
+ : @param $hi the binary search upper bound map index.
+ : @return the character class.
+ :)
+declare function p:map2($c as xs:integer, $lo as xs:integer, $hi as xs:integer) as xs:integer
+{
+  if ($lo > $hi) then
+    0
+  else
+    let $m := ($hi + $lo) idiv 2
+    return
+      if ($p:MAP2[$m] > $c) then
+        p:map2($c, $lo, $m - 1)
+      else if ($p:MAP2[~                                        print(variable("m2").size / 3);
+                       ~ + $m] < $c) then
+        p:map2($c, $m + 1, $hi)
+      else
+        $p:MAP2[~                                               print(variable("m2").size / 3 * 2);
+                ~ + $m]
+};
+~                                                             }
+                                                            }
+
+                                                            void CodeGeneratorXQuery::generateData()
+                                                            {
+                                                            }

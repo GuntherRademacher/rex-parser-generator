@@ -1,0 +1,1504 @@
+~                                                           #include "../common/Memory.hpp"
+
+                                                            #include "PrintTypescript.hpp"
+                                                            #include "ItemSet.hpp"
+
+                                                            void PrintTypescript::openClass()
+                                                            {
+                                                              if (! hasProlog)
+                                                              {
+~
+module ~                                                        print(className.c_str());
+       ~
+{~                                                            }
+~
+  export interface ParsingEventHandler
+  {
+    reset(source: string): void;
+    startNonterminal(name: string, begin: number): void;
+    endNonterminal(name: string, end: number): void;
+    terminal(name: string, begin: number, end: number): void;
+    whitespace(begin: number, end: number): void;
+  }
+~
+                                                              if (isLrParser)
+                                                              {
+~
+  export interface BottomUpEventHandler
+  {
+    reset(input: string): void;
+    nonterminal(name: string, begin: number, end: number, count: number): void;
+    terminal(name: string, begin: number, end: number): void;
+  }
+~                                                             }
+~
+  export class ParseException
+  {
+    private begin: number;
+    private end: number;
+    private state: number;
+    private offending: number;
+    private expected: number;~                                if (useGlr)
+                                                              {
+~
+    private ambiguousInput: boolean;~                           if (tree)
+                                                                {
+~
+    private ambiguityDescriptor: ParseTreeBuilder;~             }
+                                                              }
+~
+
+    constructor(b: number, e: number, s: number, o: number, x: number)
+    {
+      this.begin = b;
+      this.end = e;
+      this.state = s;
+      this.offending = o;
+      this.expected = x;~                                     if (useGlr)
+                                                              {
+~
+      this.ambiguousInput = false;~                             if (tree)
+                                                                {
+                                                                }
+                                                              }
+~
+    }
+~                                                             if (useGlr)
+                                                              {
+~
+    setAmbiguousInput(~                                         if (tree)
+                                                                {
+                      ~a: ParseTreeBuilder~                     }
+                      ~)
+    {
+      this.ambiguousInput = true;~                              if (tree)
+                                                                {
+~
+      this.ambiguityDescriptor = a;~                            }
+~
+    }
+~                                                             }
+~
+    getBegin() {return this.begin;}
+    getEnd() {return this.end;}
+    getState() {return this.state;}
+    getExpected() {return this.expected;}
+    getOffending() {return this.offending;}
+    isAmbiguousInput() {return ~                              if (useGlr)
+                                                              {
+                               ~this.ambiguousInput~          }
+                                                              else
+                                                              {
+                               ~false~                        }
+                               ~;}
+
+    getMessage()
+    {
+      return ~                                                if (useGlr)
+                                                              {
+             ~this.ambiguousInput
+           ? "ambiguous input"
+           : ~                                                }
+             ~this.offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }~                                                        if (useGlr && tree)
+                                                              {
+~
+
+    serialize(eventHandler: ParsingEventHandler)
+    {
+      this.ambiguityDescriptor.serialize(eventHandler);
+    }~                                                         }
+~
+  }
+
+  interface Memoizer
+  {
+    [index: number]: number;
+  }
+
+  export class Parser
+  {
+    constructor(source: string~                               if (noLexer)
+                                                              {
+                              ~, l: Lexer~                    }
+                                                              if (tree)
+                                                              {
+                              ~, parsingEventHandler: ~
+                                                                if (isLrParser)
+                                                                {
+                                                      ~BottomUp~
+                                                                }
+                                                                else
+                                                                {
+                                                      ~Parsing~ }
+                                                      ~EventHandler~
+                                                              }
+                              ~)
+    {
+      this.initialize(source~                                 if (noLexer)
+                                                              {
+                            ~, l~                             }
+                                                              if (tree)
+                                                              {
+                                ~, parsingEventHandler~
+                                                              }
+                                                      ~);
+    }
+~                                                             increaseIndent();
+                                                            }
+
+                                                            void PrintTypescript::printFlush(int i, bool withinThread)
+                                                            {
+                                                              increaseIndent(i);
+                                                              if (trace)
+                                                              {
+~
+parser.flushTrace();~                                         }
+                                                              decreaseIndent(i);
+                                                            }
+
+                                                            void PrintTypescript::printGlrParseMethod()
+                                                            {
+~
+public static PARSING = 0;
+public static ACCEPTED = 1;
+public static ERROR = 2;
+
+public parse(target: number, initialState: number, ~      if (tree)
+                                                              {
+                                                   ~eventHandler: BottomUpEventHandler, ~
+                                                              }
+                                                   ~thread: ParsingThread): ParsingThread
+{
+  var threads: Heap = thread.open(initialState~
+                                                              if (tree)
+                                                              {
+                                              ~, eventHandler, target~
+                                                              }
+                                              ~);
+  while (true)
+  {
+    thread = threads.poll();
+    if (thread.accepted)
+    {
+      var other = null;
+      while (! threads.isEmpty())
+      {
+        other = threads.poll();
+        if (thread.e0 < other.e0)
+        {
+          thread = other;
+          other = null;
+        }
+      }
+      if (other != null)
+      {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+                ~, thread.deferredEvent, other.deferredEvent~ }
+                ~);
+      }~
+                                                              if (tree)
+                                                              {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread.executeDeferredCode();~                          }
+~
+      return thread;
+    }
+
+    if (! threads.isEmpty())
+    {
+      if (threads.peek().equals(thread))
+      {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+                                                              {
+       ~, thread.deferredEvent, threads.peek().deferredEvent~ }
+       ~);
+      }
+    }~                                                        if (tree || hasCustomCode)
+                                                              {
+~
+    else
+    {~                                                          if (tree)
+                                                                {
+~
+      if (thread.deferredEvent != null)
+      {
+        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent = null;
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread.executeDeferredCode();~                            }
+~
+    }~                                                        }
+~
+
+    var status = Parser.PARSING;
+    while (true)
+    {
+      if ((status = thread.parse()) != Parser.PARSING) break;
+      if (! threads.isEmpty()) break;
+    }
+
+    if (status != Parser.ERROR)
+    {
+      threads.offer(thread);
+    }
+    else if (threads.isEmpty())
+    {
+      throw new ParseException(thread.b1,
+                               thread.e1,
+                               Parser.TOKENSET[thread.state] + 1,
+                               thread.l1,
+                               -1
+                              );
+    }
+  }
+}
+
+private rejectAmbiguity(begin: number, end: number~           if (tree)
+                                                              {
+             ~, first: DeferredEvent, second: DeferredEvent~  }
+             ~): void
+{~                                                            if (tree)
+                                                              {
+~
+  var treeBuilder = new ParseTreeBuilder();
+  treeBuilder.reset(this.input);
+  second.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  var secondTree = treeBuilder.pop(1)[0];
+  first.show(treeBuilder);
+  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.push(secondTree);
+  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
+                                                              }
+~
+  var exception = new ParseException(begin, end, -1, -1, -1);
+  exception.setAmbiguousInput(~                               if (tree)
+                                                              {
+                              ~treeBuilder~                   }
+                              ~);
+  throw exception;
+}
+
+private thread: ParsingThread;~                               if (tree)
+                                                              {
+~
+private eventHandler: BottomUpEventHandler;~                  }
+~
+public input: string;
+public size: number;
+public maxId: number;~                                      }
+
+                                                            void PrintTypescript::openStackNode()
+                                                            {
+~
+class StackNode
+{
+  public state: number;~                                      if (grammar->states->hasLookback)
+                                                              {
+~
+  private code: number;~                                      }
+~
+  public pos: number;
+  public link: StackNode;
+
+  constructor(state: number, ~                                if (grammar->states->hasLookback)
+                                                              {
+                             ~code: number, ~                 }
+                             ~pos: number, link: StackNode)
+  {
+    this.state = state;~                                      if (grammar->states->hasLookback)
+                                                              {
+~
+    this.code = code;~                                        }
+~
+    this.pos = pos;
+    this.link = link;
+  }
+
+  equals(obj: StackNode)
+  {
+    var lhs: StackNode = this;
+    var rhs: StackNode = obj;
+    while (lhs != null && rhs != null)
+    {
+      if (lhs == rhs) return true;
+      if (lhs.state != rhs.state) return false;~              if (grammar->states->hasLookback)
+                                                              {
+~
+      if (lhs.code != rhs.code) return false;~                }
+~
+      if (lhs.pos != rhs.pos) return false;
+      lhs = lhs.link;
+      rhs = rhs.link;
+    }
+    return lhs == rhs;
+  }
+~                                                             increaseIndent();
+                                                            }
+
+                                                            void PrintTypescript::closeStackNode()
+                                                            {
+                                                              decreaseIndent();
+~
+}
+~                                                             if (hasCustomCode)
+                                                              {
+~
+class DeferredCode
+{
+  public link: DeferredCode;
+  public codeId: number;
+  public b0: number;
+  public e0: number;
+
+  constructor(link, codeId, b0, e0)
+  {
+    this.link = link;
+    this.codeId = codeId;
+    this.b0 = b0;
+    this.e0 = e0;
+  }
+}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+class DeferredEvent
+{
+  private link: DeferredEvent;
+  private name: string;
+  private begin: number;
+  private end: number;
+  private count: number;
+
+  constructor(link: DeferredEvent, name: string, begin: number, end: number, count: number)
+  {
+    this.link = link;
+    this.name = name;
+    this.link = link;
+    this.begin = begin;
+    this.end = end;
+    this.count = count;
+  }
+
+  execute(eventHandler: BottomUpEventHandler)
+  {
+    if (this.count == null)
+    {
+      eventHandler.terminal(this.name, this.begin, this.end);
+    }
+    else
+    {
+      eventHandler.nonterminal(this.name, this.begin, this.end, this.count);
+    }
+  }
+
+  release(eventHandler: BottomUpEventHandler)
+  {
+    var current: DeferredEvent = this;
+    var predecessor = current.link;
+    current.link = null;
+    while (predecessor != null)
+    {
+      var next = predecessor.link;
+      predecessor.link = current;
+      current = predecessor;
+      predecessor = next;
+    }
+    do
+    {
+      current.execute(eventHandler);
+      current = current.link;
+    }
+    while (current != null);
+  }
+
+  show(eventHandler: BottomUpEventHandler)
+  {
+    var stack = [];
+    for (var current: DeferredEvent = this; current != null; current = current.link)
+    {
+      stack.push(current);
+    }
+    while (stack.length > 0)
+    {
+      stack.pop().execute(eventHandler);
+    }
+  }
+}
+~                                                             }
+~
+class Heap
+{
+  private array: ParsingThread[] = [];
+  private size = 0;
+
+  constructor() {}
+
+  offer(value: ParsingThread)
+  {
+    var index = this.size++;
+    while (index != 0)
+    {
+      var parentIndex = (index - 1) >> 1;
+      if (this.array[parentIndex].compareTo(value) <= 0)
+        break;
+      this.array[index] = this.array[parentIndex];
+      index = parentIndex;
+    }
+    this.array[index] = value;
+  }
+
+  poll()
+  {
+    if (this.size == 0)
+      return null;
+    var min = this.array[0];
+    if (--this.size > 0)
+    {
+      var value = this.array[this.size];
+      var index = 0;
+      for (var child;;)
+      {
+        child = (index << 1) + 2;
+        if (child < this.size)
+        {
+          var otherChild = child - 1;
+          if (otherChild < this.size && this.array[child].compareTo(this.array[otherChild]) > 0)
+            child = otherChild;
+        }
+        else if (--child >= this.size)
+        {
+          break;
+        }
+        if (value.compareTo(this.array[child]) <= 0)
+        {
+          break;
+        }
+        this.array[index] = this.array[child];
+        index = child;
+      }
+      this.array[index] = value;
+    }
+    return min;
+  }
+
+  peek()
+  {
+    return this.size == 0 ? null : this.array[0];
+  }
+
+  isEmpty(): boolean
+  {
+    return this.size == 0;
+  }
+}
+~                                                           }
+
+                                                            void PrintTypescript::openThread()
+                                                            {
+~
+class ParsingThread
+{
+  public parser: Parser;
+  private threads: Heap;
+  public accepted: boolean;
+  public stack: StackNode;
+  public state: number;
+  private action: number;
+  private target: number;~                                    if (tree)
+                                                              {
+~
+  public deferredEvent: DeferredEvent;
+  private es: number;~                                        }
+~
+  private bw: number;
+  private bs: number;~                                        if (hasCustomCode)
+                                                              {
+~
+  public deferredCode: DeferredCode;~                         }
+~
+  private id: number;
+
+  open(initialState: number~                                  if (tree)
+                                                              {
+                           ~, eventHandler: BottomUpEventHandler, target: number~
+                                                              }
+                           ~): Heap
+  {
+    this.accepted = false;~                                   if (tree)
+                                                              {
+~
+    if (eventHandler != null)
+    {
+      eventHandler.reset(this.parser.input);
+    }
+    this.eventHandler = eventHandler;
+    this.target = target;
+    this.deferredEvent = null;~                               }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    this.deferredCode = null;~                                }
+~
+    this.stack = new StackNode(-1, ~                          if (grammar->states->hasLookback)
+                                                              {
+                                   ~0, ~                      }
+                                   ~this.e0, null);
+    this.state = initialState;
+    this.action = this.predict(initialState);~                if (tree)
+                                                              {
+~
+    this.bw = this.e0;
+    this.bs = this.e0;
+    this.es = this.e0;~                                       }
+~
+    this.threads = new Heap();
+    this.threads.offer(this);
+    return this.threads;
+  }
+
+  copy(other: ParsingThread, a: number)
+  {
+    this.action = a;
+    this.accepted = other.accepted;
+    this.parser = other.parser;
+    this.threads = other.threads;
+    this.state = other.state;
+    this.stack = other.stack;
+    this.end = other.end;~                                    if (tree)
+                                                              {
+~
+    this.bs = other.bs;
+    this.es = other.es;
+    this.bw = other.bw;
+    this.eventHandler = other.eventHandler;
+    this.target = other.target;
+    this.deferredEvent = other.deferredEvent;~                }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    this.deferredCode = other.deferredCode;~                  }
+~
+    this.id = ++this.parser.maxId;
+    this.b0 = other.b0;
+    this.e0 = other.e0;
+    this.l1 = other.l1;
+    this.b1 = other.b1;
+    this.e1 = other.e1;
+    return this;
+  }
+
+  compareTo(other: ParsingThread)
+  {
+    if (this.accepted != other.accepted)
+      return this.accepted ? 1 : -1;
+    var comp = this.e0 - other.e0;
+    return comp == 0 ? this.id - other.id : comp;
+  }
+
+  equals(other: ParsingThread)
+  {
+    if (this.accepted != other.accepted) return false;
+    if (this.b1 != other.b1) return false;
+    if (this.e1 != other.e1) return false;
+    if (this.l1 != other.l1) return false;
+    if (this.state != other.state) return false;
+    if (this.action != other.action) return false;
+    if (! this.stack.equals(other.stack)) return false;
+    return true;
+  }
+~                                                             if (tree)
+                                                              {
+~
+  release()
+  {
+    if (this.deferredEvent != null)
+    {
+      this.deferredEvent.release(this.eventHandler);
+      this.deferredEvent = null;
+    }
+  }
+~                                                             }
+~
+  parse()
+  {~                                                          increaseIndent();
+                                                            }
+
+                                                            void PrintTypescript::openMethod(const wchar_t *type,
+                                                                                             const wchar_t *prefix,
+                                                                                             const wchar_t *name,
+                                                                                             const wchar_t *args,
+                                                                                             bool constant,
+                                                                                             const wchar_t *clazz)
+                                                            {
+~
+~                                                             if (isPublic)
+                                                              {
+                                                                print(name);
+                                                              }
+                                                              else
+                                                              {
+~private ~                                                      print(name);
+                                                              }
+  ~(~                                                         bool ignore = true;
+                                                              const wchar_t *typeBegin = args;
+                                                              const wchar_t *typeEnd = 0;
+                                                              for (const wchar_t *a = args; *a; ++a)
+                                                              {
+                                                                if (! ignore)
+                                                                {
+                                                                  print(*a);
+                                                                }
+                                                                if (*a == ' ')
+                                                                {
+                                                                  ignore = ! ignore;
+                                                                  if (ignore)
+                                                                    typeBegin = a + 1;
+                                                                  else
+                                                                    typeEnd = a;
+                                                                }
+                                                                if (*(a + 1) == ',' || *(a + 1) == 0)
+                                                                {
+                                                                  print(L": ");
+                                                                  if (typeEnd == typeBegin)
+                                                                    print(L"string");
+                                                                  else if (wcsncmp(typeBegin, L"int", typeEnd - typeBegin) == 0)
+                                                                    print(L"number");
+                                                                  else
+                                                                    print(typeBegin, typeEnd - typeBegin);
+                                                                }
+                                                              }
+    ~)~                                                       if (*type)
+                                                              {
+                                                                if (wcscmp(type, L"int ") == 0)
+                                                                  print(L": number");
+                                                              }
+                                                            }
+
+                                                            void PrintTypescript::privateVars()
+                                                            {
+                                                              if (trace)
+                                                              {
+~
+  private lookaheadString(): string
+  {
+    var result = "";
+    if (~                                                       print(thiz());
+        ~l1 > 0)
+    {
+      result += ~                                               print(staticPrefix());
+                ~TOKEN[~                                        print(thiz());
+                       ~l1];~                                   for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+~
+      if (~                                                       print(thiz());
+          ~l~                                                     print(format.toString<wchar_t>(i));
+            ~ > 0)
+      {
+        result += " " + ~                                         print(staticPrefix());
+                        ~TOKEN[~                                  print(thiz());
+                               ~l~                                print(format.toString<wchar_t>(i));
+                                 ~];~                             increaseIndent();
+                                                                }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+      }~                                                        }
+~
+    }
+    return result;
+  }
+~                                                             }
+                                                              if (needTokenFunction)
+                                                              {
+~
+  private token(): number
+  {
+    return this.l1;
+  }
+~                                                             }
+                                                              if (needTokenSequenceFunction)
+                                                              {
+~
+  private tokenSequence(): number
+  {
+    return this.lk;
+  }
+~                                                             }
+                                                              const wchar_t *visibility = useGlr ? L"public" : L"private";
+~
+  ~                                                           if (! isLrParser && (grammar->k > 1 || memoization || ! grammar->decisionPoints.empty()))
+                                                              {
+  ~private lk: number; ~                                      }
+                                                              else
+                                                              {
+                                                                print(wcslen(visibility), L" ");
+         ~             ~                                      }
+                                                              print(visibility);
+                       ~ b0: number; ~                        print(visibility);
+                                     ~ e0: number;~           for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                Format format;
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  ~                                                             print(visibility);
+  ~ l~                                                          print(asString);
+     ~: number; ~                                               print(visibility);
+                ~ b~                                            print(asString);
+                   ~: number; ~                                 print(visibility);
+                              ~ e~                              print(asString);
+                                 ~: number;~                  }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  private bx: number; private ex: number; private sx: number; private lx: number; private tx: number;~
+                                                              }
+                                                              if (isLrParser && ! useGlr)
+                                                              {
+~
+  private iStack: number[] = [];
+  private top: number = -1;~                                  }
+
+                                                              if (tree)
+                                                              {
+~
+  private eventHandler: ~                                       if (isLrParser)
+                                                                {
+                        ~BottomUp~                              }
+                                                                else
+                                                                {
+                        ~Parsing~                               }
+                        ~EventHandler;~                       }
+                                                              if (memoization)
+                                                              {
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+  private memo: Memoizer;~                                      if (grammar->noThrow)
+                                                                {
+~
+  private viable: boolean;~                                     }
+~
+
+  private memoize(i: number, e: number, v: number)
+  {
+    ~                                                           print(thiz());
+    ~memo[(e << ~                                               print(format.toString<wchar_t>(bits));
+                ~) + i] = v;
+  }
+
+  private memoized(i: number, e: number): number
+  {
+    var v = ~                                                   print(thiz());
+            ~memo[(e << ~                                       print(format.toString<wchar_t>(bits));
+                       ~) + i];
+    return typeof v != "undefined" ? v : 0;
+  }~                                                          }
+~
+~                                                           }
+
+                                                            void PrintTypescript::printPlatformSpecific()
+                                                            {
+~
+  var command = "node";
+  var log = function(string) {process.stdout.write(string);};
+  var fs = require('fs');
+  var readTextFile = fs.readFileSync;~                        if (performanceTest)
+                                                              {
+~
+  var readDir = fs.readdirSync;
+  var isDirectory = function(filename) {return fs.statSync(filename).isDirectory();};~
+                                                              }
+~
+~                                                           }
+
+                                                            void PrintTypescript::printFileProcessor()
+                                                            {
+                                                              if (tree)
+                                                              {
+
+~
+class ContentCounter implements ~                               print(className.c_str());
+                                ~.ParsingEventHandler
+{
+  private length = 0;
+
+  getLength() {return this.length;}
+  reset(s: string) {this.length = 0}
+  startNonterminal(name: string, begin: number) {}
+  endNonterminal(name: string, end: number) {}
+  terminal(name: string, begin: number, end: number) {this.length += end - begin;}
+  whitespace(begin: number, end: number) {this.length += end - begin;}
+}
+~                                                             }
+~
+class ParseJob
+{
+  name: string;
+  input: string;~                                             if (tree)
+                                                              {
+~
+  contentCounter: ContentCounter;~                              if (isLrParser)
+                                                                {
+~
+  parseTreeBuilder: ~                                             print(className.c_str());
+                    ~.ParseTreeBuilder;~                        }
+                                                              }
+~
+  parser: ~                                                   print(className.c_str());
+          ~.Parser;
+
+  constructor(s: string, i: string)
+  {
+    this.name = s;
+    this.input = i;~                                          if (tree)
+                                                              {
+~
+    this.contentCounter = new ContentCounter();~                if (isLrParser)
+                                                                {
+~
+    this.parseTreeBuilder = new ~                                 print(className.c_str());
+                                ~.ParseTreeBuilder();~          }
+                                                              }
+~
+    this.parser = new ~                                       print(className.c_str());
+                      ~.Parser(i~                             if (noLexer)
+                                                              {
+                                ~, null~                      }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                ~, this.parseTreeBuilder~       }
+                                                                else
+                                                                {
+                                ~, this.contentCounter~         }
+                                                              }
+                                ~);
+  }
+}
+
+function findFiles(f: string, filter: string, parsers: ParseJob[], quiet: boolean)
+{
+  if (fs.statSync(f).isDirectory())
+  {
+    var files = fs.readdirSync(f);
+    for (var i = 0; i < files.length; ++i)
+    {
+      findFiles(f + "/" + files[i], filter, parsers, quiet);
+    }
+  }
+  else if (f.substring(f.length - filter.length).toLowerCase() == filter.toLowerCase())
+  {
+    var content = fs.readFileSync(f, "utf-8");
+    var input = content.length > 0 && content.charCodeAt(0) == 0xFEFF
+              ? content.substring(1)
+              : content;
+    if (! quiet) process.stdout.write("loading " + f + "\n");
+    parsers[parsers.length] = new ParseJob(f, input);
+  }
+}
+
+// performance test main program for use with node.js
+
+var fs = require('fs');
+
+var quiet = false;
+var parsed = 0;
+var errorCount = 0;
+var parsers: ParseJob[] = [];
+
+if (process.argv.length < 3)
+{
+  process.stderr.write("Usage: node ~                         print(className.c_str());
+                                    ~.js [-q] [-r N] [-t N] ENDING...\n");
+  process.stderr.write("\n");
+  process.stderr.write("  parse all files that have names ending with ENDING, in current dir and below,\n");
+  process.stderr.write("  and display performance summary.\n");
+  process.stderr.write("\n");
+  process.stderr.write("  -q     do not show file names\n");
+  process.stderr.write("  -r N   repeat N times\n");
+  process.stderr.write("  -t N   repeat until N seconds have elapsed\n");
+}
+else
+{
+  var repeat = 1;
+  var timeout = 0;
+  var i = 1;
+  while (++i < process.argv.length)
+  {
+    if (process.argv[i] == "-q")
+    {
+      quiet = true;
+    }
+    else if (process.argv[i] == "-r")
+    {
+      repeat = parseInt(process.argv[++i]);
+      timeout = 0;
+    }
+    else if (process.argv[i] == "-t")
+    {
+      repeat = 0;
+      timeout = 1000 * parseInt(process.argv[++i]);
+    }
+    else if (process.argv[i].substring(0, 1) !== "-")
+    {
+      break;
+    }
+    else
+    {
+      throw "invalid option: " + process.argv[i];
+    }
+  }
+
+  var start = Date.now();
+
+  for (; i < process.argv.length; ++i)
+  {
+    findFiles(".", process.argv[i], parsers, quiet);
+  }
+
+  if (parsers.length != 0)
+  {
+    var msec = Date.now() - start;
+
+    if (! quiet) process.stdout.write("\n");
+    process.stdout.write("loaded " + parsers.length + " file" +
+        (parsers.length == 1 ? "" : "s") + " in " +
+        msec + " msec\n");
+    if (! quiet) process.stdout.write("\n");
+
+    start = Date.now();
+    for (i = 0; ; ++i)
+    {
+      if (repeat != 0 && i >= repeat) break;
+      if (timeout != 0 && Date.now() - start >= timeout) break;
+
+      for (var j = 0; j < parsers.length; ++j)
+      {
+        var job: ParseJob = parsers[j];
+        if (job.parser != null)
+        {
+          try
+          {
+            if (! quiet) process.stdout.write("parsing " + job.name);
+            job.parser.reset(0, 0, 0);
+            job.parser.~                                      print(methodPrefixParse);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                       ~();
+            if (! quiet) process.stdout.write("\n");~         if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+~
+            job.parseTreeBuilder.serialize(job.contentCounter);~
+                                                                }
+~
+            if (job.contentCounter.getLength() != job.input.length)
+            {
+              throw "content counter saw " + job.contentCounter.getLength() +
+                    ", but input length is " + job.input.length;
+            }~                                                }
+~
+            parsed += job.input.length;
+          }
+          catch (pe)
+          {
+            if (pe instanceof ~                               print(className.c_str());
+                              ~.ParseException)
+            {
+              ++errorCount;
+              process.stdout.write((quiet ? ("parsing " + job.name) : "") +
+                  ": error: " + job.parser.getErrorMessage(pe) + "\n");
+              job.parser = null;
+            }
+            else
+            {
+              throw pe;
+            }
+          }
+        }
+      }
+    }
+
+    msec = Date.now() - start;
+    var sec = msec / 1000e0;
+    var perSec = msec == 0
+                 ? ""
+                 : parsed / sec > 1024 * 1024
+                 ? (" ("  + (parsed / 1024 / 1024 /sec).toFixed(2) + " MB/sec)")
+                 : (" ("  + (parsed / 1024        /sec).toFixed(2) + " KB/sec)");
+
+    if (! quiet) process.stdout.write("\n");
+    process.stdout.write("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
+        " in " + msec + " msec" + perSec + "\n");
+    process.stdout.write(errorCount + " error" + (errorCount == 1 ? "" : "s") + "\n");
+  }
+}
+~                                                           }
+
+                                                            void PrintTypescript::printReadMethod()
+                                                            {
+~
+  function read(input)
+  {
+    if (/^^{.*}$/.test(input))
+    {
+      return input.substring(1, input.length - 1);
+    }
+    else
+    {
+      var content = readTextFile(input, "utf-8");
+      return content.length > 0 && content.charCodeAt(0) == 0xFEFF
+           ? content.substring(1)
+           : content;
+    }
+  }
+~                                                           }
+
+                                                            void PrintTypescript::close(Grammar *node)
+                                                            {
+                                                              print(L"\n");
+                                                              if (! useGlr)
+                                                              {
+                                                                print(lexerInstanceCode);
+                                                              }
+                                                              else
+                                                              {
+                                                                decreaseIndent(2);
+                                                              }
+                                                              print(lexerStaticCode);
+
+                                                              decreaseIndent();
+~}
+~                                                             if (useGlr)
+                                                              {
+                                                                increaseIndent();
+                                                                openStackNode();
+                                                                printCountMethod();
+                                                                closeStackNode();
+                                                                openThread();
+                                                                increaseIndent();
+                                                                printThreadBody1();
+                                                                print(lexerInstanceCode);
+                                                                decreaseIndent();
+~}
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+  export class TopDownTreeBuilder implements ParsingEventHandler
+  {
+    private input: string = null;
+    private stack: Nonterminal[] = null;
+
+    public reset(input: string): void
+    {
+      this.input = input;
+      this.stack = [];
+    }
+
+    public startNonterminal(name: string, begin: number): void
+    {
+      var nonterminal = new Nonterminal(name, begin, begin, []);
+      if (this.stack.length > 0) this.addChild(nonterminal);
+      this.stack.push(nonterminal);
+    }
+
+    public endNonterminal(name: string, end: number): void
+    {
+      this.stack[this.stack.length - 1].end = end;
+      if (this.stack.length > 1) this.stack.pop();
+    }
+
+    public terminal(name: string, begin: number, end: number): void
+    {
+      this.addChild(new Terminal(name, begin, end));
+    }
+
+    public whitespace(begin: number, end: number): void
+    {
+    }
+
+    private addChild(s: Symbol): void
+    {
+      var current = this.stack[this.stack.length - 1];
+      current.children.push(s);
+    }
+
+    public serialize(e: ParsingEventHandler): void
+    {
+      e.reset(this.input);
+      this.stack[0].send(e);
+    }
+  }
+
+  export abstract class Symbol
+  {
+    public name: string;
+    public begin: number;
+    public end: number;
+
+    constructor(name: string, begin: number, end: number)
+    {
+      this.name = name;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract send(e: ParsingEventHandler): void;
+  }
+
+  export class Terminal extends Symbol
+  {
+    constructor(name: string, begin: number, end: number)
+    {
+      super(name, begin, end);
+    }
+
+    public send(e: ParsingEventHandler): void
+    {
+      e.terminal(this.name, this.begin, this.end);
+    }
+  }
+
+  export class Nonterminal extends Symbol
+  {
+    public children: Symbol[];
+
+    constructor(name: string, begin: number, end: number, children: Symbol[])
+    {
+      super(name, begin, end);
+      this.children = children;
+    }
+
+    public send(e: ParsingEventHandler): void
+    {
+      e.startNonterminal(this.name, this.begin);
+      var pos = this.begin;
+      this.children.forEach
+      (
+        function(c): void
+        {
+          if (pos < c.begin) e.whitespace(pos, c.begin);
+          c.send(e);
+          pos = c.end;
+        }
+      );
+      if (pos < this.end) e.whitespace(pos, this.end);
+      e.endNonterminal(this.name, this.end);
+    }
+  }
+~                                                               if (isLrParser)
+                                                                {
+~
+  export class ParseTreeBuilder implements BottomUpEventHandler
+  {
+    private input: string = null;
+    private stack: Symbol[] = [];
+    private top: number = -1;
+
+    public reset(input: string): void
+    {
+      this.input = input;
+      this.top = -1;
+    }
+
+    public getStack(): Symbol[] {return this.stack;}
+    public getTop(): number {return this.top;}
+
+    public nonterminal(name: string, begin: number, end: number, count: number): void
+    {~                                                            if (useGlr)
+                                                                  {
+~
+      if (count > this.top + 1)
+      {
+        var content = this.pop(this.top + 1);
+        this.nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+        for (let symbol of content)
+        {
+          this.push(symbol);
+        }
+        count = this.top + 1;
+      }~                                                          }
+~
+      this.push(new Nonterminal(name, begin, end, this.pop(count)));
+    }
+
+    public terminal(name: string, begin: number, end: number): void
+    {
+      this.push(new Terminal(name, begin, end));
+    }
+
+    public serialize(e: ParsingEventHandler): void
+    {
+      e.reset(this.input);
+      for (var i = 0; i <= this.top; ++i)
+      {
+        this.stack[i].send(e);
+      }
+    }
+
+    public push(s: Symbol): void
+    {
+      this.stack[++this.top] = s;
+    }
+
+    public pop(count: number): Symbol[]
+    {
+      this.top -= count;
+      return this.stack.slice(this.top + 1, this.top + 1 + count);
+    }
+  }
+~
+                                                                }
+                                                              }
+                                                              if (! visitEpilog())
+                                                              {
+~}
+~                                                             }
+
+                                                              if (main)
+                                                              {
+                                                                if (tree)
+                                                                {
+~
+class XmlSerializer implements ~                                  print(className.c_str());
+                               ~.ParsingEventHandler
+{
+  private input: string = null;
+  private delayedTag: string = null;
+  private indent: boolean;
+  private hasChildElement = false;
+  private depth = 0;
+
+  constructor(indent: boolean)
+  {
+    this.indent = indent;
+  }
+
+  reset(source: string)
+  {
+    process.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    this.input = source;
+    this.hasChildElement = false;
+    this.depth = 0;
+  }
+
+  startNonterminal(tag: string, begin: number)
+  {
+    if (this.delayedTag != null)
+    {
+      process.stdout.write("<");
+      process.stdout.write(this.delayedTag);
+      process.stdout.write(">");
+    }
+    this.delayedTag = tag;
+    if (this.indent)
+    {
+      process.stdout.write("\n");
+      for (var i = 0; i < this.depth; ++i)
+      {
+        process.stdout.write("  ");
+      }
+    }
+    this.hasChildElement = false;
+    ++this.depth;
+  }
+
+  endNonterminal(tag: string, end: number)
+  {
+    --this.depth;
+    if (this.delayedTag != null)
+    {
+      this.delayedTag = null;
+      process.stdout.write("<");
+      process.stdout.write(tag);
+      process.stdout.write("/>");
+    }
+    else
+    {
+      if (this.indent)
+      {
+        if (this.hasChildElement)
+        {
+          process.stdout.write("\n");
+          for (var i = 0; i < this.depth; ++i)
+          {
+            process.stdout.write("  ");
+          }
+        }
+      }
+      process.stdout.write("</");
+      process.stdout.write(tag);
+      process.stdout.write(">");
+    }
+    this.hasChildElement = true;
+  }
+
+  terminal(tag: string, begin: number, end: number)
+  {
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    this.startNonterminal(tag, begin);
+    this.characters(begin, end);
+    this.endNonterminal(tag, end);
+  }
+
+  whitespace(begin: number, end: number)
+  {
+    this.characters(begin, end);
+  }
+
+  private characters(begin: number, end: number)
+  {
+    if (begin < end)
+    {
+      if (this.delayedTag != null)
+      {
+        process.stdout.write("<");
+        process.stdout.write(this.delayedTag);
+        process.stdout.write(">");
+        this.delayedTag = null;
+      }
+      process.stdout.write(this.input.substring(begin, end)
+                   .replace(/&/g, "&amp;")
+                   .replace(/</g, "&lt;")
+                   .replace(/>/g, "&gt;"));
+    }
+  }
+}
+~                                                               }
+~
+// main program for use with node.js
+
+var fs = require('fs');
+
+if (process.argv.length < 3)
+{
+  process.stderr.write("Usage: node ~                           print(className.c_str());
+                                    ~.js ~                      if (tree)
+                                                                {
+                                         ~[-i] ~                }
+                                         ~INPUT...\n");
+  process.stderr.write("\n");
+  process.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");~
+                                                                if (tree)
+                                                                {
+~
+  process.stderr.write("\n");
+  process.stderr.write("  Option:\n");
+  process.stderr.write("    -i     indented parse tree\n");~    }
+~
+}
+else
+{
+  var indent = false;
+  for (var i = 2; i < process.argv.length; ++i)
+  {
+    var arg = process.argv[i];~
+                                                                if (tree)
+                                                                {
+~
+    if (arg === "-i")
+    {
+      indent = true;
+      continue;
+    }~                                                          }
+~
+    var input: string;
+    if (/^^{.*}$/.test(arg))
+    {
+      input = arg.substring(1, arg.length - 1);
+    }
+    else
+    {
+      var content = fs.readFileSync(arg, "utf-8");
+      input = content.length > 0 && content.charCodeAt(0) == 0xFEFF
+            ? content.substring(1)
+            : content;
+    }~                                                          if (tree)
+                                                                {
+~
+    var s = new XmlSerializer(indent);~                           if (isLrParser)
+                                                                  {
+~
+    var t = new ~                                                   print(className.c_str());
+                ~.ParseTreeBuilder();~                            }
+                                                                }
+~
+    var parser = new ~                                          print(className.c_str());
+                     ~.Parser(input~                            if (tree)
+                                                                {
+                                                                  if (isLrParser)
+                                                                  {
+                                   ~, t~                          }
+                                                                  else
+                                                                  {
+                                   ~, s~                          }
+                                                                }
+                                       ~);
+    try
+    {~                                                          if (trace)
+                                                                {
+~
+      parser.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n");~
+                                                                }
+~
+      parser.~                                                  print(methodPrefixParse);
+                                                                print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+             ~();~                                              if (trace)
+                                                                {
+~
+      parser.writeTrace("</trace>\n");
+      parser.flushTrace();~                                     }
+                                                                if (tree && isLrParser)
+                                                                {
+~
+      t.serialize(s);~                                          }
+~
+    }
+    catch (pe)
+    {
+      if (! (pe instanceof ~                                    print(className.c_str());
+                           ~.ParseException))
+      {
+        throw pe;
+      }
+      else
+      {~                                                        if (useGlr && tree)
+                                                                {
+~
+        if (pe.isAmbiguousInput())
+        {
+          pe.serialize(s);
+          process.stdout.write("\n");
+        }~                                                      }
+~
+        throw parser.getErrorMessage(pe);
+      }
+    }
+  }
+}
+~
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+                                                                printFileProcessor();
+                                                              }
+                                                            }

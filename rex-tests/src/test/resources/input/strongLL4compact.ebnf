@@ -1,0 +1,52 @@
+                              <?java
+                                public class strongLL4compact
+                                {
+                                  public strongLL4compact(String string)
+                                  {
+                                    initialize(string);
+                                  }
+
+                                  public static void main(String args[])
+                                  {
+                                    new strongLL4compact("YYZ").parse_s();
+                                    new strongLL4compact("XYYZ").parse_s();
+                                    new strongLL4compact("XXYYZ").parse_s();
+                                    new strongLL4compact("XXXYYZ").parse_s();
+                                    new strongLL4compact("XXXXYYZ").parse_s();
+                                    new strongLL4compact("XXXXXYYZ").parse_s();
+                                    new strongLL4compact("XQ").parse_s();
+                                    new strongLL4compact("XYQY").parse_s();
+                                    new strongLL4compact("XYYQYY").parse_s();
+                                    new strongLL4compact("XYYYQYYY").parse_s();
+                                    new strongLL4compact("XYYYYQYYYY").parse_s();
+                                    new strongLL4compact("XYYYYYQYYYYY").parse_s();
+                                    try
+                                    {
+                                      new strongLL4compact("XYYYQYYZ").parse_s();
+                                      System.out.println("fail");
+                                    }
+                                    catch (ParseException e)
+                                    {
+                                      System.out.println("pass");
+                                    }
+                                  }
+                              ?>
+s ::= 'X'* 'Y' 'Y' 'Z' | 'X' c
+c ::= 'Y' c 'Y' | 'Q'
+
+<?ENCORE?>
+                              <?xquery
+                                module:parse_s("YYZ"),
+                                module:parse_s("XYYZ"),
+                                module:parse_s("XXYYZ"),
+                                module:parse_s("XXXYYZ"),
+                                module:parse_s("XXXXYYZ"),
+                                module:parse_s("XXXXXYYZ"),
+                                module:parse_s("XQ"),
+                                module:parse_s("XYQY"),
+                                module:parse_s("XYYQYY"),
+                                module:parse_s("XYYYQYYY"),
+                                module:parse_s("XYYYYQYYYY"),
+                                module:parse_s("XYYYYYQYYYYY"),
+                                "pass"
+                              ?>

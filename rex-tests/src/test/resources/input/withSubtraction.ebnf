@@ -1,0 +1,29 @@
+X ::= 'A' CommentContentsE
+    | 'B' CommentContents
+    | 'C' PragmaContents
+    | 'D' DirPIContents
+    | 'E' CDataSectionContents
+    | 'F' CDSect
+    | 'G' CharData
+    | 'H' PITarget
+    | 'I' PI
+
+<?TOKENS?>
+
+Char                  ::=  #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
+CommentContentsE      ::= (Char* - (Char* ('(:' | ':)') Char*)) & [(:]
+CommentContents       ::= (Char+ - (Char* ('(:' | ':)') Char*)) // & [(:]
+PragmaContents        ::= (Char* - (Char* '#)' Char*)) & '#'
+DirPIContents         ::= (Char* - (Char* '?>' Char*)) &'?'
+CDataSectionContents  ::= (Char* - (Char* ']]>' Char*)) & ']]'
+CDSect                ::= CDStart CData CDEnd
+CDStart               ::= '<![CDATA['
+CData                 ::= (Char* - (Char* ']]>' Char*))
+CDEnd                 ::= ']]>'
+CharData              ::= [^<&]* - ([^<&]* ']]>' [^<&]*) & ']]'
+PI                    ::= '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
+PITarget              ::= Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
+NameStartChar         ::= ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
+NameChar              ::= NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
+Name                  ::= NameStartChar (NameChar)*
+S                     ::= (#x20 | #x9 | #xD | #xA)+

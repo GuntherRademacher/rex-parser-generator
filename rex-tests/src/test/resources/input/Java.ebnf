@@ -1,0 +1,686 @@
+﻿// made by editing http://www.antlr.org/grammar/1152141644268/Java.g as of 2010-02-10
+//
+// Java.g is subject to
+// [The "BSD licence"]
+// Copyright (c) 2007-2008 Terence Parr
+// All rights reserved.
+
+compilationUnit
+    ::= (  annotations
+            (   packageDeclaration importDeclaration* typeDeclaration*
+            |   classOrInterfaceDeclaration typeDeclaration*
+            )
+        |   packageDeclaration? importDeclaration* typeDeclaration*
+        ) EOF
+
+packageDeclaration
+    ::=   'package' qualifiedName ';'
+
+importDeclaration
+    ::=   'import' 'static'? qualifiedName ('.' '*')? ';'
+
+typeDeclaration
+    ::=   classOrInterfaceDeclaration
+    |   ';'
+
+classOrInterfaceDeclaration
+    ::=   classOrInterfaceModifiers (classDeclaration | interfaceDeclaration)
+
+classOrInterfaceModifiers
+    ::=   classOrInterfaceModifier*
+
+classOrInterfaceModifier
+    ::=   annotation   // class or interface
+    |   'public'     // class or interface
+    |   'protected'  // class or interface
+    |   'private'    // class or interface
+    |   'abstract'   // class or interface
+    |   'static'     // class or interface
+    |   'final'      // class only -- does not apply to interfaces
+    |   'strictfp'   // class or interface
+
+modifiers
+    ::=   modifier*
+
+classDeclaration
+    ::=   normalClassDeclaration
+    |   enumDeclaration
+
+normalClassDeclaration
+    ::=   'class' Identifier typeParameters?
+        ('extends' type)?
+        ('implements' typeList)?
+        classBody
+
+typeParameters
+    ::=   '<' typeParameter (',' typeParameter)* '>'
+
+typeParameter
+    ::=   Identifier ('extends' typeBound)?
+
+typeBound
+    ::=   type ('&' type)*
+
+enumDeclaration
+    ::=   ENUM Identifier ('implements' typeList)? enumBody
+
+enumBody
+    ::=   '{' enumConstants? ','? enumBodyDeclarations? '}'
+
+enumConstants
+    ::=   enumConstant (',' enumConstant)*
+
+enumConstant
+    ::=   annotations? Identifier arguments? classBody?
+
+enumBodyDeclarations
+    ::=   ';' (classBodyDeclaration)*
+
+interfaceDeclaration
+    ::=   normalInterfaceDeclaration
+    |   annotationTypeDeclaration
+
+normalInterfaceDeclaration
+    ::=   'interface' Identifier typeParameters? ('extends' typeList)? interfaceBody
+
+typeList
+    ::=   type (',' type)*
+
+classBody
+    ::=   '{' classBodyDeclaration* '}'
+
+interfaceBody
+    ::=   '{' interfaceBodyDeclaration* '}'
+
+classBodyDeclaration
+    ::=   ';'
+    |   'static'? block
+    |   modifiers memberDecl
+
+memberDecl
+    ::=   genericMethodOrConstructorDecl
+    |   memberDeclaration
+    |   'void' Identifier voidMethodDeclaratorRest
+    |   Identifier constructorDeclaratorRest
+    |   interfaceDeclaration
+    |   classDeclaration
+
+memberDeclaration
+    ::=   type (methodDeclaration | fieldDeclaration)
+
+genericMethodOrConstructorDecl
+    ::=   typeParameters genericMethodOrConstructorRest
+
+genericMethodOrConstructorRest
+    ::=   (type | 'void') Identifier methodDeclaratorRest
+    |   Identifier constructorDeclaratorRest
+
+methodDeclaration
+    ::=   Identifier methodDeclaratorRest
+
+fieldDeclaration
+    ::=   variableDeclarators ';'
+
+interfaceBodyDeclaration
+    ::=   modifiers interfaceMemberDecl
+    |   ';'
+
+interfaceMemberDecl
+    ::=   interfaceMethodOrFieldDecl
+    |   interfaceGenericMethodDecl
+    |   'void' Identifier voidInterfaceMethodDeclaratorRest
+    |   interfaceDeclaration
+    |   classDeclaration
+
+interfaceMethodOrFieldDecl
+    ::=   type Identifier interfaceMethodOrFieldRest
+
+interfaceMethodOrFieldRest
+    ::=   constantDeclaratorsRest ';'
+    |   interfaceMethodDeclaratorRest
+
+methodDeclaratorRest
+    ::=   formalParameters ('[' ']')*
+        ('throws' qualifiedNameList)?
+        (   methodBody
+        |   ';'
+        )
+
+voidMethodDeclaratorRest
+    ::=   formalParameters ('throws' qualifiedNameList)?
+        (   methodBody
+        |   ';'
+        )
+
+interfaceMethodDeclaratorRest
+    ::=   formalParameters ('[' ']')* ('throws' qualifiedNameList)? ';'
+
+interfaceGenericMethodDecl
+    ::=   typeParameters (type | 'void') Identifier
+        interfaceMethodDeclaratorRest
+
+voidInterfaceMethodDeclaratorRest
+    ::=   formalParameters ('throws' qualifiedNameList)? ';'
+
+constructorDeclaratorRest
+    ::=   formalParameters ('throws' qualifiedNameList)? constructorBody
+
+constantDeclarator
+    ::=   Identifier constantDeclaratorRest
+
+variableDeclarators
+    ::=   variableDeclarator (',' variableDeclarator)*
+
+variableDeclarator
+    ::=   variableDeclaratorId ('=' variableInitializer)?
+
+constantDeclaratorsRest
+    ::=   constantDeclaratorRest (',' constantDeclarator)*
+
+constantDeclaratorRest
+    ::=   ('[' ']')* '=' variableInitializer
+
+variableDeclaratorId
+    ::=   Identifier ('[' ']')*
+
+variableInitializer
+    ::=   arrayInitializer
+    |   expression
+
+arrayInitializer
+    ::=   '{' (variableInitializer (',' variableInitializer)* (',')? )? '}'
+
+modifier
+    ::=   annotation
+    |   'public'
+    |   'protected'
+    |   'private'
+    |   'static'
+    |   'abstract'
+    |   'final'
+    |   'native'
+    |   'synchronized'
+    |   'transient'
+    |   'volatile'
+    |   'strictfp'
+
+// packageOrTypeName
+//     ::=   qualifiedName
+
+enumConstantName
+    ::=   Identifier
+
+// typeName
+//     ::=   qualifiedName
+
+type
+    ::= classOrInterfaceType ('[' ']')*
+    |  primitiveType ('[' ']')*
+
+classOrInterfaceType
+    ::= Identifier typeArguments? ('.' Identifier typeArguments? )*
+
+primitiveType
+    ::=   'boolean'
+    |   'char'
+    |   'byte'
+    |   'short'
+    |   'int'
+    |   'long'
+    |   'float'
+    |   'double'
+
+variableModifier
+    ::=   'final'
+    |   annotation
+
+typeArguments
+    ::=   '<' typeArgument (',' typeArgument)* '>'
+
+typeArgument
+    ::=   type
+    |   '?' (('extends' | 'super') type)?
+
+qualifiedNameList
+    ::=   qualifiedName (',' qualifiedName)*
+
+formalParameters
+    ::=   '(' formalParameterDecls? ')'
+
+formalParameterDecls
+    ::=   variableModifiers type formalParameterDeclsRest
+
+formalParameterDeclsRest
+    ::=   variableDeclaratorId (',' formalParameterDecls)?
+    |   '...' variableDeclaratorId
+
+methodBody
+    ::=   block
+
+constructorBody
+    ::=   '{' explicitConstructorInvocation? blockStatement* '}'
+
+explicitConstructorInvocation
+    ::=   nonWildcardTypeArguments? ('this' | 'super') arguments ';'
+    |   primary '.' nonWildcardTypeArguments? 'super' arguments ';'
+
+
+qualifiedName
+    ::=   Identifier ('.' Identifier)*
+
+literal
+    ::=   integerLiteral
+    |   FloatingPointLiteral
+    |   CharacterLiteral
+    |   StringLiteral
+    |   booleanLiteral
+    |   'null'
+
+integerLiteral
+    ::=   HexLiteral
+    |   OctalLiteral
+    |   DecimalLiteral
+
+booleanLiteral
+    ::=   'true'
+    |   'false'
+
+// ANNOTATIONS
+
+annotations
+    ::=   annotation+
+
+annotation
+    ::=   '@' annotationName ( '(' ( elementValuePairs | elementValue )? ')' )?
+
+annotationName
+    ::= Identifier ('.' Identifier)*
+
+elementValuePairs
+    ::=   elementValuePair (',' elementValuePair)*
+
+elementValuePair
+    ::=   Identifier '=' elementValue
+
+elementValue
+    ::=   conditionalExpression
+    |   annotation
+    |   elementValueArrayInitializer
+
+elementValueArrayInitializer
+    ::=   '{' (elementValue (',' elementValue)*)? (',')? '}'
+
+annotationTypeDeclaration
+    ::=   '@' 'interface' Identifier annotationTypeBody
+
+annotationTypeBody
+    ::=   '{' (annotationTypeElementDeclaration)* '}'
+
+annotationTypeElementDeclaration
+    ::=   modifiers annotationTypeElementRest
+
+annotationTypeElementRest
+    ::=   type annotationMethodOrConstantRest ';'
+    |   normalClassDeclaration ';'?
+    |   normalInterfaceDeclaration ';'?
+    |   enumDeclaration ';'?
+    |   annotationTypeDeclaration ';'?
+
+annotationMethodOrConstantRest
+    ::=   annotationMethodRest
+    |   annotationConstantRest
+
+annotationMethodRest
+    ::=   Identifier '(' ')' defaultValue?
+
+annotationConstantRest
+    ::=   variableDeclarators
+
+defaultValue
+    ::=   'default' elementValue
+
+// STATEMENTS / BLOCKS
+
+block
+    ::=   '{' blockStatement* '}'
+
+blockStatement
+    ::=   localVariableDeclarationStatement
+    |   classOrInterfaceDeclaration
+    |   statement
+
+localVariableDeclarationStatement
+    ::=    localVariableDeclaration ';'
+
+localVariableDeclaration
+    ::=   variableModifiers type variableDeclarators
+
+variableModifiers
+    ::=   variableModifier*
+
+statement
+    ::= block
+    |   ASSERT expression (':' expression)? ';'
+    |   'if' parExpression statement ('else' statement)?
+    |   'for' '(' forControl ')' statement
+    |   'while' parExpression statement
+    |   'do' statement 'while' parExpression ';'
+    |   'try' block
+        ( catches 'finally' block
+        | catches
+        |   'finally' block
+        )
+    |   'switch' parExpression '{' switchBlockStatementGroups '}'
+    |   'synchronized' parExpression block
+    |   'return' expression? ';'
+    |   'throw' expression ';'
+    |   'break' Identifier? ';'
+    |   'continue' Identifier? ';'
+    |   ';'
+    |   statementExpression ';'
+    |   Identifier ':' statement
+
+catches
+    ::=   catchClause (catchClause)*
+
+catchClause
+    ::=   'catch' '(' formalParameter ')' block
+
+formalParameter
+    ::=   variableModifiers type variableDeclaratorId
+
+switchBlockStatementGroups
+    ::=   (switchBlockStatementGroup)*
+
+// The change here (switchLabel -> switchLabel+) technically makes this grammar
+//   ambiguous; but with appropriately greedy parsing it yields the most
+//   appropriate AST, one in which each group, except possibly the last one, has
+//   labels and statements.
+
+switchBlockStatementGroup
+    ::=   switchLabel+ blockStatement*
+
+switchLabel
+    ::=   'case' constantExpression ':'
+    |   'case' enumConstantName ':'
+    |   'default' ':'
+
+forControl
+// options {k=3;} // be efficient for common case: for (ID ID : ID) ...
+    ::=   enhancedForControl
+    |   forInit? ';' expression? ';' forUpdate?
+
+forInit
+    ::=   localVariableDeclaration
+    |   expressionList
+
+enhancedForControl
+    ::=   variableModifiers type Identifier ':' expression
+
+forUpdate
+    ::=   expressionList
+
+// EXPRESSIONS
+
+parExpression
+    ::=   '(' expression ')'
+
+expressionList
+    ::=   expression (',' expression)*
+
+statementExpression
+    ::=   expression
+
+constantExpression
+    ::=   expression
+
+expression
+    ::=   conditionalExpression (assignmentOperator expression)?
+
+assignmentOperator
+    ::=   '='
+    |   '+='
+    |   '-='
+    |   '*='
+    |   '/='
+    |   '&='
+    |   '|='
+    |   '^='
+    |   '%='
+    |   '<<='
+    |   '>>>='
+    |   '>>='
+
+conditionalExpression
+    ::=   conditionalOrExpression ( '?' expression ':' expression )?
+
+conditionalOrExpression
+    ::=   conditionalAndExpression ( '||' conditionalAndExpression )*
+
+conditionalAndExpression
+    ::=   inclusiveOrExpression ( '&&' inclusiveOrExpression )*
+
+inclusiveOrExpression
+    ::=   exclusiveOrExpression ( '|' exclusiveOrExpression )*
+
+exclusiveOrExpression
+    ::=   andExpression ( '^' andExpression )*
+
+andExpression
+    ::=   equalityExpression ( '&' equalityExpression )*
+
+equalityExpression
+    ::=   instanceOfExpression ( ('==' | '!=') instanceOfExpression )*
+
+instanceOfExpression
+    ::=   relationalExpression ('instanceof' type)?
+
+relationalExpression
+    ::=   shiftExpression ( relationalOp shiftExpression )*
+
+relationalOp
+    ::=   '<='
+    |   '>='
+    |   '<'
+    |   '>'
+
+shiftExpression
+    ::=   additiveExpression ( shiftOp additiveExpression )*
+
+shiftOp
+    ::=   '<<'
+    |   '>>>'
+    |   '>>'
+
+
+additiveExpression
+    ::=   multiplicativeExpression ( ('+' | '-') multiplicativeExpression )*
+
+multiplicativeExpression
+    ::=   unaryExpression ( ( '*' | '/' | '%' ) unaryExpression )*
+
+unaryExpression
+    ::=   '+' unaryExpression
+    |   '-' unaryExpression
+    |   '++' unaryExpression
+    |   '--' unaryExpression
+    |   unaryExpressionNotPlusMinus
+
+unaryExpressionNotPlusMinus
+    ::=   '~' unaryExpression
+    |   '!' unaryExpression
+    |   castExpression
+    |   primary selector* ('++'|'--')?
+
+castExpression
+    ::=  '(' primitiveType ')' unaryExpression
+    |  '(' (type | expression) ')' unaryExpressionNotPlusMinus
+
+primary
+    ::=   parExpression
+    |   'this' ('.' Identifier)* identifierSuffix?
+    |   'super' superSuffix
+    |   literal
+    |   'new' creator
+    |   Identifier ('.' Identifier)* identifierSuffix?
+    |   primitiveType ('[' ']')* '.' 'class'
+    |   'void' '.' 'class'
+
+identifierSuffix
+    ::=   ('[' ']')+ '.' 'class'
+    |   ('[' expression ']')+ // can also be matched by selector, but do here
+    |   arguments
+    |   '.' 'class'
+    |   '.' explicitGenericInvocation
+    |   '.' 'this'
+    |   '.' 'super' arguments
+    |   '.' 'new' innerCreator
+
+creator
+    ::=   nonWildcardTypeArguments createdName classCreatorRest
+    |   createdName (arrayCreatorRest | classCreatorRest)
+
+createdName
+    ::=   classOrInterfaceType
+    |   primitiveType
+
+innerCreator
+    ::=   nonWildcardTypeArguments? Identifier nonWildcardTypeArgumentsOrDiamond? classCreatorRest
+
+nonWildcardTypeArgumentsOrDiamond
+    ::= '<' '>'
+    | nonWildcardTypeArguments
+
+arrayCreatorRest
+    ::=   '['
+        (   ']' ('[' ']')* arrayInitializer
+        |   expression ']' ('[' expression ']')* ('[' ']')*
+        )
+
+classCreatorRest
+    ::=   arguments classBody?
+
+explicitGenericInvocation
+    ::=   nonWildcardTypeArguments Identifier arguments
+
+nonWildcardTypeArguments
+    ::=   '<' typeList '>'
+
+selector
+    ::=   '.' Identifier arguments?
+    |   '.' 'this'
+    |   '.' 'super' superSuffix
+    |   '.' 'new' innerCreator
+    |   '[' expression ']'
+
+superSuffix
+    ::=   arguments
+    |   '.' Identifier arguments?
+
+arguments
+    ::=   '(' expressionList? ')'
+
+whitespace
+    ::= WS | COMMENT | LINE_COMMENT
+        /* ws: definition */
+
+<?TOKENS?>
+
+HexLiteral ::= '0' ('x'|'X') HexDigit+ IntegerTypeSuffix?
+
+DecimalLiteral ::= ('0' | [1-9] [0-9]*) IntegerTypeSuffix?
+
+OctalLiteral ::= '0' [0-7]+ IntegerTypeSuffix?
+
+HexDigit ::= [0-9a-fA-F]
+
+IntegerTypeSuffix ::= ('l'|'L')
+
+FloatingPointLiteral
+    ::=   [0-9]+ '.' [0-9]* Exponent? FloatTypeSuffix?
+    |   '.' [0-9]+ Exponent? FloatTypeSuffix?
+    |   [0-9]+ Exponent FloatTypeSuffix?
+    |   [0-9]+ FloatTypeSuffix
+
+Exponent ::= ('e'|'E') ('+'|'-')? [0-9]+
+
+FloatTypeSuffix ::= ('f'|'F'|'d'|'D')
+
+CharacterLiteral
+    ::=  "'" ( EscapeSequence | [^'\] ) "'"
+
+StringLiteral
+    ::=  '"' ( EscapeSequence | [^\"] )* '"'
+
+EscapeSequence
+    ::=   '\' ('b'|'t'|'n'|'f'|'r'|'"'|"'"|'\')
+    |   UnicodeEscape
+    |   OctalEscape
+
+OctalEscape
+    ::=   '\' [0-3] [0-7] [0-7]
+    |   '\' [0-7] [0-7]
+    |   '\' [0-7]
+
+UnicodeEscape
+    ::=   '\' 'u' HexDigit HexDigit HexDigit HexDigit
+
+ENUM ::=   'enum'
+
+ASSERT
+    ::=   'assert'
+
+Identifier
+    ::=   ( Letter (Letter|JavaIDDigit)* ) - ReservedWord
+
+// I found this char range in JavaCC's grammar, but Letter and Digit overlap.
+//   Still works, but...
+
+Letter
+    ::=  [#x0024] |
+       [#x0041-#x005a] |
+       [#x005f] |
+       [#x0061-#x007a] |
+       [#x00c0-#x00d6] |
+       [#x00d8-#x00f6] |
+       [#x00f8-#x00ff] |
+       [#x0100-#x1fff] |
+       [#x3040-#x318f] |
+       [#x3300-#x337f] |
+       [#x3400-#x3d2d] |
+       [#x4e00-#x9fff] |
+       [#xf900-#xfaff]
+
+JavaIDDigit
+    ::=  [#x0030-#x0039] |
+       [#x0660-#x0669] |
+       [#x06f0-#x06f9] |
+       [#x0966-#x096f] |
+       [#x09e6-#x09ef] |
+       [#x0a66-#x0a6f] |
+       [#x0ae6-#x0aef] |
+       [#x0b66-#x0b6f] |
+       [#x0be7-#x0bef] |
+       [#x0c66-#x0c6f] |
+       [#x0ce6-#x0cef] |
+       [#x0d66-#x0d6f] |
+       [#x0e50-#x0e59] |
+       [#x0ed0-#x0ed9] |
+       [#x1040-#x1049]
+
+WS  ::=  ' '|#xD|#x9|#xC|#xA
+
+COMMENT?
+    ::=   '/*' .* '*/'
+
+LINE_COMMENT
+    ::= '//' [^#xA#xD]* #xD? #xA
+
+EOF ::= $
+
+NonNameChar ::= . - ( Letter | JavaIDDigit )
+NonNameChar   \\ Identifier
+                 ENUM   ASSERT   "abstract"   "boolean"   "break"   "byte"   "case"   "catch"   "char"   "class"   "continue"   "default"   "do"   "double"   "else"   "extends"   "false"   "final"   "finally"   "float"   "for"   "if"   "implements"   "import"   "instanceof"   "int"   "interface"   "long"   "native"   "new"   "null"   "package"   "private"   "protected"   "public"   "return"   "short"   "static"   "strictfp"   "super"   "switch"   "synchronized"   "this"   "throw"   "throws"   "transient"   "true"   "try"   "void"   "volatile"   "while"
+ReservedWord ::= // ENUM |
+                 ASSERT | "abstract" | "boolean" | "break" | "byte" | "case" | "catch" | "char" | "class" | "continue" | "default" | "do" | "double" | "else" | "extends" | "false" | "final" | "finally" | "float" | "for" | "if" | "implements" | "import" | "instanceof" | "int" | "interface" | "long" | "native" | "new" | "null" | "package" | "private" | "protected" | "public" | "return" | "short" | "static" | "strictfp" | "super" | "switch" | "synchronized" | "this" | "throw" | "throws" | "transient" | "true" | "try" | "void" | "volatile" | "while"
+ENUM >> Identifier

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Mon Dec 19, 2016 10:29 (UTC+01) by REx v5.42 which is Copyright (c) 1979-2016 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: example2.ebnf -xml -ff -rex -lr 1 -->
+<g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production id="2" name="S">
+    <g:ref id="3" name="A"/>
+    <g:ref id="4" reduce-id="5" reduce-count="2" first="EOF" name="EOF"/>
+  </g:production>
+  <g:production id="6" name="A">
+    <g:zeroOrMore id="7" reduce-id="8" reduce-count="-1" first="0 EPSILON">
+      <g:ref id="9" first="0" name="C"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production id="10" first="0" name="C">
+    <g:string id="11" reduce-id="12" reduce-count="1" first="0">0</g:string>
+  </g:production>
+  <?TOKENS?>
+  <g:production id="13" name="EOF">
+    <g:endOfFile/>
+  </g:production>
+<parser>
+    <state id="0">
+      <item id="3" lookahead="END">S ::= <dot>.</dot> A EOF</item>
+      <item id="9" lookahead="EOF IMPLICIT">A ::= ( <dot>.</dot> C )*</item>
+      <item id="11" lookahead="0 EOF IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="8" lookahead="EOF IMPLICIT">A ::= ( C )* <dot>.</dot></item>
+      <goto on="A" to="2"/>
+      <goto on="C" to="1" domino="4" dominoes="9-8 9-9"/>
+      <shift on="0" to="3"/>
+      <reduce on="EOF" symbol="A" domino="2" dominoes="8"/>
+      <accept on="S"/>
+    </state>
+    <state id="1">
+      <item id="9" lookahead="EOF IMPLICIT">A ::= ( <dot>.</dot> C )*</item>
+      <item id="11" lookahead="0 EOF IMPLICIT">C ::= <dot>.</dot> '0'</item>
+      <item id="8" lookahead="EOF IMPLICIT">A ::= ( C )* <dot>.</dot></item>
+      <goto on="C" to="1" domino="4" dominoes="9-8 9-9"/>
+      <shift on="0" to="3"/>
+      <reduce on="EOF" symbol="A" domino="2" dominoes="8"/>
+    </state>
+    <state id="2">
+      <item id="4" lookahead="END">S ::= A <dot>.</dot> EOF</item>
+      <shift on="EOF" to="4"/>
+    </state>
+    <state id="3">
+      <item id="12" lookahead="0 EOF IMPLICIT">C ::= '0' <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="C"/>
+    </state>
+    <state id="4">
+      <item id="5" lookahead="END">S ::= A EOF <dot>.</dot></item>
+      <reduce on="EPSILON" symbol="S"/>
+    </state>
+  </parser>
+  <triples>
+    <triple from="4" to="2" valid="3"/>
+    <triple from="4" to="3" valid="5"/>
+    <triple from="4" to="4" valid="5"/>
+    <triple from="4" to="5" valid="5"/>
+  </triples>
+</g:grammar>

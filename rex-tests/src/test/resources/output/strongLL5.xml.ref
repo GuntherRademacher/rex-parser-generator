@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was generated on Mon Nov 1, 2021 13:25 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> -->
+<!-- REx command line: -q strongLL5.ebnf -java -ll 5 -xml -->
+<g:grammar xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
+  <g:production name="Prg">
+    <g:ref name="PrgSeq"/>
+    <g:ref name="Eof"/>
+  </g:production>
+  <g:production name="PrgSeq">
+    <g:ref name="PrgAtom"/>
+    <g:zeroOrMore>
+      <g:string if=";">;</g:string>
+      <g:ref name="PrgAtom"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="PrgAtom">
+    <g:choice>
+      <g:string if="skip">skip</g:string>
+      <g:string if="walk">walk</g:string>
+      <g:sequence if="turn">
+        <g:string>turn</g:string>
+        <g:string>(</g:string>
+        <g:ref name="IExp"/>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:string if="pickup">pickup</g:string>
+      <g:string if="drop">drop</g:string>
+      <g:sequence if="leavescent">
+        <g:string>leavescent</g:string>
+        <g:string>(</g:string>
+        <g:ref name="IExp"/>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="clearscent">
+        <g:string>clearscent</g:string>
+        <g:string>(</g:string>
+        <g:ref name="IExp"/>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="Identifier">
+        <g:ref name="Identifier"/>
+        <g:string>=</g:string>
+        <g:ref name="IExp"/>
+      </g:sequence>
+      <g:sequence if="{">
+        <g:string>{</g:string>
+        <g:ref name="PrgSeq"/>
+        <g:string>}</g:string>
+      </g:sequence>
+      <g:sequence if="if">
+        <g:string>if</g:string>
+        <g:ref name="IExp"/>
+        <g:string>then</g:string>
+        <g:ref name="PrgAtom"/>
+        <g:string>else</g:string>
+        <g:ref name="PrgAtom"/>
+      </g:sequence>
+      <g:sequence default="">
+        <g:string>while</g:string>
+        <g:ref name="IExp"/>
+        <g:string>do</g:string>
+        <g:ref name="PrgAtom"/>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="IExp">
+    <g:ref name="IExp1"/>
+  </g:production>
+  <g:production name="IExp1">
+    <g:ref name="IExp2"/>
+    <g:zeroOrMore>
+      <g:ref if="||" name="op1"/>
+      <g:ref name="IExp2"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="IExp2">
+    <g:ref name="IExp3"/>
+    <g:zeroOrMore>
+      <g:ref if="&amp;&amp;" name="op2"/>
+      <g:ref name="IExp3"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="IExp3">
+    <g:ref name="IExp4"/>
+    <g:zeroOrMore>
+      <g:ref if="&lt; &lt;= = == &gt; &gt;=" name="op3"/>
+      <g:ref name="IExp4"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="IExp4">
+    <g:ref name="IExp5"/>
+    <g:zeroOrMore>
+      <g:ref if="+ -" name="op4"/>
+      <g:ref name="IExp5"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="IExp5">
+    <g:ref name="IExp6"/>
+    <g:zeroOrMore>
+      <g:ref if="% * /" name="op5"/>
+      <g:ref name="IExp6"/>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="IExp6">
+    <g:choice>
+      <g:sequence if="-">
+        <g:string>-</g:string>
+        <g:ref name="IExp6"/>
+      </g:sequence>
+      <g:sequence if="!">
+        <g:string>!</g:string>
+        <g:ref name="IExp6"/>
+      </g:sequence>
+      <g:sequence if="(">
+        <g:string>(</g:string>
+        <g:ref name="IExp1"/>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:ref default="" name="IExpAtom"/>
+    </g:choice>
+  </g:production>
+  <g:production name="IExpAtom">
+    <g:choice LL1-conflict="sense" LL2-conflict="sense~(" LL3-conflict="sense~(~ahead sense~(~here" LL4-conflict="sense~(~ahead~, sense~(~here~,">
+      <g:ref if="Identifier" name="Identifier"/>
+      <g:ref if="Number" name="Number"/>
+      <g:string if="true">true</g:string>
+      <g:string if="false">false</g:string>
+      <g:string if="rand">rand</g:string>
+      <g:sequence if="sense~(~ahead~,~food sense~(~here~,~food">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>food</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~obstacle sense~(~here~,~obstacle">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>obstacle</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~home sense~(~here~,~home">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>home</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~friend sense~(~here~,~friend">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>friend</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~foe sense~(~here~,~foe">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>foe</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~foehome sense~(~here~,~foehome">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>foehome</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~carriesfood sense~(~here~,~carriesfood">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>carriesfood</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence if="sense~(~ahead~,~foescent sense~(~here~,~foescent">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>foescent</g:string>
+        <g:string>)</g:string>
+      </g:sequence>
+      <g:sequence default="">
+        <g:string>sense</g:string>
+        <g:string>(</g:string>
+        <g:ref name="Where"/>
+        <g:string>,</g:string>
+        <g:string>ownscent</g:string>
+        <g:string>,</g:string>
+        <g:ref name="IExp"/>
+        <g:string>)</g:string>
+      </g:sequence>
+    </g:choice>
+  </g:production>
+  <g:production name="Where">
+    <g:choice>
+      <g:string if="here">here</g:string>
+      <g:string default="">ahead</g:string>
+    </g:choice>
+  </g:production>
+  <g:production name="op1">
+    <g:string>||</g:string>
+  </g:production>
+  <g:production name="op2">
+    <g:string>&amp;&amp;</g:string>
+  </g:production>
+  <g:production name="op3">
+    <g:choice>
+      <g:string if="==">==</g:string>
+      <g:string if="&lt;=">&lt;=</g:string>
+      <g:string if="&lt;">&lt;</g:string>
+      <g:string if="=">=</g:string>
+      <g:string if="&gt;=">&gt;=</g:string>
+      <g:string default="">&gt;</g:string>
+    </g:choice>
+  </g:production>
+  <g:production name="op4">
+    <g:choice>
+      <g:string if="+">+</g:string>
+      <g:string default="">-</g:string>
+    </g:choice>
+  </g:production>
+  <g:production name="op5">
+    <g:choice>
+      <g:string if="*">*</g:string>
+      <g:string if="/">/</g:string>
+      <g:string default="">%</g:string>
+    </g:choice>
+  </g:production>
+  <g:production name="Whitespace" whitespace-spec="definition">
+    <g:ref name="Whitespace" context="Token"/>
+  </g:production>
+  <?TOKENS?>
+  <g:production name="Identifier">
+    <g:ref name="Alpha"/>
+    <g:zeroOrMore>
+      <g:choice>
+        <g:ref name="Alpha"/>
+        <g:ref name="Digit"/>
+      </g:choice>
+    </g:zeroOrMore>
+  </g:production>
+  <g:production name="Alpha">
+    <g:charClass>
+      <g:charRange minChar="a" maxChar="z"/>
+      <g:charRange minChar="A" maxChar="Z"/>
+    </g:charClass>
+  </g:production>
+  <g:production name="Digit">
+    <g:charClass>
+      <g:charRange minChar="0" maxChar="9"/>
+    </g:charClass>
+  </g:production>
+  <g:production name="Number">
+    <g:oneOrMore>
+      <g:ref name="Digit"/>
+    </g:oneOrMore>
+  </g:production>
+  <g:production name="Eof">
+    <g:endOfFile/>
+  </g:production>
+  <g:production name="Whitespace">
+    <g:oneOrMore>
+      <g:charClass>
+        <g:charCode value="9"/>
+        <g:charCode value="A"/>
+        <g:charCode value="D"/>
+        <g:charCode value="20"/>
+      </g:charClass>
+    </g:oneOrMore>
+  </g:production>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>clearscent</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>drop</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>false</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>if</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>leavescent</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>pickup</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>rand</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>sense</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>skip</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>true</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>turn</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>walk</g:string>
+  </g:preference>
+  <g:preference>
+    <g:ref name="Identifier"/>
+    <g:string>while</g:string>
+  </g:preference>
+</g:grammar>

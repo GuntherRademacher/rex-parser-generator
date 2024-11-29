@@ -1,0 +1,107 @@
+                                        <?javascript-regex
+										  const { XmlXlLexer } = require('./XmlXlLexer');
+
+                                          function XmlXl(string, lexer)
+                                          {
+                                            init(string, lexer);
+                                        ?>
+
+document ::= prolog element Misc* EOF
+prolog   ::= XMLDecl? Misc* ( doctypedecl Misc* )?
+XMLDecl  ::= '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
+VersionInfo
+         ::= S 'version' Eq ( "'" VersionNum "'" | '"' VersionNum '"' )
+Eq       ::= S? '=' S?
+Misc     ::= Comment
+           | PI
+           | S
+doctypedecl
+         ::= '<!DOCTYPE' S Name ( S ExternalID )? S? ( '[' intSubset ']' S? )? '>'
+DeclSep  ::= PEReference
+           | S
+intSubset
+         ::= ( markupdecl | DeclSep )*
+markupdecl
+         ::= elementdecl
+           | AttlistDecl
+           | EntityDecl
+           | NotationDecl
+           | PI
+           | Comment
+SDDecl   ::= S 'standalone' Eq ( "'" ( 'yes' | 'no' ) "'" | '"' ( 'yes' | 'no' ) '"' )
+element  ::= '<' Name ( S Attribute )* S? ( '/>' | '>' content ETag )
+Attribute
+         ::= Name Eq AttValue
+ETag     ::= '</' Name S? '>'
+content  ::= CharData? ( ( element | Reference | CDSect | PI | Comment ) CharData? )*
+elementdecl
+         ::= '<!ELEMENT' S Name S contentspec S? '>'
+contentspec
+         ::= 'EMPTY'
+           | 'ANY'
+           | Mixed
+           | children
+children ::= choiceOrSeq ( '?' | '*' | '+' )?
+cp       ::= ( Name | choiceOrSeq ) ( '?' | '*' | '+' )?
+choiceOrSeq
+         ::= '(' S? cp S? ( ( '|' S? cp S? )+ | ( ',' S? cp S? )* ) ')'
+Mixed    ::= '(' S? '#PCDATA' S? ( ( '|' S? Name S? )* ')*' | ')' )
+AttlistDecl
+         ::= '<!ATTLIST' S Name AttDef* S? '>'
+AttDef   ::= S Name S AttType S DefaultDecl
+AttType  ::= StringType
+           | TokenizedType
+           | EnumeratedType
+StringType
+         ::= 'CDATA'
+TokenizedType
+         ::= 'ID'
+           | 'IDREF'
+           | 'IDREFS'
+           | 'ENTITY'
+           | 'ENTITIES'
+           | 'NMTOKEN'
+           | 'NMTOKENS'
+EnumeratedType
+         ::= NotationType
+           | Enumeration
+NotationType
+         ::= 'NOTATION' S '(' S? Name ( S? '|' S? Name )* S? ')'
+Enumeration
+         ::= '(' S? Nmtoken ( S? '|' S? Nmtoken )* S? ')'
+DefaultDecl
+         ::= '#REQUIRED'
+           | '#IMPLIED'
+           | ( '#FIXED' S )? AttValue
+Reference
+         ::= EntityRef
+           | CharRef
+EntityRef
+         ::= '&' Name ';'
+EntityDecl
+         ::= GEDecl
+           | PEDecl
+GEDecl   ::= '<!ENTITY' S Name S EntityDef S? '>'
+PEDecl   ::= '<!ENTITY' S '%' S Name S PEDef S? '>'
+EntityDef
+         ::= EntityValue
+           | ExternalID NDataDecl?
+PEDef    ::= EntityValue
+           | ExternalID
+ExternalID
+         ::= 'SYSTEM' S SystemLiteral
+           | 'PUBLIC' S PubidLiteral S SystemLiteral
+NDataDecl
+         ::= S 'NDATA' S Name
+EncodingDecl
+         ::= S 'encoding' Eq ( '"' EncName '"' | "'" EncName "'" )
+NotationDecl
+         ::= '<!NOTATION' S Name S ExternalOrPublicID S? '>'
+ExternalOrPublicID
+         ::= 'SYSTEM' S SystemLiteral
+           | 'PUBLIC' S PubidLiteral ( S SystemLiteral )?
+
+<?TOKENS?>
+
+// No tokens are defined here - an external lexer will be used.
+// This section would in fact be ignored when using -nolexer.

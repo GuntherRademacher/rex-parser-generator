@@ -1,0 +1,39 @@
+// This grammar is Strong-LL(4)
+                                <?java
+                                  class strongLL4
+                                  {
+                                    public strongLL4(String string)
+                                    {
+                                      initialize(string);
+                                    }
+
+                                    public static void main(String args[])
+                                    {
+                                      new strongLL4("XYQY").parse_S();
+                                      new strongLL4("XYYQYY").parse_S();
+                                      new strongLL4("XYYYQYYY").parse_S();
+                                      new strongLL4("XYYYYQYYYY").parse_S();
+                                      new strongLL4("XYYZ").parse_S();
+                                      new strongLL4("XXYYZ").parse_S();
+                                      new strongLL4("XXXYYZ").parse_S();
+                                      try
+                                      {
+                                        new strongLL4("XXXYQYY").parse_S();
+                                        System.out.println("fail");
+                                      }
+                                      catch (strongLL4.ParseException e)
+                                      {
+                                        System.out.println("pass");
+                                      }
+                                    }
+                                ?>
+    S ::= XS "Y" "Y" "Z" EOF
+        | "X" c
+    XS ::= "X"
+        |  "X" XS
+    c ::= "Y" c "Y"
+        | "Q"
+
+<?TOKENS?>
+
+    EOF ::= $

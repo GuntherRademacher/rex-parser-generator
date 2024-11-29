@@ -1,0 +1,350 @@
+// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q strongLL3.ebnf -java -xml -ff
+
+public class strongLL3
+{
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+    public boolean isAmbiguousInput() {return false;}
+  }
+
+  public strongLL3(CharSequence string)
+  {
+    initialize(string);
+  }
+
+  public void initialize(CharSequence source)
+  {
+    input = source;
+    size = source.length();
+    reset(0, 0, 0);
+  }
+
+  public CharSequence getInput()
+  {
+    return input;
+  }
+
+  public int getTokenOffset()
+  {
+    return b0;
+  }
+
+  public int getTokenEnd()
+  {
+    return e0;
+  }
+
+  public final void reset(int l, int b, int e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    l2 = 0; b2 = 0; e2 = 0;
+    l3 = 0; b3 = 0; e3 = 0;
+    end = e;
+  }
+
+  public void reset()
+  {
+    reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_a()
+  {
+    lookahead1(3);                  // 'y' | 'z'
+    switch (l1)
+    {
+    case 2:                         // 'y'
+      lookahead2(3);                // 'y' | 'z'
+      switch (lk)
+      {
+      case 26:                      // 'y' 'z'
+        lookahead3(2);              // END | 'z'
+        break;
+      }
+      break;
+    default:
+      lk = l1;
+    }
+    switch (lk)
+    {
+    case 18:                        // 'y' 'y'
+    case 90:                        // 'y' 'z' END
+      parse_y();
+      lookahead1(0);                // 'y'
+      consume(2);                   // 'y'
+      lookahead1(1);                // 'z'
+      consume(3);                   // 'z'
+      break;
+    default:
+      parse_y();
+      lookahead1(1);                // 'z'
+      consume(3);                   // 'z'
+      lookahead1(1);                // 'z'
+      consume(3);                   // 'z'
+    }
+  }
+
+  private void parse_y()
+  {
+    switch (l1)
+    {
+    case 2:                         // 'y'
+      lookahead2(3);                // 'y' | 'z'
+      switch (lk)
+      {
+      case 26:                      // 'y' 'z'
+        lookahead3(2);              // END | 'z'
+        break;
+      }
+      break;
+    default:
+      lk = l1;
+    }
+    if (lk == 18                    // 'y' 'y'
+     || lk == 218)                  // 'y' 'z' 'z'
+    {
+      consume(2);                   // 'y'
+    }
+  }
+
+  private void consume(int t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
+      b1 = b2; e1 = e2; l2 = l3; if (l2 != 0) {
+      b2 = b3; e2 = e3; l3 = 0; }}
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private void lookahead1(int tokenSetId)
+  {
+    if (l1 == 0)
+    {
+      l1 = match(tokenSetId);
+      b1 = begin;
+      e1 = end;
+    }
+  }
+
+  private void lookahead2(int tokenSetId)
+  {
+    if (l2 == 0)
+    {
+      l2 = match(tokenSetId);
+      b2 = begin;
+      e2 = end;
+    }
+    lk = (l2 << 3) | l1;
+  }
+
+  private void lookahead3(int tokenSetId)
+  {
+    if (l3 == 0)
+    {
+      l3 = match(tokenSetId);
+      b3 = begin;
+      e3 = end;
+    }
+    lk |= l3 << 6;
+  }
+
+  private int error(int b, int e, int s, int l, int t)
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+  private int lk, b0, e0;
+  private int l1, b1, e1;
+  private int l2, b2, e2;
+  private int l3, b3, e3;
+  private CharSequence input = null;
+  private int size = 0;
+  private int begin = 0;
+  private int end = 0;
+
+  private int match(int tokenSetId)
+  {
+    begin = end;
+    int current = end;
+    int result = INITIAL[tokenSetId];
+    int state = 0;
+
+    for (int code = result & 3; code != 0; )
+    {
+      int charclass;
+      int c0 = current < size ? input.charAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        int c1 = c0 >> 5;
+        charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+
+      state = code;
+      int i0 = (charclass << 2) + code - 1;
+      code = TRANSITION[(i0 & 1) + TRANSITION[i0 >> 1]];
+
+      if (code > 3)
+      {
+        result = code;
+        code &= 3;
+        end = current;
+      }
+    }
+
+    result >>= 2;
+    if (result == 0)
+    {
+      end = current - 1;
+      int c1 = end < size ? input.charAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 7) - 1;
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    for (int i = 0; i < 4; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 3 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  26 */ 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58, 58,
+    /*  52 */ 58, 58, 90, 90, 90, 97, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+    /*  78 */ 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 109 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2, 10, 3
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 7, 7, 8, 9, 6, 6, 12, 0, 0, 16, 0
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /* 0 */ 4, 8, 12
+  };
+
+  private static final String[] TOKEN =
+  {
+    "(0)",
+    "END",
+    "'y'",
+    "'z'"
+  };
+}
+
+// End

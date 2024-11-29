@@ -1,0 +1,2256 @@
+~
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "PrintCpp.hpp"
+                                                            #include "ItemSet.hpp"
+                                                            #include <ctype.h>
+
+                                                            void PrintCpp::printIfndef(bool define, const wchar_t *qualifier)
+                                                            {
+                                                              if (! main && ! performanceTest)
+                                                              {
+                                                                const wchar_t *directive[] = {L"#ifndef ", L"#define ", 0};
+                                                                for (const wchar_t **d = directive; *d; ++d)
+                                                                {
+~
+~                                                                 print(*d);
+                                                                  for (const wchar_t *f = wFileName.c_str(); *f; ++f)
+                                                                  {
+                                                                    switch (*f)
+                                                                    {
+                                                                    case L'.':
+~_~                                                                   break;
+                                                                    default:
+                                                                      {
+                                                                        wchar_t s[] = {(wchar_t) towupper(*f), 0};
+                                                                        print(s);
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                  print(qualifier);
+                                                                  if (! define)
+                                                                  {
+                                                                    break;
+                                                                  }
+                                                                }
+                                                                if (main || performanceTest || tree || trace || ! parseChars)
+                                                                {
+~
+~                                                               }
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+~
+#include <time.h>~                                            }
+                                                              if (main || performanceTest || trace)
+                                                              {
+~
+#include <string.h>~                                          }
+                                                              if (main || performanceTest)
+                                                              {
+~
+#include <stdlib.h>
+#ifdef _WIN32
+  #include <fcntl.h>
+  #include <io.h>~
+                                                                if (performanceTest)
+                                                                {
+~
+#else
+  #include <sys/types.h>
+  #include <dirent.h>~                                          }
+~
+#endif~                                                       }
+                                                              if (main || performanceTest || tree || trace)
+                                                              {
+~
+#include <vector>~                                            }
+                                                              if (memoization)
+                                                              {
+~
+#include <map>~                                               }
+                                                              if (useGlr)
+                                                              {
+~
+#include <queue>~
+                                                                if (tree)
+                                                                {
+~
+#include <stack>~                                               }
+                                                              }
+~
+#include <stdio.h>
+#include <string>
+#include <algorithm>~                                       }
+
+                                                            void PrintCpp::printEndif()
+                                                            {
+                                                              visitEpilog();
+                                                              if (! main && ! performanceTest)
+                                                              {
+~
+#endif
+~                                                             }
+                                                              else
+                                                              {
+                                                                if (performanceTest)
+                                                                {
+~
+bool ~                                                            print(className.c_str());
+     ~::quiet;
+int ~                                                             print(className.c_str());
+    ~::errorCount;
+long long ~                                                       print(className.c_str());
+          ~::parsed;
+~                                                                 print(className.c_str());
+~::ParseJobs ~                                                    print(className.c_str());
+             ~::parsers;
+~                                                               }
+~
+int main(int argc, char **argv)
+{
+  return ~                                                      print(className.c_str());
+         ~::main(argc, argv);
+}
+~                                                             }
+                                                            }
+
+                                                            void PrintCpp::openFile()
+                                                            {
+                                                              printIfndef(true, L"");
+                                                            }
+
+                                                            void PrintCpp::openClass()
+                                                            {
+                                                              if (! hasProlog)
+                                                              {
+~
+
+class ~                                                         print(className.c_str());
+~
+{
+public:~                                                        if (tree)
+                                                                {
+~
+  class ~                                                         if (isLrParser)
+                                                                  {
+        ~BottomUp~                                                }
+        ~EventHandler;
+~                                                               }
+                                                                increaseIndent();
+                                                                WString args(stringType());
+                                                                args += L"string";
+                                                                if (tree)
+                                                                {
+                                                                  args += L", ";
+                                                                  if (isLrParser) args += L"BottomUp";
+                                                                  args += L"EventHandler *t";
+                                                                }
+                                                                openMethod (L"", L"", className.c_str(), args.c_str());
+                                                                if (useGlr)
+                                                                {
+~
+: thread(0)
+~                                                               }
+~
+{
+  initialize(string~                                            if (tree)
+                                                                {
+                  ~, t~                                         }
+                   ~);
+}
+~                                                               openMethod (L"", L"virtual ~~", className.c_str(), L"");
+~
+{~
+                                                                if (useGlr)
+                                                                {
+~
+  delete thread;~                                               }
+~
+}
+~                                                               decreaseIndent();
+                                                              }
+                                                              else
+                                                              {
+~
+public:~                                                      }
+                                                              if (tree)
+                                                              {
+~
+  class EventHandler
+  {
+  public:
+    virtual ~~EventHandler() {}
+
+    virtual void reset(~                                        print(stringType());
+                       ~string) = 0;
+    virtual void startNonterminal(~                             print(stringType());
+                                  ~name, int begin) = 0;
+    virtual void endNonterminal(~                               print(stringType());
+                                ~name, int end) = 0;
+    virtual void terminal(~                                     print(stringType());
+                          ~name, int begin, int end) = 0;
+    virtual void whitespace(int begin, int end) = 0;
+  };
+~                                                               if (isLrParser)
+                                                                {
+~
+  class BottomUpEventHandler
+  {
+  public:
+    virtual ~~BottomUpEventHandler() {}
+
+    virtual void reset(~                                          print(stringType());
+                       ~string) = 0;
+    virtual void nonterminal(~                                    print(stringType());
+                             ~name, int begin, int end, int count) = 0;
+    virtual void terminal(~                                       print(stringType());
+                          ~name, int begin, int end) = 0;
+  };
+~                                                               }
+                                                              }
+                                                              if (main && tree)
+                                                              {
+~
+  class XmlSerializer : public EventHandler
+  {
+  public:
+    XmlSerializer(bool indent)
+    : input(0)
+    , delayedTag(0)
+    , indent(indent)
+    , hasChildElement(false)
+    , depth(0)
+    {
+    }
+
+    void reset(~                                                print(stringType());
+               ~input)
+    {
+      fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", stdout);
+
+      this->input = input;
+      delayedTag = 0;
+      hasChildElement = false;
+      depth = 0;
+    }
+
+    void startNonterminal(~                                     print(stringType());
+                          ~tag, int b)
+    {
+      if (delayedTag != 0)
+      {
+        fputc('<', stdout);
+        fputs(~                                                 if (! parseChars)
+                                                                {
+              ~Utf8Encoder::encode(~                            }
+              ~delayedTag~                                      if (! parseChars)
+                                                                {
+                         ~).c_str()~                            }
+                         ~, stdout);
+        fputc('>', stdout);
+      }
+      delayedTag = tag;
+      if (indent)
+      {
+        fputc('\n', stdout);
+        for (int i = 0; i < depth; ++i)
+        {
+          fputs("  ", stdout);
+        }
+      }
+      hasChildElement = false;
+      ++depth;
+    }
+
+    void endNonterminal(~                                       print(stringType());
+                        ~tag, int e)
+    {
+      --depth;
+      if (delayedTag != 0)
+      {
+        delayedTag = 0;
+        fputc('<', stdout);
+        fputs(~                                                 if (! parseChars)
+                                                                {
+              ~Utf8Encoder::encode(~                            }
+              ~tag~                                             if (! parseChars)
+                                                                {
+                  ~).c_str()~                                   }
+                  ~, stdout);
+        fputs("/>", stdout);
+      }
+      else
+      {
+        if (indent)
+        {
+          if (hasChildElement)
+          {
+            fputc('\n', stdout);
+            for (int i = 0; i < depth; ++i)
+            {
+              fputs("  ", stdout);
+            }
+          }
+        }
+        fputs("</", stdout);
+        fputs(~                                                 if (! parseChars)
+                                                                {
+              ~Utf8Encoder::encode(~                            }
+              ~tag~                                             if (! parseChars)
+                                                                {
+                  ~).c_str()~                                   }
+                  ~, stdout);
+        fputc('>', stdout);
+      }
+      hasChildElement = true;
+    }
+
+    void whitespace(int b, int e)
+    {
+      characters(b, e);
+    }
+
+    void characters(int b, int e)
+    {
+      if (b < e)
+      {
+        if (delayedTag != 0)
+        {
+          fputc('<', stdout);
+          fputs(~                                               if (! parseChars)
+                                                                {
+                ~Utf8Encoder::encode(~                          }
+                ~delayedTag~                                    if (! parseChars)
+                                                                {
+                           ~).c_str()~                          }
+                           ~, stdout);
+          fputc('>', stdout);
+          delayedTag = 0;
+        }
+        std::string encoded ~                                   if (! parseChars)
+                                                                {
+                            ~= Utf8Encoder::encode~             }
+                            ~(input + b, e - b);
+        int size = encoded.size();
+        for (int i = 0; i < size; ++i)
+        {
+          char c = encoded[i];
+          switch (c)
+          {
+          case 0: break;
+          case L'&': fputs("&amp;", stdout); break;
+          case L'<': fputs("&lt;", stdout); break;
+          case L'>': fputs("&gt;", stdout); break;
+          default: fputc(c, stdout);
+          }
+        }
+      }
+    }
+
+    void terminal(~                                             print(stringType());
+                  ~tag, int b, int e)
+    {
+      if (tag[0] == ~                                           print(stringIntroducer());
+                    ~'\'') tag = ~                              print(stringIntroducer());
+                                 ~"TOKEN";
+      startNonterminal(tag, b);
+      characters(b, e);
+      endNonterminal(tag, e);
+    }
+
+  private:
+    ~                                                           print(stringType());
+    ~input;
+    ~                                                           print(stringType());
+    ~delayedTag;
+    bool indent;
+    bool hasChildElement;
+    int depth;
+  };
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+  class Symbol
+  {
+  public:
+    virtual ~~Symbol() {}
+
+    ~                                                           print(stringType());
+    ~name;
+    int begin;
+    int end;
+
+    virtual void send(EventHandler *e) = 0;
+
+  protected:
+    Symbol(~                                                    print(stringType());
+           ~name, int begin, int end)
+    {
+      this->name = name;
+      this->begin = begin;
+      this->end = end;
+    }
+  };
+
+  class Terminal : public Symbol
+  {
+  public:
+    Terminal(~                                                  print(stringType());
+             ~name, int begin, int end)
+    : Symbol(name, begin, end)
+    {}
+
+    void send(EventHandler *e)
+    {
+      e->terminal(name, begin, end);
+    }
+  };
+
+  class Nonterminal : public Symbol
+  {
+  public:
+    std::vector<Symbol *> *children;
+
+    Nonterminal(~                                               print(stringType());
+                ~name, int begin, int end, std::vector<Symbol *> *children)
+    : Symbol(name, begin, end)
+    {
+      this->children = children;
+    }
+
+    ~~Nonterminal()
+    {
+      for (std::vector<Symbol *>::iterator child = children->begin(); child != children->end(); ++child)
+        delete *child;
+      delete children;
+    }
+
+    void send(EventHandler *e)
+    {
+      e->startNonterminal(name, begin);
+      int pos = begin;
+      for (std::vector<Symbol *>::iterator i = children->begin(); i != children->end(); ++i)
+      {
+        Symbol *c = *i;
+        if (pos < c->begin) e->whitespace(pos, c->begin);
+        c->send(e);
+        pos = c->end;
+      }
+      if (pos < end) e->whitespace(pos, end);
+      e->endNonterminal(name, end);
+    }
+  };
+
+  class TopDownTreeBuilder : public EventHandler
+  {
+  public:
+    TopDownTreeBuilder()
+    {
+      input = 0;
+      stack.clear();
+      top = -1;
+    }
+
+    void reset(~                                                print(stringType());
+               ~input)
+    {
+      this->input = input;
+      top = -1;
+    }
+
+    void startNonterminal(~                                     print(stringType());
+                          ~name, int begin)
+    {
+      Nonterminal *nonterminal = new Nonterminal(name, begin, begin, new std::vector<Symbol *>());
+      if (top++ >= 0) addChild(nonterminal);
+      if ((size_t) top >= stack.size())
+        stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
+      stack[top] = nonterminal;
+    }
+
+    void endNonterminal(~                                       print(stringType());
+                        ~name, int end)
+    {
+      stack[top]->end = end;
+      if (top > 0) --top;
+    }
+
+    void terminal(~                                             print(stringType());
+                  ~name, int begin, int end)
+    {
+      addChild(new Terminal(name, begin, end));
+    }
+
+    void whitespace(int begin, int end)
+    {
+    }
+
+    void serialize(EventHandler *e)
+    {
+      e->reset(input);
+      stack[0]->send(e);
+    }
+
+  private:
+    void addChild(Symbol *s)
+    {
+      Nonterminal *current = stack[top];
+      current->children->push_back(s);
+    }
+
+    ~                                                           print(stringType());
+    ~input;
+    std::vector<Nonterminal *> stack;
+    int top;
+  };
+~                                                             if (tree && isLrParser)
+                                                              {
+~
+  class ParseTreeBuilder : public BottomUpEventHandler
+  {
+  public:
+    ParseTreeBuilder()
+    : input(0), top(-1)
+    {}
+
+    ~~ParseTreeBuilder()
+    {
+      reset(0);
+    }
+
+    void reset(~                                                print(stringType());
+               ~input)
+    {
+      for (int i = 0; i <= top; ++i)
+      {
+        delete stack[i];
+      }
+      top = -1;
+      this->input = input;
+    }
+
+    void nonterminal(~                                          print(stringType());
+                     ~name, int begin, int end, int count)
+    {~                                                          if (useGlr)
+                                                                {
+~
+      if (count > top + 1)
+      {
+        std::vector<Symbol *> *content = pop(top + 1);
+        nonterminal(~                                             print(stringIntroducer());
+                    ~"UNAMBIGUOUS", begin, content->size() == 0 ? end : (*content)[0]->begin, 0);
+        for (size_t i = 0; i < content->size(); ++i)
+        {
+          push((*content)[i]);
+        }
+        delete content;
+        count = top + 1;
+      }~                                                        }
+~
+      push(new Nonterminal(name, begin, end, pop(count)));
+    }
+
+    void terminal(~                                             print(stringType());
+                  ~name, int begin, int end)
+    {
+      push(new Terminal(name, begin, end));
+    }
+
+    void serialize(EventHandler *e)
+    {
+      e->reset(input);
+      for (int i = 0; i <= top; ++i)
+      {
+        stack[i]->send(e);
+      }
+    }
+~                                                               if (useGlr)
+                                                                {
+~
+    const std::vector<Symbol *> &getStack() const {return stack;}
+    int getTop() const {return top;}
+~                                                               }
+~
+    void push(Symbol *s)
+    {
+      if ((size_t) ++top >= stack.size())
+        stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
+      stack[top] = s;
+    }
+
+    std::vector<Symbol *> *pop(int count)
+    {
+      if (count == 0)
+        return new std::vector<Symbol *>();
+      top -= count;
+      std::vector<Symbol *>::iterator first = stack.begin() + (top + 1);
+      return new std::vector<Symbol *>(first, first + count);
+    }
+
+  private:
+    ~                                                             print(stringType());
+    ~input;
+    std::vector<Symbol *> stack;
+    int top;
+  };
+~                                                               }
+                                                              }
+                                                              if (main)
+                                                              {
+                                                                printSimpleMain();
+                                                              }
+                                                              if (performanceTest)
+                                                              {
+                                                                printPerformanceMain();
+                                                              }
+~
+  class ParseException
+  {
+  private:
+    int begin, end, offending, expected, state;~              if (useGlr)
+                                                              {
+~
+    bool ambiguousInput;~                                       if (tree)
+                                                                {
+~
+    ParseTreeBuilder *ambiguityDescriptor;~                     }
+                                                              }
+~
+    friend class ~                                            print(className.c_str());
+                 ~;
+
+  protected:
+    ParseException(int b, int e, int s, int o, int x)
+    : begin(b), end(e), offending(o), expected(x), state(s)~  if (useGlr)
+                                                              {
+                                                           ~,
+      ambiguousInput(false)~                                    if (tree)
+                                                                {
+                           ~, ambiguityDescriptor(0)~           }
+                                                              }
+~
+    {
+    }
+~                                                             if (useGlr)
+                                                              {
+~
+    ParseException(int b, int e~                                if (tree)
+                                                                {
+                               ~, ParseTreeBuilder *ambiguityDescriptor~
+                                                                }
+                               ~)
+    : begin(b), end(e), offending(-1), expected(-1), state(-1),
+      ambiguousInput(true)~                                     if (tree)
+                                                                {
+                          ~, ambiguityDescriptor(ambiguityDescriptor)~
+                                                                }
+~
+    {
+    }
+~                                                             }
+~
+  public:~                                                    if (useGlr && tree)
+                                                              {
+~
+    ~~ParseException()
+    {
+      delete ambiguityDescriptor;
+    }
+~                                                             }
+~
+    ~                                                         print(stringType());
+    ~getMessage() const
+    {
+      return ~                                                if (useGlr)
+                                                              {
+             ~ambiguousInput
+           ? ~                                                  print(stringIntroducer());
+                             ~"ambiguous input"
+           : ~                                                }
+             ~offending < 0
+           ? ~                                                print(stringIntroducer());
+                             ~"lexical analysis failed"
+           : ~                                                print(stringIntroducer());
+                             ~"syntax error";
+    }
+~                                                             if (useGlr && tree)
+                                                              {
+~
+    void serialize(EventHandler *eventHandler)
+    {
+      ambiguityDescriptor->serialize(eventHandler);
+    }
+~                                                             }
+~
+    int getBegin() const {return begin;}
+    int getEnd() const {return end;}
+    int getState() const {return state;}
+    int getOffending() const {return offending;}
+    int getExpected() const {return expected;}~               if (useGlr)
+                                                              {
+~
+    int isAmbiguousInput() const {return ambiguousInput;}~    }
+~
+  };
+~                                                             /*
+~
+  ~                                                           print(stringType());
+  ~getInput() const
+  {
+    return input;
+  }
+
+  int getTokenOffset() const
+  {
+    return b0;
+  }
+
+  int getTokenEnd() const
+  {
+    return e0;
+  }
+~                                                             */
+                                                            }
+
+                                                            void PrintCpp::beginNonpublic()
+                                                            {
+~
+private:
+~                                                           }
+
+                                                            void PrintCpp::beginPublic()
+                                                            {
+~
+public:
+~                                                           }
+
+                                                            void PrintCpp::openStackNode()
+                                                            {
+~  template<class T>
+class TreeStructuredStack
+{
+public:
+  T *link;
+
+  TreeStructuredStack(T *link)
+  : link(link), referenceCount(1)
+  {}
+
+  virtual ~~TreeStructuredStack() {}
+
+  T *share()
+  {
+    ++referenceCount;
+    return static_cast<T *>(this);
+  }
+
+  T *pop(int n)
+  {
+    T *node;
+    T *link;
+    for (node = static_cast<T *>(this); n-- > 0; node = link)
+    {
+      link = node->link;
+      if (--node->referenceCount)
+      {
+        ++link->referenceCount;
+      }
+      else
+      {
+        delete node;
+      }
+    }
+    return node;
+  }
+
+  void unshare()
+  {
+    T *node;
+    T *link;
+    for (node = static_cast<T *>(this); node; node = link)
+    {
+      link = node->link;
+      if (--node->referenceCount)
+      {
+        break;
+      }
+      else
+      {
+        delete node;
+      }
+    }
+  }
+
+private:
+  int referenceCount;
+};
+
+class StackNode : public TreeStructuredStack<StackNode>
+{
+public:
+  int state;~                                                 if (grammar->states->hasLookback)
+                                                              {
+~
+  int code;~                                                  }
+~
+  int pos;
+
+  StackNode(int state, ~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                       ~int code, ~                           }
+                       ~int pos, StackNode *link)
+  : TreeStructuredStack(link), state(state)~
+                                                              if (grammar->states->hasLookback)
+                                                              {
+                                           ~, code(code)~     }
+                                           ~, pos(pos)
+  {}
+
+  bool equals(const StackNode *rhs)
+  {
+    StackNode *lhs = this;
+    while (lhs != 0 && rhs != 0)
+    {
+      if (lhs == rhs) return true;
+      if (lhs->state != rhs->state) return false;~            if (grammar->states->hasLookback)
+                                                              {
+~
+      if (lhs->code != rhs->code) return false;~              }
+~
+      if (lhs->pos != rhs->pos) return false;
+      lhs = lhs->link;
+      rhs = rhs->link;
+    }
+    return lhs == rhs;
+  }
+~                                                             increaseIndent();
+                                                            }
+
+                                                            void PrintCpp::closeStackNode()
+                                                            {
+                                                              decreaseIndent();
+~
+};
+~                                                             if (hasCustomCode)
+                                                              {
+~
+class DeferredCode : public TreeStructuredStack<DeferredCode>
+{
+public:
+  int codeId;
+  int b0;
+  int e0;
+
+  DeferredCode(DeferredCode *link, int codeId, int b0, int e0)
+  : TreeStructuredStack(link), codeId(codeId), b0(b0), e0(e0)
+  {}
+};
+~                                                             }
+                                                              if (tree)
+                                                              {
+~
+class DeferredEvent : public TreeStructuredStack<DeferredEvent>
+{
+public:
+  ~                                                             print(stringType());
+  ~name;
+  int begin;
+  int end;
+
+  DeferredEvent(DeferredEvent *link, ~                          print(stringType());
+                                     ~name, int begin, int end)
+  : TreeStructuredStack(link), name(name), begin(begin), end(end)
+  {}
+
+  virtual void execute(BottomUpEventHandler *eventHandler) = 0;
+
+  void release(BottomUpEventHandler *eventHandler)
+  {
+    DeferredEvent *current = this;
+    DeferredEvent *predecessor = current->link;
+    current->link = 0;
+    while (predecessor != 0)
+    {
+      DeferredEvent *next = predecessor->link;
+      predecessor->link = current;
+      current = predecessor;
+      predecessor = next;
+    }
+    do
+    {
+      DeferredEvent *next = current->link;
+      current->execute(eventHandler);
+      delete current;
+      current = next;
+    }
+    while (current != 0);
+  }
+
+  void show(BottomUpEventHandler *eventHandler)
+  {
+    std::stack<DeferredEvent *> stack;
+    for (DeferredEvent *current = this; current != 0; current = current->link)
+    {
+      stack.push(current);
+    }
+    while (! stack.empty())
+    {
+      stack.top()->execute(eventHandler);
+      stack.pop();
+    }
+  }
+};
+
+class TerminalEvent : public DeferredEvent
+{
+public:
+  TerminalEvent(DeferredEvent *link, ~                          print(stringType());
+                                     ~name, int begin, int end)
+  : DeferredEvent(link, name, begin, end)
+  {}
+
+  void execute(BottomUpEventHandler *eventHandler)
+  {
+    eventHandler->terminal(name, begin, end);
+  }
+};
+
+class NonterminalEvent : public DeferredEvent
+{
+public:
+  int count;
+
+  NonterminalEvent(DeferredEvent *link, ~                       print(stringType());
+                                        ~name, int begin, int end, int count)
+  : DeferredEvent(link, name, begin, end), count(count)
+  {}
+
+  void execute(BottomUpEventHandler *eventHandler)
+  {
+    eventHandler->nonterminal(name, begin, end, count);
+  }
+};
+~                                                             }
+~
+class ParsingThread;
+
+class ParsingThreadLess
+{
+public:
+  bool operator()(ParsingThread *lhs, ParsingThread *rhs) const {return *lhs < *rhs;}
+};
+
+class PriorityQueue : public std::priority_queue<ParsingThread *, std::vector<ParsingThread *>, ParsingThreadLess>
+{
+public:
+  ~~PriorityQueue()
+  {
+    while (!empty())
+    {
+      delete top();
+      pop();
+    }
+  }
+};
+
+enum Status {PARSING, ACCEPTED, ERROR};
+
+void parse(int target, int initialState, ~                    if (tree)
+                                                              {
+                                         ~BottomUpEventHandler *eventHandler, ~
+                                                              }
+                                         ~ParsingThread *&thread)
+{
+  PriorityQueue threads;
+  thread->open(threads, initialState~                         if (tree)
+                                                              {
+                                    ~, eventHandler~          }
+                                    ~, target);
+  for (;;)
+  {
+    thread = threads.top();
+    threads.pop();
+    if (thread->accepted)
+    {
+      ParsingThread *other = 0;
+      while (! threads.empty())
+      {
+        delete other;
+        other = threads.top();
+        threads.pop();
+        if (thread->e0 < other->e0)
+        {
+          delete thread;
+          thread = other;
+          other = 0;
+        }
+      }
+      if (other != 0)
+      {
+        threads.push(other);
+        rejectAmbiguity(thread~                               if (tree)
+                                                              {
+                              ~, thread->deferredEvent, other->deferredEvent~
+                                                              }
+                              ~);
+      }~
+                                                              if (tree)
+                                                              {
+~
+      if (thread->deferredEvent != 0)
+      {
+        thread->deferredEvent->release(eventHandler);
+        thread->deferredEvent = 0;
+      }~                                                      }
+                                                              if (hasCustomCode)
+                                                              {
+~
+      thread->executeDeferredCode();~                         }
+~
+      return;
+    }
+
+    if (! threads.empty())
+    {
+      if (*threads.top() == *thread)
+      {
+        rejectAmbiguity(thread~                               if (tree)
+                                                              {
+                              ~, thread->deferredEvent, threads.top()->deferredEvent~
+                                                              }
+                              ~);
+      }
+    }~                                                        if (tree || hasCustomCode)
+                                                              {
+~
+    else
+    {~                                                          if (tree)
+                                                                {
+~
+      if (thread->deferredEvent != 0)
+      {
+        thread->deferredEvent->release(eventHandler);
+        thread->deferredEvent = 0;
+      }~                                                        }
+                                                                if (hasCustomCode)
+                                                                {
+~
+      thread->executeDeferredCode();~                            }
+~
+    }~                                                        }
+~
+
+    int status;
+    for (;;)
+    {
+      if ((status = thread->parse()) != PARSING) break;
+      if (! threads.empty()) break;
+    }
+
+    if (status != ERROR)
+    {
+      threads.push(thread);
+    }
+    else if (threads.empty())
+    {
+      thread->cleanup();
+      throw ParseException(thread->b1,
+                           thread->e1,
+                           TOKENSET[thread->state] + 1,
+                           thread->l1,
+                           -1
+                          );
+    }
+    else
+    {
+      delete thread;
+    }
+  }
+}
+
+void rejectAmbiguity(ParsingThread *&thread~                  if (tree)
+                                                              {
+                                           ~, DeferredEvent *first, DeferredEvent *second~
+                                                              }
+                                           ~)
+{~                                                            if (tree)
+                                                              {
+~
+  ParseTreeBuilder *treeBuilder = new ParseTreeBuilder();
+  treeBuilder->reset(input);
+  second->show(treeBuilder);
+  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+                           ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
+  std::vector<Symbol *> *secondTree = treeBuilder->pop(1);
+  first->show(treeBuilder);
+  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+                           ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
+  treeBuilder->push((*secondTree)[0]);
+  delete secondTree;
+  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+                           ~"AMBIGUOUS", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, 2);~
+                                                              }
+~
+  int begin = thread->stack->pos;
+  int end = thread->e0;
+  thread->cleanup();
+  throw ParseException(begin, end~                            if (tree)
+                                                              {
+                                 ~, treeBuilder~              }
+                                 ~);
+}
+~
+                                                            }
+
+                                                            void PrintCpp::openThread()
+                                                            {
+~
+class ParsingThread
+{
+public:
+  ~                                                           print(className.c_str());
+  ~ *parser;
+  PriorityQueue *threads;
+  bool accepted;
+  StackNode *stack;
+  int state;
+  int action;
+  int target;~                                                if (tree)
+                                                              {
+~
+  DeferredEvent *deferredEvent;~                              }
+                                                              if (hasCustomCode)
+                                                              {
+~
+  DeferredCode *deferredCode;~                                }
+~
+  int id;
+
+  ParsingThread()
+  : stack(0)
+  {}
+
+  ~~ParsingThread()
+  {
+    cleanup();
+  }
+
+  void open(PriorityQueue &threads, int initialState~         if (tree)
+                                                              {
+                                                    ~, BottomUpEventHandler *eventHandler~
+                                                              }
+                                                    ~, int target)
+  {
+    this->threads = &threads;
+    this->target = target;
+    bw = e0;
+    bs = e0;~                                                 if (tree)
+                                                              {
+~
+    es = e0;
+    this->eventHandler = eventHandler;
+    if (eventHandler != 0)
+    {
+      eventHandler->reset(parser->input);
+    }
+    deferredEvent = 0;~                                       }
+                                                              if (hasCustomCode && useGlr)
+                                                              {
+~
+    deferredCode = 0;~                                        }
+~
+    accepted = false;
+    stack = new StackNode(-1, ~                               if (grammar->states->hasLookback)
+                                                              {
+                              ~0, ~                           }
+                              ~e0, 0);
+    state = initialState;
+    action = predict(initialState);
+    threads.push(this);
+  }
+
+  void cleanup()
+  {
+    if (stack != 0)
+    {
+      stack->unshare();
+      stack = 0;
+    }~                                                        if (tree)
+                                                              {
+~
+    if (deferredEvent != 0)
+    {
+      deferredEvent->unshare();
+      deferredEvent = 0;
+    }~                                                        }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    if (deferredCode != 0)
+    {
+      deferredCode->unshare();
+      deferredCode = 0;
+    }~                                                        }
+~
+  }
+
+  ParsingThread *copy(ParsingThread *other, int action)
+  {
+    this->action = action;
+    accepted = other->accepted;
+    target = other->target;
+    parser = other->parser;
+    bs = other->bs;
+    bw = other->bw;~                                          if (tree)
+                                                              {
+~
+    es = other->es;
+    eventHandler = other->eventHandler;
+    deferredEvent = other->deferredEvent == 0 ? 0 : other->deferredEvent->share();~
+                                                              }
+                                                              if (hasCustomCode)
+                                                              {
+~
+    deferredCode = other->deferredCode == 0 ? 0 : other->deferredCode->share();~
+                                                              }
+~
+    id = ++parser->maxId;
+    threads = other->threads;
+    state = other->state;
+    stack = other->stack->share();
+    b0 = other->b0;
+    e0 = other->e0;~                                          for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    l~                                                          print(iString);
+     ~ = other->l~                                              print(iString);
+                 ~;
+    b~                                                          print(iString);
+     ~ = other->b~                                              print(iString);
+                 ~;
+    e~                                                          print(iString);
+     ~ = other->e~                                              print(iString);
+                 ~;~                                         }
+~
+    end = other->end;
+    return this;
+  }
+
+  bool operator<(const ParsingThread &other)
+  {
+    int comp;
+    if (accepted != other.accepted)
+    {
+      comp = accepted ? 1 : -1;
+    }
+    else
+    {
+      comp = e0 - other.e0;
+      if (comp == 0)
+        comp = id - other.id;
+    }
+    return comp >= 0;
+  }
+
+  bool operator==(const ParsingThread &other)
+  {
+    if (accepted != other.accepted) return false;
+    if (b1 != other.b1) return false;
+    if (e1 != other.e1) return false;
+    if (l1 != other.l1) return false;
+    if (state != other.state) return false;
+    if (action != other.action) return false;
+    if (! stack->equals(other.stack)) return false;
+    return true;
+  }
+
+  int parse()
+  {~                                                          increaseIndent();
+                                                            }
+
+                                                            void PrintCpp::openMethod(const wchar_t *type,
+                                                                                      const wchar_t *prefix,
+                                                                                      const wchar_t *name,
+                                                                                      const wchar_t *args,
+                                                                                      bool constant,
+                                                                                      const wchar_t *clazz)
+                                                            {
+~
+~                                                             print(prefix);
+                                                              print(type);
+                                                              print(name);
+~(~                                                           print(args);
+  ~)~                                                         if (constant)
+                                                              {
+    ~ const~                                                  }
+                                                            }
+
+                                                            void PrintCpp::privateVars()
+                                                            {
+~
+  int ~                                                       if (! isLrParser && (grammar->k > 1 ||
+                                                                                   memoization ||
+                                                                                   ! grammar->decisionPoints.empty()))
+                                                              {
+      ~lk,~                                                   }
+                                                              else
+                                                              {
+      ~   ~                                                   }
+      ~ b0, e0;~                                              for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+                                                                wchar_t *asString = format.toString<wchar_t>(k);
+~
+  int l~                                                        print(asString);
+        ~, b~                                                   print(asString);
+            ~, e~                                               print(asString);
+                ~;~                                           }
+                                                              if (hasBacktracking)
+                                                              {
+~
+  int bx, ex, sx, lx, tx;~                                    }
+                                                              if (isLrParser && ! useGlr)
+                                                              {
+~
+  std::vector<int> iStack;
+  int top;~                                                   }
+                                                              if (useGlr)
+                                                              {
+~
+  int bw, bs;~                                                }
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                                  if (useGlr)
+                                                                  {
+~
+  int es;~                                                        }
+~
+  BottomUpEventHandler *eventHandler;~                          }
+                                                                else
+                                                                {
+~
+  EventHandler *eventHandler;~                                  }
+                                                              }
+                                                              if (memoization)
+                                                              {
+~
+  std::map<int, int> memo;~                                     if (grammar->noThrow)
+                                                                {
+~
+  bool viable;~                                                 }
+                                                              }
+                                                              if (memoization)
+                                                              {
+                                                                int bits = Math::bits(grammar->conflictCount);
+~
+
+  void memoize(int i, int e, int v)
+  {
+    memo[(e << ~                                                print(format.toString<wchar_t>(bits));
+               ~) + i] = v;
+  }
+
+  int memoized(int i, int e)
+  {
+    std::map<int, int>::iterator v = memo.find((e << ~          print(format.toString<wchar_t>(bits));
+                                                     ~) + i);
+    return v != memo.end() ? v->second : 0;
+  }~                                                          }
+~
+~                                                           }
+
+                                                            void PrintCpp::printReadMethod()
+                                                            {
+                                                              if (main || performanceTest)
+                                                              {
+~
+class FileNotFound
+{
+public:
+  FileNotFound(std::string name) : filename(name) {}
+  const std::string &getFilename() const {return filename;}
+
+private:
+  std::string filename;
+};
+~                                                             }
+                                                              if (main || performanceTest || tree || trace)
+                                                              {
+~
+class MalformedInputException
+{
+public:
+  MalformedInputException(size_t offset) : offset(offset) {}
+  size_t getOffset() const {return offset;}
+
+private:
+  size_t offset;
+};
+~                                                               if (! parseChars)
+                                                                {
+~
+class Utf8Encoder
+{
+public:
+  static std::string encode(const wchar_t *unencoded)
+  {
+    return encode(unencoded, wcslen(unencoded));
+  }
+
+  static std::string encode(const wchar_t *unencoded, size_t size)
+  {
+    std::string encoded;
+    encoded.reserve(size + 3);
+
+    for (size_t i = 0; i < size; ++i)
+    {
+      if (encoded.size() + 4 >= encoded.capacity()) encoded.reserve(encoded.capacity() * 2);
+
+      int w = unencoded[i];
+      if (w < 0x80)
+      {
+        encoded += w;
+      }
+      else if (w < 0x800)
+      {
+        encoded += 0xc0 | (w >> 6);
+        encoded += 0x80 | (w & 0x3f);
+      }
+      else if (w < 0xd800)
+      {
+        encoded += 0xe0 | ( w          >> 12);
+        encoded += 0x80 | ((w & 0xfff) >>  6);
+        encoded += 0x80 | ( w &  0x3f       );
+      }
+      else if (w < 0xe000)
+      {
+        if (++i >= size)
+        {
+          throw MalformedInputException(i - 1);
+        }
+        int w2 = unencoded[i];
+        if (w2 < 0xdc00 || w2 > 0xdfff)
+        {
+          throw MalformedInputException(i - 1);
+        }
+        w = (((w  & 0x3ff) << 10) | (w2 & 0x3ff)) + 0x10000;
+        encoded += 0xf0 | ( w            >> 18);
+        encoded += 0x80 | ((w & 0x3ffff) >> 12);
+        encoded += 0x80 | ((w &   0xfff) >>  6);
+        encoded += 0x80 | ( w &    0x3f       );
+      }
+      else if (w < 0x10000)
+      {
+        encoded += 0xe0 | ( w          >> 12);
+        encoded += 0x80 | ((w & 0xfff) >>  6);
+        encoded += 0x80 | ( w &  0x3f       );
+      }
+      else if (w < 0x110000)
+      {
+        encoded += 0xf0 | ( w            >> 18);
+        encoded += 0x80 | ((w & 0x3ffff) >> 12);
+        encoded += 0x80 | ((w &   0xfff) >>  6);
+        encoded += 0x80 | ( w &    0x3f       );
+      }
+      else
+      {
+        throw MalformedInputException(i);
+      }
+    }
+    return encoded;
+  }
+};
+~                                                               }
+                                                              }
+                                                              if (main || performanceTest)
+                                                              {
+                                                                if (! parseChars)
+                                                                {
+~
+class Utf8Decoder
+{
+public:
+  static std::wstring decode(const char *string)
+  {
+    return decode(string, strlen(string));
+  }
+
+  static std::wstring decode(const char *string, size_t size)
+  {
+    std::wstring decoded;
+    decoded.reserve(size + 1);
+
+    for (size_t consumed = 0; consumed < size; )
+    {
+      if (decoded.size() + 2 >= decoded.capacity()) decoded.reserve(decoded.capacity() * 2);
+
+      size_t bytes;
+      int codepoint = decodeChar(string + consumed, &bytes);
+
+      if (bytes == 0)
+      {
+        throw MalformedInputException(consumed);
+      }
+
+      consumed += bytes;
+
+      if (codepoint < 0x10000)
+      {
+        decoded += codepoint;
+      }
+      else
+      {
+        codepoint -= 0x10000;
+        decoded += 0x0d800 | (codepoint >> 10);
+        decoded += 0x0dc00 | (codepoint & 0x3ff);
+      }
+    }
+
+    return decoded;
+  }
+
+private:
+  static int decodeChar(const char *input, size_t *size)
+  {
+    int codepoint = input[0];
+    if ((codepoint & 0x80) == 0)
+    {
+      *size = 1;
+    }
+    else if (   (codepoint & 0x60) == 0x40
+             && (input[1]  & 0xc0) == 0x80)
+    {
+      codepoint = ((codepoint & 0x1f) << 6)
+                |  (input[1]  & 0x3f);
+      *size = codepoint < 0x80 ? 0 : 2;
+    }
+    else if (   (codepoint & 0x70) == 0x60
+             && (input[1]  & 0xc0) == 0x80
+             && (input[2]  & 0xc0) == 0x80)
+    {
+      codepoint = ((codepoint &  0xf) << 12)
+                | ((input[1]  & 0x3f) <<  6)
+                |  (input[2]  & 0x3f);
+      *size = codepoint < 0x800 ? 0 : 3;
+    }
+    else if (   (codepoint & 0x78) == 0x70
+             && (input[1]  & 0xc0) == 0x80
+             && (input[2]  & 0xc0) == 0x80
+             && (input[3]  & 0xc0) == 0x80)
+    {
+      codepoint  = ((codepoint &  0x7) << 18)
+                 | ((input[1]  & 0x3f) << 12)
+                 | ((input[2]  & 0x3f) <<  6)
+                 | ( input[3]  & 0x3f       );
+      *size = codepoint < 0x10000 || codepoint > 0x10ffff ? 0 : 4;
+    }
+    else
+    {
+      *size = 0;
+    }
+    return codepoint;
+  }
+};
+~                                                               }
+~
+static std::~                                                   if (! parseChars) append(L"w");
+            ~string read(const char *input)
+{
+  size_t l = strlen(input);
+  if (l > 0 && input[0] == '{' && input[l - 1] == '}')
+  {
+    return ~                                                    if (parseChars)
+                                                                {
+           ~std::string~                                        }
+                                                                else
+                                                                {
+           ~Utf8Decoder::decode~                                }
+                               ~(input + 1, l - 2);
+  }
+  else
+  {
+    FILE *file = fopen(input, "rb");
+    if (file == 0)
+    {
+      throw FileNotFound(std::string(input));
+    }
+
+    std::string content;
+    content.reserve(4096);
+
+    for (int c = getc(file); c != EOF; c = getc(file))
+    {
+      if (content.size() + 1 >= content.capacity()) content.reserve(content.capacity() * 2);
+      content += c;
+    }
+
+    fclose(file);
+
+    if (content.size() >= 3
+     && (unsigned char) content[0] == 0xef
+     && (unsigned char) content[1] == 0xbb
+     && (unsigned char) content[2] == 0xbf)
+    {
+      content.erase(0, 3);
+    }
+
+    return ~                                                   if (! parseChars)
+                                                               {
+           ~Utf8Decoder::decode(~                              }
+           ~content~                                           if (! parseChars)
+                                                               {
+                                ~.c_str())~                    }
+                   ~;
+  }
+}
+~                                                            }
+                                                            }
+
+                                                            void PrintCpp::printFileProcessor()
+                                                            {
+                                                            }
+
+                                                            void PrintCpp::printSimpleMain()
+                                                            {
+~
+  static int main(int argc, char **argv)
+  {
+    int returnCode = 0;
+
+    if (argc < 2)
+    {
+      fprintf(stderr, "Usage: %s ~                            if (tree)
+                                                              {
+                                 ~[-i] ~                      }
+                                 ~INPUT...\n", argv[0]);
+      fprintf(stderr, "\n");
+      fprintf(stderr, "  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");~
+                                                              if (tree)
+                                                              {
+~
+      fprintf(stderr, "\n");
+      fprintf(stderr, "  Option:\n");
+      fprintf(stderr, "    -i     indented parse tree\n");~   }
+~
+    }
+    else
+    {
+#ifdef _WIN32
+      _setmode(1, O_BINARY);
+#endif
+~                                                                 if (tree)
+                                                                  {
+~
+      bool indent = false;~                                       }
+~
+      for (int i = 1; i < argc; ++i)
+      {~                                                          if (tree)
+                                                                  {
+~
+        if (strcmp(argv[i], "-i") == 0)
+        {
+          indent = true;
+          continue;
+        }~                                                        }
+~
+        try
+        {~                                                        if (tree)
+                                                                  {
+~
+          XmlSerializer s(indent);~                               }
+~
+          std::~                                                  if (! parseChars) append(L"w");
+               ~string input = read(argv[i]);~                    if (tree && isLrParser)
+                                                                  {
+~
+          ParseTreeBuilder t;~                                    }
+~
+          ~                                                       print(className.c_str());
+          ~ parser(input.c_str()~                                 if (tree)
+                                                                  {
+                                                                    if (isLrParser)
+                                                                    {
+                                ~, &t~                              }
+                                                                    else
+                                                                    {
+                                ~, &s~                              }
+                                                                  }
+                                ~);
+          try
+          {~
+                                                                  if (trace)
+                                                                  {
+~
+            fprintf(stderr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+            fprintf(stderr, "<trace>\n");~                        }
+~
+            parser.~                                              print(methodPrefix);
+                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                   ~();~                                          if (trace)
+                                                                  {
+~
+            fprintf(stderr, "</trace>\n");~                       }
+                                                                  if (tree && isLrParser)
+                                                                  {
+~
+            t.serialize(&s);~                                     }
+~
+          }
+          catch (ParseException &pe)
+          {~                                                      if (tree)
+                                                                  {
+                                                                    if (useGlr)
+                                                                    {
+~
+            if (pe.isAmbiguousInput())
+            {
+              pe.serialize(&s);
+              putchar('\n');
+              fflush(stdout);
+            }~                                                      }
+~
+            fprintf(stderr, "\n");~                               }
+~
+            fprintf(stderr, "%s\n", ~                             if (! parseChars)
+                                                                  {
+                                    ~Utf8Encoder::encode(~        }
+                                    ~parser.getErrorMessage(pe).c_str()~
+                                                                  if (! parseChars)
+                                                                  {
+                                                                       ~).c_str()~
+                                                                  }
+                         ~);
+            returnCode = 1;
+            break;
+          }
+        }
+        catch (FileNotFound &fnf)
+        {
+          fprintf(stderr, "error: file not found: %s\n", fnf.getFilename().c_str());
+          returnCode = 1;
+          break;
+        }
+        catch (MalformedInputException &mie)
+        {
+          fprintf(stderr, "error: UTF-8 decoding error in %s at offset %d\n",
+            argv[i], static_cast<int>(mie.getOffset()));
+          returnCode = 1;
+          break;
+        }
+      }
+    }
+    return returnCode;
+  }
+~                                                           }
+
+                                                            void PrintCpp::printPerformanceMain()
+                                                            {
+~
+  static int main(int argc, char **argv)
+  {
+    errorCount = 0;
+
+    if (argc < 2)
+    {
+      fprintf(stdout, "Usage: %s [-q] [-r N] [-t N] ENDING...\n", argv[0]);
+      fprintf(stdout, "\n");
+      fprintf(stdout, "  parse all files that have names ending with ENDING, in current dir and below,\n");
+      fprintf(stdout, "  and display performance summary.\n");
+      fprintf(stdout, "\n");
+      fprintf(stdout, "  -q     do not show file names\n");
+      fprintf(stdout, "  -r N   repeat N times\n");
+      fprintf(stdout, "  -t N   repeat until N seconds have elapsed\n");
+    }
+    else
+    {
+      quiet = false;
+      parsed = 0l;
+
+      int repeat = 1;
+      int timeout = 0;
+      int i;
+
+      for (i = 1; i < argc && argv[i][0] == '-'; ++i)
+      {
+        switch (strlen(argv[i]) == 2 ? argv[i][1] : ' ')
+        {
+        case 'q':
+          quiet = true;
+          break;
+        case 'r':
+          repeat = strtol(argv[++i], 0, 0);
+          timeout = 0;
+          break;
+        case 't':
+          repeat = 0;
+          timeout = CLOCKS_PER_SEC * strtol(argv[++i], 0, 0);
+          break;
+        default:
+          printf("invalid option: %s\n", argv[i]);
+          exit(1);
+        }
+      }
+
+      clock_t start = clock();
+
+      for (; i < argc; ++i)
+      {
+        FileParser fp(".", argv[i]);
+        if (fp.run() < 1)
+        {
+          fprintf(stderr, "no files found that have names ending with \"%s\"\n", argv[i]);
+        }
+      }
+
+      if (! parsers.empty())
+      {
+        long msec = (long) (1000.0 * (clock() - start) / CLOCKS_PER_SEC);
+
+        if (! quiet) fprintf(stdout, "\n");
+        fprintf(stdout, "loaded %d file%s in %d msec\n",
+                static_cast<int>(parsers.size()), parsers.size() == 1 ? "" : "s",
+                (int) msec);
+        if (! quiet) fprintf(stdout, "\n");
+        fflush(stdout);
+
+        start = clock();
+
+        for (i = 0; ; ++i)
+        {
+          if (repeat != 0 && i >= repeat) break;
+          if (timeout != 0 && clock() - start >= timeout) break;
+
+          for (ParseJobs::iterator job = parsers.begin(); job != parsers.end(); ++job)
+          {
+            if (job->parser != 0)
+            {
+              try
+              {
+                if (! quiet) fprintf(stdout, "parsing %s", ~  if (! parseChars)
+                                                              {
+                                                           ~Utf8Encoder::encode(~
+                                                              }
+                                                           ~job->name->c_str()~
+                                                              if (! parseChars)
+                                                              {
+                                                                              ~).c_str()~
+                                                              }
+                                                                                        ~);
+                job->parser->~                                if (useGlr)
+                                                              {
+                             ~thread->~                       }
+                             ~reset(0, 0, 0);
+                job->parser->~                                print(methodPrefix);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                        ~();
+                if (! quiet) fprintf(stdout, "\n");~          if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+~
+                job->parseTreeBuilder->serialize(job->contentCounter);~
+                                                                }
+~
+                if (job->contentCounter->getLength() != job->content->size())
+                {
+                  fprintf(stderr, "content counter saw %d but input length is %d\n", job->contentCounter->getLength(), job->content->size());
+                  exit(1);
+                }~                                                      }
+~
+                parsed += job->content->size();
+              }
+              catch (ParseException &pe)
+              {
+                ++errorCount;
+                if (quiet) fprintf(stdout, "parsing %s", ~      if (! parseChars)
+                                                                {
+                                                         ~Utf8Encoder::encode(~
+                                                                }
+                                                         ~job->name->c_str()~
+                                                                if (! parseChars)
+                                                                {
+                                                                            ~).c_str()~
+                                                                }
+                                                                                      ~);
+                fprintf(stdout, ": error:\n%s", ~               if (! parseChars)
+                                                                {
+                                                ~Utf8Encoder::encode(~
+                                                                }
+                                                ~job->parser->getErrorMessage(pe).c_str()~
+                                                                if (! parseChars)
+                                                                {
+                                                                                         ~).c_str()~
+                                                                }
+                                                                                                   ~);
+                delete job->parser;
+                job->parser = 0;
+              }
+            }
+          }
+        }
+
+        msec = (long) (1000.0 * (clock() - start) / CLOCKS_PER_SEC);
+
+        double mbPerSec = msec == 0 ? 0e0 : parsed / 1024e0 / 1024e0 * 1000e0 / msec;
+        if (! quiet) fprintf(stdout, "\n");
+        const char *format = "parsed %lld byte%s in %d msec";
+        fprintf(stdout, format, parsed, parsed == 1 ? "" : "s", (int) msec);
+        if (mbPerSec != 0e0) fprintf(stdout, " (%0.2f MB/sec)", mbPerSec);
+        fprintf(stdout, "\n");
+        fprintf(stdout, "%d error%s\n", errorCount, errorCount == 1 ? "" : "s");
+      }
+    }
+
+    return errorCount == 0 ? 0 : 1;
+  }
+~                                                           }
+
+                                                            void PrintCpp::printPerformanceCode()
+                                                            {
+                                                              if (tree)
+                                                              {
+~
+  class ContentCounter : public EventHandler
+  {
+  public:
+    ContentCounter() : length(0) {}
+    size_t getLength() const {return length;}
+
+    void reset(~                                                print(stringType());
+               ~string) {length = 0;}
+    void startNonterminal(~                                     print(stringType());
+                          ~name, int begin)  {}
+    void endNonterminal(~                                       print(stringType());
+                        ~name, int end)  {}
+    void terminal(~                                             print(stringType());
+                  ~name, int begin, int end)  {length += end - begin;}
+    void whitespace(int begin, int end) {length += end - begin;}
+
+  private:
+    size_t length;
+  };
+~                                                             }
+~
+  class ParseJob
+  {
+  public:
+    ParseJob(const std::~                                     if (! parseChars) append(L"w");
+                        ~string &n, const std::~              if (! parseChars) append(L"w");
+                                               ~string &c)
+    : name(0), content(0), parser(0)~                         if (tree)
+                                                              {
+                                    ~, contentCounter(0)~       if (isLrParser)
+                                                                {
+                                                        ~, parseTreeBuilder(0)~
+                                                                }
+                                                              }
+~
+    {
+      name = new std::~                                       if (! parseChars) append(L"w");
+                      ~string(n);
+      content = new std::~                                    if (! parseChars) append(L"w");
+                         ~string(c);~                         if (tree)
+                                                              {
+~
+      contentCounter = new ContentCounter();~                   if (isLrParser)
+                                                                {
+~
+      parseTreeBuilder = new ParseTreeBuilder();~               }
+                                                              }
+~
+      parser = new ~                                          print(className.c_str());
+                   ~(content->c_str()~                        if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                     ~, parseTreeBuilder~       }
+                                                                else
+                                                                {
+                                     ~, contentCounter~         }
+                                                              }
+                                     ~);
+    }
+
+    std::~                                                    if (! parseChars) append(L"w");
+         ~string *name;
+    std::~                                                    if (! parseChars) append(L"w");
+         ~string *content;
+    ~                                                         print(className.c_str());
+    ~ *parser;~                                               if (tree)
+                                                              {
+~
+    ContentCounter *contentCounter;~                            if (isLrParser)
+                                                                {
+~
+    ParseTreeBuilder *parseTreeBuilder;~                        }
+                                                              }
+~
+  };
+
+  typedef std::vector<ParseJob> ParseJobs;
+
+  static bool quiet;
+  static int errorCount;
+  static long long parsed;
+  static ParseJobs parsers;
+
+  class FileProcessor
+  {
+  public:
+    virtual int process(const char *path) = 0;
+
+#ifdef _WIN32
+    bool endsWithI(const char *s1, const char *s2)
+    {
+      size_t l1 = strlen(s1);
+      size_t l2 = strlen(s2);
+      return l1 >= l2 && (stricmp(s1 + l1 - l2, s2) == 0);
+    }
+
+    int findfiles(const char *path, const char *filter)
+    {
+      int count = 0;
+
+      const char *pathWithoutDriveLetter = path[0] != 0 && path[1] == ':'
+                                         ? path + 2
+                                         : path;
+      std::string current(path);
+      if (strcmp(pathWithoutDriveLetter, ".") == 0
+       || strcmp(pathWithoutDriveLetter, "..") == 0)
+      {
+        current += '/';
+      }
+      else if (*pathWithoutDriveLetter == 0)
+      {
+        current += "./";
+      }
+
+      if (current[current.size() - 1] == '/' || current[current.size() - 1] == '\\')
+      {
+        current += '*';
+      }
+
+      _finddata_t foundfile;
+
+      intptr_t f = _findfirst(current.c_str(), &foundfile);
+      if (-1L != f)
+      {
+        current.resize(0);
+        for (int i = (int) strlen(path); i >= 0; --i)
+        {
+          char c = path[i];
+          if (c == '/' || c == '\\' || c == ':')
+          {
+            current.append(path, i + 1);
+            break;
+          }
+        }
+        do
+        {
+          std::string foundPath(current);
+          foundPath += foundfile.name;
+          if ((foundfile.attrib & _A_SUBDIR) == 0)
+          {
+            if (endsWithI(foundfile.name, filter))
+            {
+              count += process(foundPath.c_str());
+            }
+          }
+          else if (strcmp(foundfile.name, ".") && strcmp(foundfile.name, ".."))
+          {
+            foundPath += "/*";
+            count += findfiles(foundPath.c_str(), filter);
+          }
+        }
+        while (_findnext(f, &foundfile) == 0);
+      }
+      _findclose(f);
+
+      return count;
+    }
+#else
+    bool endsWithI(const char *s1, const char *s2)
+    {
+      size_t l1 = strlen(s1);
+      size_t l2 = strlen(s2);
+      return l1 >= l2 && (strcasecmp(s1 + l1 - l2, s2) == 0);
+    }
+
+    int findfiles(const char *path, const char *filter)
+    {
+      DIR *dir = opendir(path);
+      if (dir)
+      {
+        int count = 0;
+        std::string current;
+        if (strcmp(path, "."))
+        {
+          current += path;
+          if (current[current.size() - 1] != '/')
+          {
+            current += "/";
+          }
+        }
+        for (struct dirent *dp = readdir(dir);
+             dp;
+             dp = readdir(dir))
+        {
+          if (strcmp(dp->d_name, ".") && strcmp(dp->d_name, ".."))
+          {
+            std::string foundPath(current);
+            foundPath += dp->d_name;
+            count += findfiles(foundPath.c_str(), filter);
+          }
+        }
+        return count;
+      }
+      else if (endsWithI(path, filter))
+      {
+        return process(path);
+      }
+    }
+#endif
+  };
+
+  class FileParser : public FileProcessor
+  {
+  public:
+    FileParser(const char *aRoot, const char *aFilter)
+    : root(aRoot), filter(aFilter)
+    {}
+
+    int run()
+    {
+      return findfiles(root, filter);
+    }
+
+    int process(const char *path)
+    {
+      try
+      {
+        if (! ~                                               print(className.c_str());
+              ~::quiet) fprintf(stdout, "loading %s\n", path);
+        parsers.push_back(ParseJob(~                          if (parseChars)
+                                                              {
+                                   ~std::string~              }
+                                                              else
+                                                              {
+                                   ~Utf8Decoder::decode~      }
+                                   ~(path), read(path)));
+        return 1;
+      }
+      catch (FileNotFound &)
+      {
+        fprintf(stderr, "error: file not found: %s\n", path);
+      }
+      catch (MalformedInputException &mie)
+      {
+        fprintf(stderr, "error: UTF-8 decoding error in %s at offset %d\n",
+                path, static_cast<int>(mie.getOffset()));
+      }
+      return 0;
+    }
+
+  private:
+    const char* root;
+    const char* filter;
+  };
+
+  friend class FileParser;
+~                                                           }
+
+                                                            void PrintCpp::printInterface()
+                                                            {
+                                                              printf("...printing interface\n");
+                                                            }
+
+                                                            void PrintCpp::close(Grammar *node)
+                                                            {
+                                                              if (lexerInstanceCode == 0)
+                                                              {
+                                                                internalerr();
+                                                              }
+
+                                                              print(lexerInstanceCode);
+                                                              if (trace)
+                                                              {
+~
+  std::~                                                        print(stringIntroducer()[0] ? L"w" : L"");
+       ~string lookaheadString()
+  {
+    std::~                                                      print(stringIntroducer()[0] ? L"w" : L"");
+         ~string result;
+    if (~                                                       print(thiz());
+        ~l1 > 0)
+    {
+      result += ~                                               print(staticPrefix());
+                ~TOKEN[~                                        print(thiz());
+                       ~l1];~                                   for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+~
+      if (~                                                       print(thiz());
+          ~l~                                                     print(format.toString<wchar_t>(i));
+            ~ > 0)
+      {
+        result += ~                                               print(stringIntroducer());
+                  ~" ";
+        result += ~                                               print(staticPrefix());
+                  ~TOKEN[~                                        print(thiz());
+                         ~l~                                      print(format.toString<wchar_t>(i));
+                           ~];~                                   increaseIndent();
+                                                                }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
+~
+      }~                                                        }
+~
+    }
+    return result;
+  }
+~                                                             }
+                                                              if (useGlr)
+                                                              {
+~
+};
+
+ParsingThread *thread;~                                         if (tree)
+                                                                {
+~
+BottomUpEventHandler *eventHandler;~                            }
+~
+const ~                                                         if (parseChars)
+                                                                {
+      ~char~                                                    }
+                                                                else
+                                                                {
+      ~wchar_t~                                                 }
+      ~ *input;
+int size;
+int maxId;
+~                                                             }
+                                                              if (lexerStaticCode == 0)
+                                                              {
+                                                                internalerr();
+                                                              }
+
+                                                              if (useGlr)
+                                                                decreaseIndent();
+
+                                                              increaseIndent();
+                                                              printReadMethod();
+                                                              decreaseIndent();
+
+                                                              if (performanceTest)
+                                                              {
+                                                                printPerformanceCode();
+                                                              }
+
+                                                              print(lexerStaticCode);
+                                                              printEndif();
+                                                            }

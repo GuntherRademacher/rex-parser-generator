@@ -1,0 +1,2613 @@
+~                                                           /*
+                                                             * PrintXQuery.hpp
+                                                             *
+                                                             *  Created on: 31.07.2008
+                                                             *      Author: Gunther
+                                                             */
+
+                                                            #include "../common/Memory.hpp"
+
+                                                            #include "PrintXQuery.hpp"
+                                                            #include "OrderedTokenSequenceVector.hpp"
+                                                            #include "ItemSet.hpp"
+
+                                                            #include "../common/PtrLess.hpp"
+                                                            #include "../common/Format.hpp"
+                                                            #include "../common/Encoder.hpp"
+                                                            #include "../common/Math.hpp"
+
+                                                            void PrintXQuery::printCodeSequenceAnnotation(const TokenSequenceSet &t)
+                                                            {
+                                                              const size_t align = 60;
+                                                              lineBuffer += L" ";
+                                                              print(lineBuffer.c_str());
+                                                              size_t lsize = column();
+                                                              size_t filler = lsize > align ? 0 : align - lsize;
+                                                              int spaces = lsize + filler + 3;
+                                                              size_t width = spaces > 120 ? 0 : 120 - spaces;
+                                                              if (width < (120 - align) / 2) width = (120 - align) / 2;
+
+                                                              WString annotation(t.toString(grammar, L"\n", L" |", width, 0, false, toBeEscaped));
+                                                              invalidateCommentTokens(annotation);
+                                                              wchar_t *indentedAnnotation = Format::reIndent(annotation.c_str(), Math::max(0, static_cast<int>(spaces) - getIndent()));
+                                                              print(filler, L" ");
+~(: ~                                                         print(indentedAnnotation);
+~ :)~                                                         free(indentedAnnotation);
+                                                            }
+
+                                                            bool PrintXQuery::printLookahead(size_t k,
+                                                                                             const TokenSequenceSet &prefix,
+                                                                                             size_t level,
+                                                                                             const CompressedTokenSet *lookahead,
+                                                                                             bool findsLookahead)
+                                                            {
+                                                              bool empty = true;
+                                                              if (lookahead != 0 && ! lookahead->empty())
+                                                              {
+                                                                if (level > 1 || ! findsLookahead)
+                                                                {
+                                                                  empty = false;
+                                                                  const wchar_t *lookaheadType;
+                                                                  if (lookahead->hasImplicitWhitespace())
+                                                                  {
+                                                                    lookaheadType = L"W";
+                                                                  }
+                                                                  else
+                                                                  {
+                                                                    lookaheadType = L"";
+                                                                  }
+
+                                                                  lineBuffer.clear();
+                                                                  lineBuffer += L"let $state := p:lookahead";
+                                                                  lineBuffer += format.toString<wchar_t>(level);
+                                                                  lineBuffer += lookaheadType;
+                                                                  lineBuffer += L"(";
+                                                                  lineBuffer += level == 1 || ! unlimitedLookahead ? L"" : format.toString<wchar_t>(lookahead->prefixCode(grammar->tokenSequenceFactory->tokenBits()));
+                                                                  lineBuffer += level == 1 || ! unlimitedLookahead ? L"" : L", ";
+                                                                  lineBuffer += grammar->singleLexer ? L"0" : format.toString<wchar_t>(lookahead->getSetNo(grammar->lookaheadSets));
+                                                                  lineBuffer += L", $input, $state)";
+~
+~                                                                 printCodeSequenceAnnotation(lookahead->getInitials());
+                                                                }
+
+                                                                if (lookahead->getDpi() >= 0)
+                                                                {
+                                                                  empty = false;
+~
+let $state := p:predict($input, $state, ~                         print(format.toString<wchar_t>(lookahead->getDpi()));
+                                        ~)~                     }
+                                                                else if (level < k)
+                                                                {
+                                                                  // this block will be obsolete when "tables" proves to be successful
+
+                                                                  const CompressedTokenSet::CompressedTokenSetByTokenSet &chol(lookahead->getCombinedHigherOrderLookahead());
+                                                                  if (! chol.empty())
+                                                                  {
+                                                                    empty = false;
+                                                                    ++level;
+~
+let $state :=~                                                      increaseIndent();
+                                                                    OrderedTokenSequenceVector orderedPrefix(prefix, __FILE__, __LINE__);
+                                                                    if (unlimitedLookahead)
+                                                                    {
+                                                                      const CompressedTokenSet::HigherOrderLookahead &hol(lookahead->getHigherOrderLookahead());
+                                                                      const wchar_t *delimiter = L"";
+                                                                      for (CompressedTokenSet::HigherOrderLookahead::const_iterator i(hol.begin());
+                                                                           i != hol.end();
+                                                                           ++i)
+                                                                      {
+                                                                        Token::Code token = i->first;
+                                                                        for (OrderedTokenSequenceVector::const_iterator p = orderedPrefix.begin(); p != orderedPrefix.end(); ++p)
+                                                                        {
+                                                                          TokenSequence nextPrefix(grammar->tokenSequenceFactory->tokenSequence(*p, grammar->tokenSequence(token)));
+
+                                                                          lineBuffer = delimiter;
+                                                                          lineBuffer += L"if ($state[$p:l";
+                                                                          lineBuffer += level == 2 ? L"1" : L"k";
+                                                                          lineBuffer += L"] = ";
+                                                                          lineBuffer += format.toString<wchar_t>(lookahead->localSequenceCode(grammar->tokenSequenceFactory, grammar->tokenSequence(token), grammar->externalTokenCode));
+                                                                          lineBuffer += L") then";
+~
+~                                                                         printCodeSequenceAnnotation(nextPrefix);
+                                                                          increaseIndent();
+
+                                                                          TokenSequenceSet singleNextPrefixSet;
+                                                                          singleNextPrefixSet.insert(nextPrefix);
+                                                                          printLookahead(k, singleNextPrefixSet, level, i->second, findsLookahead);
+~
+return $state~                                                            decreaseIndent();
+                                                                          delimiter = L"else ";
+                                                                        }
+                                                                      }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      const CompressedTokenSet::CompressedTokenSetByTokenSet &chol = lookahead->getCombinedHigherOrderLookahead();
+                                                                      const wchar_t *delimiter = L"";
+                                                                      for (CompressedTokenSet::CompressedTokenSetByTokenSet::const_iterator i = chol.begin();
+                                                                           i != chol.end();
+                                                                           ++i)
+                                                                      {
+                                                                        const CompressedTokenSet *cts = i->second;
+                                                                        TokenSequenceSet nextPrefixSet;
+                                                                        const OrderedTokenSequenceVector &ots(i->first);
+                                                                        TokenSequence nextPrefix(grammar->tokenSequenceFactory->emptySequence());
+                                                                        size_t size = orderedPrefix.size() * ots.size();
+                                                                        int seqNo = 0;
+                                                                        for (OrderedTokenSequenceVector::const_iterator p = orderedPrefix.begin(); p != orderedPrefix.end(); ++p)
+                                                                          for (OrderedTokenSequenceVector::const_iterator j = ots.begin(); j != ots.end(); ++j)
+                                                                        {
+                                                                          if (seqNo != 0)
+                                                                          {
+                                                                            lineBuffer += L",";
+~
+~                                                                           printCodeSequenceAnnotation(nextPrefix);
+                                                                          }
+
+                                                                          nextPrefix = grammar->tokenSequenceFactory->tokenSequence(*p, *j);
+                                                                          nextPrefixSet.insert(nextPrefix);
+
+                                                                          if (seqNo == 0)
+                                                                          {
+                                                                            lineBuffer = delimiter;
+                                                                            lineBuffer += L"if ($state[$p:l";
+                                                                            lineBuffer += level == 2 ? L"1" : L"k";
+                                                                            lineBuffer += L"] ";
+                                                                            lineBuffer += size == 1 ? L"eq " : L"= (";
+                                                                          }
+                                                                          else
+                                                                          {
+                                                                            lineBuffer.assign(wcslen(delimiter), L' ');
+                                                                            lineBuffer += L"               ";
+                                                                            lineBuffer += L"      ";
+                                                                          }
+                                                                          lineBuffer += format.toString<wchar_t>(CompressedTokenSet::uniqueSequenceCode(grammar->tokenSequenceFactory, nextPrefix, grammar->externalTokenCode));
+                                                                          ++seqNo;
+                                                                        }
+                                                                        lineBuffer += size == 1 ? L"" : L")";
+                                                                        lineBuffer += L") then";
+~
+~                                                                       printCodeSequenceAnnotation(nextPrefix);
+
+                                                                        increaseIndent();
+                                                                        printLookahead(k, nextPrefixSet, level, cts, findsLookahead);
+~
+return $state~                                                          decreaseIndent();
+                                                                        delimiter = L"else ";
+                                                                      }
+                                                                    }
+                                                                    --level;
+~
+else~                                                               increaseIndent();
+                                                                    if (level == 1)
+                                                                    {
+~
+($state[$p:l1], subsequence($state, $p:lk + 1))~                    }
+                                                                    else
+                                                                    {
+~
+$state~                                                             }
+                                                                    decreaseIndent(2);
+                                                                  }
+                                                                }
+                                                              }
+                                                              return ! empty;
+                                                            }
+
+                                                            void PrintXQuery::printMatch(const CompressedTokenSet *lookahead,
+                                                                                         size_t k,
+                                                                                         int backtrackedCaseId,
+                                                                                         const TokenSequenceSet &ts,
+                                                                                         MatchType matchType,
+                                                                                         int caseId,
+                                                                                         const wchar_t *prefix,
+                                                                                         const wchar_t *suffix)
+                                                            {
+                                                              if (matchType == DEFAULT)
+                                                              {
+~
+else~                                                           return;
+                                                              }
+                                                              size_t prefixSize = wcslen(prefix);
+                                                              if (prefixSize)
+                                                              {
+                                                                lineBuffer = prefix;
+                                                              }
+
+                                                              const wchar_t *comparison = matchType == IFNOT ? L" != " : L" = ";
+                                                              const wchar_t *connector  = matchType == IFNOT ? L"and " : L" or ";
+
+                                                              const TokenSequence *previousCodeSequence = 0;
+                                                              const TokenSequence *codeSequence = 0;
+
+                                                              const wchar_t *matchVariable = k == 0
+                                                                                           ? L"$match[1]"
+                                                                                           : k == 1 && backtrackedCaseId == 0 && (lookahead == 0 || lookahead->getDpi() < 0)
+                                                                                           ? L"$state[$p:l1]"
+                                                                                           : L"$state[$p:lk]";
+                                                              bool first = true;
+
+                                                              OrderedTokenSequenceVector v(ts, __FILE__, __LINE__);
+                                                              for (OrderedTokenSequenceVector::const_iterator i = v.begin(); ; )
+                                                              {
+                                                                const wchar_t *matchCode;
+                                                                if (backtrackedCaseId)
+                                                                {
+                                                                  matchCode = format.toString<wchar_t>(- backtrackedCaseId);
+                                                                  backtrackedCaseId = 0;
+                                                                }
+                                                                else if (lookahead && lookahead->getDpi() >= 0 && i != v.end())
+                                                                {
+                                                                  matchCode = format.toString<wchar_t>(caseId);
+                                                                  i = v.end();
+                                                                }
+                                                                else if (! (i != v.end()))
+                                                                {
+                                                                  break;
+                                                                }
+                                                                else
+                                                                {
+                                                                  codeSequence = &*i;
+                                                                  ++i;
+                                                                  matchCode = ! unlimitedLookahead
+                                                                            ? format.toString<wchar_t>(CompressedTokenSet::uniqueSequenceCode(grammar->tokenSequenceFactory, *codeSequence, grammar->externalTokenCode))
+                                                                            : lookahead
+                                                                            ? format.toString<wchar_t>(lookahead->localSequenceCode(grammar->tokenSequenceFactory, *codeSequence, grammar->externalTokenCode))
+                                                                            : format.toString<wchar_t>(grammar->externalTokenCode[codeSequence->first()]);
+                                                                }
+
+                                                                switch (matchType)
+                                                                {
+                                                                case IF:
+                                                                case IFNOT:
+                                                                case CASE:
+                                                                  if (! first)
+                                                                  {
+                                                                    if (previousCodeSequence)
+                                                                    {
+~
+~                                                                     printCodeSequenceAnnotation(*previousCodeSequence);
+                                                                    }
+                                                                    else
+                                                                    {
+~
+~                                                                     print(lineBuffer.c_str());
+                                                                    }
+                                                                    lineBuffer.assign(prefixSize - 4, L' ');
+                                                                    lineBuffer += connector;
+                                                                  }
+                                                                  lineBuffer += matchVariable;
+                                                                  lineBuffer += comparison;
+                                                                  lineBuffer += matchCode;
+                                                                  break;
+
+                                                                default:
+                                                                  break;
+                                                                }
+                                                                previousCodeSequence = codeSequence;
+                                                                first = false;
+                                                              }
+
+                                                              if (! first && *suffix)
+                                                              {
+                                                                lineBuffer += suffix;
+                                                                if (previousCodeSequence)
+                                                                {
+~
+~                                                                 printCodeSequenceAnnotation(*previousCodeSequence);
+                                                                }
+                                                                else
+                                                                {
+~
+~                                                                 print(lineBuffer.c_str());
+                                                                }
+                                                              }
+                                                            }
+
+                                                            void PrintXQuery::printConsume(Token::Code code)
+                                                            {
+                                                              lineBuffer = L"let $state := p:consume";
+                                                              if (tree && methodPrefix == methodPrefixTry)
+                                                              {
+                                                                lineBuffer += L"T";
+                                                                consumeMethods = 2;
+                                                              }
+                                                              lineBuffer += L"(";
+                                                              lineBuffer += Format().toString<wchar_t>(grammar->externalTokenCode[code]);
+                                                              lineBuffer += L", $input, $state)";
+~
+~                                                             printCodeSequenceAnnotation(grammar->tokenSequence(code));
+                                                            }
+
+                                                            void PrintXQuery::visitNodeList(Node *firstNode)
+                                                            {
+                                                              if (firstNode)
+                                                              {
+                                                                bool doIndent = firstNode->getParent() && ! firstNode->getParent()->isSequence();
+                                                                if (doIndent) increaseIndent();
+                                                                for (Node *node = firstNode; node; node = node->followingSibling)
+                                                                {
+                                                                  node->accept(*this);
+                                                                }
+                                                                if (doIndent) decreaseIndent();
+                                                              }
+                                                            }
+
+                                                            void PrintXQuery::visitOptional(Optional *node)
+                                                            {
+                                                              printLookahead(node->k, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printBacktracking(node,
+                                                                                node->getLookahead(),
+                                                                                node->conflictCaseId,
+                                                                                node->conflictId,
+                                                                                node->firstElementChild);
+~
+let $state :=
+  if ($state[$p:error]) then
+    $state~                                                   increaseIndent();
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                              printMatch(node->getLookahead(),
+                                                                         node->k,
+                                                                           node->conflicts(node->k) == 0
+                                                                         ? 0
+                                                                         : matchType == IF
+                                                                         ? 1
+                                                                         : 2,
+                                                                         match,
+                                                                         matchType,
+                                                                         1,
+                                                                         L"else if (",
+                                                                         L") then");
+                                                              Visitor::visitNodeWithChildren(node);
+                                                              decreaseIndent();
+~
+    return $state
+  else
+    $state~                                                 }
+
+                                                            void PrintXQuery::visitZeroOrMore(ZeroOrMore *node)
+                                                            {
+~
+let $state := p:~                                             print(methodPrefix);
+                ~-~                                           print(node->production->name);
+                  ~-~                                         print(format.toString<wchar_t>(node->loopId));
+                    ~($input, $state)~                      }
+
+                                                            void PrintXQuery::visitOneOrMore(OneOrMore *node)
+                                                            {
+~
+let $state := p:~                                             print(methodPrefix);
+                ~-~                                           print(node->production->name);
+                  ~-~                                         print(format.toString<wchar_t>(node->loopId));
+                    ~($input, $state)~                      }
+
+                                                            void PrintXQuery::printCase(const CompressedTokenSet *lookahead, size_t k, Node *c, const wchar_t *prefix)
+                                                            {
+                                                              Node *e = c->element();
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = e->getMatch(matchType);
+                                                              printMatch(lookahead,
+                                                                         k,
+                                                                         0,
+                                                                         match,
+                                                                         matchType,
+                                                                         e->caseId,
+                                                                         prefix,
+                                                                         L") then");
+                                                              increaseIndent();
+                                                              size_t outputSize1 = size();
+
+                                                              c->accept(*this);
+
+                                                              size_t outputSize2 = size();
+                                                              if (outputSize1 != outputSize2)
+                                                              {
+~
+return $state~                                                }
+                                                              else
+                                                              {
+~
+$state~                                                       }
+                                                              decreaseIndent();
+                                                            }
+
+                                                            bool PrintXQuery::printBacktracking(Node *node,
+                                                                                                const CompressedTokenSet *lookahead,
+                                                                                                int conflictCaseId,
+                                                                                                int conflictId,
+                                                                                                Node *predicate)
+                                                            {
+                                                              bool hasBacktracking = node->conflicts(node->k) != 0;
+                                                              if (hasBacktracking)
+                                                              {
+                                                                NodeList cases(false);
+                                                                cases.push_back(predicate);
+                                                                cases.push_back(predicate);
+                                                                hasBacktracking = printBacktracking(node,
+                                                                                                    lookahead,
+                                                                                                    conflictCaseId,
+                                                                                                    conflictId,
+                                                                                                    cases);
+
+                                                              }
+                                                              return hasBacktracking;
+                                                            }
+
+                                                            bool PrintXQuery::printBacktracking(Node *node,
+                                                                                                const CompressedTokenSet *lookahead,
+                                                                                                int conflictCaseId,
+                                                                                                int conflictId,
+                                                                                                const NodeList &cases)
+                                                            {
+                                                              bool hasBacktracking = node->conflicts(node->k) != 0;
+                                                              if (hasBacktracking)
+                                                              {
+~
+let $state :=~                                                  increaseIndent();
+                                                                MatchType conflictMatchType;
+                                                                const TokenSequenceSet &conflictMatch = node->getConflictMatch(conflictMatchType);
+                                                                if (! conflictMatch.empty())
+                                                                {
+
+~
+if ($state[$p:error]) then
+  $state~                                                         if (lookahead && lookahead->getDpi() >= 0 && conflictMatchType == IFNOT)
+                                                                  {
+                                                                    conflictMatchType = IF;
+                                                                    conflictCaseId = 0;
+                                                                  }
+                                                                  printMatch(lookahead,
+                                                                             node->k,
+                                                                             0,
+                                                                             conflictMatch,
+                                                                             conflictMatchType,
+                                                                             conflictCaseId,
+                                                                             L"else if (",
+                                                                             L") then");
+                                                                  increaseIndent();
+                                                                }
+~
+let $state :=~                                                  if (memoization)
+                                                                {
+~ p:memoized($state, ~                                            print(format.toString<wchar_t>(conflictId));
+                     ~)
+return
+  if ($state[$p:lk] != 0) then
+    $state
+  else~                                                           increaseIndent();
+                                                                }
+                                                                increaseIndent();
+                                                                size_t caseId = 0;
+                                                                size_t firstConflictCaseId = 0;
+                                                                size_t lastConflictCaseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (c->involvedInConflict)
+                                                                  {
+                                                                    lastConflictCaseId = caseId;
+                                                                    if (firstConflictCaseId == 0)
+                                                                    {
+                                                                      firstConflictCaseId = caseId;
+                                                                    }
+                                                                  }
+                                                                }
+
+                                                                bool nestedTry = methodPrefix == methodPrefixTry;
+                                                                caseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (caseId == lastConflictCaseId)
+                                                                  {
+~
+p:memoize($backtrack, $state, ~                                     print(format.toString<wchar_t>(conflictId));
+                              ~, $backtrack[$p:e0], -~              print(format.toString<wchar_t>(caseId));
+                                                     ~, -~          print(format.toString<wchar_t>(caseId));
+                                                         ~)~      }
+                                                                  else if (c->involvedInConflict)
+                                                                  {
+                                                                    if (caseId == firstConflictCaseId)
+                                                                    {
+~
+let $backtrack := $state
+let $state := p:strip-result($state)~                               }
+                                                                    else
+                                                                    {
+~
+let $state := p:restore($backtrack, $state)~                          restoreCalled = true;
+                                                                    }
+                                                                    const wchar_t *v = variant;
+                                                                    const wchar_t *m = methodPrefix;
+                                                                    variant = L"";
+                                                                    methodPrefix = methodPrefixTry;
+                                                                    if (node->isChoice())
+                                                                    {
+                                                                      c->accept(*this);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                      decreaseIndent();
+                                                                      visitNodeList(c);
+                                                                      increaseIndent();
+                                                                    }
+                                                                    variant = v;
+                                                                    methodPrefix = m;
+~
+return
+  if (not($state[$p:error])) then~                                  if (nestedTry && (node->isZeroOrMore() || node->isOneOrMore()))
+                                                                    {
+~
+    p:memoize($state, $state, ~                                       print(format.toString<wchar_t>(conflictId));
+                              ~, $backtrack[$p:e0], -~                print(format.toString<wchar_t>(caseId));
+                                                     ~, -3)~        }
+                                                                    else
+                                                                    {
+~
+    p:memoize($backtrack, $state, ~                                   print(format.toString<wchar_t>(conflictId));
+                                  ~, $backtrack[$p:e0], -~            print(format.toString<wchar_t>(caseId));
+                                                         ~, -~        print(format.toString<wchar_t>(caseId));
+                                                             ~)~    }
+~
+  else~                                                             increaseIndent(2);
+                                                                  }
+                                                                }
+                                                                caseId = 0;
+                                                                for (NodeList::const_iterator i = cases.begin(); i != cases.end(); ++i)
+                                                                {
+                                                                  Node *c = *i;
+                                                                  ++caseId;
+                                                                  if (c->involvedInConflict && caseId != lastConflictCaseId)
+                                                                  {
+                                                                    decreaseIndent(2);
+                                                                  }
+                                                                }
+                                                                decreaseIndent();
+                                                                if (memoization)
+                                                                {
+                                                                  decreaseIndent();
+                                                                }
+                                                                if (! conflictMatch.empty())
+                                                                {
+                                                                  decreaseIndent();
+~
+else~                                                             if (node->k > 1)
+                                                                  {
+~
+  $state~                                                         }
+                                                                  else
+                                                                  {
+~
+  ($state[$p:l1], subsequence($state, $p:lk + 1))~                }
+                                                                }
+                                                                decreaseIndent();
+                                                              }
+                                                              return hasBacktracking;
+                                                            }
+
+                                                            void PrintXQuery::visitChoice(Choice *node)
+                                                            {
+                                                              printLookahead(node->k, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printBacktracking(node,
+                                                                                node->getLookahead(),
+                                                                                node->conflictCaseId,
+                                                                                node->conflictId,
+                                                                                node->cases);
+~
+let $state :=
+  if ($state[$p:error]) then
+    $state~                                                   increaseIndent();
+                                                              Node *defaultCase = 0;
+                                                              const wchar_t *prefix = L"else if (";
+                                                              size_t caseId = 0;
+                                                              for (NodeList::iterator i = node->cases.begin(); i != node->cases.end(); ++i)
+                                                              {
+                                                                Node *c = *i;
+                                                                ++caseId;
+                                                                MatchType matchType;
+                                                                const TokenSequenceSet &match = c->element()->getMatch(matchType);
+                                                                if (matchType == DEFAULT)
+                                                                {
+                                                                  defaultCase = c;
+                                                                }
+                                                                else
+                                                                {
+                                                                  if (c->involvedInConflict)
+                                                                  {
+~
+~                                                                   print(prefix);
+                                                                    prefix = L" or ";
+~$state[$p:lk] = -~                                                 print(format.toString<wchar_t>(caseId));
+                                                                    if (match.empty())
+                                                                    {
+~) then~                                                            }
+                                                                  }
+                                                                  printCase(node->getLookahead(), node->k, c, prefix);
+                                                                  prefix = L"else if (";
+                                                                }
+                                                              }
+                                                              printCase(node->getLookahead(), node->k, defaultCase, L"");
+                                                              decreaseIndent();
+                                                            }
+
+                                                            void PrintXQuery::visitProduction(Production *node)
+                                                            {
+                                                              setIndent(0);
+~
+(:~~
+ : ~                                                          if (methodPrefix != methodPrefixTry)
+                                                              {
+   ~Parse~                                                    }
+                                                              else
+                                                              {
+   ~Try parsing~                                              }
+               ~ ~                                            print(node->name);
+                 ~.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:~                                          print(methodPrefix);
+                   ~-~                                        print(node->name);
+                     ~($input as xs:string, $state as item()+) as item()+
+{~                                                            if (debug)
+                                                              {
+~
+  debug:enter('~                                                print(methodPrefix);
+               ~-~                                              print(node->name);
+                 ~', $state),~                                }
+                                                              if (trace)
+                                                              {
+~
+  p:trace-nonterminal($state, "~                                print(methodPrefix);
+                               ~", "start", "~                  print(node->name);
+                                             ~"),
+  let $state :=~                                                increaseIndent();
+                                                              }
+                                                              if (tree && methodPrefix != methodPrefixTry)
+                                                              {
+~
+  let $count := count($state)~                                  if (! noPosition)
+                                                                {
+~
+  let $begin := $state[$p:e0]~                                  }
+                                                              }
+                                                              visitNodeList(node->firstChild);
+                                                              if (tree && methodPrefix != methodPrefixTry)
+                                                              {
+                                                                if (! noPosition)
+                                                                {
+~
+  let $end := $state[$p:e0]~                                    }
+                                                                if (debug)
+                                                                {
+~
+  let $state := ~                                               }
+                                                                else
+                                                                {
+~
+  return ~                                                      }
+
+         ~p:reduce($state, "~                                   print(node->name);
+                            ~", $count~                         if (! noPosition)
+                                                                {
+                                      ~, $begin, $end~          }
+                                      ~)~                       if (debug)
+                                                                {
+~
+  return ($state, debug:leave('~                                  print(methodPrefix);
+                               ~-~                                print(node->name);
+                                 ~', $state))~                  }
+                                                              }
+                                                              else if (debug)
+                                                              {
+~
+  return ($state, debug:leave('~                                print(methodPrefix);
+                               ~-~                              print(node->name);
+                                 ~', $state))~                }
+                                                              else
+                                                              {
+~
+  return $state~                                              }
+                                                              if (trace)
+                                                              {
+~
+return
+(
+  p:trace-nonterminal($state, "~                                print(methodPrefix);
+                               ~", "end", "~                    print(node->name);
+                                           ~"),
+  $state
+)~
+                                                                decreaseIndent();
+                                                              }
+~
+};
+~                                                           }
+
+                                                            void PrintXQuery::visitRef(Ref *node)
+                                                            {
+                                                              printLookahead(1, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              if (node->lexical)
+                                                              {
+                                                                printConsume(node->lexical->tokenCode);
+                                                              }
+                                                              else
+                                                              {
+                                                                if (   node->whitespaceAllowance == IMPLICIT
+                                                                    && tree
+                                                                    && methodPrefix != methodPrefixTry)
+                                                                {
+~
+let $state := p:whitespace($input, $state)~                       whitespaceCalled = true;
+                                                                }
+~
+let $state :=
+  if ($state[$p:error]) then
+    $state
+  else
+    p:~                                                         print(methodPrefix);
+      ~-~                                                       print(node->name);
+        ~($input, $state)~                                    }
+                                                            }
+
+                                                            void PrintXQuery::visitString(String *node)
+                                                            {
+                                                              printLookahead(1, *grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              automaticSemicolonInsertion(node);
+                                                              printConsume(node->lexical->tokenCode);
+                                                            }
+
+                                                            void PrintXQuery::visitProcessingInstruction(ProcessingInstruction *node)
+                                                            {
+                                                              int spaces = Math::max(0, static_cast<int>(piIndent) - getIndent());
+                                                              if (variant != 0 && wcscmp(node->target, variant) == 0)
+                                                              {
+~
+~                                                               print(spaces, L" ");
+~(: line ~                                                      print(format.toString<wchar_t>(node->line));
+         ~ "~                                                   print(node->fileName);
+            ~" :)
+~                                                               print(spaces, L" ");
+                                                                wchar_t *reIndented = Format::reIndent(node->content, spaces);
+                                                                print(reIndented);
+                                                                free(reIndented);
+~
+~                                                               print(spaces, L" ");
+~(: line ~                                                      print(format.toString<wchar_t>(lineNo + 1));
+        ~ "~                                                    print(wFileName);
+           ~" :)~                                             }
+                                                            }
+
+                                                            void PrintXQuery::printUtilities()
+                                                            {
+                                                              if (isLrParser)
+                                                              {
+                                                                if (grammar->states->hasLookback)
+                                                                {
+~
+(:~~
+ : Compare a lookback code to a sorted, zero-terminated list of pairs at
+ : the given index into the LOOKBACK table. A matching first code in a
+ : pair will cause its second code to be returned. The list is sorted in
+ : descending order of first codes, so it is safe to stop when the first
+ : code is less than what is searched for.
+ :
+ : @param $x the lookback code to search for.
+ : @param $i the index into the LOOKBACK table.
+ : @return the new lookback code as the second code from a pair with a
+ : matching first code.
+ :)
+declare function p:lookback($x as xs:integer, $i as xs:integer)
+{
+  let $l := $p:LOOKBACK[$i + 1]
+  return
+    if ($l gt $x) then
+      p:lookback($x, $i + 2)
+    else if ($l eq $x) then
+      $p:LOOKBACK[$i + 2]
+    else
+      0
+};
+
+(:~~
+ : Calculate number of symbols to remove from LR stack for reduction by
+ : walking through lookback codes of reduction and stack entries. A single
+ : invocation combines two of those, more are handled in tail recursion.
+ :
+ : @param $code the reduction lookback code.
+ : @param $count the initial count value.
+ : @param $stack the LR stack.
+ : @param $t the stack running index.
+ : @return the initial count value, increased by the number of calculations
+ : yielding a non-zero lookback code.
+ :)
+declare function p:count($code as xs:integer, $count as xs:integer, $stack as xs:integer*, $t as xs:integer)
+{
+  if ($stack[$t] lt 0) then
+    $count
+  else
+    let $code := p:lookback($stack[$t + 1], $p:LOOKBACK[$code + 1])
+    return
+      if ($code eq 0) then
+        $count
+      else
+        p:count($code, $count + 1, $stack, $t - 3)
+};
+~                                                               }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+(:~~
+ : Determine index of the next thread that must be parsed, by comparing
+ : threads in $threads starting at $i with the candidate at $thread.
+ :
+ : @param $threads the sequence of all current threads.
+ : @param $thread the index of the next thread candidate.
+ : @param $i the index where to start searching.
+ : @return the index of the next thread.
+ :)
+declare function p:next-thread($threads as map(*)*, $thread as xs:integer, $i as xs:integer)
+{
+  if ($i gt count($threads)) then
+    $thread
+  else
+    let $thread :=
+      if ($threads[$thread]?accepted ne $threads[$i]?accepted) then
+        if ($threads[$thread]?accepted) then $i else $thread
+      else
+        let $comp := $threads[$thread]?lexer-state[$p:e0] - $threads[$i]?lexer-state[$p:e0]
+        return
+          if ($comp ne 0) then
+            if ($comp lt 0) then $thread else $i
+          else
+            let $comp := $threads[$thread]?id - $threads[$i]?id
+            return if ($comp le 0) then $thread else $i
+    return p:next-thread($threads, $thread, $i + 1)
+};
+
+(:~~
+ : Compare two parsing threads for equality. A result of false indicates an
+ : ambiguity.
+ :
+ : @param $t1 the first thread data.
+ : @param $t2 the second thread data.
+ : @return true(), if threads are equal.
+ :)
+declare function p:thread-equals($t1 as map(*), $t2 as map(*)) as xs:boolean
+{
+  if ($t1?accepted ne $t2?accepted) then false() else
+  if ($t1?lexer-state[$p:b1] ne $t2?lexer-state[$p:b1]) then false() else
+  if ($t1?lexer-state[$p:e1] ne $t2?lexer-state[$p:e1]) then false() else
+  if ($t1?lexer-state[$p:l1] ne $t2?lexer-state[$p:l1]) then false() else
+  if ($t1?state ne $t2?state) then false() else
+  if ($t1?action ne $t2?action) then false() else deep-equal($t1?stack, $t2?stack)
+};
+
+(:~~
+ : Perform GLR parsing by selecting a thread and invoke the LR parse function
+ : on it for a single token. Process result with respect to thread management.
+ :
+ : @param $input the input string.
+ : @param $target the target symbol code.
+ : @param $max-id the maximum thread id.
+ : @param $threads the sequence of all current threads.
+ : @return the lexer state of the accepting (or error) thread.
+ :)
+declare function p:parse-glr($input as xs:string,
+                             $target as xs:integer,
+                             $max-id as xs:integer,
+                             $threads as map(*)+)
+{
+  let $i := p:next-thread($threads, 1, 2)
+  let $thread := $threads[$i]
+  let $lexer-state := $thread?lexer-state
+  return
+    if ($thread?accepted) then
+      let $max-e0 := max($threads!?lexer-state[$p:e0])
+      let $longest-accept := $threads[?lexer-state[$p:e0] eq $max-e0]
+      return
+        if (count($longest-accept) eq 1) then
+          $longest-accept?lexer-state
+        else
+          p:reject-ambiguity($longest-accept[1]~                if (tree)
+                                                                {
+                                               ~, $longest-accept[2]~
+                                                                }
+                                               ~)
+    else
+      let $threads := (subsequence($threads, 1, $i - 1), subsequence($threads, $i + 1))
+      let $other := if (exists($threads)) then $threads[p:next-thread($threads, 1, 2)] else ()
+      return
+        if (exists($other) and p:thread-equals($thread, $other)) then
+          p:reject-ambiguity($thread~                           if (tree)
+                                                                {
+                                    ~, $other~                  }
+                                    ~)
+        else
+          let $thread := p:parse($input, $target, $max-id, $thread)
+          let $lexer-state := $thread?lexer-state
+          return
+            if (count($thread) gt 1) then
+              p:parse-glr($input, $target, $max-id + 1, ($threads, $thread))
+            else if (not($lexer-state[$p:error])) then
+              p:parse-glr($input, $target, $max-id, ($threads, $thread))
+            else if (exists($threads)) then
+              p:parse-glr($input, $target, $max-id, $threads)
+            else
+              $lexer-state
+};
+
+(:~~
+ : Raise an error for ambiguous input.
+ :
+ : @param $thread the parsing thread data.~                     if (tree)
+                                                                {
+~
+ : @param $other the parsing thread data of the other thread.~  }
+~
+ : @return a lexer state containing an error element describing the ambiguity.
+ :)
+declare function p:reject-ambiguity($thread as map(*)~          if (tree)
+                                                                {
+                                                     ~, $other as map(*)~
+                                                                }
+                                                     ~) as item()+
+{
+  let $lexer-state := $thread?lexer-state
+  return
+  (
+    subsequence($lexer-state, 1, $p:error - 1),
+    element error
+    {
+      attribute b {$thread?stack[last() - 2]},
+      attribute e {$lexer-state[$p:e0]},
+      attribute ambiguous-input {true()}~                       if (tree)
+                                                                {
+                                        ~,
+      let $first-tree := $lexer-state[last()]
+      let $second-tree := $other?lexer-state[last()]
+      return
+        <AMBIGUOUS>
+          <ALTERNATIVE>{p:rewrite-ambiguity($first-tree, $second-tree, true())}</ALTERNATIVE>
+          <ALTERNATIVE>{p:rewrite-ambiguity($second-tree, $first-tree, true())}</ALTERNATIVE>
+        </AMBIGUOUS>~                                           }
+~
+    },
+    subsequence($lexer-state, $p:error + 1)
+  )
+};
+~                                                               if (tree)
+                                                                {
+~
+(:~~
+ : Rewrite a parse tree fragment $first, combining elements into an "UNAMBIGUOUS"
+ : element as long as they match elements in $second, in node order.
+ :
+ : @param $first the first node.
+ : @param $second the second node.
+ : @return $first rewritten, with initial element nodes possibly combined.
+ :)
+declare function p:rewrite-ambiguity($first as node(), $second as node()?, $unambiguous as xs:boolean)
+{
+  typeswitch ($first)
+  case element() return
+    if ($unambiguous and deep-equal($first, $second)) then
+      <UNAMBIGUOUS>{string($first)}</UNAMBIGUOUS>
+    else
+      element {node-name($first)}
+      {
+        for $node at $i in $first/node()
+        let $unambiguous :=
+          $unambiguous and
+          (every $j in 1 to $i - 1 satisfies deep-equal($first/node()[$j], $second/node()[$j]))
+        return p:rewrite-ambiguity($node, $second/node()[$i], $unambiguous)
+      }
+  default return
+    $first
+};
+~                                                               }
+~
+(:~~
+ : Construct a new map containing data for one parsing thread.
+ :
+ : @param $id the parsing thread id.
+ : @param $accepted true(), if this thread has accepted.
+ : @param $state the LR parser state number.
+ : @param $action the action code.
+ : @param $nonterminal current nonterminal, -1 if processing a terminal.
+ : @param $bw the whitespace begin input index.
+ : @param $bs the symbol begin input index.
+ : @param $es the symbol end input index.
+ : @param $stack the LR stack.
+ : @param $lexer-state lexer state, error indicator, and result stack.
+ : @return the thread data map.
+ :)
+declare function p:thread($id as xs:integer,
+                          $accepted as xs:boolean,
+                          $state as xs:integer,
+                          $action as xs:integer,
+                          $nonterminal as xs:integer,
+                          $bw as xs:integer,
+                          $bs as xs:integer,
+                          $es as xs:integer,
+                          $stack as xs:integer*,
+                          $lexer-state as item()+) as map(*)
+{
+  map
+  {
+    "id": $id,
+    "accepted": $accepted,
+    "state": $state,
+    "action": $action,
+    "nonterminal": $nonterminal,
+    "bw": $bw,
+    "bs": $bs,
+    "es": $es,
+    "stack": $stack,
+    "lexer-state": $lexer-state
+  }
+};
+~                                                               }
+~
+(:~~
+ : Parse input for given target symbol using LR tables. Each invocation
+ : handles one parsing action (shift, reduce, shift+reduce, accept).
+ : Subsequent actions are handled by tail-recursion.
+ :
+ : @param $input the input string.
+ : @param $target the target symbol code.~                      if (grammar->useGlr)
+                                                                {
+~
+ : @param $max-id the maximum thread id.
+ : @param $thread the parsing thread data.~                     }
+                                                                else
+                                                                {
+~
+ : @param $state the LR parser state number.
+ : @param $action the action code.
+ : @param $nonterminal current nonterminal, -1 if processing a terminal.
+ : @param $bw the whitespace begin input index.
+ : @param $bs the symbol begin input index.
+ : @param $es the symbol end input index.
+ : @param $stack the LR stack.
+ : @param $lexer-state lexer state, error indicator, and result stack.~
+                                                                }
+~
+ : @return the updated state.
+ :)
+declare function p:parse($input as xs:string,
+                         $target as xs:integer,~                if (grammar->useGlr)
+                                                                {
+~
+                         $max-id as xs:integer,
+                         $thread as map(*))
+{
+  let $lexer-state := $thread?lexer-state
+  return
+    if ($lexer-state[$p:error]) then
+      $thread
+    else
+      let $state := $thread?state
+      let $action := $thread?action
+      let $nonterminal := $thread?nonterminal
+      let $bw := $thread?bw
+      let $bs := $thread?bs
+      let $es := $thread?es
+      let $stack := $thread?stack~                                increaseIndent();
+                                                                }
+                                                                else
+                                                                {
+~
+                         $state as xs:integer,
+                         $action as xs:integer,
+                         $nonterminal as xs:integer,
+                         $bw as xs:integer,
+                         $bs as xs:integer,
+                         $es as xs:integer,
+                         $stack as xs:integer*,
+                         $lexer-state as item()+)
+{
+  if ($lexer-state[$p:error]) then
+    $lexer-state
+  else~                                                         }
+                                                                /*
+~
+    trace((), concat("compound action: ", string($action), ", action: ", string($action mod ~
+                                                                print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                     ~), ", lookback: ", string(($action idiv ~ print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                                   ~) mod ~                     print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
+                     ~),  ", argument: ", string($action idiv ~ print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
+                     ~)~
+    ~)),~
+                                                                */
+                                                                if (trace)
+                                                                {
+~
+    let $trace :=
+      string-join
+      (
+        (
+          "  <parse ~                                             if (grammar->useGlr)
+                                                                  {
+                    ~thread=""", $thread?id, """ offset=""", $lexer-state[$p:e0], """ ~
+                                                                  }
+                    ~state=""", string($state), """ input=""",
+          $p:NONTERMINAL[$nonterminal + 1],
+          " "[$nonterminal ge 0 and $lexer-state[$p:l1] gt 0],
+          p:xml-escape(p:lookahead-string($lexer-state)),
+          """ action="""
+        ),
+        ""
+      )~                                                        }
+~
+    let $argument := $action idiv ~                             print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
+~
+    let $lookback := ($action idiv ~                            print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+                                   ~) mod ~                     print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
+~
+    let $action := $action mod ~                                print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+~
+    return
+      if ($action eq 6) then (: SHIFT+ACCEPT :)~                if (trace)
+                                                                {
+~
+      (
+        p:trace(concat($trace, "accept""/>")),~                 }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+        p:thread($thread?id, true(), $state, $action, $nonterminal, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                else
+                                                                {
+~
+        $lexer-state~                                           }
+                                                                if (trace)
+                                                                {
+~
+      )~                                                        }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+      else if ($action eq 7) then (: FORK :)~                     if (trace)
+                                                                  {
+~
+      (
+        p:trace(concat($trace, "fork""/>")),~                     }
+~
+        for $i in (1, 2)
+        return p:thread(($max-id + 1, $thread?id)[$i], false(), $state, $p:APPENDIX[$argument + $i], -1, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                  if (trace)
+                                                                  {
+~
+      )~                                                          }
+                                                                }
+~
+      else
+        let $shift-reduce-symbols :=
+          if ($action eq 1) then (: SHIFT :)
+            ($argument, -1, -1)
+          else if ($action eq 2) then (: REDUCE :)
+            (-1, $argument, $lookback)~                         if (grammar->states->hasLookback)
+                                                                {
+~
+          else if ($action eq 3) then (: REDUCE+LOOKBACK :)
+            (-1, $argument, p:count($lookback, 0, $stack, count($stack) - 1))~
+                                                                }
+~
+          else if ($action eq 4) then (: SHIFT+REDUCE :)
+            ($state, $argument, $lookback + 1)~                 if (grammar->states->hasLookback)
+                                                                {
+~
+          else if ($action eq 5) then (: SHIFT+REDUCE+LOOKBACK :)
+            ($state, $argument, p:count($lookback, 1, $stack, count($stack) - 1))~
+                                                                }
+~
+          else (: ERROR :)
+            (-1, -1, -1)
+        let $shift := $shift-reduce-symbols[1]
+        let $reduce := $shift-reduce-symbols[2]
+        let $symbols := $shift-reduce-symbols[3]
+        let $es := if ($shift lt 0 or $nonterminal ge 0) then $es else $lexer-state[$p:e1]~
+                                                                if (trace)
+                                                                {
+~
+        let $trace := if ($shift lt 0) then $trace else concat($trace, "shift")~
+                                                                }
+~
+        let $lexer-state :=
+          if ($shift lt 0 or $nonterminal ge 0) then
+            $lexer-state
+          else
+            p:consume
+            (
+              $lexer-state[$p:l1],
+              $input,
+              $lexer-state
+            )
+        let $stack :=
+          if ($shift lt 0) then
+            $stack
+          else
+            ($stack, if ($nonterminal lt 0) then $lexer-state[$p:b0] else $bs, $state, $lookback)
+        let $state := if ($shift lt 0) then $state else $shift
+        return
+          if ($reduce lt 0) then
+            if ($shift lt 0) then
+            (~                                                  if (trace)
+                                                                {
+~
+              p:trace(concat($trace, "fail""/>")),~             }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+              p:thread
+              (
+                $thread?id, false(), $state, 0, -1, $bw, $bs, $es, $stack,
+                (~                                                increaseIndent(2);
+                                                                }
+~
+              subsequence($lexer-state, 1, $p:error - 1),
+              element error
+              {
+                attribute b {$lexer-state[$p:b1]},
+                attribute e {$lexer-state[$p:e1]},
+                attribute o {$lexer-state[$p:l1]}[. > 0],
+                attribute s {$p:TOKENSET[$state + 1] + 1}
+              },
+              subsequence($lexer-state, $p:error + 1)~          if (grammar->useGlr)
+                                                                {
+                                                                  decreaseIndent(2);
+~
+                )
+              )~                                                }
+~
+            )
+            else
+              let $lexer-state := p:predict($input, $lexer-state, $state~
+                                                                if (grammar->useGlr)
+                                                                {
+                                         ~, $thread?id~         }
+                                         ~)
+              return~                                           if (trace)
+                                                                {
+~
+              (
+                p:trace(concat($trace, """/>")),
+                ~                                               }
+                                                                else
+                                                                {
+                ~ ~                                             }
+                                                                if (grammar->useGlr)
+                                                                {
+                ~p:thread($thread?id, false(), $state, $lexer-state[$p:lk], -1, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                else
+                                                                {
+                ~p:parse($input, $target, $state, $lexer-state[$p:lk], -1, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                if (trace)
+                                                                {
+~
+              )~                                                }
+~
+          else~                                                 if (trace)
+                                                                {
+~
+            let $trace := concat($trace, if ($shift lt 0) then "" else " ", "reduce"" nonterminal=""", $p:NONTERMINAL[$reduce + 1], """ count=""", $symbols, """/>")~
+                                                                }
+~
+            let $state := if ($symbols gt 0) then $stack[last() - 3 * $symbols + 2] else $state
+            let $bs := if ($symbols gt 0) then $stack[last() - 3 * $symbols + 1] else $lexer-state[$p:b1]
+            let $es := if ($symbols gt 0) then $es else $bs
+            let $stack := if ($symbols gt 0) then subsequence($stack, 1, count($stack) - 3 * $symbols) else $stack~
+                                                                if (tree && anyWhitespace)
+                                                                {
+~
+            let $lexer-state := if ($symbols gt 0) then $lexer-state else p:whitespace($input, $lexer-state)~
+                                                                  whitespaceCalled = true;
+                                                                }
+~
+            let $accept := $reduce eq $target and count($stack) eq 3
+            let $bs := if ($accept) then $bw else $bs
+            let $es := if ($accept) then $lexer-state[$p:b1] else $es
+            let $bw := if ($accept) then $es else $bw~          if (tree)
+                                                                {
+~
+            let $index := if ($accept) then $p:result else p:first-child-node-index($lexer-state, count($lexer-state) + 1, $symbols)
+            let $lexer-state :=
+            (
+              subsequence($lexer-state, 1, $index - 1),
+              element {$p:NONTERMINAL[$reduce + 1]}
+              {
+                (: bs, es :)
+                subsequence($lexer-state, $index)
+              }
+            )~                                                  }
+                                                                if (hasCustomCode)
+                                                                {
+~
+            let $nonterminal := $p:REDUCTION[$reduce + 1]
+            let $reduce := $p:REDUCTION[$reduce + 2]
+            let $lexer-state := if ($reduce lt 0) then $lexer-state else p:execute($input, $lexer-state, $reduce)~
+                                                                }
+                                                                else
+                                                                {
+~
+            let $nonterminal := $reduce~                        }
+                                                                if (grammar->useGlr)
+                                                                {
+~
+            let $thread := p:thread($thread?id, false(), $state, p:goto($nonterminal, $state), $nonterminal, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+~
+            return~                                             if (trace)
+                                                                {
+~
+            (
+              p:trace($trace),
+              ~                                                 }
+                                                                else
+                                                                {
+              ~ ~                                               }
+              ~p:parse($input, $target, ~                       if (grammar->useGlr)
+                                                                {
+                                        ~$max-id, $thread)~     }
+                                                                else
+                                                                {
+                                        ~$state, p:goto($nonterminal, $state), $nonterminal, $bw, $bs, $es, $stack, $lexer-state)~
+                                                                }
+                                                                if (trace)
+                                                                {
+~
+            )~                                                  }
+                                                                if (grammar->useGlr)
+                                                                  decreaseIndent();
+~
+};
+~
+                                                                if (hasCustomCode)
+                                                                {
+~
+(:~~
+ : Update state with code annotation results.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $reduce the reduce case id.
+ : @return the updated state.
+ :)
+declare function p:execute($input as xs:string,
+                           $state as item()+,
+                           $reduce as xs:integer) as item()+
+{~                                                                increaseIndent();
+                                                                  int lastContentId = grammar->distinctCodeAnnotations.size() - 1;
+                                                                  for (int contentId = 0; contentId <= lastContentId; ++contentId)
+                                                                  {
+                                                                    ProcessingInstruction *p = grammar->distinctCodeAnnotations[contentId];
+~
+~                                                                   if (contentId > 0)
+                                                                    {
+~else ~                                                             }
+~if ($reduce eq ~                                                   print(format.toString<wchar_t>(contentId));
+                ~) then
+(~                                                                  visitProcessingInstruction(p);
+~
+  return $state
+)~                                                                }
+~
+else
+  $state~                                                         increaseIndent();
+~
+};
+~                                                               }
+
+                                                                if (tree)
+                                                                {
+~
+(:~~
+ : Decrement given index by the given number of elements on the result
+ : stack, skipping any non-element nodes.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $index the index into the result stack.
+ : @param $element-count the number of elements to be handled.
+ : @return the decremented index.
+ :)
+declare function p:first-child-node-index($state as item()+,
+                                          $index as xs:integer,
+                                          $element-count as xs:integer)
+{
+  if ($element-count eq 0) then
+    $index
+  else
+    let $index := $index - 1
+    let $element-count := $element-count - (if ($state[$index] instance of element()) then 1 else 0)
+    return p:first-child-node-index($state, $index, $element-count)
+};
+~                                                               }
+                                                              }
+                                                              if (trace)
+                                                              {
+~
+(:~~
+ : Assemble a string showing current lookahead tokens, as far as they have
+ : been tokenized.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @return a string containing the space-separated list of lookahead tokens.
+ :)
+declare function p:lookahead-string($state as item()+) as xs:string
+{
+  string-join
+  (
+    (
+      if ($state[$p:l1] le 0) then
+        ()
+      else
+      (
+        $p:TOKEN[$state[$p:l1] + 1]~                            for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  increaseIndent();
+                                   ~,
+      if ($state[$p:l~                                            print(format.toString<wchar_t>(i));
+                     ~] le 0) then
+        ()
+      else
+      (
+        $p:TOKEN[$state[$p:l~                                     print(format.toString<wchar_t>(i));
+                            ~] + 1]~                            }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+~
+      )~                                                          decreaseIndent();
+                                                                }
+~
+      )
+    ),
+    " "
+  )
+};
+~                                                             }
+~
+(:~~
+ : Create a textual error message from a parsing error.
+ :
+ : @param $input the input string.
+ : @param $error the parsing error descriptor.
+ : @return the error message.
+ :)
+declare function p:error-message($input as xs:string, $error as element(error)) as xs:string
+{
+  let $begin := xs:integer($error/@b)
+  let $context := string-to-codepoints(substring($input, 1, $begin - 1))
+  let $linefeeds := index-of($context, 10)
+  let $line := count($linefeeds) + 1
+  let $column := ($begin - $linefeeds[last()], $begin)[1]
+  return
+    string-join
+    (
+      (
+        ~                                                     if (grammar->useGlr)
+                                                              {
+        ~if ($error/@ambiguous-input) then
+          "ambiguous input"
+        else ~                                                }
+        ~if ($error/@o) then
+          ("syntax error, found ", $p:TOKEN[$error/@o + 1])
+        else
+          "lexical analysis failed",
+        "&#10;",~                                             if (grammar->useGlr)
+                                                              {
+~
+        if ($error/@ambiguous-input) then
+          ()
+        else
+        (~                                                      increaseIndent();
+                                                              }
+~
+        "while expecting ",
+        if ($error/@x) then
+          $p:TOKEN[$error/@x + 1]
+        else
+          let $expected := p:expected-token-set($error/@s)
+          return
+          (
+            "["[exists($expected[2])],
+            string-join($expected, ", "),
+            "]"[exists($expected[2])]
+          ),
+        "&#10;",
+        if ($error/@o or $error/@e = $begin) then
+          ()
+        else
+          ("after successfully scanning ", string($error/@e - $begin), " characters beginning ")~
+                                                              if (grammar->useGlr)
+                                                              {
+                                                                decreaseIndent();
+~
+        )~                                                    }
+         ~,
+        "at line ", string($line), ", column ", string($column), ":&#10;",
+        "...", substring($input, $begin, 64), "..."
+      ),
+      ""
+    )
+};
+~
+                                                              const wchar_t *name[2] = {L"consume", L"consumeT"};
+                                                              for (int i = 0; i < consumeMethods; ++i)
+                                                              {
+~
+(:~~
+ : Consume one token, i.e. compare lookahead token 1 with expected
+ : token and in case of a match, shift lookahead tokens down such that
+ : l1 becomes the current token, and higher lookahead tokens move down.
+ : When lookahead token 1 does not match the expected token, raise an
+ : error by saving the expected token code in the error field of the
+ : lexer state.~                                                if (i)
+                                                                {
+                ~ In contrast to p:consume, do not create any output.~
+                                                                }
+                ~
+ :
+ : @param $code the expected token.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:~                                            print(name[i]);
+                   ~($code as xs:integer, $input as xs:string, $state as item()+) as item()+
+{
+  if ($state[$p:error]) then
+    $state
+  else if ($state[$p:l1] eq $code) then~                        if (trace && ! isLrParser)
+                                                                {
+~
+    let $state :=~                                                increaseIndent();
+                                                                }
+~
+  (
+    subsequence($state, $p:l1, ~                                print(format.toString<wchar_t>(grammar->k * 3));
+                               ~),
+    0, 0, 0,
+    subsequence($state, ~                                       print(format.toString<wchar_t>((grammar->k + 1) * 3 + 1));
+                        ~)~                                     if (tree && i == 0)
+                                                                {
+                          ~,
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    where $begin ne $end
+    return
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      },
+    let $token := $p:TOKEN[1 + $state[$p:l1]]
+    let $name := if (starts-with($token, "'")) then "TOKEN" else $token
+    let $begin := $state[$p:b1]
+    let $end := $state[$p:e1]
+    return
+      element {$name}
+      {
+        substring($input, $begin, $end - $begin)
+      }~                                                        }
+~
+  )~                                                            if (trace && ! isLrParser)
+                                                                {
+                                                                  decreaseIndent();
+~
+    return
+    (
+      p:trace
+      (
+        string-join
+        (
+          (
+            "  <~                                                 print(i == 0 ? methodPrefixParse : methodPrefixTry);
+                ~ terminal=""", p:xml-escape($p:TOKEN[$code + 1]), """",
+            if ($state[$p:l1] le 0) then () else (" input=""", p:xml-escape(p:lookahead-string($state)), """"),
+            "/>"
+          ),
+          ""
+        )
+      ),
+      $state
+    )~                                                          }
+~
+  else
+  (
+    subsequence($state, 1, $p:error - 1),
+    element error
+    {~                                                          if (memoization)
+                                                                {
+~
+      if ($state[$p:e1] < $state[$p:memo]/@e) then
+        $state[$p:memo]/@*
+      else
+      (~                                                          increaseIndent();
+                                                                }
+~
+      attribute b {$state[$p:b1]},
+      attribute e {$state[$p:e1]},
+      if ($state[$p:l1] lt 0) then
+        attribute s {- $state[$p:l1]}
+      else
+        (attribute o {$state[$p:l1]}, attribute x {$code})~     if (memoization)
+                                                                {
+                                                                  decreaseIndent();
+~
+      )~                                                        }
+~
+    },
+    subsequence($state, $p:error + 1)
+  )
+};
+~                                                             }
+                                                              if (anyWhitespace)
+                                                              {
+                                                                if (whitespaceCalled)
+                                                                {
+~
+(:~~
+ : Consume whitespace.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:whitespace($input as xs:string,
+                              $state as item()+) as item()+
+{
+  if ($state[$p:e0] = $state[$p:b1]) then
+    $state
+  else
+    let $begin := $state[$p:e0]
+    let $end := $state[$p:b1]
+    return
+    (
+      0,
+      $state[$p:b0],
+      $end,
+      subsequence($state, $p:e0 + 1),
+      text
+      {
+        substring($input, $begin, $end - $begin)
+      }
+    )
+};
+~
+                                                                }
+~
+(:~~
+ : Use p:match to fetch the next token, but skip any leading
+ : whitespace.
+ :
+ : @param $input the input string.
+ : @param $begin the index where to start.
+ : @param $token-set the valid token set id.~                   if (grammar->useGlr)
+                                                                {
+~
+ : @param $id the parsing thread id.~                           }
+~
+ : @return a sequence of three values: the token code of the result
+ : token, with input string positions of token begin and end.
+ :)
+declare function p:matchW($input as xs:string,
+                          $begin as xs:integer,
+                          $token-set as xs:integer~             if (grammar->useGlr)
+                                                                {
+                                                  ~,
+                          $id as xs:integer~                    }
+                                                  ~)
+{
+  let $match := p:match($input, $begin, $token-set~             if (grammar->useGlr)
+                                                                {
+                                                  ~, $id~       }
+                                                  ~)
+  return~                                                       setIndent(2);
+                                                                const wchar_t *condition = L"if (";
+                                                                if (simpleWhitespace)
+                                                                {
+                                                                  condition = L"else if (";
+                                                                  printMatch(0, 0, 0, grammar->simpleWhitespaceIntroducers, IF, 0, L"if (", L") then");
+~
+  p:matchW($input, $match[3], $token-set~                         if (grammar->useGlr)
+                                                                  {
+                                        ~, $id~                   }
+                                        ~)~                     }
+                                                                if (complexWhitespace)
+                                                                {
+                                                                  printMatch(0, 0, 0, grammar->complexWhitespaceIntroducers, IF, 0, condition, L") then");
+                                                                  if (isLrParser)
+                                                                  {
+~
+  let $state := (0, $begin, $begin, $match, 0, 0~                   for (size_t k = 2; k <= grammar->k; ++k)
+                                                                    {
+                                              ~, 0, 0, 0~           }
+                                              ~, false()~           if (memoization)
+                                                                    {
+                                                        ~, <memo/>~ }
+                                                        ~)
+  let $state := p:predict($input, $state, ~                         print(format.toString<wchar_t>((*grammar->states)[grammar->whitespace->state]->getStateId()));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                          ~, $id~                   }
+                                          ~)
+  let $e0 := $state[$p:e0]
+  let $state := p:parse~                                            if (grammar->useGlr)
+                                                                    {
+                       ~-glr~                                       }
+                       ~($input, -1~                                if (grammar->useGlr)
+                                                                    {
+                                  ~, 0, p:thread(0, false()~        }
+                                  ~, ~                              print(format.toString<wchar_t>((*grammar->states)[grammar->whitespace->state]->getStateId()));
+                                  ~, $state[$p:lk], -1, $e0, $e0, $e0, (1, -1, 0), $state~
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                  ~)~                               }
+                                  ~)~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+  let $state := p:try-~                                             print(grammar->whitespace->name);
+                      ~($input, (0, $begin, $begin, $match~         for (size_t k = 2; k <= grammar->k; ++k)
+                                                                    {
+                                                ~, 0, 0, 0~         }
+                                                ~, false()~         if (memoization)
+                                                                    {
+                                                          ~, <memo/>~
+                                                                    }
+                                                          ~))~
+                                                                  }
+~
+  return p:matchW($input, $state[$p:e0], $token-set~
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                                   ~, $id~          }
+                                                   ~)~          }
+~
+else
+  $match~                                                       setIndent(0);
+~
+};
+~                                                               size_t lwc = grammar->tables && grammar->k >= grammar->tables && anyWhitespace
+                                                                           ? grammar->k
+                                                                           : grammar->lookaheadSets.lookaheadWCount;
+                                                                printLookaheadMethods(lwc, true);
+                                                              }
+                                                              size_t lc = isLrParser && anyWhitespace
+                                                                        ? 0
+                                                                        : grammar->tables && grammar->k >= grammar->tables && ! anyWhitespace
+                                                                        ? grammar->k
+                                                                        : grammar->lookaheadSets.lookaheadCount;
+                                                              printLookaheadMethods(lc, false);
+                                                              if (tree && ! isLrParser)
+                                                              {
+~
+(:~~
+ : Reduce the result stack, creating a nonterminal element. Pop
+ : $count elements off the stack, wrap them in a new element
+ : named $name, and push the new element.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $name the name of the result node.
+ : @param $count the number of child nodes.~                    if (! noPosition)
+                                                                {
+~
+ : @param $begin the input index where the nonterminal begins.
+ : @param $end the input index where the nonterminal ends.~     }
+~
+ : @return the updated state.
+ :)
+declare function p:reduce($state as item()+, $name as xs:string, $count as xs:integer~
+                                                                if (! noPosition)
+                                                                {
+                                                                                     ~, $begin as xs:integer, $end as xs:integer~
+                                                                }
+                                                                                     ~) as item()+
+{
+  subsequence($state, 1, $count),
+  element {$name}
+  {
+    subsequence($state, $count + 1)
+  }
+};
+~                                                             }
+                                                              if (memoization)
+                                                              {
+                                                                const wchar_t *factor = format.toString<wchar_t>(Math::powerof(2, Math::bits(grammar->conflictCount)));
+~
+(:~~
+ : Strip result from lexer state, in order to avoid carrying it while
+ : backtracking.
+ :
+ : @param $state the lexer state after an alternative failed.
+ : @return the updated state.
+ :)
+declare function p:strip-result($state as item()+) as item()+
+{
+  subsequence($state, 1, $p:memo)
+};
+~                                                               if (restoreCalled)
+                                                                {
+~
+(:~~
+ : Restore lexer state after unsuccessfully trying an alternative,
+ : merging any memoization that was collected on the way.
+ :
+ : @param $backtrack the lexer state before backtracking started.
+ : @param $state the lexer state after an alternative failed.
+ : @return the updated state.
+ :)
+declare function p:restore($backtrack as item()+,
+                           $state as item()+) as item()+
+{
+  subsequence($backtrack, 1, $p:memo - 1),
+  element memo
+  {
+    let $errors := ($state[$p:memo], $state[$p:error])[.]
+    return $errors[@e = max($errors/xs:integer(@e))][last()]/@*,
+    $state[$p:memo]/value
+  }
+};
+~                                                               }
+~
+(:~~
+ : Memoize the backtracking result that was computed at decision point
+ : $dpi for input position $e0. Reconstruct state from the parameters.
+ :
+ : @param $state the lexer state to be restored.
+ : @param $update the lexer state containing updates.
+ : @param $dpi the decision point id.
+ : @param $e0 the input position.
+ : @param $v the id of the successful alternative.
+ : @param $lk the new lookahead code.
+ : @return the reconstructed state.
+ :)
+declare function p:memoize($state as item()+,
+                           $update as item()+,
+                           $dpi as xs:integer,
+                           $e0 as xs:integer,
+                           $v as xs:integer,
+                           $lk as xs:integer) as item()+
+{
+  $lk,
+  subsequence($state, $p:b0, $p:memo - $p:b0),
+  let $memo := $update[$p:memo]
+  let $errors := ($memo, $update[$p:error])[.]
+  return
+    element memo
+    {
+      $errors[@e = max($errors/xs:integer(@e))][last()]/@*,
+      $memo/value,
+      element value {attribute key {$e0 * ~                     print(factor);
+                                          ~ + $dpi}, $v}
+    },
+  subsequence($state, $p:memo + 1)
+};
+
+(:~~
+ : Retrieve memoized backtracking result for decision point $dpi
+ : and input position $state[$p:e0] into $state[$p:lk].
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $dpi the decision point id.
+ : @return the updated state.
+ :)
+declare function p:memoized($state as item()+, $dpi as xs:integer) as item()+
+{
+  let $value := data($state[$p:memo]/value[@key = $state[$p:e0] * ~
+                                                                print(factor);
+                ~ + $dpi])
+  return
+  (
+    if ($value) then $value else 0,
+    subsequence($state, $p:lk + 1)
+  )
+};
+~                                                             }
+                                                            }
+
+                                                            void PrintXQuery::printLookaheadMethods(size_t lookaheadMethods, bool withWhitespace)
+                                                            {
+                                                              for (size_t k = 1; k <= lookaheadMethods; ++k)
+                                                              {
+~
+(:~~
+ : Lookahead one token on level ~                               print(format.toString<wchar_t>(k));
+                                                                if (withWhitespace)
+                                                                {
+                                ~ with whitespace skipping~     }
+                                ~.
+ :~                                                             if (k != 1 && unlimitedLookahead)
+                                                                {
+~
+ : @param $prefix the prefix code representing lower level lookahead.~
+                                                                }
+~
+ : @param $set the code of the DFA entry state for the set of valid tokens.
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.~
+                                                                if (grammar->useGlr)
+                                                                {
+~
+ : @param $id the parsing thread id.~                           }
+~
+ : @return the updated state.
+ :)
+declare function p:lookahead~                                   print(format.toString<wchar_t>(k));
+                                                                if (withWhitespace)
+                                                                {
+                            ~W~
+                                                                }
+                            ~(~                                 if (k != 1 && unlimitedLookahead)
+                                                                {
+                              ~$prefix as xs:integer, ~         }
+                                                      ~$set as xs:integer, $input as xs:string, $state as item()+~
+                                                                if (grammar->useGlr)
+                                                                {
+                                                      ~, $id as xs:integer~
+                                                                }
+                                                      ~) as item()+
+{~                                                              if (k == 1)
+                                                                {
+~
+  if ($state[$p:l1] ne 0) then
+    $state
+  else
+    let $match :=~                                                increaseIndent();
+                                                                }
+                                                                else
+                                                                {
+~
+  let $match :=
+    if ($state[$p:l~                                              print(format.toString<wchar_t>(k));
+                   ~] ne 0) then
+      subsequence($state, $p:l~                                   print(format.toString<wchar_t>(k));
+                              ~, ~                                print(format.toString<wchar_t>(k < grammar->k ? 6 : 3));
+                                 ~)
+    else~                                                       }
+                                                                if (k < grammar->k)
+                                                                {
+~
+    (~                                                          }
+~
+      p:match~                                                  if (withWhitespace)
+                                                                {
+             ~W~
+                                                                }
+             ~($input, $state[$p:e~                             print(format.toString<wchar_t>(k - 1));
+                                  ~], $set~                     if (grammar->useGlr)
+                                                                {
+                                          ~, $id~               }
+                                          ~)~                   if (k < grammar->k)
+                                                                {
+                                           ~,
+      0, 0, 0
+    )~                                                          }
+~
+  return
+  (
+    ~                                                           if (grammar->tables && k >= grammar->tables)
+                                                                {
+
+    ~subsequence($state, 1, ~                                     print(format.toString<wchar_t>(k * 3));
+                            ~),~                                }
+                                                                else
+                                                                {
+                                                                  if (k != 1 && unlimitedLookahead)
+                                                                  {
+    ~$match[1] + $prefix~                                         }
+                                                                  else
+                                                                  {
+    ~$match[1]~                                                     switch (k)
+                                                                    {
+                                                                    case 1: break;
+                                                                    case 2:
+              ~ * ~                                                   print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
+                  ~ + $state[$p:l1]~                                  break;
+                                                                    default:
+              ~ * ~                                                   print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
+                  ~ + $state[$p:lk]~                                  break;
+                                                                    }
+                                                                  }
+              ~,
+    subsequence($state, $p:b0, ~                                  print(format.toString<wchar_t>(k * 3 - 1));
+                               ~),~                             }
+~
+    $match,
+    subsequence($state, ~                                       print(format.toString<wchar_t>(k * 3 + (grammar->k > k ? 7 : 4)));
+                        ~)
+  )~                                                            if (k == 1) decreaseIndent();
+~
+};
+~
+                                                              }
+                                                              setIndent(0);
+                                                            }
+
+                                                            void PrintXQuery::printEpilog(Grammar *node)
+                                                            {
+                                                              if (node->automaticSemicolonInsertion)
+                                                              {
+~
+(:~~
+ : Check whether the lookahead token is preceded by a line terminator.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:follows-line-terminator($input as xs:string,
+                                           $state as item()+
+                                          ) as item()+
+{
+  let $begin := if ($state[$p:e0] eq $state[$p:b1]) then $state[$p:b0] else $state[$p:e0]
+  let $preceding-whitespace := substring($input, $begin, $state[$p:b1] - $begin)
+  return string-to-codepoints($preceding-whitespace) = (10, 13, 8232, 8233)
+};
+~                                                             }
+                                                              for (Node *n = node->nonTerminals; n; n = n->followingSibling)
+                                                              {
+                                                                Production *p = static_cast <Production *> (n);
+                                                                if (p->isStartSymbol())
+                                                                {
+~
+(:~~
+ : Parse start symbol ~                                           print(p->name);
+                      ~ from given string.
+ :
+ : @param $s the string to be parsed.
+ : @return the result as generated by parser actions.
+ :)
+declare function p:~                                              print(methodPrefix);
+                   ~-~                                            print(p->name);
+                     ~($s as xs:string) as item()*
+{
+  let $state := (0, 1, 1~                                         for (size_t k = 1; k <= grammar->k; ++k)
+                                                                  {
+                        ~, 0, 0, 0~                               }
+                                  ~, false()~                     if (memoization)
+                                                                  {
+                                            ~, <memo/>~           }
+                                                      ~)~         if (isLrParser)
+                                                                  {
+~
+  let $state := p:predict($s, $state, ~                             print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                      ~, 0~                         }
+                                      ~)
+  let $state := p:parse~                                            if (grammar->useGlr)
+                                                                    {
+                       ~-glr~                                       }
+                       ~($s, ~                                      print(format.toString<wchar_t>(p->nonterminalCode));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                             ~, 0, p:thread(0, false()~             }
+                             ~, ~                                   print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
+                             ~, $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state~
+                                                                    if (grammar->useGlr)
+                                                                    {
+                             ~)~                                    }
+                             ~)~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+  let $state := p:parse-~                                           print(p->name);
+                        ~($s, $state)~                            }
+~
+  let $error := $state[$p:error]
+  return
+    if ($error) then~                                             if (tree && grammar->useGlr)
+                                                                  {
+~
+    (
+      $error/AMBIGUOUS,~                                          }
+~
+      element ERROR {$error/@*, p:error-message($s, $error)}~     if (tree && grammar->useGlr)
+                                                                  {
+~
+    )~
+                                                                  }
+~
+    else
+      subsequence($state, $p:result)
+};
+~                                                               }
+                                                              }
+                                                              if (debug)
+                                                              {
+~
+declare function debug:enter($name, $state)
+{
+  p:trace(concat("enter ", $name, " l1=", $state[$p:l1], " e1=", $state[$p:e1], " memo/e=", $state[$p:memo]/@e, " error/e=", if ($state[$p:error] instance of xs:boolean) then $state[$p:error] else $state[$p:error]/@e))
+};
+
+declare function debug:leave($name, $state)
+{
+  p:trace(concat("leave ", $name, " l1=", $state[$p:l1], " e1=", $state[$p:e1], " memo/e=", $state[$p:memo]/@e, " error/e=", if ($state[$p:error] instance of xs:boolean) then $state[$p:error] else $state[$p:error]/@e))
+};
+~                                                             }
+                                                              if (trace && ! isLrParser)
+                                                              {
+~
+(:~~
+ : Trace LL processing of a nonterminal.
+ :
+ : @param $state lexer state, error indicator, and result stack.
+ : @param $method processing method type.
+ : @param $occasion the current step.
+ : @param $name the nonterminal name.
+ : @return the empty sequence.
+ :)
+declare function p:trace-nonterminal($state as item()+,
+                                     $method as xs:string,
+                                     $occasion as xs:string,
+                                     $name as xs:string) as xs:string?
+{
+  p:trace
+  (
+    string-join
+    (
+      (
+        "  <",
+        $method,
+        " ",
+        $occasion,
+        "nonterminal=""",
+        $name,
+        """",
+        if ($state[$p:l1] le 0) then () else (" input=""", p:xml-escape(p:lookahead-string($state)), """"),
+        "/>"
+      ),
+      ""
+    )
+  )
+};
+~                                                             }
+                                                              if (main)
+                                                              {
+~
+(:~~
+ : The input filename, or string, if surrounded by curly braces.
+ :)
+declare variable $input as xs:string external;
+
+let $result :=~
+                                                                if (trace)
+                                                                {
+~
+(
+  p:trace("<trace>"),~                                          }
+~
+  if (matches($input, "^^\{.*\}$")) then
+    p:~                                                         print(methodPrefix);
+      ~-~                                                       print(grammar->startSymbol()->name);
+        ~(substring($input, 2, string-length($input) - 2))
+  else
+    p:~                                                         print(methodPrefix);
+      ~-~                                                       print(grammar->startSymbol()->name);
+        ~(unparsed-text($input, "utf-8"))~                      if (trace)
+                                                                {
+                                         ~,
+  p:trace("</trace>")
+)~                                                              }
+~
+return
+  if (empty($result/self::ERROR)) then
+    $result
+  else~                                                         if (tree && grammar->useGlr)
+                                                                {
+~
+  (
+    $result[not(self::ERROR)],
+    "&#xA;",~                                                   }
+~
+    error(xs:QName("p:~                                         print(methodPrefix);
+                      ~-~                                       print(grammar->startSymbol()->name);
+                        ~"), concat("&#10;    ", replace($result~
+                                                                if (tree && grammar->useGlr)
+                                                                {
+                                                                ~[self::ERROR]~
+                                                                }
+                                                                ~, "&#10;", "&#10;    ")))~
+                                                                if (tree && grammar->useGlr)
+                                                                {
+~
+  )~                                                            }
+~
+~                                                             }
+                                                            }
+
+                                                            void PrintXQuery::printVariables()
+                                                            {
+~
+(:~~
+ : The index of the lexer state for accessing the combined
+ : (i.e. level > 1) lookahead code.
+ :)
+declare variable $p:lk as xs:integer := 1;
+
+(:~~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the token that has been consumed.
+ :)
+declare variable $p:b0 as xs:integer := 2;
+
+(:~~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the token that has been consumed.
+ :)
+declare variable $p:e0 as xs:integer := 3;~                   int stateIndex = 3;
+                                                              for (size_t k = 1; k <= grammar->k; ++k)
+                                                              {
+~
+
+(:~~
+ : The index of the lexer state for accessing the code of the
+ : level-~                                                      print(format.toString<wchar_t>(k));
+         ~-lookahead token.
+ :)
+declare variable $p:l~                                          print(format.toString<wchar_t>(k));
+                     ~ as xs:integer := ~                       print(format.toString<wchar_t>(++stateIndex));
+                                        ~;
+
+(:~~
+ : The index of the lexer state for accessing the position in the
+ : input string of the begin of the level-~                     print(format.toString<wchar_t>(k));
+                                          ~-lookahead token.
+ :)
+declare variable $p:b~                                          print(format.toString<wchar_t>(k));
+                     ~ as xs:integer := ~                       print(format.toString<wchar_t>(++stateIndex));
+                                        ~;
+
+(:~~
+ : The index of the lexer state for accessing the position in the
+ : input string of the end of the level-~                       print(format.toString<wchar_t>(k));
+                                        ~-lookahead token.
+ :)
+declare variable $p:e~                                          print(format.toString<wchar_t>(k));
+                     ~ as xs:integer := ~                       print(format.toString<wchar_t>(++stateIndex));
+                                        ~;~                   }
+~
+
+(:~~
+ : The index of the lexer state for accessing the token code that
+ : was expected when an error was found.
+ :)
+declare variable $p:error as xs:integer := ~                  print(format.toString<wchar_t>(++stateIndex));
+                                           ~;
+~                                                             if (memoization)
+                                                              {
+~
+(:~~
+ : The index of the lexer state for accessing the memoization
+ : of backtracking results.
+ :)
+declare variable $p:memo as xs:integer := ~                     print(format.toString<wchar_t>(++stateIndex));
+                                          ~;
+~                                                             }
+~
+(:~~
+ : The index of the lexer state that points to the first entry
+ : used for collecting action results.
+ :)
+declare variable $p:result as xs:integer := ~                 print(format.toString<wchar_t>(++stateIndex));
+                                            ~;~
+                                                            }
+
+                                                            void PrintXQuery::printProlog(Grammar *aNode)
+                                                            {
+                                                              if (! hasProlog)
+                                                              {
+                                                                if (main)
+                                                                {
+~
+declare namespace p="~                                            print(className);
+                     ~";~                                       }
+                                                                else
+                                                                {
+~
+(:~~
+ : The parser that was generated for the ~                        print(className);
+                                         ~ grammar.
+ :)
+module namespace p="~                                             print(className);
+                    ~";~                                        }
+~
+declare default function namespace "http://www.w3.org/2005/xpath-functions";
+~
+                                                                if (debug)
+                                                                {
+~declare namespace debug="DEBUG";
+~                                                               }
+                                                              }
+                                                            }
+
+                                                            void PrintXQuery::PrintLoops::visitZeroOrMore(ZeroOrMore *node)
+                                                            {
+                                                              if (node->loopId == 0)
+                                                              {
+                                                                node->loopId = ++loopId;
+                                                                Visitor::visitZeroOrMore(node);
+                                                              }
+                                                              if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
+                                                              {
+~
+(:~~
+ : ~                                                          if (px->methodPrefix != px->methodPrefixTry)
+                                                              {
+   ~Parse~                                                    }
+                                                              else
+                                                              {
+   ~Try parsing~                                              }
+               ~ the ~                                        px->print(px->format.toString<wchar_t>(node->loopId));
+                                                              switch (node->loopId)
+                                                              {
+                                                              case 1:  append(L"st"); break;
+                                                              case 2:  append(L"nd"); break;
+                                                              case 3:  append(L"rd"); break;
+                                                              default: append(L"th"); break;
+                                                              }
+                     ~ loop of production ~                   px->print(node->production->name);
+                                          ~ (zero or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:~                                          px->print(px->methodPrefix);
+                   ~-~                                        px->print(node->production->name);
+                     ~-~                                      px->print(px->format.toString<wchar_t>(node->loopId));
+                       ~($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else~                                                       px->increaseIndent(2);
+                                                              bool hasLookahead =
+                                                                px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                              px->automaticSemicolonInsertion(node);
+                                                              bool nestedTry = px->methodPrefix == px->methodPrefixTry;
+                                                              bool hasBacktracking =
+                                                                px->printBacktracking(node,
+                                                                                      node->getLookahead(),
+                                                                                      node->conflictCaseId,
+                                                                                      node->conflictId,
+                                                                                      node->firstElementChild);
+                                                              if (hasLookahead || hasBacktracking)
+                                                              {
+~
+return~                                                         px->increaseIndent();
+                                                              }
+                                                              const wchar_t *prefix = L"if (";
+                                                              if (hasBacktracking && nestedTry)
+                                                              {
+~
+if ($state[$p:lk] = -3) then
+  p:~                                                           px->print(px->methodPrefix);
+    ~-~                                                         px->print(node->production->name);
+      ~-~                                                       px->print(px->format.toString<wchar_t>(node->loopId));
+        ~($input, $state)~                                      prefix = L"else if (";
+                                                              }
+                                                              MatchType matchType;
+                                                              const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                              px->printMatch(node->getLookahead(),
+                                                                             node->k,
+                                                                             node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
+                                                                             match,
+                                                                             matchType == IF ? IFNOT : IF,
+                                                                             1,
+                                                                             prefix,
+                                                                             L") then");
+~
+  $state
+else~                                                         px->Visitor::visitNodeWithChildren(node);
+~
+  return p:~                                                  px->print(px->methodPrefix);
+           ~-~                                                px->print(node->production->name);
+             ~-~                                              px->print(px->format.toString<wchar_t>(node->loopId));
+               ~($input, $state)~                             px->decreaseIndent(2);
+                                                              if (hasLookahead || hasBacktracking)
+                                                              {
+                                                                px->decreaseIndent();
+                                                              }
+~
+};
+~
+                                                              }
+                                                              if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
+                                                              {
+                                                                px->methodPrefix = px->methodPrefixTry;
+                                                                visitZeroOrMore(node);
+                                                                px->methodPrefix = px->methodPrefixParse;
+                                                              }
+                                                            }
+
+                                                            void PrintXQuery::PrintLoops::visitOneOrMore(OneOrMore *node)
+                                                            {
+                                                              if (node->loopId == 0)
+                                                              {
+                                                                node->loopId = ++loopId;
+                                                                Visitor::visitOneOrMore(node);
+                                                              }
+                                                              if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
+                                                              {
+~
+(:~~
+ : ~                                                            if (px->methodPrefix != px->methodPrefixTry)
+                                                                {
+   ~Parse~                                                      }
+                                                                else
+                                                                {
+   ~Try parsing~                                                }
+               ~ the ~                                          px->print(px->format.toString<wchar_t>(node->loopId));
+                                                                switch (node->loopId)
+                                                                {
+                                                                case 1:  append(L"st"); break;
+                                                                case 2:  append(L"nd"); break;
+                                                                case 3:  append(L"rd"); break;
+                                                                default: append(L"th"); break;
+                                                                }
+         ~ loop of production ~                                 px->print(node->production->name);
+                              ~ (one or more). Use
+ : tail recursion for iteratively updating the lexer state.
+ :
+ : @param $input the input string.
+ : @param $state lexer state, error indicator, and result stack.
+ : @return the updated state.
+ :)
+declare function p:~                                            px->print(px->methodPrefix);
+                   ~-~                                          px->print(node->production->name);
+                     ~-~                                        px->print(px->format.toString<wchar_t>(node->loopId));
+                       ~($input as xs:string, $state as item()+)
+{
+  if ($state[$p:error]) then
+    $state
+  else~                                                         px->increaseIndent();
+                                                                px->visitNodeList(node->firstChild);
+                                                                px->increaseIndent();
+                                                                px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                                px->automaticSemicolonInsertion(node);
+                                                                bool nestedTry = px->methodPrefix == px->methodPrefixTry;
+                                                                bool hasBacktracking =
+                                                                  px->printBacktracking(node,
+                                                                                        node->getLookahead(),
+                                                                                        node->conflictCaseId,
+                                                                                        node->conflictId,
+                                                                                        node->firstElementChild);
+~
+return~                                                         const wchar_t *prefix = L"if (";
+                                                                if (hasBacktracking && nestedTry)
+                                                                {
+~
+  if ($state[$p:lk] = -3) then
+    p:~                                                           px->print(px->methodPrefix);
+      ~-~                                                         px->print(node->production->name);
+        ~-~                                                       px->print(px->format.toString<wchar_t>(node->loopId));
+          ~($input, $state)~                                      prefix = L"else if (";
+                                                                }
+                                                                px->increaseIndent();
+                                                                MatchType matchType;
+                                                                const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                                px->printMatch(node->getLookahead(),
+                                                                               node->k,
+                                                                               node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
+                                                                               match,
+                                                                               matchType == IF ? IFNOT : IF,
+                                                                               1,
+                                                                               prefix,
+                                                                               L") then");
+~
+  $state
+else
+  p:~                                                           px->print(px->methodPrefix);
+    ~-~                                                         px->print(node->production->name);
+      ~-~                                                       px->print(px->format.toString<wchar_t>(node->loopId));
+        ~($input, $state)~                                      px->decreaseIndent(3);
+~
+};
+~                                                             }
+                                                              if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
+                                                              {
+                                                                px->methodPrefix = px->methodPrefixTry;
+                                                                visitOneOrMore(node);
+                                                                px->methodPrefix = px->methodPrefixParse;
+                                                              }
+                                                            }
+
+                                                            void PrintXQuery::automaticSemicolonInsertion(Node *node)
+                                                            {
+                                                              if (node->automaticSemicolonInsertion)
+                                                              {
+                                                                const bool afterRbrace = false;
+                                                                Production *p;
+                                                                p = grammar->stringByName.byStringValue(L";");
+                                                                Token::Code semicolon = p == 0 ? -1 : p->tokenCode;
+                                                                lineBuffer.clear();
+                                                                TokenSequenceSet tss;
+~
+let $state :=~                                                  switch (node->automaticSemicolonInsertion)
+                                                                {
+                                                                case PLUSPLUS:
+                                                                case MINUSMINUS:
+                                                                  {
+                                                                    p = grammar->stringByName.byStringValue(L"++");
+                                                                    Token::Code plusplus = p == 0 ? -1 : p->tokenCode;
+                                                                    p = grammar->stringByName.byStringValue(L"--");
+                                                                    Token::Code minusminus = p == 0 ? -1 : p->tokenCode;
+~
+  if ($state[$p:l1] = (~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
+                       ~, ~                                         print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
+                          ~) and p:follows-line-terminator($input, $state)) then~ tss.insert(grammar->tokenSequence(plusplus));
+                                                                    tss.insert(grammar->tokenSequence(minusminus));
+                                                                    printCodeSequenceAnnotation(tss);
+                                                                  }
+                                                                  break;
+                                                                case CONTINUE:
+                                                                case BREAK:
+                                                                case RETURN:
+                                                                case THROW:
+                                                                  {
+~
+  if ($state[$p:l1] ne ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                       ~ and $state[$p:l1] ge 0 and p:follows-line-terminator($input, $state)) then~
+                                                                    tss.insert(grammar->tokenSequence(semicolon));
+                                                                    printCodeSequenceAnnotation(tss);
+                                                                  }
+                                                                  break;
+                                                                case SEMICOLON:
+                                                                  {
+                                                                    p = grammar->terminalByName.byNodeType(EndOfFile().getNodeType());
+                                                                    Token::Code eof = p == 0 ? -1 : p->tokenCode;
+                                                                    p = grammar->stringByName.byStringValue(L"}");
+                                                                    Token::Code rbrace = p == 0 ? -1 : p->tokenCode;
+~
+  if ($state[$p:l1] eq ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
+~
+   or $state[$p:l1] eq ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(eof));
+~
+   or $state[$p:l1] ne ~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                       ~ and $state[$p:l1] ge 0 and ~               if (afterRbrace)
+                                                                    {
+                                                    ~(~             }
+                                                    ~p:follows-line-terminator($input, $state)~
+                                                                    if (afterRbrace)
+                                                                    {
+                                                    ~ or substring($input, $state[$p:b0], 1) eq "}")~
+                                                                    }
+                                                    ~) then~        printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
+                                                                  }
+                                                                  break;
+                                                                default:
+                                                                  {
+                                                                    internalerr();
+                                                                  }
+                                                                }
+~
+  (
+    subsequence($state, 1, $p:l1 - 1),
+    ~                                                           print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+    ~,~                                                         printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
+~
+    $state[$p:b1],
+    $state[$p:b1],
+    subsequence($state, $p:e1 + 1)
+  )
+  else
+    $state~                                                   }
+                                                            }

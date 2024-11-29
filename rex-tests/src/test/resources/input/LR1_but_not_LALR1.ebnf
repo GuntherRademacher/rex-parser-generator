@@ -1,0 +1,13 @@
+S ::= A a
+    | b A c
+    | B c
+    | b B a
+A ::= d
+B ::= d
+
+<?TOKENS?>
+
+a ::= 'a'
+b ::= 'b'
+c ::= 'c'
+d ::= 'd'
