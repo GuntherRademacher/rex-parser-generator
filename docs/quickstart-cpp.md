@@ -39,7 +39,7 @@ We will use it to produce parse trees, trace parser and lexer execution, and eva
 
 Two remarks on the grammar:
 
- - Note that `<?TOKENS?>` separates syntax rules from lexical rules. While syntax rules describe the structure of the language, lexical rules define individual tokens. These sections have different allowances: syntax rules allow recursive patterns, whereas lexical rules are restricted to regular expressions.
+ - Note that `<?TOKENS?>` separates syntax rules from lexical rules. While syntax rules describe the structure of the language, lexical rules define individual tokens. These sections have different constraints: syntax rules allow recursive patterns, whereas lexical rules are restricted to regular expressions.
  - This grammar does not enforce end-of-input processing. As a result, a parser generated from it may accept input as valid once it reaches a stopping point, even if additional characters remain. This behavior could lead to subtle bugs, especially when input is expected to match the grammar entirely. To ensure complete processing, additional checks or rules should be added to handle end-of-input explicitly.
 
 ## Step 2: Generate the Parser and Lexer
@@ -59,7 +59,7 @@ This command line asks REx for
 
 The result will be a C++ file named `Arithmetic.cpp` in the current directory, containing the generated code. Usually the parser class would be generated in a `.hpp` file, but as the result will contain a main program in this case, REx puts everything together into a `.cpp` file.
 
-The command line is used to specify the generator's options. With the above command, we have applied for the default of LL for the parsing algorithm to be used, which would have read `-ll 3`, if it had been specified explicitly (the grammar being LL(1), though). In case an LR parser is preferred, `-lalr 1` could have been used as an alternative here.
+The command line is used to specify the generator's options. With the above command, we have chosen the default LL parsing algorithm, which would have been specified as `-ll 3` explicitly (the grammar being LL(1), though). In case an LR parser is preferred, `-lalr 1` could have been used as an alternative here.
 
 ## Step 3: Compile the Generated Code
 
@@ -71,7 +71,7 @@ g++ -o Arithmetic Arithmetic.cpp
 
 ## Step 4: Run the Generated Code
 
-You are now in a position to run the generated code. At this point it can be used to dump the parse tree in XML while parsing any input - this is the functionality of the main program, that was generated in response to REx option `-main`.
+You are now in a position to run the generated code. At this point it can be used to dump the parse tree in XML while parsing any input - this is the functionality of the main program that was generated in response to REx option `-main`.
 
 Running it without any command line arguments,
 
