@@ -7,7 +7,7 @@
 
 There is no binary distribution of REx, it must be built from source. This project includes C++ source code with build scripts for Linux, macOS, and Windows, as well as a Java Gradle project containing tests.
 
-If you’d like to try REx without building it, you can run it directly on this website: [https://www.bottlecaps.de/rex/](https://www.bottlecaps.de/rex/). Please note that the site is currently accessible only via IPv6.
+If you’d like to try REx without building it, you can run it directly on this website: [https://www.bottlecaps.de/rex/](https://www.bottlecaps.de/rex/).
 
 ## Prerequisites
 

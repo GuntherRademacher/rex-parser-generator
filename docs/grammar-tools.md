@@ -21,7 +21,7 @@ The converter can handle input in formats like ANTLR, JavaCC, or Bison and trans
 **ebnf-convert** is available:
 
  - as a GitHub project: [`https://github.com/GuntherRademacher/ebnf-convert`](https://github.com/GuntherRademacher/ebnf-convert)
- - as online converter (IPv6 only): [`https://www.bottlecaps.de/ebnf-convert`](https://www.bottlecaps.de/ebnf-convert)
+ - as online converter: [`https://www.bottlecaps.de/ebnf-convert`](https://www.bottlecaps.de/ebnf-convert)
 
 ## **RR** Railroad Diagram Generator
 
@@ -34,8 +34,7 @@ It accepts grammars in REx EBNF, and creates one diagram per rule as SVG or PNG 
 **RR** is available:
 
  - as a GitHub project: [`https://github.com/GuntherRademacher/rr`](https://github.com/GuntherRademacher/rr)
- - as online generator (IPv6 only): [`https://www.bottlecaps.de/rr/ui`](https://www.bottlecaps.de/rr/ui)
- - as online generator (IPv4): [`https://rr.red-dove.com`](https://rr.red-dove.com)
+ - as online generator: [`https://www.bottlecaps.de/rr/ui`](https://www.bottlecaps.de/rr/ui)
 
 Below is a simple example of an **RR**-generated diagram. Complete diagrams of the REx grammar can be found on page [Grammar for Parsing EBNF](grammar-for-parsing-ebnf.md#syntax-diagrams).
 
