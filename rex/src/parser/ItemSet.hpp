@@ -302,7 +302,7 @@ private:
 
   void visitNode(Node *node)
   {
-    fwprintf(stderr, L"unsupported node type: %s", node->getNodeType());
+    fprintf(stderr, "unsupported node type: %ls", node->getNodeType());
     fflush(stderr);
     internalerr();
   }

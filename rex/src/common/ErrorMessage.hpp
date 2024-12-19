@@ -44,7 +44,7 @@ void showErrorContext(const CHAR *wquery, const char *file, int offset, const ch
       for (int j = 0; j < size; j++)
       {
         int c = l[j];
-        fwprintf(stdout, L"%c", c == 9 ? 32 : c);
+        fprintf(stdout, "%lc", c == 9 ? 32 : c);
       }
       fprintf(stdout, "\n");
     }

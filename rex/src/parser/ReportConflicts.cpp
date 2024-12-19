@@ -46,7 +46,7 @@ void ReportConflicts::report(const LrStates::Conflicts *conflicts, Grammar *gram
         ++shift;
     }
 
-    wprintf(L"%ls(%d) conflict #%d (%lsreduce%ls):\n", label, (int) k, (int) ++count, shift > 0 ? L"shift-" : L"", reduce > 1 ? L"-reduce" : L"");
+    printf("%ls(%d) conflict #%d (%lsreduce%ls):\n", label, (int) k, (int) ++count, shift > 0 ? L"shift-" : L"", reduce > 1 ? L"-reduce" : L"");
 
     //  const wchar_t *zNotationSpot = L"&#10625;";
     //  const wchar_t *bullet = L"&#8226;";
@@ -54,7 +54,7 @@ void ReportConflicts::report(const LrStates::Conflicts *conflicts, Grammar *gram
     for (ItemSet::const_iterator j = conflictingItems->begin(); j != conflictingItems->end(); ++j)
     {
       Node* const item = j->first;
-      wprintf(L"    %ls", Format::reIndent(pe.itemToString(item, L"."), 4, true).c_str());
+      printf("    %ls", Format::reIndent(pe.itemToString(item, L"."), 4, true).c_str());
     }
 
     if (k)
@@ -62,6 +62,6 @@ void ReportConflicts::report(const LrStates::Conflicts *conflicts, Grammar *gram
       reportConflictingTokenSequences(*conflictingTokens, grammar);
     }
 
-    wprintf(L"\n");
+    printf("\n");
   }
 }

@@ -724,7 +724,7 @@ const TokenSequenceSet &Node::getMatch(MatchType &m)
     wchar_t *ls = parent->getLookahead()->getMatchSet().toString(grammar, L"\n[lookahead] ", L" |", 100, 0, false, 0);
     wchar_t *ms = match->toString(grammar, L"\n[match] ", L" |", 100, 0, false, 0);
     wchar_t *cs = matchComplement->toString(grammar, L"\n[matchComplement]", L" |", 100, 0, false, 0);
-    wprintf(L"[lookahead size=%d] %ls\n[match size=%d] %ls\n[matchComplement size=%d] %ls\n\n",
+    printf("[lookahead size=%d] %ls\n[match size=%d] %ls\n[matchComplement size=%d] %ls\n\n",
             parent->getLookahead()->getMatchSet().size(), ls,
             match->size(), ms,
             matchComplement->size(), cs);

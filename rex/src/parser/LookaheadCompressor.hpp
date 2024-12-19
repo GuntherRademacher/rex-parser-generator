@@ -274,10 +274,10 @@ public:
 
     if (node->verbose)
     {
-      wprintf(L"using whitespace production %ls\n", ws->name);
+      printf("using whitespace production %ls\n", ws->name);
 #if SELFTEST
-      wprintf(L"   first (%ls): %ls\n", ws->name, wf1.toString(L"", L" |", 120, 0, false));
-      wprintf(L"   first2(%ls): %ls\n", ws->name, wf2.toString(L"", L" |", 120, 0, false));
+      printf("   first (%ls): %ls\n", ws->name, wf1.toString(L"", L" |", 120, 0, false));
+      printf("   first2(%ls): %ls\n", ws->name, wf2.toString(L"", L" |", 120, 0, false));
 #endif
     }
 
@@ -292,7 +292,7 @@ public:
         {
           if (node->verbose)
           {
-            wprintf(L"whitespace introducer %ls is referenced elsewhere\n", node->naming.getName(node, t));
+            printf("whitespace introducer %ls is referenced elsewhere\n", node->naming.getName(node, t));
           }
           throw Complaint(L"non-whitespace token occurs in first1(<whitespace>): ", node->naming.getName(node, t));
         }
@@ -302,7 +302,7 @@ public:
 #if SELFTEST
         if (node->verbose)
         {
-          wprintf(L"first2(%ls).contains(%ls): %ls\n", ws->name, node->naming.getName(node, t), simple ? L"yes" : L"no");
+          printf("first2(%ls).contains(%ls): %ls\n", ws->name, node->naming.getName(node, t), simple ? L"yes" : L"no");
         }
 #endif
 
@@ -314,9 +314,9 @@ public:
 #if SELFTEST
           if (node->verbose)
           {
-            wprintf(L"t2.first: %ls\n", node->naming.getName(node, t2.first()));
-            wprintf(L"t2.size: %d\n", t2.size());
-            wprintf(L"t2.last: %ls\n", node->naming.getName(node, t2.last()));
+            printf("t2.first: %ls\n", node->naming.getName(node, t2.first()));
+            printf("t2.size: %d\n", t2.size());
+            printf("t2.last: %ls\n", node->naming.getName(node, t2.last()));
           }
 #endif
           if (t == t2.first() && t2.size() > 1 && ! wf1.contains(node->tokenSequence(t2.last())))
@@ -330,7 +330,7 @@ public:
           node->simpleWhitespaceIntroducers.insert(node->tokenSequence(t));
           if (node->verbose)
           {
-            wprintf(L"simple whitespace introducer: %ls\n", node->naming.getName(node, t));
+            printf("simple whitespace introducer: %ls\n", node->naming.getName(node, t));
           }
         }
         else
@@ -338,7 +338,7 @@ public:
           node->complexWhitespaceIntroducers.insert(node->tokenSequence(t));
           if (node->verbose)
           {
-            wprintf(L"complex whitespace introducer: %ls\n", node->naming.getName(node, t));
+            printf("complex whitespace introducer: %ls\n", node->naming.getName(node, t));
           }
         }
       }

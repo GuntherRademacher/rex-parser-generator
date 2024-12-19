@@ -41,7 +41,7 @@ void LookaheadCompressor::visitGrammar(Grammar *node)
         && ! p->runOffLoad
         && p != grammar->whitespace)
     {
-      wprintf(L"-Warning- Nonterminal %ls not used\n", p->name);
+      printf("-Warning- Nonterminal %ls not used\n", p->name);
     }
   }
 
@@ -51,7 +51,7 @@ void LookaheadCompressor::visitGrammar(Grammar *node)
 
   if (grammar->verbose)
   {
-    fwprintf(stdout, L"number of lookahead sets: %d\n", (int) grammar->lookaheadSets.size());
+    fprintf(stdout, "number of lookahead sets: %d\n", (int) grammar->lookaheadSets.size());
     fflush(stdout);
   }
 }
