@@ -204,7 +204,7 @@ public:
       }
 
       next = l->link;
-      delete l;
+      free(l);
     }
     return 0;
   }

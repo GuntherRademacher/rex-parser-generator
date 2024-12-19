@@ -2856,10 +2856,10 @@ void LexerGeneratorImpl::dfaConstruction(const GrammarCharClasses &gcc, DfaState
   delete legacyDfa;
   legacyDfa = 0;
 
-  for (size_t i = 0; i < tokenStrings.size(); ++i) {delete tokenStrings[i];}
+  for (size_t i = 0; i < tokenStrings.size(); ++i) {free(const_cast<char*>(tokenStrings[i]));}
   tokenStrings.clear();
 
-  for (size_t i = 0; i < tokenNames.size(); ++i) {delete tokenNames[i];}
+  for (size_t i = 0; i < tokenNames.size(); ++i) {free(const_cast<char*>(tokenNames[i]));}
   tokenNames.clear();
 
   delete charMap;

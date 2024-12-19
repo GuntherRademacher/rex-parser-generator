@@ -20,7 +20,7 @@ public:
   {
     for (iterator i(begin()); i != end(); ++i)
     {
-      delete i->second;
+      free(const_cast<wchar_t *>(i->second));
     }
   }
 

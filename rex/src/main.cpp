@@ -47,8 +47,8 @@ again:
         {
           result = codeTemplate(2, argv);
         }
-        else if (length >= 9 && strcmp(argv[1] + length - 14, ".java.compress") == 0
-                             && strchr(argv[1], '.') - argv[1] < (int) (length - 9))
+        else if (length >= 14 && strcmp(argv[1] + length - 14, ".java.compress") == 0
+                              && strchr(argv[1], '.') - argv[1] < (int) (length - 14))
         {
           result = compress(2, argv);
         }

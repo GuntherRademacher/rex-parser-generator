@@ -157,7 +157,6 @@ protected:
     casesensitive = false;
     targetLanguage = C;
     so = 0;
-    prn = 0;
     soopen = false;
     classify = false;
     embedded = false;

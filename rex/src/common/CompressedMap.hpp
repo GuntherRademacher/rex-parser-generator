@@ -228,7 +228,7 @@ public:
   ~TiledMap2D()
   {
     delete map;
-    delete uncompressedMap;
+    free(uncompressedMap);
   }
 
   int getMaxX() const {return cols;}
