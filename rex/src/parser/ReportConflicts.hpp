@@ -52,7 +52,7 @@ private:
     ++count;
     bool reported = false;
 
-//    fwprintf(stdout, L"reported A: %d %d %ls\n", reported, k, node->production->name);
+//    fprintf(stdout, "reported A: %d %d %ls\n", reported, k, node->production->name);
 
     size_t alternative = 0;
     for (NodeList::iterator i(node->cases.begin()); i != node->cases.end(); ++i)
@@ -65,23 +65,23 @@ private:
         conflicts.insertIntersectionOf(*node->conflicts(k), element->expect(k));
 
 //        wchar_t *w = (*node->conflicts(k)).toString(node->grammar, L"", L"", 96, 0, false);
-//        wprintf(L"    lhs      %ls\n", w ? w : L"null pointer...");
+//        printf("    lhs      %ls\n", w ? w : L"null pointer...");
 
 //        w = element->expect(k).toString(node->grammar, L"", L"", 96, 0, false);
-//        wprintf(L"    rhs      %ls\n", w ? w : L"null pointer...");
+//        printf("    rhs      %ls\n", w ? w : L"null pointer...");
 
 //        w = conflicts.toString(node->grammar, L"", L"", 96, 0, false);
-//        wprintf(L"    res      %ls\n", w ? w : L"null pointer...");
+//        printf("    res      %ls\n", w ? w : L"null pointer...");
 
         if (! conflicts.empty())
         {
           reportConflict(node, conflicts, alternative);
           reported = true;
-//          fwprintf(stdout, L"reported B: %d\n", reported);
+//          fprintf(stdout, "reported B: %d\n", reported);
         }
       }
     }
-//    fwprintf(stdout, L"reported C: %d\n", reported);
+//    fprintf(stdout, "reported C: %d\n", reported);
     fflush(stdout);
     if (! reported) internalerr();
   }
@@ -96,31 +96,31 @@ private:
 
   void reportConflict(Node *node, const TokenSequenceSet &conflicts, size_t alternative = 0)
   {
-    fwprintf(stdout, L"%ls(%d) conflict #%d in ", label, (int) k, (int) count);
+    fprintf(stdout, "%ls(%d) conflict #%d in ", label, (int) k, (int) count);
     if (alternative)
     {
-      fwprintf(stdout, L"%ls alternative of ", Format().toString<wchar_t>(alternative, 10, 0, 0, 0, 0, true));
+      fprintf(stdout, "%ls alternative of ", Format().toString<wchar_t>(alternative, 10, 0, 0, 0, 0, true));
     }
-    fwprintf(stdout, L"%ls operator of ", node->getNodeType());
-    fwprintf(stdout, L"production %ls:\n", node->production->name);
+    fprintf(stdout, "%ls operator of ", node->getNodeType());
+    fprintf(stdout, "production %ls:\n", node->production->name);
     reportConflictingTokenSequences(conflicts, node->grammar);
   }
 
   void reportConflictingTokenSequences(const TokenSequenceSet &conflicts, Grammar *grammar)
   {
-    fwprintf(stdout, L"  conflicting lookahead token%ls%ls:\n", k == 1 ? L"" : L" sequence", conflicts.size() == 1 ? L"" : L"s");
+    fprintf(stdout, "  conflicting lookahead token%ls%ls:\n", k == 1 ? L"" : L" sequence", conflicts.size() == 1 ? L"" : L"s");
     int count = 0;
     OrderedTokenSequenceVector orderedConflicts(conflicts, __FILE__, __LINE__);
     for (OrderedTokenSequenceVector::const_iterator i(orderedConflicts.begin()); i != orderedConflicts.end(); ++i)
     {
       if (++count <= LIMIT || ff)
       {
-        fwprintf(stdout, L"    %ls\n", i->toString(grammar).c_str());
+        fprintf(stdout, "    %ls\n", i->toString(grammar).c_str());
       }
     }
     if (count >= LIMIT && ! ff)
     {
-      fwprintf(stdout, L"    ... %ls more\n", Format().toString<wchar_t>(count - LIMIT));
+      fprintf(stdout, "    ... %ls more\n", Format().toString<wchar_t>(count - LIMIT));
     }
   }
 

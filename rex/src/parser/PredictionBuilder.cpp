@@ -127,19 +127,19 @@ void PredictionBuilder::build()
 #if 0
     const TokenSequence &subSequence = i->k;
 
-    wprintf(L"%4.4d ", i->lookahead.getCode());
-    wprintf(L"%ls", i->lookahead.isPrefix() ? L"P " : L"  ");
-    wprintf(L"%ls", i->lookahead.isMatch() ? L"M " : L"  ");
+    printf("%4.4d ", i->lookahead.getCode());
+    printf("%ls", i->lookahead.isPrefix() ? L"P " : L"  ");
+    printf("%ls", i->lookahead.isMatch() ? L"M " : L"  ");
 
     size_t sequenceSize = subSequence.size();
     for (size_t j = 0; j < sequenceSize; ++j)
     {
       const Token::Code c(subSequence[(int) j]);
       const wchar_t *name = grammar->naming.getName(grammar, c, false);
-      wprintf(L"%ls ", name);
+      printf("%ls ", name);
     }
 
-    wprintf(L" %ls\n", i->lookahead.isPrefix() ? L"P" : L" ");
+    printf(" %ls\n", i->lookahead.isPrefix() ? L"P" : L" ");
 #endif
     if (i->lookahead.isPrefix())
     {
@@ -192,7 +192,7 @@ void PredictionBuilder::build()
 #if DEBUG_TABLES
       TokenSequenceSet tss(ts);
       wchar_t *string = tss.toString(grammar, L"", L" ", 999, 0, false, 0);
-      wprintf(L"    LOOKAHEAD(%d, %d) = %d // %ls\n", mc0, tc, mc1, string);
+      printf("    LOOKAHEAD(%d, %d) = %d // %ls\n", mc0, tc, mc1, string);
       free(string);
 #endif
     }
@@ -247,16 +247,16 @@ void PredictionBuilder::build()
   }
 
 #if DEBUG_TABLES
-  wprintf(L"caseidTable: %d rows, %d cols\n", maxMatchCode, dpi - 1);
+  printf("caseidTable: %d rows, %d cols\n", maxMatchCode, dpi - 1);
 
   for (int d = 0; d <= dpi - 1; ++d)
   {
-    wprintf(L"dpi %d:", d);
+    printf("dpi %d:", d);
     for (int m = 0; m <= maxMatchCode; ++m)
     {
-      wprintf(L" %d", grammar->caseidTable->get(m, d));
+      printf(" %d", grammar->caseidTable->get(m, d));
     }
-    wprintf(L"\n");
+    printf("\n");
   }
 #endif
 
@@ -285,22 +285,22 @@ void PredictionBuilder::setTokensetByDpiAndMatchcode(TiledMap2D *caseidTable, in
       const MatchCodeDescriptor &mcd(j->second);
 
 #if DEBUG_TABLES
-      wprintf(L"    dpi %d, matchcode %d, tokenset %d more %d ",
-              dpi, mcd.getCode(),
-              cts.getSetNo(grammar->lookaheadSets),
-              ! next->getHigherOrderLookahead().empty());
+      printf("    dpi %d, matchcode %d, tokenset %d more %d ",
+             dpi, mcd.getCode(),
+             cts.getSetNo(grammar->lookaheadSets),
+             ! next->getHigherOrderLookahead().empty());
 
-      wprintf(L"%4.4d ", mcd.getCode());
-      wprintf(L"%ls", mcd.isPrefix() ? L"P " : L"  ");
-      wprintf(L"%ls", mcd.isMatch() ? L"M " : L"  ");
+      printf("%4.4d ", mcd.getCode());
+      printf("%ls", mcd.isPrefix() ? L"P " : L"  ");
+      printf("%ls", mcd.isMatch() ? L"M " : L"  ");
       size_t sequenceSize = ts.size();
       for (size_t j = 0; j < sequenceSize; ++j)
       {
         const Token::Code c(ts[(int) j]);
         const wchar_t *name = grammar->naming.getName(grammar, c, false);
-        wprintf(L"%ls ", name);
+        printf("%ls ", name);
       }
-      wprintf(L"\n");
+      printf("\n");
 
       printf("    CASEID(%d, %d) = (%d << 1) + 1\n", mcd.getCode(), dpi, next->getSetNo(grammar->lookaheadSets));
 #endif

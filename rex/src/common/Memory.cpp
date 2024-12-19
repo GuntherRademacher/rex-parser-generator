@@ -177,8 +177,8 @@ void Malloc::exitfunction()
       || mallocSizeBalance != 0)
   {
     fprintf(stderr, "mallocElapsedTime: %.0f msec\n", ((double) mallocElapsedTime / CLOCKS_PER_SEC) * 1000);
-    fwprintf(stderr, L"mallocMax: %zd (%zd MB)\n", mallocSizeMaxBalance, ((mallocSizeMaxBalance + 512) / 1024 + 512) / 1024);
-    fwprintf(stderr, L"mallocSize: %zd (%zd MB)\n", mallocSize, ((mallocSize + 512) / 1024 + 512) / 1024);
+    fprintf(stderr, "mallocMax: %zd (%zd MB)\n", mallocSizeMaxBalance, ((mallocSizeMaxBalance + 512) / 1024 + 512) / 1024);
+    fprintf(stderr, "mallocSize: %zd (%zd MB)\n", mallocSize, ((mallocSize + 512) / 1024 + 512) / 1024);
     fprintf(stderr, "mallocCount: %zd\n", mallocCount);
   }
 

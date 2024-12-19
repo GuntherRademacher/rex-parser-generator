@@ -42,7 +42,7 @@ public:
       if (found == 0)
         throw Complaint(msg.c_str(), L"");
       else
-        wprintf(L"%ls\n", msg.c_str());
+        printf("%ls\n", msg.c_str());
     }
   }
 

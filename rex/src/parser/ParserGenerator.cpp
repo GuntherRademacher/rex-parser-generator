@@ -654,7 +654,7 @@ int generateParser(int argc, char **argv)
 
 //          for (int i = 0; i <= grammar->maxNonterminalCode; ++i)
 //          {
-//            wprintf(L"  %3d %ls\n", i, grammar->nonterminalProductionByCode[i]->name);
+//            printf("  %3d %ls\n", i, grammar->nonterminalProductionByCode[i]->name);
 //          }
 
             if (automaticSemicolonInsertion)
@@ -686,7 +686,7 @@ int generateParser(int argc, char **argv)
 
                 if (grammar->states->getConflicts()->empty())
                 {
-                  if (! quiet) fwprintf(stdout, L"grammar is %ls(%d)\n", parserType, (int) grammar->k);
+                  if (! quiet) fprintf(stdout, "grammar is %ls(%d)\n", parserType, (int) grammar->k);
                 }
                 else if (generalized)
                 {
@@ -694,10 +694,10 @@ int generateParser(int argc, char **argv)
                   if (! quiet)
                   {
                     int conflictCount = grammar->states->getConflicts()->size();
-                    fwprintf(stdout, L"%d %ls(%d)-conflict%ls handled by G%ls processing\n", conflictCount, parserType, (int) grammar->k, conflictCount == 1 ? L"" : L"s", parserType);
+                    fprintf(stdout, "%d %ls(%d)-conflict%ls handled by G%ls processing\n", conflictCount, parserType, (int) grammar->k, conflictCount == 1 ? L"" : L"s", parserType);
                     if ((int) grammar->k < maxLR)
                     {
-                      fwprintf(stdout, L"used lookahead %d, because extending to %d did not resolve any %ls(%d) conflicts\n", (int) grammar->k, maxLR, parserType, (int) grammar->k);
+                      fprintf(stdout, "used lookahead %d, because extending to %d did not resolve any %ls(%d) conflicts\n", (int) grammar->k, maxLR, parserType, (int) grammar->k);
                     }
                   }
                 }
@@ -707,10 +707,10 @@ int generateParser(int argc, char **argv)
                   rc.report(grammar->states->getConflicts(), grammar);
 
                   int conflictCount = grammar->states->getConflicts()->size();
-                  fwprintf(stdout, L"%d %ls(%d)-conflict%ls\n", conflictCount, parserType, (int) grammar->k, conflictCount == 1 ? L"" : L"s");
+                  fprintf(stdout, "%d %ls(%d)-conflict%ls\n", conflictCount, parserType, (int) grammar->k, conflictCount == 1 ? L"" : L"s");
                   if ((int) grammar->k < maxLR)
                   {
-                    fwprintf(stdout, L"extending lookahead to %d did not resolve any %ls(%d) conflicts\n", maxLR, parserType, (int) grammar->k);
+                    fprintf(stdout, "extending lookahead to %d did not resolve any %ls(%d) conflicts\n", maxLR, parserType, (int) grammar->k);
                   }
 
                   WString label(parserType);
@@ -718,9 +718,9 @@ int generateParser(int argc, char **argv)
                   label += Format().toString<wchar_t>(maxLR);
                   label += L")";
 
-//                  wprintf(L"number of LR(%d) states: %d", lalr ? 0 : grammar->k, grammar->states->size());
-//                  wprintf(L", %d with %d conflicts", grammar->states->getConflictingStates(), conflictCount, label.c_str());
-//                  wprintf(L"\n");
+//                  printf("number of LR(%d) states: %d", lalr ? 0 : grammar->k, grammar->states->size());
+//                  printf(", %d with %d conflicts", grammar->states->getConflictingStates(), conflictCount, label.c_str());
+//                  printf("\n");
 
                   throw Complaint(L"grammar fails to be ", label);
                 }
@@ -739,13 +739,13 @@ int generateParser(int argc, char **argv)
                 {
                   grammar->accept(lc);
 
-                  if (! quiet) fwprintf(stdout, L"grammar is %ls(%d)\n", parserType, (int) grammar->k);
+                  if (! quiet) fprintf(stdout, "grammar is %ls(%d)\n", parserType, (int) grammar->k);
                   fflush(stdout);
                 }
                 else if (backtrack)
                 {
                   grammar->accept(lc);
-                  if (! quiet) fwprintf(stdout, L"%d %ls(%d)-conflict%ls handled by backtracking\n", grammar->conflictCount, parserType, (int) grammar->k, grammar->conflictCount == 1 ? L"" : L"s");
+                  if (! quiet) fprintf(stdout, "%d %ls(%d)-conflict%ls handled by backtracking\n", grammar->conflictCount, parserType, (int) grammar->k, grammar->conflictCount == 1 ? L"" : L"s");
                 }
                 else
                 {
@@ -870,11 +870,11 @@ int generateParser(int argc, char **argv)
           if (c.offset >= 0)
           {
             showErrorContext(wquery, file, c.offset, "error");
-            fwprintf(stdout, L"  ");
+            fprintf(stdout, "  ");
           }
           if (c.msg.c_str())
           {
-            fwprintf(stdout, L"%ls%ls\n", c.msg.c_str(), c.name.c_str());
+            fprintf(stdout, "%ls%ls\n", c.msg.c_str(), c.name.c_str());
           }
         }
         catch (EbnfParser::ParseException &pe)
@@ -883,10 +883,10 @@ int generateParser(int argc, char **argv)
           const wchar_t *token = EbnfParser::getOffendingToken(pe);
           if (token)
           {
-            fwprintf(stdout, L"  found:\n");
-            fwprintf(stdout, L"    %ls\n", token);
+            fprintf(stdout, "  found:\n");
+            fprintf(stdout, "    %ls\n", token);
           }
-          fwprintf(stdout, L"  expected:\n");
+          fprintf(stdout, "  expected:\n");
 
           const wchar_t *expected[64];
           EbnfParser::getExpectedTokenSet(pe, expected, sizeof expected / sizeof *expected);
@@ -896,11 +896,11 @@ int generateParser(int argc, char **argv)
           {
             if (--limit)
             {
-              fwprintf(stdout, L"    %ls\n", *e);
+              fprintf(stdout, "    %ls\n", *e);
             }
             else
             {
-              fwprintf(stdout, L"    ...\n");
+              fprintf(stdout, "    ...\n");
               break;
             }
           }
@@ -924,7 +924,7 @@ int generateParser(int argc, char **argv)
   if (verbose)
   {
     double elapsed = (double) (clock() - c0) / CLOCKS_PER_SEC;
-    fwprintf(stdout, L"completed in %.0f msec\n", elapsed * 1000.0);
+    fprintf(stdout, "completed in %.0f msec\n", elapsed * 1000.0);
   }
 
   return status;

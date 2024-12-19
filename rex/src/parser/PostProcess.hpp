@@ -135,7 +135,7 @@ public:
         const wchar_t *name = node->isRef() ? static_cast<Ref *>(node)->name
                             : node->isString() ? static_cast<String *>(node)->value
                             : L"";
-        fwprintf(stderr, L"reduceType unknown in production %ls, node type %ls(%ls)\n", node->production->name, node->getNodeType(), name);
+        fprintf(stderr, "reduceType unknown in production %ls, node type %ls(%ls)\n", node->production->name, node->getNodeType(), name);
         internalerr();
       }
       if (reduceType == reduceByCount && node->getDistance() < 0)
@@ -347,7 +347,7 @@ private:
     }
     else if (! node->isZeroOrMore() && ! node->isOneOrMore())
     {
-      fwprintf(stderr, L"invalid node type: %ls\n", node->getNodeType());
+      fprintf(stderr, "invalid node type: %ls\n", node->getNodeType());
       internalerr();
     }
     return VARIABLE;
@@ -433,11 +433,11 @@ public:
 
       Node *child = node->lastElementChild;
 
-//      fwprintf(stderr, L"--- optional candidate: %ls ---\n", node->production->name);
-//      fwprintf(stderr, L"   hasFollowers: %d\n", hasFollowers);
-//      fwprintf(stderr, L"     isRepeated: %d\n", isRepeated);
-//      fwprintf(stderr, L"      rc(child): %d\n", reduceCount(child));
-//      fwprintf(stderr, L"       rc(node): %d\n", reduceCount(node));
+//      fprintf(stderr, "--- optional candidate: %ls ---\n", node->production->name);
+//      fprintf(stderr, "   hasFollowers: %d\n", hasFollowers);
+//      fprintf(stderr, "     isRepeated: %d\n", isRepeated);
+//      fprintf(stderr, "      rc(child): %d\n", reduceCount(child));
+//      fprintf(stderr, "       rc(node): %d\n", reduceCount(node));
 
       if (child != 0 &&
           ! isRepeated &&
@@ -824,9 +824,9 @@ public:
           {
             if (nStartSymbols == 2)
             {
-              wprintf(L"start symbol: %ls\n", startSymbol->name);
+              printf("start symbol: %ls\n", startSymbol->name);
             }
-            wprintf(L"start symbol: %ls\n", p->name);
+            printf("start symbol: %ls\n", p->name);
           }
         }
       }
@@ -840,7 +840,7 @@ public:
         startSymbol->startSym = true;
         startSymbol->accept(markReachable);
 
-        wprintf(L"start symbol: %ls\n", startSymbol->name);
+        printf("start symbol: %ls\n", startSymbol->name);
       }
       else
       {
@@ -863,7 +863,7 @@ public:
         {
           if (leftRecursiveProduction)
           {
-            wprintf(L"left-recursive production: %ls\n", leftRecursiveProduction->name);
+            printf("left-recursive production: %ls\n", leftRecursiveProduction->name);
           }
           leftRecursiveProduction = p;
         }
@@ -953,7 +953,7 @@ public:
         if (! grammar->noLexer)
         {
           ++errors;
-          wprintf(L"undefined symbol: %ls\n", node->name);
+          printf("undefined symbol: %ls\n", node->name);
         }
         node->lexical = new Production(AUTOMATIC, false, wcsdup(node->name), node->context ? wcsdup(node->context) : 0);
         grammar->addChild(node->lexical);

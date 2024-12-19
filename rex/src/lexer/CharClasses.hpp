@@ -339,7 +339,7 @@ public:
           {
             characters += CharacterRange(j->second);
 
-//          wprintf(L" - augmenting %c with %c\n", *i, j->second);
+//          printf(" - augmenting %lc with %lc\n", *i, j->second);
           }
         }
       }

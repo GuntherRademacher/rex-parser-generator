@@ -139,7 +139,7 @@ void LrState::buildLookahead(Grammar *grammar, const size_t k)
 
 #define SHOWSETS 0
 #if SHOWSETS
-        fwprintf(stderr, L"state %d(%p), k %d, nonConflictingLookahead(%p): %ls\n", id, this, k, nonConflictingLookahead, nonConflictingLookahead->toString(grammar, L"", L" |", 32767, 0, false).c_str());
+        fprintf(stderr, "state %d(%p), k %d, nonConflictingLookahead(%p): %ls\n", id, this, k, nonConflictingLookahead, nonConflictingLookahead->toString(grammar, L"", L" |", 32767, 0, false).c_str());
 #endif
 
         const TokenSequenceSet *downSizedNonConflictingLookahead = grammar->tokenSequenceSets->firstK(nonConflictingLookahead, this->k - 1);
@@ -149,7 +149,7 @@ void LrState::buildLookahead(Grammar *grammar, const size_t k)
         this->k -= 1;
 
 #if SHOWSETS
-        fwprintf(stderr, L"state %d(%p), downgrading t0 k %d\n", id, this, k);
+        fprintf(stderr, "state %d(%p), downgrading t0 k %d\n", id, this, k);
 #endif
 
         conflictsK[this->k] = 0;
@@ -300,12 +300,12 @@ const TokenSequenceSet *LrState::resolve(Grammar *grammar,
             ItemSet::iterator actualItem = reduceItems.find(item);
             if (actualItem == reduceItems.end())
             {
-              wprintf(L"failed to find this %ls item(%p):\n%ls\n", j->first->getNodeType(), item, pe.itemToString(item).c_str());
-              wprintf(L"reduce items are:\n");
+              printf("failed to find this %ls item(%p):\n%ls\n", j->first->getNodeType(), item, pe.itemToString(item).c_str());
+              printf("reduce items are:\n");
               int i = 0;
               for (ItemSet::iterator r = reduceItems.begin(); r != reduceItems.end(); ++r)
               {
-                wprintf(L"  %ls item #%d:\n%ls\n", r->first->getNodeType(), i++, pe.itemToString(r->first).c_str());
+                printf("  %ls item #%d:\n%ls\n", r->first->getNodeType(), i++, pe.itemToString(r->first).c_str());
               }
 
               internalerr();
@@ -434,7 +434,7 @@ int LrState::shiftEntry(Grammar *grammar, const TokenSequence &ts)
   StateBySymbol::const_iterator to = stateBySymbol.find(symbol);
   if (to == stateBySymbol.end())
   {
-    wprintf(L"no target found for shift on %ls in state %d\n", symbol->name, id);
+    printf("no target found for shift on %ls in state %d\n", symbol->name, id);
     internalerr();
   }
 
@@ -450,7 +450,7 @@ int LrState::shiftEntry(Grammar *grammar, const TokenSequence &ts)
   if (! toStateTransitions->isLr0ReduceState())
   {
     int lookback = dominoSets.getId(transition.dominoes);
-//          if (log) wprintf(L"   add \"shift %d\" with lookback %d for matchCode %d (%ls) and source state %d\n", targetStateId, lookback, code, ts.toString(grammar).c_str(), sourceStateId);
+//          if (log) printf("   add \"shift %d\" with lookback %d for matchCode %d (%ls) and source state %d\n", targetStateId, lookback, code, ts.toString(grammar).c_str(), sourceStateId);
     entry = grammar->states->entry(LrStates::SHIFT, targetStateId, lookback);
   }
   else
@@ -458,7 +458,7 @@ int LrState::shiftEntry(Grammar *grammar, const TokenSequence &ts)
     Reduce* reduceItem = toStateTransitions->getLr0ReduceItem();
     int lookback = dominoSets.getLookbackCode(transition.dominoes, reduceItem, 1);
 //    Production* nonterminal = reduceItem->production;
-//          if (log) wprintf(L"   add \"shift+reduce %ls\" with lookback %d for matchCode %d (%ls) and source state %d\n", nonterminal->name, lookback, code, ts.toString(grammar).c_str(), sourceStateId);
+//          if (log) printf("   add \"shift+reduce %ls\" with lookback %d for matchCode %d (%ls) and source state %d\n", nonterminal->name, lookback, code, ts.toString(grammar).c_str(), sourceStateId);
     LrStates::ActionType actionType = (lookback & 1) != 0 ? LrStates::SHIFT_REDUCE : LrStates::SHIFT_REDUCE_LOOKBACK;
     entry = grammar->states->entry(actionType, reduceCode(reduceItem), lookback >> 1);
   }
@@ -499,7 +499,7 @@ void LrState::buildAppendixes(Grammar *grammar)
           int entry = shiftEntry(grammar, ts);
           appendixByTokenSequence[ts].first.insert(entry);
 
-//          wprintf(L"state id %d, shift on  %ls\n", id, ts.toString(grammar).c_str()); //(grammar, L"", L"~", 132, 0, false, 0).c_str());
+//          printf("state id %d, shift on %ls\n", id, ts.toString(grammar).c_str()); //(grammar, L"", L"~", 132, 0, false, 0).c_str());
         }
       }
     }
@@ -520,7 +520,7 @@ void LrState::buildAppendixes(Grammar *grammar)
         {
           appendixByTokenSequence[ts].first.insert(entry);
 
-//          wprintf(L"state id %d, reduce on  %ls\n", id, ts.toString(grammar).c_str()); //(grammar, L"", L"~", 132, 0, false, 0).c_str());
+//          printf("state id %d, reduce on  %ls\n", id, ts.toString(grammar).c_str()); //(grammar, L"", L"~", 132, 0, false, 0).c_str());
         }
       }
     }
@@ -595,12 +595,12 @@ void LrState::publishActionCodes(Grammar *grammar)
 //            if (symbol->isProduction())
 //            {
 //              Production *p = static_cast<Production *>(symbol);
-//              wprintf(L"   add \"shift %d\" with lookback %d for nonterminal %d (%ls) and source state %d\n", targetStateId, lookback, p->nonterminalCode, p->name, id);
+//              printf("   add \"shift %d\" with lookback %d for nonterminal %d (%ls) and source state %d\n", targetStateId, lookback, p->nonterminalCode, p->name, id);
 //            }
 //            else
 //            {
 //              Reduce *r = static_cast<Reduce *>(symbol);
-//              wprintf(L"   add \"shift %d\" with lookback %d for nonterminal %d (EMBEDDED-%d) and source state %d\n", targetStateId, lookback, r->nonterminalCode, r->nonterminalCode, id);
+//              printf("   add \"shift %d\" with lookback %d for nonterminal %d (EMBEDDED-%d) and source state %d\n", targetStateId, lookback, r->nonterminalCode, r->nonterminalCode, id);
 //            }
 //          }
 
@@ -617,12 +617,12 @@ void LrState::publishActionCodes(Grammar *grammar)
 //            if (symbol->isProduction())
 //            {
 //              Production *p = static_cast<Production *>(symbol);
-//              wprintf(L"   add \"shift+reduce %ls\" with lookback %d for nonterminal %d (%ls) and source state %d\n", nonterminal->name, lookback, p->nonterminalCode, p->name, id);
+//              printf("   add \"shift+reduce %ls\" with lookback %d for nonterminal %d (%ls) and source state %d\n", nonterminal->name, lookback, p->nonterminalCode, p->name, id);
 //            }
 //            else
 //            {
 //              Reduce *r = static_cast<Reduce *>(symbol);
-//              wprintf(L"   add \"shift+reduce %ls\" with lookback %d for nonterminal %d (EMBEDDED-%d) and source state %d\n", nonterminal->name, lookback, r->nonterminalCode, r->nonterminalCode, id);
+//              printf("   add \"shift+reduce %ls\" with lookback %d for nonterminal %d (EMBEDDED-%d) and source state %d\n", nonterminal->name, lookback, r->nonterminalCode, r->nonterminalCode, id);
 //            }
 //          }
 
@@ -653,15 +653,15 @@ void LrState::publishActionCodes(Grammar *grammar)
      */
 
 #if SHOWSETS
-      fwprintf(stderr, L"state %d(%p), k %d,            defaultMatch(%p): %ls\n", id, this, k, defaultMatch, defaultMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
+      fprintf(stderr, "state %d(%p), k %d,            defaultMatch(%p): %ls\n", id, this, k, defaultMatch, defaultMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
     if (compressedConflictMatch != 0)
-      fwprintf(stderr, L"state %d(%p), k %d, compressedConflictMatch(%p): %ls\n", id, this, k, compressedConflictMatch, compressedConflictMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
+      fprintf(stderr, "state %d(%p), k %d, compressedConflictMatch(%p): %ls\n", id, this, k, compressedConflictMatch, compressedConflictMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
 #endif
 
     if (compressedShiftMatch != 0)
     {
 #if SHOWSETS
-      fwprintf(stderr, L"state %d(%p), k %d,    compressedShiftMatch(%p): %ls\n", id, this, k, compressedShiftMatch, compressedShiftMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
+      fprintf(stderr, "state %d(%p), k %d,    compressedShiftMatch(%p): %ls\n", id, this, k, compressedShiftMatch, compressedShiftMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
 #endif
 
       if (compressedConflictMatch != 0)
@@ -674,7 +674,7 @@ void LrState::publishActionCodes(Grammar *grammar)
             IntByTokenSequence::iterator it = appendixOffsetByTokenSequence->find(ts);
             if (it == appendixOffsetByTokenSequence->end())
             {
-              fwprintf(stderr, L"failed to find appendix offset for: %ls\n", ts.toString(grammar).c_str());
+              fprintf(stderr, "failed to find appendix offset for: %ls\n", ts.toString(grammar).c_str());
               internalerr();
             }
             int sourceStateId = compressedShiftMatch->contains(ts)
@@ -713,7 +713,7 @@ void LrState::publishActionCodes(Grammar *grammar)
         CompressedTokenSet::compressMatch(conflictsK, itemLookahead, grammar->tokenSequenceFactory, grammar->tokenSequenceSets);
 
 #if SHOWSETS
-      fwprintf(stderr, L"state %d(%p), k %d,     compressedItemMatch(%p): %ls\n", id, this, k, compressedItemMatch, compressedItemMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
+      fprintf(stderr, "state %d(%p), k %d,     compressedItemMatch(%p): %ls\n", id, this, k, compressedItemMatch, compressedItemMatch->toString(grammar, L"", L" |", 32767, 0, false).c_str());
 #endif
 
       if (compressedConflictMatch != 0)
@@ -726,7 +726,7 @@ void LrState::publishActionCodes(Grammar *grammar)
             IntByTokenSequence::iterator it = appendixOffsetByTokenSequence->find(ts);
             if (it == appendixOffsetByTokenSequence->end())
             {
-              fwprintf(stderr, L"failed to find appendix offset for: %ls\n", ts.toString(grammar).c_str());
+              fprintf(stderr, "failed to find appendix offset for: %ls\n", ts.toString(grammar).c_str());
               internalerr();
             }
             int entry = forkEntry(grammar, it->second);
@@ -1233,7 +1233,7 @@ void LrStates::setAction(const TokenSequence &ts, int stateId, int entry) const
   int lookback = (entry >> actionBits) & ((1 << dominoBits) - 1);
   int action = entry & actionMask;
   WString matchCodeDescription = ts.toString(grammar);
-  fwprintf(stderr, L"setAction state=%d tokenSequence=(%ls) argument=%d lookback=%d action=%d (%d/%d)",
+  fprintf(stderr, "setAction state=%d tokenSequence=(%ls) argument=%d lookback=%d action=%d (%d/%d)",
       stateId, matchCodeDescription.c_str(),
       argument, lookback, action, dominoBits, actionBits);
 #endif
@@ -1241,7 +1241,7 @@ void LrStates::setAction(const TokenSequence &ts, int stateId, int entry) const
   int code = grammar->matchCode.get(ts);
 
 #if SHOW_SETTINGS
-  fwprintf(stderr, L" code=%d\n", code);
+  fprintf(stderr, " code=%d\n", code);
 #endif
 
   grammar->caseidTable->set(code, stateId, entry << 1); // << 1 indicates result
@@ -1256,7 +1256,7 @@ void LrStates::setGoto(int nonterminalCode, int stateId, int entry) const
   const wchar_t *nonterminalName = nonterminalCode > grammar->maxNonterminalCode
                                  ? L"<implicit>"
                                  : grammar->nonterminalProductionByCode[nonterminalCode]->name;
-  fwprintf(stderr, L"setGoto state=%d nonterminal=%d(%ls) argument=%d lookback=%d action=%d (%d/%d)\n",
+  fprintf(stderr, "setGoto state=%d nonterminal=%d(%ls) argument=%d lookback=%d action=%d (%d/%d)\n",
       stateId, nonterminalCode, nonterminalName,
       argument, lookback, action, dominoBits, actionBits);
 #endif
