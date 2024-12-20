@@ -20,7 +20,7 @@ SymbolTable::~SymbolTable()
     Rule::deleterules(s->rules);
     char *name = s->name;
     delete s;
-    free(name);
+    delete name;
   }
   clear();
 }
