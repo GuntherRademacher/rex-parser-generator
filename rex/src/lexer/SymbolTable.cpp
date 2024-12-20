@@ -18,9 +18,8 @@ SymbolTable::~SymbolTable()
     ++i;
     SymbolTableEntry *s = j->second;
     Rule::deleterules(s->rules);
-    char *name = s->name;
+    Alloc<char>(__FILE__, __LINE__).deallocate(s->name, s->size + 1);
     delete s;
-    delete name;
   }
   clear();
 }

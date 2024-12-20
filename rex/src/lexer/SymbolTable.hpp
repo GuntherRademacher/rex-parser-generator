@@ -19,7 +19,8 @@ class SymbolTableEntry
 {
 public:
   SymbolTableEntry(const char *key, size_t size)
-  : rules(0),
+  : size(size),
+	rules(0),
     effectiveCharSet(0),
     trailingcontext(0),
     code(-1),
@@ -31,13 +32,13 @@ public:
     istoken(false),
     ungreedy(false)
   {
-    char *n = Alloc<char>(__FILE__, __LINE__).allocate(size + 1);
-    memcpy(n, key, size);
-    n[size] = 0;
-    name = n;
+    name = Alloc<char>(__FILE__, __LINE__).allocate(size + 1);
+    memcpy(name, key, size);
+    name[size] = 0;
   }
 
   char *name;
+  size_t size;
   Rule *rules;
   const RangeCharSet *effectiveCharSet;
   SymbolTableEntry *trailingcontext;
