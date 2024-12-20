@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 20, 2024 20:17 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Dec 20, 2024 23:02 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: EbnfParser.ebnf -cpp -a rex
 
 #ifndef EBNFPARSER_HPP
@@ -949,7 +949,6 @@ private:
     consume(6);                     // CaretName
                                                             #line 159 "EbnfParser.ebnf"
                                                             static_cast<NodeWithContext *>(currentNode->lastChild)->context = currentToken().copy(1);
-                                                            printf("-----context: %ls\n", static_cast<NodeWithContext *>(currentNode->lastChild)->context);
                                                             #line 953 "EbnfParser.hpp"
   }
 
