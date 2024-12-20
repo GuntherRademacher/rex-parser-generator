@@ -15,11 +15,11 @@ class WStringRef
 public:
   WStringRef(const wchar_t *p, size_t s) : pointer(p), size(s) {}
 
-  wchar_t *copy() const
+  wchar_t *copy(const int offset = 0) const
   {
-    wchar_t *result = ALLOCATE_ARRAY(wchar_t, size + 1);
-    wcsncpy(result, pointer, size);
-    result[size] = 0;
+    wchar_t *result = ALLOCATE_ARRAY(wchar_t, size + 1 - offset);
+    wcsncpy(result, pointer + offset, size);
+    result[size - offset] = 0;
     return result;
   }
 
