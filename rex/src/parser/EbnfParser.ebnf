@@ -156,11 +156,7 @@ NameOrString      ::= Name                              <?rex currentNode->addCh
                       Context?
                     | StringLiteral                     <?rex currentNode->addChild(new String(currentToken().copy()));?>
                       Context?
-Context           ::= CaretName                         <?rex
-                                                          wchar_t *context = currentToken().copy();
-                                                          wcscpy(context, context + 1);
-                                                          static_cast<NodeWithContext *>(currentNode->lastChild)->context = context;
-                                                        ?>
+Context           ::= CaretName                         <?rex static_cast<NodeWithContext *>(currentNode->lastChild)->context = currentToken().copy(1);?>
 CharClass         ::=                                   <?rex bool complement = false;?>
                       ( "["
                       | "[^"                            <?rex complement = true;?>

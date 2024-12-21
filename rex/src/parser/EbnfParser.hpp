@@ -1,4 +1,4 @@
-// This file was generated on Sun Nov 24, 2024 16:09 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Dec 20, 2024 23:02 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: EbnfParser.ebnf -cpp -a rex
 
 #ifndef EBNFPARSER_HPP
@@ -947,18 +947,16 @@ private:
   void parse_Context()
   {
     consume(6);                     // CaretName
-                                                            #line 160 "EbnfParser.ebnf"
-                                                            wchar_t *context = currentToken().copy();
-                                                            wcscpy(context, context + 1);
-                                                            static_cast<NodeWithContext *>(currentNode->lastChild)->context = context;
-                                                            #line 955 "EbnfParser.hpp"
+                                                            #line 159 "EbnfParser.ebnf"
+                                                            static_cast<NodeWithContext *>(currentNode->lastChild)->context = currentToken().copy(1);
+                                                            #line 953 "EbnfParser.hpp"
   }
 
   void parse_CharClass()
   {
-                                                            #line 164 "EbnfParser.ebnf"
+                                                            #line 160 "EbnfParser.ebnf"
                                                             bool complement = false;
-                                                            #line 962 "EbnfParser.hpp"
+                                                            #line 960 "EbnfParser.hpp"
     switch (l1)
     {
     case 34:                        // '['
@@ -967,15 +965,15 @@ private:
     default:
       {
         consume(35);                // '[^'
-                                                            #line 166 "EbnfParser.ebnf"
+                                                            #line 162 "EbnfParser.ebnf"
                                                             complement = true;
-                                                            #line 973 "EbnfParser.hpp"
+                                                            #line 971 "EbnfParser.hpp"
       }
       break;
     }
-                                                            #line 167 "EbnfParser.ebnf"
+                                                            #line 163 "EbnfParser.ebnf"
                                                             descend(new CharClass());
-                                                            #line 979 "EbnfParser.hpp"
+                                                            #line 977 "EbnfParser.hpp"
     for (;;)
     {
       lookahead1(19);               // CharCode | Char | CharRange | CharCodeRange
@@ -984,34 +982,34 @@ private:
       case 8:                       // Char
         {
           consume(8);               // Char
-                                                            #line 168 "EbnfParser.ebnf"
+                                                            #line 164 "EbnfParser.ebnf"
                                                             currentNode->addChild(new Char(*currentChar()));
-                                                            #line 990 "EbnfParser.hpp"
+                                                            #line 988 "EbnfParser.hpp"
         }
         break;
       case 7:                       // CharCode
         {
           consume(7);               // CharCode
-                                                            #line 169 "EbnfParser.ebnf"
+                                                            #line 165 "EbnfParser.ebnf"
                                                             currentNode->addChild(new CharCode(charCodeValue(currentChar() + 1)));
-                                                            #line 998 "EbnfParser.hpp"
+                                                            #line 996 "EbnfParser.hpp"
         }
         break;
       case 9:                       // CharRange
         {
           consume(9);               // CharRange
-                                                            #line 170 "EbnfParser.ebnf"
+                                                            #line 166 "EbnfParser.ebnf"
                                                             currentNode->addChild(new CharRange(b0, *currentChar(), *(currentChar() + 2)));
-                                                            #line 1006 "EbnfParser.hpp"
+                                                            #line 1004 "EbnfParser.hpp"
         }
         break;
       default:
         {
           consume(10);              // CharCodeRange
-                                                            #line 172 "EbnfParser.ebnf"
+                                                            #line 168 "EbnfParser.ebnf"
                                                             int minValue = charCodeValue(currentChar() + 1);
                                                             currentNode->addChild(new CharCodeRange(b0, minValue, charCodeValue(wcschr(currentChar(), L'-') + 2)));
-                                                            #line 1015 "EbnfParser.hpp"
+                                                            #line 1013 "EbnfParser.hpp"
         }
         break;
       }
@@ -1021,16 +1019,16 @@ private:
         break;
       }
     }
-                                                            #line 175 "EbnfParser.ebnf"
+                                                            #line 171 "EbnfParser.ebnf"
                                                             ascend();
-                                                            #line 1027 "EbnfParser.hpp"
+                                                            #line 1025 "EbnfParser.hpp"
     consume(37);                    // ']'
-                                                            #line 177 "EbnfParser.ebnf"
+                                                            #line 173 "EbnfParser.ebnf"
                                                             if (complement)
                                                             {
                                                               currentNode->addChild(new Complement(static_cast<CharClass *>(currentNode->isolateLastChild())));
                                                             }
-                                                            #line 1034 "EbnfParser.hpp"
+                                                            #line 1032 "EbnfParser.hpp"
   }
 
   void parse_Option()
@@ -1062,19 +1060,19 @@ private:
     case 39:                        // 'explicit'
       {
         consume(39);                // 'explicit'
-                                                            #line 185 "EbnfParser.ebnf"
+                                                            #line 181 "EbnfParser.ebnf"
                                                             static_cast<Production *>(currentNode->lastChild)->wsExplicit = true;
-                                                            #line 1068 "EbnfParser.hpp"
+                                                            #line 1066 "EbnfParser.hpp"
       }
       break;
     default:
       {
         consume(38);                // 'definition'
-                                                            #line 187 "EbnfParser.ebnf"
+                                                            #line 183 "EbnfParser.ebnf"
                                                             Production *p = static_cast<Production *>(currentNode->lastChild);
                                                             p->wsExplicit = true;
                                                             setWhitespaceDefinition(p);
-                                                            #line 1078 "EbnfParser.hpp"
+                                                            #line 1076 "EbnfParser.hpp"
       }
       break;
     }
@@ -1093,25 +1091,25 @@ private:
   void parse_Preference()
   {
     parse_NameOrString();
-                                                            #line 196 "EbnfParser.ebnf"
+                                                            #line 192 "EbnfParser.ebnf"
                                                             Preference *preference = new Preference();
-                                                            #line 1099 "EbnfParser.hpp"
+                                                            #line 1097 "EbnfParser.hpp"
     lookahead1W(16);                // Whitespace | '<<' | '>>'
     switch (l1)
     {
     case 31:                        // '>>'
       {
         consume(31);                // '>>'
-                                                            #line 197 "EbnfParser.ebnf"
+                                                            #line 193 "EbnfParser.ebnf"
                                                             preference->addLhs(currentNode->isolateLastChild());
-                                                            #line 1108 "EbnfParser.hpp"
+                                                            #line 1106 "EbnfParser.hpp"
         for (;;)
         {
           lookahead1W(10);          // Whitespace | Name | StringLiteral
           parse_NameOrString();
-                                                            #line 198 "EbnfParser.ebnf"
+                                                            #line 194 "EbnfParser.ebnf"
                                                             preference->addRhs(currentNode->isolateLastChild());
-                                                            #line 1115 "EbnfParser.hpp"
+                                                            #line 1113 "EbnfParser.hpp"
           lookahead1W(22);          // Whitespace | Name | StringLiteral | EOF | EquivalenceLookAhead | '.' |
                                     // '<?ENCORE?>'
           switch (l1)
@@ -1166,16 +1164,16 @@ private:
     default:
       {
         consume(26);                // '<<'
-                                                            #line 200 "EbnfParser.ebnf"
+                                                            #line 196 "EbnfParser.ebnf"
                                                             preference->addRhs(currentNode->isolateLastChild());
-                                                            #line 1172 "EbnfParser.hpp"
+                                                            #line 1170 "EbnfParser.hpp"
         for (;;)
         {
           lookahead1W(10);          // Whitespace | Name | StringLiteral
           parse_NameOrString();
-                                                            #line 201 "EbnfParser.ebnf"
+                                                            #line 197 "EbnfParser.ebnf"
                                                             preference->addLhs(currentNode->isolateLastChild());
-                                                            #line 1179 "EbnfParser.hpp"
+                                                            #line 1177 "EbnfParser.hpp"
           lookahead1W(22);          // Whitespace | Name | StringLiteral | EOF | EquivalenceLookAhead | '.' |
                                     // '<?ENCORE?>'
           switch (l1)
@@ -1228,26 +1226,26 @@ private:
       }
       break;
     }
-                                                            #line 203 "EbnfParser.ebnf"
+                                                            #line 199 "EbnfParser.ebnf"
                                                             currentNode->addChild(preference);
-                                                            #line 1234 "EbnfParser.hpp"
+                                                            #line 1232 "EbnfParser.hpp"
   }
 
   void parse_Delimiter()
   {
     consume(2);                     // Name
-                                                            #line 204 "EbnfParser.ebnf"
+                                                            #line 200 "EbnfParser.ebnf"
                                                             Delimiter *delimiter = new Delimiter(new Ref(currentToken().copy()));
-                                                            #line 1242 "EbnfParser.hpp"
+                                                            #line 1240 "EbnfParser.hpp"
     lookahead1W(6);                 // Whitespace | '\\'
     consume(36);                    // '\\'
     for (;;)
     {
       lookahead1W(10);              // Whitespace | Name | StringLiteral
       parse_NameOrString();
-                                                            #line 205 "EbnfParser.ebnf"
+                                                            #line 201 "EbnfParser.ebnf"
                                                             delimiter->addRhs(currentNode->isolateLastChild());
-                                                            #line 1251 "EbnfParser.hpp"
+                                                            #line 1249 "EbnfParser.hpp"
       lookahead1W(22);              // Whitespace | Name | StringLiteral | EOF | EquivalenceLookAhead | '.' |
                                     // '<?ENCORE?>'
       switch (l1)
@@ -1297,30 +1295,30 @@ private:
         break;
       }
     }
-                                                            #line 206 "EbnfParser.ebnf"
+                                                            #line 202 "EbnfParser.ebnf"
                                                             currentNode->addChild(delimiter);
-                                                            #line 1303 "EbnfParser.hpp"
+                                                            #line 1301 "EbnfParser.hpp"
   }
 
   void parse_Equivalence()
   {
     consume(12);                    // EquivalenceLookAhead
-                                                            #line 207 "EbnfParser.ebnf"
+                                                            #line 203 "EbnfParser.ebnf"
                                                             Equivalence *equivalence = new Equivalence();
-                                                            #line 1311 "EbnfParser.hpp"
+                                                            #line 1309 "EbnfParser.hpp"
     lookahead1W(12);                // Whitespace | StringLiteral | '['
     parse_EquivalenceCharRange();
-                                                            #line 208 "EbnfParser.ebnf"
+                                                            #line 204 "EbnfParser.ebnf"
                                                             equivalence->setLhs(currentNode->isolateLastChild());
-                                                            #line 1316 "EbnfParser.hpp"
+                                                            #line 1314 "EbnfParser.hpp"
     lookahead1W(5);                 // Whitespace | '=='
     consume(30);                    // '=='
     lookahead1W(12);                // Whitespace | StringLiteral | '['
     parse_EquivalenceCharRange();
-                                                            #line 211 "EbnfParser.ebnf"
+                                                            #line 207 "EbnfParser.ebnf"
                                                             equivalence->setRhs(currentNode->isolateLastChild());
                                                             currentNode->addChild(equivalence);
-                                                            #line 1324 "EbnfParser.hpp"
+                                                            #line 1322 "EbnfParser.hpp"
   }
 
   void parse_EquivalenceCharRange()
@@ -1330,9 +1328,9 @@ private:
     case 5:                         // StringLiteral
       {
         consume(5);                 // StringLiteral
-                                                            #line 215 "EbnfParser.ebnf"
+                                                            #line 211 "EbnfParser.ebnf"
                                                             currentNode->addChild(new String(currentToken().copy()));
-                                                            #line 1336 "EbnfParser.hpp"
+                                                            #line 1334 "EbnfParser.hpp"
       }
       break;
     default:
@@ -1344,34 +1342,34 @@ private:
         case 8:                     // Char
           {
             consume(8);             // Char
-                                                            #line 217 "EbnfParser.ebnf"
+                                                            #line 213 "EbnfParser.ebnf"
                                                             currentNode->addChild(new Char(*currentChar()));
-                                                            #line 1350 "EbnfParser.hpp"
+                                                            #line 1348 "EbnfParser.hpp"
           }
           break;
         case 7:                     // CharCode
           {
             consume(7);             // CharCode
-                                                            #line 218 "EbnfParser.ebnf"
+                                                            #line 214 "EbnfParser.ebnf"
                                                             currentNode->addChild(new CharCode(charCodeValue(currentChar() + 1)));
-                                                            #line 1358 "EbnfParser.hpp"
+                                                            #line 1356 "EbnfParser.hpp"
           }
           break;
         case 9:                     // CharRange
           {
             consume(9);             // CharRange
-                                                            #line 219 "EbnfParser.ebnf"
+                                                            #line 215 "EbnfParser.ebnf"
                                                             currentNode->addChild(new CharRange(b0, *currentChar(), *(currentChar() + 2)));
-                                                            #line 1366 "EbnfParser.hpp"
+                                                            #line 1364 "EbnfParser.hpp"
           }
           break;
         default:
           {
             consume(10);            // CharCodeRange
-                                                            #line 221 "EbnfParser.ebnf"
+                                                            #line 217 "EbnfParser.ebnf"
                                                             int minValue = charCodeValue(currentChar() + 1);
                                                             currentNode->addChild(new CharCodeRange(b0, minValue, charCodeValue(wcschr(currentChar(), L'-') + 2)));
-                                                            #line 1375 "EbnfParser.hpp"
+                                                            #line 1373 "EbnfParser.hpp"
           }
           break;
         }
@@ -1385,9 +1383,9 @@ private:
   void parse_Encore()
   {
     consume(28);                    // '<?ENCORE?>'
-                                                            #line 228 "EbnfParser.ebnf"
+                                                            #line 224 "EbnfParser.ebnf"
                                                             section = EPILOG;
-                                                            #line 1391 "EbnfParser.hpp"
+                                                            #line 1389 "EbnfParser.hpp"
     for (;;)
     {
       lookahead1W(13);              // Whitespace | EOF | '<?'
@@ -1397,9 +1395,9 @@ private:
       }
       parse_ProcessingInstruction();
     }
-                                                            #line 229 "EbnfParser.ebnf"
+                                                            #line 225 "EbnfParser.ebnf"
                                                             static_cast<Grammar *>(currentNode)->setEpilog();
-                                                            #line 1403 "EbnfParser.hpp"
+                                                            #line 1401 "EbnfParser.hpp"
   }
 
   void consume(int t)

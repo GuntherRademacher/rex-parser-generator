@@ -1903,6 +1903,11 @@ static std::~                                                   if (! parseChars
         if (mbPerSec != 0e0) fprintf(stdout, " (%0.2f MB/sec)", mbPerSec);
         fprintf(stdout, "\n");
         fprintf(stdout, "%d error%s\n", errorCount, errorCount == 1 ? "" : "s");
+
+        for (ParseJobs::iterator job = parsers.begin(); job != parsers.end(); ++job)
+        {
+          job->cleanup();
+        }
       }
     }
 
@@ -1974,6 +1979,21 @@ static std::~                                                   if (! parseChars
                                      ~, contentCounter~         }
                                                               }
                                      ~);
+    }
+
+    void cleanup()
+    {
+      delete name;
+      delete content;
+      delete parser;~                                         if (tree)
+                                                              {
+~
+      delete contentCounter;~                                   if (isLrParser)
+                                                                {
+~
+      delete parseTreeBuilder;~                                 }
+                                                              }
+~
     }
 
     std::~                                                    if (! parseChars) append(L"w");
@@ -2107,12 +2127,14 @@ static std::~                                                   if (! parseChars
             count += findfiles(foundPath.c_str(), filter);
           }
         }
+        closedir(dir);
         return count;
       }
-      else if (endsWithI(path, filter))
+      if (endsWithI(path, filter))
       {
         return process(path);
       }
+      return 0;
     }
 #endif
   };

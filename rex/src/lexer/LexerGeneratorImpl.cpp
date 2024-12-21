@@ -405,6 +405,7 @@ void LexerGeneratorImpl::outopen(const char *n)
         printfilename(fileName, strlen(fileName));
         OutputFile::printHeader(so, targetLanguage, argv);
       }
+      free(fileName);
     }
   }
 }

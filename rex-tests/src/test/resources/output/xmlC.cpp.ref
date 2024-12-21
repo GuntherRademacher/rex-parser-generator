@@ -1,4 +1,4 @@
-// This file was generated on Wed Oct 20, 2021 14:20 (UTC+02) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Dec 20, 2024 22:20 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XmlParser.ebnf -performance -cpp -name xmlC
 
 #include <time.h>
@@ -135,6 +135,11 @@ public:
         if (mbPerSec != 0e0) fprintf(stdout, " (%0.2f MB/sec)", mbPerSec);
         fprintf(stdout, "\n");
         fprintf(stdout, "%d error%s\n", errorCount, errorCount == 1 ? "" : "s");
+
+        for (ParseJobs::iterator job = parsers.begin(); job != parsers.end(); ++job)
+        {
+          job->cleanup();
+        }
       }
     }
 
@@ -1762,6 +1767,13 @@ private:
       parser = new xmlC(content->c_str());
     }
 
+    void cleanup()
+    {
+      delete name;
+      delete content;
+      delete parser;
+    }
+
     std::wstring *name;
     std::wstring *content;
     xmlC *parser;
@@ -1882,12 +1894,14 @@ private:
             count += findfiles(foundPath.c_str(), filter);
           }
         }
+        closedir(dir);
         return count;
       }
-      else if (endsWithI(path, filter))
+      if (endsWithI(path, filter))
       {
         return process(path);
       }
+      return 0;
     }
 #endif
   };
