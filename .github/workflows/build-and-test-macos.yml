@@ -1,4 +1,4 @@
-name: Build REx and run tests (Linux)
+name: Build REx and run tests (macOS)
 
 on:
   workflow_dispatch:
@@ -10,12 +10,15 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     timeout-minutes: 45
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+
+      - name: Use GNU g++
+        run: ln -sf $(brew --prefix)/bin/g++-14 /usr/local/bin/g++
 
       - name: Build C++ Project
         run: |
@@ -32,14 +35,16 @@ jobs:
           java-version: '17'
 
       - name: Install Haxe
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y haxe
+        run: brew install haxe
+
+      - name: Install TypeScript
+        run: npm install -g typescript
 
       - name: Install Scala
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y scala
+        run: brew install scala
+
+      - name: Install Go
+        run: brew install go
 
       - name: Run Gradle Tests
         working-directory: rex-tests
