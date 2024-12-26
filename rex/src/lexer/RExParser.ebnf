@@ -223,6 +223,7 @@ equivalence_stmt
 equ          ::= [=:]
 or           ::= [!|]
 identifier   ::= name ('^' name?)*
+               | "%OTHER"
 integer      ::= [0-9]+
                | '0X' [0-9A-F]+
 action       ::= '<' [^>#xA]+ '>'

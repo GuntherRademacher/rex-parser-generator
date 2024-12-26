@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 9, 2022 21:18 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:58 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q turtle.ebnf -java -tree -main -saxon -name Turtle
 
 import java.io.IOException;
@@ -1340,7 +1340,7 @@ public class Turtle
 
   private static final String[] TOKEN =
   {
-    "(0)",
+    "%ERROR",
     "WhiteSpace",
     "IRIREF",
     "PNAME_NS",

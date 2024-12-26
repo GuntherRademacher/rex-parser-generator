@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q strongLL27.ebnf -xquery -ll 27 -a xquery :)
 
                                                                       (: line 68 "strongLL27.ebnf" :)
@@ -587,8 +587,8 @@ declare variable $p:EXPECTED as xs:integer+ :=
  :)
 declare variable $p:TOKEN as xs:string+ :=
 (
-  "(0)",
-  "END",
+  "%ERROR",
+  "%OTHER",
   "'a'",
   "'b'",
   "'c'",
@@ -768,7 +768,7 @@ declare function p:parse-y($input as xs:string, $state as item()+) as item()+
                                                                's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z' :)
       let $state :=
         if ($state[$p:lk] = 59) then                        (: 'y' 'z' :)
-          let $state := p:lookahead3(64, 26, $input, $state) (: END | 'z' :)
+          let $state := p:lookahead3(64, 26, $input, $state) (: %OTHER | 'z' :)
           return $state
         else
           $state
@@ -940,7 +940,7 @@ declare function p:parse-a($input as xs:string, $state as item()+) as item()+
                                                                                                                                          'h' 'i' 'j' 'k' 'l' 'm' 'n'
                                                                                                                                          'o' 'p' 'q' 'r' 's' 't' 'u'
                                                                                                                                          'v' 'w' 'x' 'y' 'z' :)
-                                                                                                          let $state := p:lookahead27(832, 26, $input, $state) (: END | 'z' :)
+                                                                                                          let $state := p:lookahead27(832, 26, $input, $state) (: %OTHER | 'z' :)
                                                                                                           return $state
                                                                                                         else
                                                                                                           $state
@@ -2489,7 +2489,7 @@ declare function p:parse-a($input as xs:string, $state as item()+) as item()+
     else if ($state[$p:lk] = 826                            (: 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n'
                                                                'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'y' :)
           or $state[$p:lk] = 833) then                      (: 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n'
-                                                               'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' END :)
+                                                               'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z' %OTHER :)
       let $state := p:consume(2, $input, $state)            (: 'a' :)
       let $state := p:lookahead1(1, $input, $state)         (: 'b' :)
       let $state := p:consume(3, $input, $state)            (: 'b' :)

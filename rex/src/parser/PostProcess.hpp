@@ -706,17 +706,17 @@ public:
 
     // create production for implicit whitespace
 
-    Production *implicit = new Production(TERMINALS, 0, wcsdup(L"IMPLICIT"));
-    grammar->addChild(implicit);
-    implicit->accept(pt);
-    assign(implicit, Token::eIMPLICIT);
+    Production *implicitWs = new Production(TERMINALS, 0, wcsdup(L"%WS"));
+    grammar->addChild(implicitWs);
+    implicitWs->accept(pt);
+    assign(implicitWs, Token::eWS);
 
-    // create production for end token
+    // create production for %OTHER token
 
-    Production *end = new Production(TERMINALS, 0, wcsdup(L"END"));
-    grammar->addChild(end);
-    end->accept(pt);
-    assign(end, Token::eEND);
+    Production *other = new Production(TERMINALS, 0, wcsdup(L"%OTHER"));
+    grammar->addChild(other);
+    other->accept(pt);
+    assign(other, Token::eOTHER);
 
     // accept string productions
 

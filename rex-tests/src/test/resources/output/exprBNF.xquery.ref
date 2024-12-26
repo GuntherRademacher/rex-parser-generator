@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Thu Dec 26, 2024 06:54 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q exprBNF.ebnf -lalr 1 -xquery -tree -main :)
 
 declare namespace p="exprBNF";
@@ -132,7 +132,7 @@ declare variable $p:GOTO as xs:integer+ :=
  :)
 declare variable $p:TOKEN as xs:string+ :=
 (
-  "(0)",
+  "%ERROR",
   "ws",
   "integer",
   "EOF",

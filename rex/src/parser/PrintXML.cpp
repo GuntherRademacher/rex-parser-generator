@@ -57,7 +57,7 @@ wchar_t *PrintXML::tokenSequenceString(const TokenSequence &c)
     size_t size = c.size();
     if (size == 0)
     {
-      ts = wcsdup(L"EPSILON");
+      ts = wcsdup(L"%EPSILON");
     }
     else
     {

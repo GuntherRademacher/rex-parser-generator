@@ -1,4 +1,4 @@
-// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q strongLL4.ebnf -java -ll 4 -a java
 
                                                             // line 3 "strongLL4.ebnf"
@@ -400,7 +400,7 @@
 
   private static final String[] TOKEN =
   {
-    "(0)",
+    "%ERROR",
     "EOF",
     "'Q'",
     "'X'",

@@ -1,4 +1,4 @@
-// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryV10.ebnf -java
 
 public class XQueryV10
@@ -4934,8 +4934,8 @@ public class XQueryV10
   {
     for (;;)
     {
-      lookahead1(14);               // END | S^WS | '(:'
-      if (l1 == 1)                  // END
+      lookahead1(14);               // %OTHER | S^WS | '(:'
+      if (l1 == 1)                  // %OTHER
       {
         break;
       }
@@ -6770,8 +6770,8 @@ public class XQueryV10
 
   private static final String[] TOKEN =
   {
-    "(0)",
-    "END",
+    "%ERROR",
+    "%OTHER",
     "DirCommentContents",
     "IntegerLiteral",
     "DecimalLiteral",

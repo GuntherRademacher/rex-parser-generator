@@ -27,7 +27,7 @@ WString TokenSequence::toString(Grammar *grammar) const
       string += L" ";
     }
     string += grammar->naming.getName(grammar, t);
-    if (t == Token::eEND)
+    if (t == Token::eOTHER)
     {
       break;
     }

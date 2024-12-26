@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 20, 2024 22:20 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:58 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XmlParser.ebnf -performance -cpp -name xmlC
 
 #include <time.h>
@@ -2302,7 +2302,7 @@ const int xmlC::EXPECTED[] =
 
 const wchar_t *xmlC::TOKEN[] =
 {
-  L"(0)",
+  L"%ERROR",
   L"EOF",
   L"S",
   L"Name",

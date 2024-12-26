@@ -1,4 +1,4 @@
-// This file was generated on Mon Nov 1, 2021 13:46 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:55 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: HelloWorld_REx_11.rex
 class HelloWorld_REx_11
 {
@@ -202,7 +202,7 @@ const int HelloWorld_REx_11::EXPECTED[] =
 
 const wchar_t *HelloWorld_REx_11::TOKEN[] =
 {
-  L"(0)",
+  L"%ERROR",
   L"W",
   L"'hello'",
   L"'world'"

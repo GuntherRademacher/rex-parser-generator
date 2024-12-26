@@ -85,7 +85,7 @@ public:
       for (size_t i = 0; ; ++i)
       {
         Token::Code token(tokenSequence[(int) i]);
-        if (token == Token::eIMPLICIT)
+        if (token == Token::eWS)
         {
           break;
         }
@@ -182,9 +182,9 @@ private:
   {
     Token::Code prefix = tokenSequence.first();
 
-    if (prefix != Token::eIMPLICIT)
+    if (prefix != Token::eWS)
     {
-      if (tokenSequence.last() != Token::eIMPLICIT)
+      if (tokenSequence.last() != Token::eWS)
       {
         matchSet.insert(tokenSequence);
       }
