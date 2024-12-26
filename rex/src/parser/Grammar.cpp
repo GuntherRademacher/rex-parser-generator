@@ -514,16 +514,16 @@ Grammar::~Grammar()
 {
   fflush(stdout);
 
+  freeNodeList(prolog);
+  freeNodeList(nonTerminals);
+  freeNodeList(terminals);
+  freeNodeList(epilog);
+
   for (EmbeddedReduceItems::iterator i = embeddedReduceItems.begin(); i != embeddedReduceItems.end(); ++i)
   {
     Reduce *reduce = i->second;
     delete reduce;
   }
-
-  freeNodeList(prolog);
-  freeNodeList(nonTerminals);
-  freeNodeList(terminals);
-  freeNodeList(epilog);
 
   free(externalTokenCode);
 
