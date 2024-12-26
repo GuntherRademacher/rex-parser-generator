@@ -73,7 +73,7 @@ void LrState::buildLookahead(Grammar *grammar, const size_t k)
 
       if (fromItem->whitespaceAllowance == IMPLICIT)
       {
-        TokenSequenceSet tss(grammar->tokenSequence(Token::eIMPLICIT));
+        TokenSequenceSet tss(grammar->tokenSequence(Token::eWS));
         shiftLookahead = tokenSequenceSets->setUnion(shiftLookahead, tokenSequenceSets->resolve(&tss));
       }
     }
@@ -108,7 +108,7 @@ void LrState::buildLookahead(Grammar *grammar, const size_t k)
           conflicts = tokenSequenceSets->setUnion(conflicts, itemConflictsI);
         }
 
-        conflicts = tokenSequenceSets->eraseIfEndsWith(conflicts, Token::eIMPLICIT);
+        conflicts = tokenSequenceSets->eraseIfEndsWith(conflicts, Token::eWS);
 
         if (! conflicts->empty())
         {
@@ -135,7 +135,7 @@ void LrState::buildLookahead(Grammar *grammar, const size_t k)
         // if resolves conflicts, if (lookahead - conflicts(k)), downsized to k-1, contains any token sequence in conflicts(k-1)
 
         const TokenSequenceSet *nonConflictingLookahead = grammar->tokenSequenceSets->setDifference(lookahead, getConflicts(this->k));
-        nonConflictingLookahead = grammar->tokenSequenceSets->eraseIfEndsWith(nonConflictingLookahead, Token::eIMPLICIT);
+        nonConflictingLookahead = grammar->tokenSequenceSets->eraseIfEndsWith(nonConflictingLookahead, Token::eWS);
 
 #define SHOWSETS 0
 #if SHOWSETS
@@ -768,7 +768,7 @@ void LrStates::generate()
 {
   size_t maxK = grammar->maxK;
 
-  TokenSequence end1(grammar->tokenSequence(Token::eEND));
+  TokenSequence end1(grammar->tokenSequence(Token::eOTHER));
   std::vector<ItemSet *> states;
 
   // k == 0 ?

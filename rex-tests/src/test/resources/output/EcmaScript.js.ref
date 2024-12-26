@@ -1,4 +1,4 @@
-// This file was generated on Sun Nov 28, 2021 19:53 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:54 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q EcmaScript.ebnf -ll 1 -backtrack -asi -javascript -main
 
 function EcmaScript(string)
@@ -446,7 +446,7 @@ function EcmaScript(string)
   function parse_VariableDeclaration()
   {
     consume(4);                     // Identifier
-    lookahead1W(18);                // END | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
+    lookahead1W(18);                // %OTHER | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
     if (l1 == 43)                   // '='
     {
       parse_Initialiser();
@@ -456,7 +456,7 @@ function EcmaScript(string)
   function try_VariableDeclaration()
   {
     consumeT(4);                    // Identifier
-    lookahead1W(18);                // END | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
+    lookahead1W(18);                // %OTHER | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
     if (l1 == 43)                   // '='
     {
       try_Initialiser();
@@ -1117,9 +1117,10 @@ function EcmaScript(string)
     parse_UnaryExpression();
     for (;;)
     {
-      lookahead1W(27);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' | '*' |
-                                    // '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' | '>' |
-                                    // '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' | '}'
+      lookahead1W(27);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' |
+                                    // '*' | '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' |
+                                    // '>' | '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' |
+                                    // '}'
       if (l1 != 18                  // '%'
        && l1 != 25                  // '*'
        && l1 != 35)                 // '/'
@@ -1151,9 +1152,10 @@ function EcmaScript(string)
     try_UnaryExpression();
     for (;;)
     {
-      lookahead1W(27);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' | '*' |
-                                    // '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' | '>' |
-                                    // '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' | '}'
+      lookahead1W(27);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' |
+                                    // '*' | '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' |
+                                    // '>' | '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' |
+                                    // '}'
       if (l1 != 18                  // '%'
        && l1 != 25                  // '*'
        && l1 != 35)                 // '/'
@@ -1577,7 +1579,7 @@ function EcmaScript(string)
     }
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -1628,7 +1630,7 @@ function EcmaScript(string)
     }
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -2489,7 +2491,7 @@ function EcmaScript(string)
     parse_Arguments();
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -2529,7 +2531,7 @@ function EcmaScript(string)
     try_Arguments();
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -2975,7 +2977,7 @@ function EcmaScript(string)
                                     // '~'
       parse_Expression();
       consume(24);                  // ')'
-      lookahead1W(15);              // END | EOF | WhiteSpace | Comment | ';' | '}'
+      lookahead1W(15);              // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
       parse_Semicolon();
       break;
     case -3:
@@ -3294,7 +3296,7 @@ function EcmaScript(string)
                                     // '~'
       try_Expression();
       consumeT(24);                 // ')'
-      lookahead1W(15);              // END | EOF | WhiteSpace | Comment | ';' | '}'
+      lookahead1W(15);              // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
       try_Semicolon();
       break;
     case -3:
@@ -4149,7 +4151,7 @@ function EcmaScript(string)
   function parse_ContinueStatement()
   {
     consume(60);                    // 'continue'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4160,14 +4162,14 @@ function EcmaScript(string)
     {
       consume(4);                   // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     parse_Semicolon();
   }
 
   function try_ContinueStatement()
   {
     consumeT(60);                   // 'continue'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4178,14 +4180,14 @@ function EcmaScript(string)
     {
       consumeT(4);                  // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
   function parse_BreakStatement()
   {
     consume(57);                    // 'break'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4196,14 +4198,14 @@ function EcmaScript(string)
     {
       consume(4);                   // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     parse_Semicolon();
   }
 
   function try_BreakStatement()
   {
     consumeT(57);                   // 'break'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4214,14 +4216,14 @@ function EcmaScript(string)
     {
       consumeT(4);                  // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
   function parse_ReturnStatement()
   {
     consume(74);                    // 'return'
-    lookahead1W(26);                // END | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
+    lookahead1W(26);                // %OTHER | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | '!' | '(' | '+' | '++' | '-' |
                                     // '--' | ';' | '[' | 'delete' | 'function' | 'new' | 'this' | 'typeof' | 'void' |
@@ -4232,7 +4234,7 @@ function EcmaScript(string)
       e1 = b1;
       end = e1;
     }
-    if (l1 != 1                     // END
+    if (l1 != 1                     // %OTHER
      && l1 != 3                     // EOF
      && l1 != 38                    // ';'
      && l1 != 89)                   // '}'
@@ -4245,7 +4247,7 @@ function EcmaScript(string)
   function try_ReturnStatement()
   {
     consumeT(74);                   // 'return'
-    lookahead1W(26);                // END | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
+    lookahead1W(26);                // %OTHER | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | '!' | '(' | '+' | '++' | '-' |
                                     // '--' | ';' | '[' | 'delete' | 'function' | 'new' | 'this' | 'typeof' | 'void' |
@@ -4256,7 +4258,7 @@ function EcmaScript(string)
       e1 = b1;
       end = e1;
     }
-    if (l1 != 1                     // END
+    if (l1 != 1                     // %OTHER
      && l1 != 3                     // EOF
      && l1 != 38                    // ';'
      && l1 != 89)                   // '}'
@@ -4657,14 +4659,14 @@ function EcmaScript(string)
   function parse_DebuggerStatement()
   {
     consume(61);                    // 'debugger'
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     parse_Semicolon();
   }
 
   function try_DebuggerStatement()
   {
     consumeT(61);                   // 'debugger'
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
@@ -5493,8 +5495,8 @@ EcmaScript.EXPECTED =
 
 EcmaScript.TOKEN =
 [
-  "(0)",
-  "END",
+  "%ERROR",
+  "%OTHER",
   "Shebang",
   "EOF",
   "Identifier",

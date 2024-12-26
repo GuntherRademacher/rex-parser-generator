@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file was generated on Mon Dec 19, 2016 10:29 (UTC+01) by REx v5.42 which is Copyright (c) 1979-2016 by Gunther Rademacher <grd@gmx.net> -->
+<!-- This file was generated on Thu Dec 26, 2024 07:37 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> -->
 <!-- REx command line: lr2.ebnf -xml -ff -rex -lr 2 -->
 <g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
-  <g:production id="2" follow="END" name="S">
-    <g:choice id="3" follow="END">
-      <g:sequence id="4" follow="END">
+  <g:production id="2" follow="%OTHER" name="S">
+    <g:choice id="3" follow="%OTHER">
+      <g:sequence id="4" follow="%OTHER">
         <g:ref id="5" name="A"/>
         <g:ref id="6" reduce-id="7" reduce-count="2" first="a" first2="a" name="a"/>
       </g:sequence>
-      <g:sequence id="8" follow="END">
+      <g:sequence id="8" follow="%OTHER">
         <g:ref id="9" name="B"/>
         <g:ref id="10" reduce-id="7" reduce-count="2" first="b" first2="b" name="b"/>
       </g:sequence>
@@ -62,11 +62,11 @@
   </g:production>
 <parser>
     <state id="0">
-      <item id="22" lookahead="IMPLICIT a~END">A ::= q <dot>.</dot> E</item>
-      <item id="26" lookahead="IMPLICIT b~END">B ::= q <dot>.</dot> E</item>
-      <item id="35" lookahead="IMPLICIT a~END b~END">E ::= <dot>.</dot> e</item>
-      <item id="30" lookahead="IMPLICIT e~c">C ::= q <dot>.</dot></item>
-      <item id="33" lookahead="IMPLICIT e~d">D ::= q <dot>.</dot></item>
+      <item id="22" lookahead="%WS a~%OTHER">A ::= q <dot>.</dot> E</item>
+      <item id="26" lookahead="%WS b~%OTHER">B ::= q <dot>.</dot> E</item>
+      <item id="35" lookahead="%WS a~%OTHER b~%OTHER">E ::= <dot>.</dot> e</item>
+      <item id="30" lookahead="%WS e~c">C ::= q <dot>.</dot></item>
+      <item id="33" lookahead="%WS e~d">D ::= q <dot>.</dot></item>
       <goto on="E" to="9"/>
       <shift on="e" to="11"/>
       <reduce on="e~c" symbol="C"/>
@@ -74,14 +74,14 @@
       <accept on="S"/>
     </state>
     <state id="2">
-      <item id="5" lookahead="END~END">S ::= <dot>.</dot> A a</item>
-      <item id="9" lookahead="END~END">S ::= <dot>.</dot> B b</item>
-      <item id="12" lookahead="END~END">S ::= <dot>.</dot> C e c</item>
-      <item id="17" lookahead="END~END">S ::= <dot>.</dot> D e d</item>
-      <item id="21" lookahead="IMPLICIT a~END">A ::= <dot>.</dot> q E</item>
-      <item id="25" lookahead="IMPLICIT b~END">B ::= <dot>.</dot> q E</item>
-      <item id="29" lookahead="IMPLICIT e~c">C ::= <dot>.</dot> q</item>
-      <item id="32" lookahead="IMPLICIT e~d">D ::= <dot>.</dot> q</item>
+      <item id="5" lookahead="%OTHER~%OTHER">S ::= <dot>.</dot> A a</item>
+      <item id="9" lookahead="%OTHER~%OTHER">S ::= <dot>.</dot> B b</item>
+      <item id="12" lookahead="%OTHER~%OTHER">S ::= <dot>.</dot> C e c</item>
+      <item id="17" lookahead="%OTHER~%OTHER">S ::= <dot>.</dot> D e d</item>
+      <item id="21" lookahead="%WS a~%OTHER">A ::= <dot>.</dot> q E</item>
+      <item id="25" lookahead="%WS b~%OTHER">B ::= <dot>.</dot> q E</item>
+      <item id="29" lookahead="%WS e~c">C ::= <dot>.</dot> q</item>
+      <item id="32" lookahead="%WS e~d">D ::= <dot>.</dot> q</item>
       <goto on="A" to="3"/>
       <goto on="B" to="4"/>
       <goto on="C" to="5"/>
@@ -89,46 +89,46 @@
       <shift on="q" to="0"/>
     </state>
     <state id="3">
-      <item id="6" lookahead="END~END">S ::= A <dot>.</dot> a</item>
+      <item id="6" lookahead="%OTHER~%OTHER">S ::= A <dot>.</dot> a</item>
       <shift on="a" to="10"/>
     </state>
     <state id="4">
-      <item id="10" lookahead="END~END">S ::= B <dot>.</dot> b</item>
+      <item id="10" lookahead="%OTHER~%OTHER">S ::= B <dot>.</dot> b</item>
       <shift on="b" to="10"/>
     </state>
     <state id="5">
-      <item id="13" lookahead="END~END">S ::= C <dot>.</dot> e c</item>
+      <item id="13" lookahead="%OTHER~%OTHER">S ::= C <dot>.</dot> e c</item>
       <shift on="e" to="7"/>
     </state>
     <state id="6">
-      <item id="18" lookahead="END~END">S ::= D <dot>.</dot> e d</item>
+      <item id="18" lookahead="%OTHER~%OTHER">S ::= D <dot>.</dot> e d</item>
       <shift on="e" to="8"/>
     </state>
     <state id="7">
-      <item id="14" lookahead="END~END">S ::= C e <dot>.</dot> c</item>
+      <item id="14" lookahead="%OTHER~%OTHER">S ::= C e <dot>.</dot> c</item>
       <shift on="c" to="12"/>
     </state>
     <state id="8">
-      <item id="19" lookahead="END~END">S ::= D e <dot>.</dot> d</item>
+      <item id="19" lookahead="%OTHER~%OTHER">S ::= D e <dot>.</dot> d</item>
       <shift on="d" to="12"/>
     </state>
     <state id="9">
-      <item id="23" lookahead="IMPLICIT a~END">A ::= q E <dot>.</dot></item>
-      <item id="27" lookahead="IMPLICIT b~END">B ::= q E <dot>.</dot></item>
+      <item id="23" lookahead="%WS a~%OTHER">A ::= q E <dot>.</dot></item>
+      <item id="27" lookahead="%WS b~%OTHER">B ::= q E <dot>.</dot></item>
       <reduce on="a" symbol="A"/>
       <reduce on="b" symbol="B"/>
     </state>
     <state id="10">
-      <item id="7" lookahead="END~END">S ::= A a <dot>.</dot> | B b <dot>.</dot></item>
-      <reduce on="EPSILON" symbol="S"/>
+      <item id="7" lookahead="%OTHER~%OTHER">S ::= A a <dot>.</dot> | B b <dot>.</dot></item>
+      <reduce on="%EPSILON" symbol="S"/>
     </state>
     <state id="11">
-      <item id="36" lookahead="IMPLICIT a~END b~END">E ::= e <dot>.</dot></item>
-      <reduce on="EPSILON" symbol="E"/>
+      <item id="36" lookahead="%WS a~%OTHER b~%OTHER">E ::= e <dot>.</dot></item>
+      <reduce on="%EPSILON" symbol="E"/>
     </state>
     <state id="12">
-      <item id="15" lookahead="END~END">S ::= C e c <dot>.</dot> | D e d <dot>.</dot></item>
-      <reduce on="EPSILON" symbol="S"/>
+      <item id="15" lookahead="%OTHER~%OTHER">S ::= C e c <dot>.</dot> | D e d <dot>.</dot></item>
+      <reduce on="%EPSILON" symbol="S"/>
     </state>
   </parser>
   <triples>

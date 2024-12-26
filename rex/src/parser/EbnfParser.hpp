@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 20, 2024 23:02 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 07:44 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: EbnfParser.ebnf -cpp -a rex
 
 #ifndef EBNFPARSER_HPP
@@ -1855,7 +1855,7 @@ const int EbnfParser::EXPECTED[] =
 
 const wchar_t *EbnfParser::TOKEN[] =
 {
-  L"(0)",
+  L"%ERROR",
   L"Whitespace",
   L"Name",
   L"Space",

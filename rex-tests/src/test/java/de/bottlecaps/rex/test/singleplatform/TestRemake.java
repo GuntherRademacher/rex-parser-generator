@@ -23,6 +23,8 @@ import de.bottlecaps.rex.test.base.Pass;
 
 public class TestRemake extends AbstractSinglePlatformTest
 {
+  private static boolean runningInEclipse = isEclipseRunnerInStackTrace();
+
   public static Collection<String> testRemake() throws IOException {
     String suffix = ".ref";
     List<String> filenames = new ArrayList<>();
@@ -84,8 +86,22 @@ public class TestRemake extends AbstractSinglePlatformTest
 
       runner.compile(fileName);
 
-      if (! Pass.isSameCode(expectedContent, runner.getPath(fileName)))
-        Assertions.fail(runner.summary("actual result does not match expected result from " + expectedResult.getPath()));
+      String actualContent = new NamedFile(runner.getPath(fileName)).getContent();
+      if (! Pass.isSameCode(expectedContent, actualContent)) {
+        String summary = runner.summary(
+                "actual result does not match expected result, see\n"
+              + "    diff " + runner.getPath(fileName) + " " + expectedResult.getPath());
+        if (runningInEclipse)
+        {
+          // when running in Eclipse test runner, show the complete diff
+          Assertions.assertEquals(expectedContent, actualContent, summary);
+        }
+        else
+        {
+          // otherwise, show just the diff command
+          Assertions.fail(summary);
+        }
+      }
 
       Pass.passNormally(runner);
     });
@@ -108,4 +124,13 @@ public class TestRemake extends AbstractSinglePlatformTest
     return "";
   }
 
+  private static boolean isEclipseRunnerInStackTrace()
+  {
+    for (StackTraceElement element : Thread.currentThread().getStackTrace())
+    {
+      if (element.getClassName().startsWith("org.eclipse.jdt.internal.junit.runner"))
+        return true;
+    }
+    return false;
+  }
 }

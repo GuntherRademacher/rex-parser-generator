@@ -1,4 +1,4 @@
-// This file was generated on Sun Nov 24, 2024 16:09 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 07:44 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeTemplate.ebnf -cpp -a rex
 
 #ifndef CODETEMPLATE_HPP
@@ -572,7 +572,7 @@ const int CodeTemplate::EXPECTED[] =
 
 const wchar_t *CodeTemplate::TOKEN[] =
 {
-  L"(0)",
+  L"%ERROR",
   L"FragmentWithoutLF",
   L"FragmentWithLF",
   L"BeginVariable",

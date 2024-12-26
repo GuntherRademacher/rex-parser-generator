@@ -1,4 +1,4 @@
-// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q strongLL27.ebnf -cpp -ll 27
 
 #ifndef STRONGLL27_HPP
@@ -319,7 +319,7 @@ public:
                                                       {
                                                       case 827: // 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm'
                                                                 // 'n' 'o' 'p' 'q' 'r' 's' 't' 'u' 'v' 'w' 'x' 'y' 'z'
-                                                        lookahead27(832, 26); // END | 'z'
+                                                        lookahead27(832, 26); // %OTHER | 'z'
                                                         break;
                                                       }
                                                       break;
@@ -1748,7 +1748,7 @@ public:
     case 826:                       // 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't'
                                     // 'u' 'v' 'w' 'x' 'y' 'y'
     case 833:                       // 'a' 'b' 'c' 'd' 'e' 'f' 'g' 'h' 'i' 'j' 'k' 'l' 'm' 'n' 'o' 'p' 'q' 'r' 's' 't'
-                                    // 'u' 'v' 'w' 'x' 'y' 'z' END
+                                    // 'u' 'v' 'w' 'x' 'y' 'z' %OTHER
       consume(2);                   // 'a'
       lookahead1(1);                // 'b'
       consume(3);                   // 'b'
@@ -1873,7 +1873,7 @@ private:
       switch (lk)
       {
       case 59:                      // 'y' 'z'
-        lookahead3(64, 26);         // END | 'z'
+        lookahead3(64, 26);         // %OTHER | 'z'
         break;
       }
       break;
@@ -2420,8 +2420,8 @@ const int strongLL27::EXPECTED[] =
 
 const wchar_t *strongLL27::TOKEN[] =
 {
-  L"(0)",
-  L"END",
+  L"%ERROR",
+  L"%OTHER",
   L"'a'",
   L"'b'",
   L"'c'",

@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q XQueryV11-20081203.ebnf -a xquery -xquery :)
 
                                                                       (: line 57 "XQueryV11-20081203.ebnf" :)
@@ -1610,8 +1610,8 @@ declare variable $p:EXPECTED as xs:integer+ :=
  :)
 declare variable $p:TOKEN as xs:string+ :=
 (
-  "(0)",
-  "END",
+  "%ERROR",
+  "%OTHER",
   "PragmaContents",
   "Wildcard",
   "DirCommentContents",
@@ -2030,9 +2030,9 @@ declare function p:try-Whitespace-1($input as xs:string, $state as item()+)
   if ($state[$p:error]) then
     $state
   else
-    let $state := p:lookahead1(14, $input, $state)          (: END | S^WS | ('(' ':') :)
+    let $state := p:lookahead1(14, $input, $state)          (: %OTHER | S^WS | ('(' ':') :)
     return
-      if ($state[$p:l1] = 1) then                           (: END :)
+      if ($state[$p:l1] = 1) then                           (: %OTHER :)
         $state
       else
         let $state :=
@@ -2666,7 +2666,7 @@ declare function p:parse-SingleType($input as xs:string, $state as item()+) as i
       $state
     else
       p:parse-AtomicType($input, $state)
-  let $state := p:lookahead1W(139, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(139, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | '?' | ']' | 'and' | 'ascending' |
                                                                'case' | 'castable' | 'collation' | 'count' | 'default' |
@@ -2923,7 +2923,7 @@ declare function p:parse-ForwardStep($input as xs:string, $state as item()+) as 
 {
   let $state :=
     if ($state[$p:l1] eq 73) then                           (: 'attribute' :)
-      let $state := p:lookahead2W(146, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(146, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | '::' | ';' |
                                                                '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -2941,7 +2941,7 @@ declare function p:parse-ForwardStep($input as xs:string, $state as item()+) as 
                               110,                          (: 'following' :)
                               111,                          (: 'following-sibling' :)
                               166)) then                    (: 'self' :)
-      let $state := p:lookahead2W(143, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+      let $state := p:lookahead2W(143, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '/' | '//' | '::' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -3036,7 +3036,7 @@ declare function p:parse-NodeTest($input as xs:string, $state as item()+) as ite
                          164,                               (: 'schema-attribute' :)
                          165,                               (: 'schema-element' :)
                          173)) then                         (: 'text' :)
-      let $state := p:lookahead2W(142, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(142, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -3185,7 +3185,7 @@ declare function p:parse-AxisStep($input as xs:string, $state as item()+) as ite
                          152,                               (: 'parent' :)
                          156,                               (: 'preceding' :)
                          157)) then                         (: 'preceding-sibling' :)
-      let $state := p:lookahead2W(143, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+      let $state := p:lookahead2W(143, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '/' | '//' | '::' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -3221,7 +3221,7 @@ declare function p:parse-AxisStep($input as xs:string, $state as item()+) as ite
         else
           p:parse-ForwardStep($input, $state)
       return $state
-  let $state := p:lookahead1W(141, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(141, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' | '<<' |
                                                                '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' | 'and' |
                                                                'ascending' | 'case' | 'cast' | 'castable' |
@@ -3293,7 +3293,7 @@ declare function p:parse-PredicateList-1($input as xs:string, $state as item()+)
   if ($state[$p:error]) then
     $state
   else
-    let $state := p:lookahead1W(141, $input, $state)        (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+    let $state := p:lookahead1W(141, $input, $state)        (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' | '<<' |
                                                                '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' | 'and' |
                                                                'ascending' | 'case' | 'cast' | 'castable' |
@@ -5024,7 +5024,7 @@ declare function p:parse-FilterExpr($input as xs:string, $state as item()+) as i
       $state
     else
       p:parse-PrimaryExpr($input, $state)
-  let $state := p:lookahead1W(141, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(141, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' | '<<' |
                                                                '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' | 'and' |
                                                                'ascending' | 'case' | 'cast' | 'castable' |
@@ -5054,22 +5054,22 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
 {
   let $state :=
     if ($state[$p:l1] eq 73) then                           (: 'attribute' :)
-      let $state := p:lookahead2W(171, $input, $state)      (: END | QName^Token | S^WS | EOF | OuterFor | '!=' | '(' |
-                                                               ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' | '//' |
-                                                               '::' | ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' |
-                                                               '>>' | '[' | ']' | 'ancestor' | 'ancestor-or-self' |
-                                                               'and' | 'ascending' | 'attribute' | 'case' | 'cast' |
-                                                               'castable' | 'child' | 'collation' | 'comment' |
-                                                               'count' | 'declare' | 'default' | 'descendant' |
-                                                               'descendant-or-self' | 'descending' | 'div' |
-                                                               'document' | 'document-node' | 'element' | 'else' |
-                                                               'empty' | 'empty-sequence' | 'end' | 'eq' | 'every' |
-                                                               'except' | 'following' | 'following-sibling' | 'for' |
-                                                               'ge' | 'group' | 'gt' | 'idiv' | 'if' | 'import' |
-                                                               'instance' | 'intersect' | 'is' | 'item' | 'le' | 'let' |
-                                                               'lt' | 'mod' | 'module' | 'namespace' | 'ne' | 'node' |
-                                                               'only' | 'or' | 'order' | 'ordered' | 'parent' |
-                                                               'preceding' | 'preceding-sibling' |
+      let $state := p:lookahead2W(171, $input, $state)      (: %OTHER | QName^Token | S^WS | EOF | OuterFor | '!=' |
+                                                               '(' | ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' |
+                                                               '//' | '::' | ';' | '<' | '<<' | '<=' | '=' | '>' |
+                                                               '>=' | '>>' | '[' | ']' | 'ancestor' |
+                                                               'ancestor-or-self' | 'and' | 'ascending' | 'attribute' |
+                                                               'case' | 'cast' | 'castable' | 'child' | 'collation' |
+                                                               'comment' | 'count' | 'declare' | 'default' |
+                                                               'descendant' | 'descendant-or-self' | 'descending' |
+                                                               'div' | 'document' | 'document-node' | 'element' |
+                                                               'else' | 'empty' | 'empty-sequence' | 'end' | 'eq' |
+                                                               'every' | 'except' | 'following' | 'following-sibling' |
+                                                               'for' | 'ge' | 'group' | 'gt' | 'idiv' | 'if' |
+                                                               'import' | 'instance' | 'intersect' | 'is' | 'item' |
+                                                               'le' | 'let' | 'lt' | 'mod' | 'module' | 'namespace' |
+                                                               'ne' | 'node' | 'only' | 'or' | 'order' | 'ordered' |
+                                                               'parent' | 'preceding' | 'preceding-sibling' |
                                                                'processing-instruction' | 'return' | 'satisfies' |
                                                                'schema-attribute' | 'schema-element' | 'self' | 'some' |
                                                                'stable' | 'start' | 'text' | 'to' | 'treat' | 'try' |
@@ -5210,11 +5210,11 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
           $state
       return $state
     else if ($state[$p:l1] eq 100) then                     (: 'element' :)
-      let $state := p:lookahead2W(170, $input, $state)      (: END | QName^Token | S^WS | EOF | OuterFor | '!=' | '(' |
-                                                               ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' | '//' |
-                                                               ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' |
-                                                               ']' | 'ancestor' | 'ancestor-or-self' | 'and' |
-                                                               'ascending' | 'attribute' | 'case' | 'cast' |
+      let $state := p:lookahead2W(170, $input, $state)      (: %OTHER | QName^Token | S^WS | EOF | OuterFor | '!=' |
+                                                               '(' | ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' |
+                                                               '//' | ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' |
+                                                               '>>' | '[' | ']' | 'ancestor' | 'ancestor-or-self' |
+                                                               'and' | 'ascending' | 'attribute' | 'case' | 'cast' |
                                                                'castable' | 'child' | 'collation' | 'comment' |
                                                                'count' | 'declare' | 'default' | 'descendant' |
                                                                'descendant-or-self' | 'descending' | 'div' |
@@ -5367,11 +5367,11 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
       return $state
     else if ($state[$p:l1] = (137,                          (: 'namespace' :)
                               160)) then                    (: 'processing-instruction' :)
-      let $state := p:lookahead2W(149, $input, $state)      (: END | NCName^Token | S^WS | EOF | OuterFor | '!=' | '(' |
-                                                               ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' | '//' |
-                                                               ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' |
-                                                               ']' | 'and' | 'ascending' | 'case' | 'cast' |
-                                                               'castable' | 'collation' | 'count' | 'default' |
+      let $state := p:lookahead2W(149, $input, $state)      (: %OTHER | NCName^Token | S^WS | EOF | OuterFor | '!=' |
+                                                               '(' | ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' |
+                                                               '//' | ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' |
+                                                               '>>' | '[' | ']' | 'and' | 'ascending' | 'case' |
+                                                               'cast' | 'castable' | 'collation' | 'count' | 'default' |
                                                                'descending' | 'div' | 'else' | 'empty' | 'end' | 'eq' |
                                                                'except' | 'for' | 'ge' | 'group' | 'gt' | 'idiv' |
                                                                'instance' | 'intersect' | 'is' | 'le' | 'let' | 'lt' |
@@ -5556,7 +5556,7 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
                               150,                          (: 'ordered' :)
                               173,                          (: 'text' :)
                               181)) then                    (: 'unordered' :)
-      let $state := p:lookahead2W(147, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(147, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -5579,7 +5579,7 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
                               156,                          (: 'preceding' :)
                               157,                          (: 'preceding-sibling' :)
                               166)) then                    (: 'self' :)
-      let $state := p:lookahead2W(146, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(146, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | '::' | ';' |
                                                                '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -5639,7 +5639,7 @@ declare function p:parse-StepExpr($input as xs:string, $state as item()+) as ite
                               182,                          (: 'validate' :)
                               186,                          (: 'where' :)
                               188)) then                    (: 'xquery' :)
-      let $state := p:lookahead2W(142, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(142, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -6073,7 +6073,7 @@ declare function p:parse-PathExpr($input as xs:string, $state as item()+) as ite
       $state
     else if ($state[$p:l1] = 44) then                       (: '/' :)
       let $state := p:consume(44, $input, $state)           (: '/' :)
-      let $state := p:lookahead1W(172, $input, $state)      (: END | Wildcard | IntegerLiteral | DecimalLiteral |
+      let $state := p:lookahead1W(172, $input, $state)      (: %OTHER | Wildcard | IntegerLiteral | DecimalLiteral |
                                                                DoubleLiteral | StringLiteral | QName^Token | S^WS |
                                                                EOF | OuterFor | '!=' | '$' | '(' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | '.' | '..' | ';' | '<' | '<!--' |
@@ -6099,7 +6099,7 @@ declare function p:parse-PathExpr($input as xs:string, $state as item()+) as ite
       let $state :=
         if ($state[$p:error]) then
           $state
-        else if ($state[$p:l1] = 1                          (: END :)
+        else if ($state[$p:l1] = 1                          (: %OTHER :)
               or $state[$p:l1] = 24                         (: EOF :)
               or $state[$p:l1] = 25                         (: OuterFor :)
               or $state[$p:l1] = 26                         (: '!=' :)
@@ -6284,7 +6284,7 @@ declare function p:parse-ValueExpr($input as xs:string, $state as item()+) as it
 {
   let $state :=
     if ($state[$p:l1] eq 182) then                          (: 'validate' :)
-      let $state := p:lookahead2W(152, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(152, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'as' | 'ascending' | 'case' | 'cast' |
@@ -6411,7 +6411,7 @@ declare function p:parse-CastExpr($input as xs:string, $state as item()+) as ite
       $state
     else
       p:parse-UnaryExpr($input, $state)
-  let $state := p:lookahead1W(140, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(140, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | ']' | 'and' | 'ascending' | 'case' |
                                                                'cast' | 'castable' | 'collation' | 'count' | 'default' |
@@ -6471,7 +6471,7 @@ declare function p:parse-CastableExpr($input as xs:string, $state as item()+) as
       $state
     else
       p:parse-CastExpr($input, $state)
-  let $state := p:lookahead1W(138, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(138, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | ']' | 'and' | 'ascending' | 'case' |
                                                                'castable' | 'collation' | 'count' | 'default' |
@@ -6531,7 +6531,7 @@ declare function p:parse-TreatExpr($input as xs:string, $state as item()+) as it
       $state
     else
       p:parse-CastableExpr($input, $state)
-  let $state := p:lookahead1W(137, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(137, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | ']' | 'and' | 'ascending' | 'case' |
                                                                'collation' | 'count' | 'default' | 'descending' |
@@ -6591,7 +6591,7 @@ declare function p:parse-InstanceofExpr($input as xs:string, $state as item()+) 
       $state
     else
       p:parse-TreatExpr($input, $state)
-  let $state := p:lookahead1W(136, $input, $state)          (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+  let $state := p:lookahead1W(136, $input, $state)          (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | ']' | 'and' | 'ascending' | 'case' |
                                                                'collation' | 'count' | 'default' | 'descending' |
@@ -6649,7 +6649,7 @@ declare function p:parse-IntersectExceptExpr-1($input as xs:string, $state as it
   if ($state[$p:error]) then
     $state
   else
-    let $state := p:lookahead1W(135, $input, $state)        (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+    let $state := p:lookahead1W(135, $input, $state)        (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '+' | ',' | '-' | ';' | '<' | '<<' | '<=' | '=' |
                                                                '>' | '>=' | '>>' | ']' | 'and' | 'ascending' | 'case' |
                                                                'collation' | 'count' | 'default' | 'descending' |
@@ -7622,7 +7622,7 @@ declare function p:parse-TryCatchExpr-1($input as xs:string, $state as item()+)
         $state
       else
         p:parse-CatchClause($input, $state)
-    let $state := p:lookahead1W(125, $input, $state)        (: END | S^WS | EOF | OuterFor | ('(' ':') | ')' | ',' |
+    let $state := p:lookahead1W(125, $input, $state)        (: %OTHER | S^WS | EOF | OuterFor | ('(' ':') | ')' | ',' |
                                                                ';' | ']' | 'ascending' | 'case' | 'catch' |
                                                                'collation' | 'count' | 'default' | 'descending' |
                                                                'else' | 'empty' | 'end' | 'for' | 'group' | 'let' |
@@ -9783,7 +9783,7 @@ declare function p:parse-ExprSingle($input as xs:string, $state as item()+) as i
 {
   let $state :=
     if ($state[$p:l1] eq 112) then                          (: 'for' :)
-      let $state := p:lookahead2W(151, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '$' | '(' |
+      let $state := p:lookahead2W(151, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '$' | '(' |
                                                                ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' | '//' |
                                                                ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' |
                                                                ']' | 'and' | 'ascending' | 'case' | 'cast' |
@@ -9796,7 +9796,7 @@ declare function p:parse-ExprSingle($input as xs:string, $state as item()+) as i
                                                                'treat' | 'tumbling' | 'union' | 'where' | '|' | '}' :)
       return $state
     else if ($state[$p:l1] eq 177) then                     (: 'try' :)
-      let $state := p:lookahead2W(147, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(147, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -9810,7 +9810,7 @@ declare function p:parse-ExprSingle($input as xs:string, $state as item()+) as i
       return $state
     else if ($state[$p:l1] = (120,                          (: 'if' :)
                               179)) then                    (: 'typeswitch' :)
-      let $state := p:lookahead2W(142, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(142, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '+' | ',' | '-' | '/' | '//' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' | ']' |
                                                                'and' | 'ascending' | 'case' | 'cast' | 'castable' |
@@ -9825,7 +9825,7 @@ declare function p:parse-ExprSingle($input as xs:string, $state as item()+) as i
     else if ($state[$p:l1] = (107,                          (: 'every' :)
                               132,                          (: 'let' :)
                               168)) then                    (: 'some' :)
-      let $state := p:lookahead2W(145, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '$' | '(' |
+      let $state := p:lookahead2W(145, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '$' | '(' |
                                                                ('(' ':') | ')' | '*' | '+' | ',' | '-' | '/' | '//' |
                                                                ';' | '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '[' |
                                                                ']' | 'and' | 'ascending' | 'case' | 'cast' |
@@ -10568,7 +10568,7 @@ declare function p:parse-ItemType($input as xs:string, $state as item()+) as ite
                          164,                               (: 'schema-attribute' :)
                          165,                               (: 'schema-element' :)
                          173)) then                         (: 'text' :)
-      let $state := p:lookahead2W(150, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(150, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '*' | '+' | '+' | ',' | '-' | ':=' | ';' |
                                                                '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '?' | ']' |
                                                                'and' | 'ascending' | 'at' | 'case' | 'collation' |
@@ -10628,7 +10628,7 @@ declare function p:parse-SequenceType($input as xs:string, $state as item()+) as
 {
   let $state :=
     if ($state[$p:l1] eq 103) then                          (: 'empty-sequence' :)
-      let $state := p:lookahead2W(150, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
+      let $state := p:lookahead2W(150, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | '(' | ('(' ':') |
                                                                ')' | '*' | '*' | '+' | '+' | ',' | '-' | ':=' | ';' |
                                                                '<' | '<<' | '<=' | '=' | '>' | '>=' | '>>' | '?' | ']' |
                                                                'and' | 'ascending' | 'at' | 'case' | 'collation' |
@@ -10658,7 +10658,7 @@ declare function p:parse-SequenceType($input as xs:string, $state as item()+) as
           $state
         else
           p:parse-ItemType($input, $state)
-      let $state := p:lookahead1W(148, $input, $state)      (: END | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
+      let $state := p:lookahead1W(148, $input, $state)      (: %OTHER | S^WS | EOF | OuterFor | '!=' | ('(' ':') | ')' |
                                                                '*' | '*' | '+' | '+' | ',' | '-' | ':=' | ';' | '<' |
                                                                '<<' | '<=' | '=' | '>' | '>=' | '>>' | '?' | ']' |
                                                                'and' | 'ascending' | 'at' | 'case' | 'collation' |

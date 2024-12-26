@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 2, 2022 18:01 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q LL2_but_not_strongLL2.ebnf -java -saxon
 
 import java.util.ArrayList;
@@ -261,7 +261,7 @@ public class LL2_but_not_strongLL2
       switch (lk)
       {
       case 19:                      // b a
-        lookahead3(2);              // END | a
+        lookahead3(2);              // %OTHER | a
         break;
       }
       break;
@@ -447,8 +447,8 @@ public class LL2_but_not_strongLL2
 
   private static final String[] TOKEN =
   {
-    "(0)",
-    "END",
+    "%ERROR",
+    "%OTHER",
     "'a'",
     "'b'"
   };
