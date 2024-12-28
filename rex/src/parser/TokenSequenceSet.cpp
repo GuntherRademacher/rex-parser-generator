@@ -148,7 +148,7 @@ void TokenSequenceSet::insertUpsized(const TokenSequenceSet &lhs, const TokenSeq
     const TokenSequence &ts(*i);
     size_t s = ts.size();
     if (s == k ||
-        ts.last() == Token::eIMPLICIT ||
+        ts.last() == Token::eWS ||
         ts.last() == Token::eCYCLIC)
     {
       insert(ts);

@@ -773,9 +773,9 @@ public:
       }
       i->second = setNo++;
     }
-    if (lookaheadAll.contains(tokenSequence(Token::eEND)))
+    if (lookaheadAll.contains(tokenSequence(Token::eOTHER)))
     {
-      firstTokenCode = Token::eEND;
+      firstTokenCode = Token::eOTHER;
     }
 
     // set external token code. possibly redefined later when preparing tables.

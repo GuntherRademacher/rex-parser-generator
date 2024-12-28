@@ -68,6 +68,7 @@ The executable is all that is needed for using REx, it contains everything neede
 REx is also built by these GitHub workflows:
 
  - on Linux: [build-and-test-linux.yml](https://github.com/GuntherRademacher/rex-parser-generator/actions/workflows/build-and-test-linux.yml)
+ - on macOs: [build-and-test-macos.yml](https://github.com/GuntherRademacher/rex-parser-generator/actions/workflows/build-and-test-macos.yml)
  - on Windows: [build-and-test-windows.yml](https://github.com/GuntherRademacher/rex-parser-generator/actions/workflows/build-and-test-windows.yml)
 
 ## Viewing REx Documentation locally

@@ -24,8 +24,8 @@ public:
   {
     eEPSILON = 0,
     eCYCLIC = 1,
-    eIMPLICIT = 2,
-    eEND = 3,
+    eWS = 2,
+    eOTHER = 3,
     eFIRST = 4
   };
 };

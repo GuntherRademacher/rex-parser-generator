@@ -185,7 +185,7 @@ bool Node::setConflicts(size_t k, TokenSequenceSet *conflicts)
   for (TokenSequenceSet::iterator i = conflicts->begin(); i != conflicts->end(); ++i)
   {
     const TokenSequence &l(*i);
-    if (l.last() != Token::eIMPLICIT)
+    if (l.last() != Token::eWS)
     {
       empty = false;
       break;
@@ -225,7 +225,7 @@ bool Node::setConflicts(size_t k, TokenSequenceSet *conflicts)
     for (TokenSequenceSet::iterator i = conflictsK[k - 1]->begin(); i != conflictsK[k - 1]->end(); )
     {
       const TokenSequence &l(*i);
-      if (l.last() == Token::eIMPLICIT)
+      if (l.last() == Token::eWS)
       {
         TokenSequenceSet::iterator j(i);
         ++j;
@@ -353,7 +353,7 @@ static void shieldedFirst(Node *node, size_t k, TokenSequenceSet& result)
 
   if (node->whitespaceAllowance == IMPLICIT)
   {
-    result.insert(node->grammar->tokenSequence(Token::eIMPLICIT));
+    result.insert(node->grammar->tokenSequence(Token::eWS));
   }
 
   if (node->automaticSemicolonInsertion == SEMICOLON)
@@ -370,7 +370,7 @@ static void shieldedFirst(Node *node, size_t k, TokenSequenceSet& result)
       result.insert(node->grammar->tokenSequence(eof->tokenCode));
     }
 
-    result.insert(node->grammar->tokenSequence(Token::eEND));
+    result.insert(node->grammar->tokenSequence(Token::eOTHER));
   }
 
 #define EXPERIMENTAL 0
@@ -391,7 +391,7 @@ static void shieldedFirst(Node *node, size_t k, TokenSequenceSet& result)
       }
 
       resolved.erase(node->grammar->tokenSequence(Token::eEPSILON));
-      resolved.erase(node->grammar->tokenSequence(Token::eIMPLICIT));
+      resolved.erase(node->grammar->tokenSequence(Token::eWS));
       resolved.erase(node->grammar->tokenSequence(Token::eCYCLIC));
       TokenSequenceSet difference;
       difference.insertDifferenceOf(result, resolved);
@@ -442,7 +442,7 @@ void Node::fastFollowers(size_t k,
 
   if (firstSet != grammar->epsilon && ! origin->production->wsExplicit)
   {
-    result.insert(grammar->tokenSequence(Token::eIMPLICIT));
+    result.insert(grammar->tokenSequence(Token::eWS));
   }
 
   if (firstSet->contains(grammar->tokenSequenceFactory->emptySequence()))
@@ -514,16 +514,16 @@ Grammar::~Grammar()
 {
   fflush(stdout);
 
+  freeNodeList(prolog);
+  freeNodeList(nonTerminals);
+  freeNodeList(terminals);
+  freeNodeList(epilog);
+
   for (EmbeddedReduceItems::iterator i = embeddedReduceItems.begin(); i != embeddedReduceItems.end(); ++i)
   {
     Reduce *reduce = i->second;
     delete reduce;
   }
-
-  freeNodeList(prolog);
-  freeNodeList(nonTerminals);
-  freeNodeList(terminals);
-  freeNodeList(epilog);
 
   free(externalTokenCode);
 
@@ -553,7 +553,7 @@ void Production::fastFollow(size_t k, TokenSequenceSet &result, NodePointerSet &
 {
   if (isStartSymbol() || this == grammar->whitespace)
   {
-    result.insert(grammar->tokenSequence(Token::eEND));
+    result.insert(grammar->tokenSequence(Token::eOTHER));
   }
   for (NodePointerSet::iterator j = references.begin();
        j != references.end();

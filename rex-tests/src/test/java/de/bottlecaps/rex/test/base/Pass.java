@@ -96,7 +96,8 @@ public class Pass extends RuntimeException
       File cacheFile = new File(cachePath + fileName);
       if (cacheFile.exists())
       {
-        if (isSameCode(content, Paths.get(cacheFile.getCanonicalPath())))
+        String cacheContent = new NamedFile(Paths.get(cacheFile.getCanonicalPath())).getContent();    	    
+        if (isSameCode(content, cacheContent))
         {
           runner.cleanup();
           throw new Pass(cachePath);
@@ -113,9 +114,8 @@ public class Pass extends RuntimeException
     Pass.content = content;
   }
 
-  public static boolean isSameCode(String code1, Path path)
+  public static boolean isSameCode(String code1, String code2)
   {
-    String code2 = new NamedFile(path).getContent();
     return code2.replaceFirst("This file was generated[^\n]+\n", "").equals(
            code1.replaceFirst("This file was generated[^\n]+\n", ""));
   }

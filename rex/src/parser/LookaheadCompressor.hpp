@@ -285,7 +285,7 @@ public:
     {
       const Token::Code t(i->first());
       if (   t != Token::eEPSILON
-          && t != Token::eEND)
+          && t != Token::eOTHER)
       {
         const Production *root = node->terminalProductionByCode[t]->uniqueRoot;
         if (root == 0)

@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 9, 2022 22:25 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 07:01 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Zakynthos.ebnf -trace -java -a java
 
                                                             // line 5 "Zakynthos.ebnf"
@@ -538,7 +538,7 @@
 
   private static final String[] TOKEN =
   {
-    "(0)",
+    "%ERROR",
     "Z1",
     "Z2",
     "'1'",

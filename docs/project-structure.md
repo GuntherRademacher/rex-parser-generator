@@ -12,6 +12,7 @@ This is an overview of the topmost files and folders in this repository:
  ├─── 📂 .github                                 # GitHub actions
  │     ├─── 📂 workflows                         # Build and test workflows
  │     │     ├─── 📄 build-and-test-linux.yml    # Build and test workflow for Linux
+ │     │     ├─── 📄 build-and-test-macos.yml    # Build and test workflow for macOS
  │     │     ├─── 📄 build-and-test-windows.yml  # Build and test workflow for Windows
  │     │     └─── 📄 check-markdown-links.yml    # documentation link check workflow
  │     └─── 📄 dependabot.yml                    # Dependency update workflow

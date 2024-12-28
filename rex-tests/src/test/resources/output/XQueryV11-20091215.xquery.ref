@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Wed Sep 22, 2021 20:16 (UTC+02) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q XQueryV11-20091215.ebnf -xquery -u -tree -main :)
 
 declare namespace p="XQueryV11-20091215";
@@ -1603,8 +1603,8 @@ declare variable $p:EXPECTED as xs:integer+ :=
  :)
 declare variable $p:TOKEN as xs:string+ :=
 (
-  "(0)",
-  "END",
+  "%ERROR",
+  "%OTHER",
   "PragmaContents",
   "DirCommentContents",
   "DirPIContents",
@@ -2025,9 +2025,9 @@ declare function p:try-Whitespace-1($input as xs:string, $state as item()+)
   if ($state[$p:error]) then
     $state
   else
-    let $state := p:lookahead1(14, $input, $state)          (: END | S^WS | ('(' ':') :)
+    let $state := p:lookahead1(14, $input, $state)          (: %OTHER | S^WS | ('(' ':') :)
     return
-      if ($state[$p:l1] = 1) then                           (: END :)
+      if ($state[$p:l1] = 1) then                           (: %OTHER :)
         $state
       else
         let $state :=

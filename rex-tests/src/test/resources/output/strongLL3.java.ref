@@ -1,4 +1,4 @@
-// This file was generated on Sun Jun 6, 2021 17:04 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q strongLL3.ebnf -java -xml -ff
 
 public class strongLL3
@@ -123,7 +123,7 @@ public class strongLL3
       switch (lk)
       {
       case 26:                      // 'y' 'z'
-        lookahead3(2);              // END | 'z'
+        lookahead3(2);              // %OTHER | 'z'
         break;
       }
       break;
@@ -133,7 +133,7 @@ public class strongLL3
     switch (lk)
     {
     case 18:                        // 'y' 'y'
-    case 90:                        // 'y' 'z' END
+    case 90:                        // 'y' 'z' %OTHER
       parse_y();
       lookahead1(0);                // 'y'
       consume(2);                   // 'y'
@@ -158,7 +158,7 @@ public class strongLL3
       switch (lk)
       {
       case 26:                      // 'y' 'z'
-        lookahead3(2);              // END | 'z'
+        lookahead3(2);              // %OTHER | 'z'
         break;
       }
       break;
@@ -340,8 +340,8 @@ public class strongLL3
 
   private static final String[] TOKEN =
   {
-    "(0)",
-    "END",
+    "%ERROR",
+    "%OTHER",
     "'y'",
     "'z'"
   };

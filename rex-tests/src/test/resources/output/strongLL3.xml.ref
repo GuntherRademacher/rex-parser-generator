@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file was generated on Mon Nov 1, 2021 13:25 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> -->
+<!-- This file was generated on Thu Dec 26, 2024 07:38 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> -->
 <!-- REx command line: -q strongLL3.ebnf -java -xml -ff -->
 <g:grammar xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
-  <g:production follow="END" name="a">
-    <g:choice LL1-conflict="y" LL2-conflict="y~z" first3="y~y~z y~z y~z~z z~z" follow="END">
-      <g:sequence first="y" first2="y~y y~z" first3="y~y~z y~z" follow="END" if="y~y y~z~END">
+  <g:production follow="%OTHER" name="a">
+    <g:choice LL1-conflict="y" LL2-conflict="y~z" first3="y~y~z y~z y~z~z z~z" follow="%OTHER">
+      <g:sequence first="y" first2="y~y y~z" first3="y~y~z y~z" follow="%OTHER" if="y~y y~z~%OTHER">
         <g:ref first="y" first2="y~y y~z" first3="y~y~z y~z" name="y"/>
         <g:string first="y" first2="y~z" first3="y~z">y</g:string>
         <g:string first="z" first2="z">z</g:string>
       </g:sequence>
-      <g:sequence first="y z" first2="y~z z~z" first3="y~z~z z~z" follow="END" default="">
+      <g:sequence first="y z" first2="y~z z~z" first3="y~z~z z~z" follow="%OTHER" default="">
         <g:ref first="y z" first2="y~z z~z" first3="y~z~z z~z" name="y"/>
         <g:string first="z" first2="z~z" first3="z~z">z</g:string>
         <g:string first="z" first2="z">z</g:string>
       </g:sequence>
     </g:choice>
   </g:production>
-  <g:production first="EPSILON y" first2="EPSILON y" first3="EPSILON y" follow="IMPLICIT y z" follow2="IMPLICIT y~z z~z" follow3="IMPLICIT y~z~END z~z~END" name="y">
-    <g:optional LL1-conflict="y" LL2-conflict="y~z" first="EPSILON y" first2="EPSILON y" first3="EPSILON y" follow="IMPLICIT y z" follow2="IMPLICIT y~z z~z" follow3="IMPLICIT y~z~END z~z~END">
-      <g:string first="y" first2="y" first3="y" follow="IMPLICIT y z" follow2="IMPLICIT y~z z~z" if="y~y y~z~z">y</g:string>
+  <g:production first="%EPSILON y" first2="%EPSILON y" first3="%EPSILON y" follow="%WS y z" follow2="%WS y~z z~z" follow3="%WS y~z~%OTHER z~z~%OTHER" name="y">
+    <g:optional LL1-conflict="y" LL2-conflict="y~z" first="%EPSILON y" first2="%EPSILON y" first3="%EPSILON y" follow="%WS y z" follow2="%WS y~z z~z" follow3="%WS y~z~%OTHER z~z~%OTHER">
+      <g:string first="y" first2="y" first3="y" follow="%WS y z" follow2="%WS y~z z~z" if="y~y y~z~z">y</g:string>
     </g:optional>
   </g:production>
   </g:grammar>

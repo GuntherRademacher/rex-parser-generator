@@ -1,4 +1,4 @@
-// This file was generated on Sun Oct 27, 2024 20:10 (UTC+01) by REx v5.58 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Dec 26, 2024 09:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q TabFree.ebnf -scala -performance -tree
 
 import java.io.File
@@ -479,7 +479,7 @@ object TabFree {
   )
 
   private final val TOKEN = Array(
-    "(0)",
+    "%ERROR",
     "Line",
     "LF",
     "EOF"

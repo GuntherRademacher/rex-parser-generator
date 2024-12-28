@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 2, 2022 17:59 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Wed Dec 25, 2024 22:26 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q EcmaScript.ebnf -ll 1 -backtrack -asi -java -performance -saxon -tree
 
 import java.util.Arrays;
@@ -975,7 +975,7 @@ public class EcmaScript
   {
     eventHandler.startNonterminal("VariableDeclaration", e0);
     consume(4);                     // Identifier
-    lookahead1W(18);                // END | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
+    lookahead1W(18);                // %OTHER | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
     if (l1 == 43)                   // '='
     {
       whitespace();
@@ -987,7 +987,7 @@ public class EcmaScript
   private void try_VariableDeclaration()
   {
     consumeT(4);                    // Identifier
-    lookahead1W(18);                // END | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
+    lookahead1W(18);                // %OTHER | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
     if (l1 == 43)                   // '='
     {
       try_Initialiser();
@@ -1687,9 +1687,10 @@ public class EcmaScript
     parse_UnaryExpression();
     for (;;)
     {
-      lookahead1W(27);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' | '*' |
-                                    // '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' | '>' |
-                                    // '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' | '}'
+      lookahead1W(27);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' |
+                                    // '*' | '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' |
+                                    // '>' | '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' |
+                                    // '}'
       if (l1 != 18                  // '%'
        && l1 != 25                  // '*'
        && l1 != 35)                 // '/'
@@ -1723,9 +1724,10 @@ public class EcmaScript
     try_UnaryExpression();
     for (;;)
     {
-      lookahead1W(27);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' | '*' |
-                                    // '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' | '>' |
-                                    // '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' | '}'
+      lookahead1W(27);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '&' | '&&' | ')' |
+                                    // '*' | '+' | ',' | '-' | '/' | ':' | ';' | '<' | '<<' | '<=' | '==' | '===' |
+                                    // '>' | '>=' | '>>' | '>>>' | '?' | ']' | '^' | 'in' | 'instanceof' | '|' | '||' |
+                                    // '}'
       if (l1 != 18                  // '%'
        && l1 != 25                  // '*'
        && l1 != 35)                 // '/'
@@ -2170,7 +2172,7 @@ public class EcmaScript
     }
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -2224,7 +2226,7 @@ public class EcmaScript
     }
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -3130,7 +3132,7 @@ public class EcmaScript
     parse_Arguments();
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -3174,7 +3176,7 @@ public class EcmaScript
     try_Arguments();
     for (;;)
     {
-      lookahead1W(36);              // END | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
+      lookahead1W(36);              // %OTHER | EOF | WhiteSpace | Comment | '!=' | '!==' | '%' | '%=' | '&' | '&&' |
                                     // '&=' | '(' | ')' | '*' | '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' |
                                     // '.' | '/' | '/=' | ':' | ';' | '<' | '<<' | '<<=' | '<=' | '=' | '==' | '===' |
                                     // '>' | '>=' | '>>' | '>>=' | '>>>' | '>>>=' | '?' | '[' | ']' | '^' | '^=' |
@@ -3635,7 +3637,7 @@ public class EcmaScript
       whitespace();
       parse_Expression();
       consume(24);                  // ')'
-      lookahead1W(15);              // END | EOF | WhiteSpace | Comment | ';' | '}'
+      lookahead1W(15);              // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
       whitespace();
       parse_Semicolon();
       break;
@@ -3972,7 +3974,7 @@ public class EcmaScript
                                     // '~'
       try_Expression();
       consumeT(24);                 // ')'
-      lookahead1W(15);              // END | EOF | WhiteSpace | Comment | ';' | '}'
+      lookahead1W(15);              // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
       try_Semicolon();
       break;
     case -3:
@@ -4869,7 +4871,7 @@ public class EcmaScript
   {
     eventHandler.startNonterminal("ContinueStatement", e0);
     consume(60);                    // 'continue'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4880,7 +4882,7 @@ public class EcmaScript
     {
       consume(4);                   // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
     eventHandler.endNonterminal("ContinueStatement", e0);
@@ -4889,7 +4891,7 @@ public class EcmaScript
   private void try_ContinueStatement()
   {
     consumeT(60);                   // 'continue'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4900,7 +4902,7 @@ public class EcmaScript
     {
       consumeT(4);                  // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
@@ -4908,7 +4910,7 @@ public class EcmaScript
   {
     eventHandler.startNonterminal("BreakStatement", e0);
     consume(57);                    // 'break'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4919,7 +4921,7 @@ public class EcmaScript
     {
       consume(4);                   // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
     eventHandler.endNonterminal("BreakStatement", e0);
@@ -4928,7 +4930,7 @@ public class EcmaScript
   private void try_BreakStatement()
   {
     consumeT(57);                   // 'break'
-    lookahead1W(17);                // END | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
     {
       l1 = 38;                      // ';'
@@ -4939,7 +4941,7 @@ public class EcmaScript
     {
       consumeT(4);                  // Identifier
     }
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
@@ -4947,7 +4949,7 @@ public class EcmaScript
   {
     eventHandler.startNonterminal("ReturnStatement", e0);
     consume(74);                    // 'return'
-    lookahead1W(26);                // END | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
+    lookahead1W(26);                // %OTHER | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | '!' | '(' | '+' | '++' | '-' |
                                     // '--' | ';' | '[' | 'delete' | 'function' | 'new' | 'this' | 'typeof' | 'void' |
@@ -4958,7 +4960,7 @@ public class EcmaScript
       e1 = b1;
       end = e1;
     }
-    if (l1 != 1                     // END
+    if (l1 != 1                     // %OTHER
      && l1 != 3                     // EOF
      && l1 != 38                    // ';'
      && l1 != 89)                   // '}'
@@ -4974,7 +4976,7 @@ public class EcmaScript
   private void try_ReturnStatement()
   {
     consumeT(74);                   // 'return'
-    lookahead1W(26);                // END | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
+    lookahead1W(26);                // %OTHER | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | '!' | '(' | '+' | '++' | '-' |
                                     // '--' | ';' | '[' | 'delete' | 'function' | 'new' | 'this' | 'typeof' | 'void' |
@@ -4985,7 +4987,7 @@ public class EcmaScript
       e1 = b1;
       end = e1;
     }
-    if (l1 != 1                     // END
+    if (l1 != 1                     // %OTHER
      && l1 != 3                     // EOF
      && l1 != 38                    // ';'
      && l1 != 89)                   // '}'
@@ -5426,7 +5428,7 @@ public class EcmaScript
   {
     eventHandler.startNonterminal("DebuggerStatement", e0);
     consume(61);                    // 'debugger'
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
     eventHandler.endNonterminal("DebuggerStatement", e0);
@@ -5435,7 +5437,7 @@ public class EcmaScript
   private void try_DebuggerStatement()
   {
     consumeT(61);                   // 'debugger'
-    lookahead1W(15);                // END | EOF | WhiteSpace | Comment | ';' | '}'
+    lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     try_Semicolon();
   }
 
@@ -6348,8 +6350,8 @@ public class EcmaScript
 
   private static final String[] TOKEN =
   {
-    "(0)",
-    "END",
+    "%ERROR",
+    "%OTHER",
     "Shebang",
     "EOF",
     "Identifier",

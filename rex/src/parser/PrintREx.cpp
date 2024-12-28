@@ -275,7 +275,7 @@ void PrintREx::visitGrammar(Grammar *node)
   section = TERMINALS;
   for (Token::Code token = 0; token <= node->maxTokenCode; ++token)
   {
-    if (token != Token::eIMPLICIT)
+    if (token != Token::eWS)
     {
       Production *p = node->terminalProductionByCode[token];
       if (p)

@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Sun Jun 6, 2021 17:03 (UTC+02) by REx v5.53 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Thu Dec 26, 2024 06:54 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q css3selectors.ebnf -xquery -main -tree :)
 
 declare namespace p="css3selectors";
@@ -226,8 +226,8 @@ declare variable $p:EXPECTED as xs:integer+ :=
  :)
 declare variable $p:TOKEN as xs:string+ :=
 (
-  "(0)",
-  "END",
+  "%ERROR",
+  "%OTHER",
   "S",
   "'~='",
   "'|='",
@@ -1046,8 +1046,8 @@ declare function p:parse-universal($input as xs:string, $state as item()+) as it
   let $begin := $state[$p:e0]
   let $state :=
     if ($state[$p:l1] eq 20) then                           (: '*' :)
-      let $state := p:lookahead2(20, $input, $state)        (: END | S | HASH | PLUS | GREATER | COMMA | TILDE | NOT |
-                                                               ')' | '.' | ':' | '[' | '|' :)
+      let $state := p:lookahead2(20, $input, $state)        (: %OTHER | S | HASH | PLUS | GREATER | COMMA | TILDE |
+                                                               NOT | ')' | '.' | ':' | '[' | '|' :)
       return $state
     else
       ($state[$p:l1], subsequence($state, $p:lk + 1))
@@ -1134,8 +1134,8 @@ declare function p:parse-type_selector($input as xs:string, $state as item()+) a
   let $begin := $state[$p:e0]
   let $state :=
     if ($state[$p:l1] eq 8) then                            (: IDENT :)
-      let $state := p:lookahead2(20, $input, $state)        (: END | S | HASH | PLUS | GREATER | COMMA | TILDE | NOT |
-                                                               ')' | '.' | ':' | '[' | '|' :)
+      let $state := p:lookahead2(20, $input, $state)        (: %OTHER | S | HASH | PLUS | GREATER | COMMA | TILDE |
+                                                               NOT | ')' | '.' | ':' | '[' | '|' :)
       return $state
     else
       ($state[$p:l1], subsequence($state, $p:lk + 1))
@@ -1175,8 +1175,8 @@ declare function p:parse-simple_selector_sequence-1($input as xs:string, $state 
   if ($state[$p:error]) then
     $state
   else
-    let $state := p:lookahead1(18, $input, $state)          (: END | S | HASH | PLUS | GREATER | COMMA | TILDE | NOT |
-                                                               '.' | ':' | '[' :)
+    let $state := p:lookahead1(18, $input, $state)          (: %OTHER | S | HASH | PLUS | GREATER | COMMA | TILDE |
+                                                               NOT | '.' | ':' | '[' :)
     return
       if ($state[$p:l1] != 12                               (: HASH :)
       and $state[$p:l1] != 17                               (: NOT :)
@@ -1269,8 +1269,8 @@ declare function p:parse-simple_selector_sequence-2($input as xs:string, $state 
           else
             p:parse-negation($input, $state)
         return $state
-    let $state := p:lookahead1(18, $input, $state)          (: END | S | HASH | PLUS | GREATER | COMMA | TILDE | NOT |
-                                                               '.' | ':' | '[' :)
+    let $state := p:lookahead1(18, $input, $state)          (: %OTHER | S | HASH | PLUS | GREATER | COMMA | TILDE |
+                                                               NOT | '.' | ':' | '[' :)
     return
       if ($state[$p:l1] != 12                               (: HASH :)
       and $state[$p:l1] != 17                               (: NOT :)
@@ -1306,8 +1306,8 @@ declare function p:parse-simple_selector_sequence($input as xs:string, $state as
           return $state
         else if ($state[$p:l1] = (8,                        (: IDENT :)
                                   20)) then                 (: '*' :)
-          let $state := p:lookahead2(19, $input, $state)    (: END | S | HASH | PLUS | GREATER | COMMA | TILDE | NOT |
-                                                               '.' | ':' | '[' | '|' :)
+          let $state := p:lookahead2(19, $input, $state)    (: %OTHER | S | HASH | PLUS | GREATER | COMMA | TILDE |
+                                                               NOT | '.' | ':' | '[' | '|' :)
           let $state :=
             if ($state[$p:lk] = (872,                       (: IDENT '|' :)
                                  884)) then                 (: '*' '|' :)
@@ -1321,7 +1321,7 @@ declare function p:parse-simple_selector_sequence($input as xs:string, $state as
       let $state :=
         if ($state[$p:error]) then
           $state
-        else if ($state[$p:lk] = 40                         (: IDENT END :)
+        else if ($state[$p:lk] = 40                         (: IDENT %OTHER :)
               or $state[$p:lk] = 72                         (: IDENT S :)
               or $state[$p:lk] = 283                        (: '|' IDENT :)
               or $state[$p:lk] = 392                        (: IDENT HASH :)
@@ -1370,7 +1370,7 @@ declare function p:parse-selector-1($input as xs:string, $state as item()+)
   if ($state[$p:error]) then
     $state
   else
-    if ($state[$p:l1] = 1                                   (: END :)
+    if ($state[$p:l1] = 1                                   (: %OTHER :)
      or $state[$p:l1] = 15) then                            (: COMMA :)
       $state
     else

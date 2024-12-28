@@ -446,7 +446,11 @@ public:
       tokenString += format.toString<char>(id);
       tokenString += ']';
     }
-    else // if (! embedded)
+    else if (id == 0)
+    {
+      tokenString += "%ERROR";
+    }
+    else
     {
       tokenString += '(';
       tokenString += format.toString<char>(id);

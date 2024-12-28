@@ -361,7 +361,7 @@ public:
 
   ~EntryListMap2D()
   {
-    delete map;
+    free(map);
   }
 
   int getMaxX() const {return maxX;}
