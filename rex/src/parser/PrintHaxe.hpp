@@ -51,7 +51,7 @@ public:
   virtual ~PrintHaxe()
   {
     delete toBeEscaped;
-    delete classNamePrefix;
+    free(const_cast<wchar_t *>(classNamePrefix));
   };
 
   virtual void openFile() {}

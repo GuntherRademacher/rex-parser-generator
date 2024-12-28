@@ -603,10 +603,8 @@ public:
         else
         {
           symbolSize = *usedSize - symbolSize;
-
           bool isWhitespace = symbolSize == 0
-                           || (symbolSize == 1 && buffer[*usedSize - 1] == blank);
-
+                           || (symbolSize == 1 && (*usedSize == 0 || buffer[*usedSize - 1] == blank));
           switch (s->operation)
           {
           case none:
@@ -662,12 +660,11 @@ public:
 
       ruleCount++;
       if (    ruleSize > 1
-          || (ruleSize == 1 && buffer [*usedSize - 1] != blank)
+          || (ruleSize == 1 && *usedSize > 0 && (buffer[*usedSize - 1] != blank))
          )
       {
         nonBlank = 1;
       }
-
       r = r->link;
     }
 
@@ -848,3 +845,4 @@ private:
 };
 
 #endif
+
