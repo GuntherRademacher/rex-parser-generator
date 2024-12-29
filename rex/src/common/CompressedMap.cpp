@@ -77,7 +77,8 @@ void TiledMap::optimize(int shift)
                ++r)
           {
             Tile &rt(const_cast<Tile &> (*r));
-            if (memcmp(matchTile.data, rt.data, matchSize * sizeof *rt.data) != 0)
+            if (   matchSize > rt.size
+                || memcmp(matchTile.data, rt.data, matchSize * sizeof *rt.data) != 0)
             {
               break;
             }
@@ -661,3 +662,4 @@ const int *EntryListMap2D::getMap()
   }
   return map;
 }
+
