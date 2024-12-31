@@ -1,4 +1,4 @@
-// This file was generated on Mon Dec 30, 2024 21:55 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Dec 31, 2024 16:31 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCpp.cpp.template
                                                             #line 2 "PrintCpp.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -2596,17 +2596,17 @@
                                                               print(methodPrefix);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                                                             #line 2599 "PrintCpp.cpp"
-  append(L"();\n");
-  append(L"                job->parser->");
-                                                            #line 1851 "PrintCpp.cpp.template"
+  append(L"();");
+                                                            #line 1850 "PrintCpp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2605 "PrintCpp.cpp"
-  append(L"thread->");
+                                                            #line 2604 "PrintCpp.cpp"
+  append(L"\n");
+  append(L"                job->parser->thread->cleanup();");
                                                             #line 1853 "PrintCpp.cpp.template"
                                                               }
                                                             #line 2609 "PrintCpp.cpp"
-  append(L"cleanup();\n");
+  append(L"\n");
   append(L"                if (! quiet) fprintf(stdout, \"\\n\");");
                                                             #line 1855 "PrintCpp.cpp.template"
                                                               if (tree)
