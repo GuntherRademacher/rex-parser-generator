@@ -1847,7 +1847,11 @@ static std::~                                                   if (! parseChars
                              ~reset(0, 0, 0);
                 job->parser->~                                print(methodPrefix);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                        ~();
+                             ~();
+                job->parser->~                                if (useGlr)
+                                                              {
+                             ~thread->~                       }
+                             ~cleanup();
                 if (! quiet) fprintf(stdout, "\n");~          if (tree)
                                                               {
                                                                 if (isLrParser)

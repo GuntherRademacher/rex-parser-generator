@@ -1,4 +1,4 @@
-// This file was generated on Sun Nov 24, 2024 16:09 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Dec 30, 2024 20:41 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCLike.cpp.template
                                                             #line 1 "PrintCLike.cpp.template"
                                                             /*
@@ -8443,194 +8443,202 @@
   append(L", 0)");
                                                             #line 4885 "PrintCLike.cpp.template"
                                                                       print(semicolon());
-                                                            #line 8447 "PrintCLike.cpp"
+                                                                      if (isCpp())
+                                                                      {
+                                                            #line 8449 "PrintCLike.cpp"
   append(L"\n");
-  append(L"  thread");
-                                                            #line 4887 "PrintCLike.cpp.template"
-                                                                      print(arrow());
-                                                            #line 8452 "PrintCLike.cpp"
-  append(L"l1 = code");
-                                                            #line 4888 "PrintCLike.cpp.template"
-                                                                      print(semicolon());
-                                                            #line 8456 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  thread");
+  append(L"  thread->stack->unshare();\n");
+  append(L"  thread->stack = 0;");
                                                             #line 4890 "PrintCLike.cpp.template"
-                                                                      print(arrow());
-                                                            #line 8461 "PrintCLike.cpp"
-  append(L"b1 = ");
-                                                            #line 4891 "PrintCLike.cpp.template"
-                                                                      if (useGlr) print(thiz());
-                                                            #line 8465 "PrintCLike.cpp"
-  append(L"begin");
-                                                            #line 4892 "PrintCLike.cpp.template"
-                                                                      print(semicolon());
-                                                            #line 8469 "PrintCLike.cpp"
+                                                                      }
+                                                            #line 8455 "PrintCLike.cpp"
   append(L"\n");
   append(L"  thread");
-                                                            #line 4894 "PrintCLike.cpp.template"
+                                                            #line 4892 "PrintCLike.cpp.template"
                                                                       print(arrow());
-                                                            #line 8474 "PrintCLike.cpp"
-  append(L"e1 = ");
+                                                            #line 8460 "PrintCLike.cpp"
+  append(L"l1 = code");
+                                                            #line 4893 "PrintCLike.cpp.template"
+                                                                      print(semicolon());
+                                                            #line 8464 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  thread");
                                                             #line 4895 "PrintCLike.cpp.template"
-                                                                      if (useGlr) print(thiz());
-                                                            #line 8478 "PrintCLike.cpp"
-  append(L"end");
+                                                                      print(arrow());
+                                                            #line 8469 "PrintCLike.cpp"
+  append(L"b1 = ");
                                                             #line 4896 "PrintCLike.cpp.template"
+                                                                      if (useGlr) print(thiz());
+                                                            #line 8473 "PrintCLike.cpp"
+  append(L"begin");
+                                                            #line 4897 "PrintCLike.cpp.template"
+                                                                      print(semicolon());
+                                                            #line 8477 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  thread");
+                                                            #line 4899 "PrintCLike.cpp.template"
+                                                                      print(arrow());
+                                                            #line 8482 "PrintCLike.cpp"
+  append(L"e1 = ");
+                                                            #line 4900 "PrintCLike.cpp.template"
+                                                                      if (useGlr) print(thiz());
+                                                            #line 8486 "PrintCLike.cpp"
+  append(L"end");
+                                                            #line 4901 "PrintCLike.cpp.template"
                                                                       print(semicolon());
                                                                     }
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 8486 "PrintCLike.cpp"
+                                                            #line 8494 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 4902 "PrintCLike.cpp.template"
+                                                            #line 4907 "PrintCLike.cpp.template"
                                                                     print(intVal());
-                                                            #line 8491 "PrintCLike.cpp"
+                                                            #line 8499 "PrintCLike.cpp"
   append(L"b0W");
-                                                            #line 4903 "PrintCLike.cpp.template"
+                                                            #line 4908 "PrintCLike.cpp.template"
                                                                     print(assign());
                                                                     print(thiz());
-                                                            #line 8496 "PrintCLike.cpp"
+                                                            #line 8504 "PrintCLike.cpp"
   append(L"b0; ");
-                                                            #line 4905 "PrintCLike.cpp.template"
+                                                            #line 4910 "PrintCLike.cpp.template"
                                                                     print(intVal());
-                                                            #line 8500 "PrintCLike.cpp"
+                                                            #line 8508 "PrintCLike.cpp"
   append(L"e0W");
-                                                            #line 4906 "PrintCLike.cpp.template"
+                                                            #line 4911 "PrintCLike.cpp.template"
                                                                     print(assign());
                                                                     print(thiz());
-                                                            #line 8505 "PrintCLike.cpp"
+                                                            #line 8513 "PrintCLike.cpp"
   append(L"e0");
-                                                            #line 4909 "PrintCLike.cpp.template"
+                                                            #line 4914 "PrintCLike.cpp.template"
                                                                     for (size_t k = 1; k < grammar->k; ++k)
                                                                     {
-                                                            #line 8510 "PrintCLike.cpp"
-  append(L"; ");
-                                                            #line 4911 "PrintCLike.cpp.template"
-                                                                      print(intVal());
-                                                            #line 8514 "PrintCLike.cpp"
-  append(L"l");
-                                                            #line 4912 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
                                                             #line 8518 "PrintCLike.cpp"
+  append(L"; ");
+                                                            #line 4916 "PrintCLike.cpp.template"
+                                                                      print(intVal());
+                                                            #line 8522 "PrintCLike.cpp"
+  append(L"l");
+                                                            #line 4917 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8526 "PrintCLike.cpp"
   append(L"W");
-                                                            #line 4913 "PrintCLike.cpp.template"
+                                                            #line 4918 "PrintCLike.cpp.template"
                                                                       print(assign());
                                                                       print(thiz());
-                                                            #line 8523 "PrintCLike.cpp"
+                                                            #line 8531 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 4915 "PrintCLike.cpp.template"
+                                                            #line 4920 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
                                                                       print(semicolon());
-                                                            #line 8528 "PrintCLike.cpp"
+                                                            #line 8536 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 4918 "PrintCLike.cpp.template"
-                                                                      print(intVal());
-                                                            #line 8533 "PrintCLike.cpp"
-  append(L"b");
-                                                            #line 4919 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8537 "PrintCLike.cpp"
-  append(L"W");
-                                                            #line 4920 "PrintCLike.cpp.template"
-                                                                      print(assign());
-                                                                      print(thiz());
-                                                            #line 8542 "PrintCLike.cpp"
-  append(L"b");
-                                                            #line 4922 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8546 "PrintCLike.cpp"
-  append(L"; ");
                                                             #line 4923 "PrintCLike.cpp.template"
                                                                       print(intVal());
-                                                            #line 8550 "PrintCLike.cpp"
-  append(L"e");
+                                                            #line 8541 "PrintCLike.cpp"
+  append(L"b");
                                                             #line 4924 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
-                                                            #line 8554 "PrintCLike.cpp"
+                                                            #line 8545 "PrintCLike.cpp"
   append(L"W");
                                                             #line 4925 "PrintCLike.cpp.template"
                                                                       print(assign());
                                                                       print(thiz());
-                                                            #line 8559 "PrintCLike.cpp"
-  append(L"e");
+                                                            #line 8550 "PrintCLike.cpp"
+  append(L"b");
                                                             #line 4927 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8554 "PrintCLike.cpp"
+  append(L"; ");
+                                                            #line 4928 "PrintCLike.cpp.template"
+                                                                      print(intVal());
+                                                            #line 8558 "PrintCLike.cpp"
+  append(L"e");
+                                                            #line 4929 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8562 "PrintCLike.cpp"
+  append(L"W");
+                                                            #line 4930 "PrintCLike.cpp.template"
+                                                                      print(assign());
+                                                                      print(thiz());
+                                                            #line 8567 "PrintCLike.cpp"
+  append(L"e");
+                                                            #line 4932 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
                                                                     }
                                                                     print(semicolon());
-                                                            #line 8565 "PrintCLike.cpp"
+                                                            #line 8573 "PrintCLike.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  ");
-                                                            #line 4932 "PrintCLike.cpp.template"
-                                                                    print(thiz());
-                                                            #line 8571 "PrintCLike.cpp"
-  append(L"l1 = code; ");
-                                                            #line 4933 "PrintCLike.cpp.template"
-                                                                    print(thiz());
-                                                            #line 8575 "PrintCLike.cpp"
-  append(L"b1 = ");
-                                                            #line 4934 "PrintCLike.cpp.template"
+                                                            #line 4937 "PrintCLike.cpp.template"
                                                                     print(thiz());
                                                             #line 8579 "PrintCLike.cpp"
-  append(L"begin; ");
-                                                            #line 4935 "PrintCLike.cpp.template"
+  append(L"l1 = code; ");
+                                                            #line 4938 "PrintCLike.cpp.template"
                                                                     print(thiz());
                                                             #line 8583 "PrintCLike.cpp"
-  append(L"e1 = ");
-                                                            #line 4936 "PrintCLike.cpp.template"
+  append(L"b1 = ");
+                                                            #line 4939 "PrintCLike.cpp.template"
                                                                     print(thiz());
                                                             #line 8587 "PrintCLike.cpp"
+  append(L"begin; ");
+                                                            #line 4940 "PrintCLike.cpp.template"
+                                                                    print(thiz());
+                                                            #line 8591 "PrintCLike.cpp"
+  append(L"e1 = ");
+                                                            #line 4941 "PrintCLike.cpp.template"
+                                                                    print(thiz());
+                                                            #line 8595 "PrintCLike.cpp"
   append(L"end");
-                                                            #line 4937 "PrintCLike.cpp.template"
+                                                            #line 4942 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                     for (size_t k = 2; k <= grammar->k; ++k)
                                                                     {
-                                                            #line 8593 "PrintCLike.cpp"
+                                                            #line 8601 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 4941 "PrintCLike.cpp.template"
+                                                            #line 4946 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 8598 "PrintCLike.cpp"
+                                                            #line 8606 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 4942 "PrintCLike.cpp.template"
+                                                            #line 4947 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
-                                                            #line 8602 "PrintCLike.cpp"
+                                                            #line 8610 "PrintCLike.cpp"
   append(L" = 0");
-                                                            #line 4943 "PrintCLike.cpp.template"
+                                                            #line 4948 "PrintCLike.cpp.template"
                                                                       print(semicolon());
                                                                     }
                                                                   }
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 8610 "PrintCLike.cpp"
+                                                            #line 8618 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 4949 "PrintCLike.cpp.template"
+                                                            #line 4954 "PrintCLike.cpp.template"
                                                                     if (useGlr)
                                                                     {
                                                                       if (! isCpp())
                                                                       {
-                                                            #line 8618 "PrintCLike.cpp"
+                                                            #line 8626 "PrintCLike.cpp"
   append(L"thread = ");
-                                                            #line 4953 "PrintCLike.cpp.template"
+                                                            #line 4958 "PrintCLike.cpp.template"
                                                                       }
                                                                       if (isJava())
                                                                       {
                                                                         print(className.c_str());
-                                                            #line 8625 "PrintCLike.cpp"
+                                                            #line 8633 "PrintCLike.cpp"
   append(L".this.");
-                                                            #line 4957 "PrintCLike.cpp.template"
+                                                            #line 4962 "PrintCLike.cpp.template"
                                                                       }
                                                                       else if (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript() || isGo() || isPython())
                                                                       {
                                                                         print(thiz());
-                                                            #line 8632 "PrintCLike.cpp"
+                                                            #line 8640 "PrintCLike.cpp"
   append(L"parser");
-                                                            #line 4961 "PrintCLike.cpp.template"
+                                                            #line 4966 "PrintCLike.cpp.template"
                                                                         print(arrow());
                                                                       }
                                                                     }
@@ -8638,39 +8646,39 @@
                                                                     {
                                                                       print(thiz());
                                                                     }
-                                                            #line 8642 "PrintCLike.cpp"
+                                                            #line 8650 "PrintCLike.cpp"
   append(L"parse(-1, ");
-                                                            #line 4968 "PrintCLike.cpp.template"
+                                                            #line 4973 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->whitespace->getStateId()));
                                                                     if (tree)
                                                                     {
-                                                            #line 8648 "PrintCLike.cpp"
+                                                            #line 8656 "PrintCLike.cpp"
   append(L", ");
-                                                            #line 4971 "PrintCLike.cpp.template"
+                                                            #line 4976 "PrintCLike.cpp.template"
                                                                       print(nullPtr());
                                                                     }
                                                                     if (useGlr)
                                                                     {
-                                                            #line 8655 "PrintCLike.cpp"
+                                                            #line 8663 "PrintCLike.cpp"
   append(L", thread");
-                                                            #line 4975 "PrintCLike.cpp.template"
+                                                            #line 4980 "PrintCLike.cpp.template"
                                                                     }
-                                                            #line 8659 "PrintCLike.cpp"
+                                                            #line 8667 "PrintCLike.cpp"
   append(L")");
-                                                            #line 4976 "PrintCLike.cpp.template"
+                                                            #line 4981 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 8666 "PrintCLike.cpp"
+                                                            #line 8674 "PrintCLike.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  ");
-                                                            #line 4982 "PrintCLike.cpp.template"
+                                                            #line 4987 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 8672 "PrintCLike.cpp"
+                                                            #line 8680 "PrintCLike.cpp"
   append(L"try_");
-                                                            #line 4983 "PrintCLike.cpp.template"
+                                                            #line 4988 "PrintCLike.cpp.template"
                                                                     print(Format::acceptableName<WString>(grammar->whitespace->name).c_str());
                                                                     if (! isScala()) print(L"()");
                                                                     print(semicolon());
@@ -8679,85 +8687,93 @@
                                                                   {
                                                                     if (isJavascript())
                                                                     {
-                                                            #line 8683 "PrintCLike.cpp"
+                                                            #line 8691 "PrintCLike.cpp"
   append(L"\n");
   append(L"  end = thread.getEnd();");
-                                                            #line 4992 "PrintCLike.cpp.template"
+                                                            #line 4997 "PrintCLike.cpp.template"
+                                                                    }
+                                                                    else if (isCpp())
+                                                                    {
+                                                            #line 8698 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  end = thread->end;\n");
+  append(L"  delete thread;");
+                                                            #line 5002 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 8690 "PrintCLike.cpp"
+                                                            #line 8706 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 4996 "PrintCLike.cpp.template"
+                                                            #line 5006 "PrintCLike.cpp.template"
                                                                       if (useGlr) print(thiz());
-                                                            #line 8695 "PrintCLike.cpp"
+                                                            #line 8711 "PrintCLike.cpp"
   append(L"end = thread");
-                                                            #line 4997 "PrintCLike.cpp.template"
+                                                            #line 5007 "PrintCLike.cpp.template"
                                                                       print(arrow());
-                                                            #line 8699 "PrintCLike.cpp"
+                                                            #line 8715 "PrintCLike.cpp"
   append(L"end");
-                                                            #line 4998 "PrintCLike.cpp.template"
+                                                            #line 5008 "PrintCLike.cpp.template"
                                                                       print(semicolon());
                                                                     }
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 8707 "PrintCLike.cpp"
+                                                            #line 8723 "PrintCLike.cpp"
   append(L"\n");
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5005 "PrintCLike.cpp.template"
-                                                                    print(thiz());
-                                                            #line 8713 "PrintCLike.cpp"
-  append(L"b0 = b0W; ");
-                                                            #line 5006 "PrintCLike.cpp.template"
-                                                                    print(thiz());
-                                                            #line 8717 "PrintCLike.cpp"
-  append(L"e0 = e0W");
-                                                            #line 5007 "PrintCLike.cpp.template"
-                                                                    for (size_t k = 1; k < grammar->k; ++k)
-                                                                    {
-                                                            #line 8722 "PrintCLike.cpp"
-  append(L"; ");
-                                                            #line 5009 "PrintCLike.cpp.template"
-                                                                      print(thiz());
-                                                            #line 8726 "PrintCLike.cpp"
-  append(L"l");
-                                                            #line 5010 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8730 "PrintCLike.cpp"
-  append(L" = l");
-                                                            #line 5011 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8734 "PrintCLike.cpp"
-  append(L"W");
-                                                            #line 5012 "PrintCLike.cpp.template"
-                                                                      if (isPython())
-                                                                      {
-                                                            #line 8739 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
                                                             #line 5015 "PrintCLike.cpp.template"
+                                                                    print(thiz());
+                                                            #line 8729 "PrintCLike.cpp"
+  append(L"b0 = b0W; ");
+                                                            #line 5016 "PrintCLike.cpp.template"
+                                                                    print(thiz());
+                                                            #line 8733 "PrintCLike.cpp"
+  append(L"e0 = e0W");
+                                                            #line 5017 "PrintCLike.cpp.template"
+                                                                    for (size_t k = 1; k < grammar->k; ++k)
+                                                                    {
+                                                            #line 8738 "PrintCLike.cpp"
+  append(L"; ");
+                                                            #line 5019 "PrintCLike.cpp.template"
+                                                                      print(thiz());
+                                                            #line 8742 "PrintCLike.cpp"
+  append(L"l");
+                                                            #line 5020 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8746 "PrintCLike.cpp"
+  append(L" = l");
+                                                            #line 5021 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8750 "PrintCLike.cpp"
+  append(L"W");
+                                                            #line 5022 "PrintCLike.cpp.template"
+                                                                      if (isPython())
+                                                                      {
+                                                            #line 8755 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5025 "PrintCLike.cpp.template"
                                                                       }
                                                                       else
                                                                       {
-                                                            #line 8746 "PrintCLike.cpp"
+                                                            #line 8762 "PrintCLike.cpp"
   append(L"; ");
-                                                            #line 5018 "PrintCLike.cpp.template"
+                                                            #line 5028 "PrintCLike.cpp.template"
                                                                       }
-                                                            #line 8750 "PrintCLike.cpp"
+                                                            #line 8766 "PrintCLike.cpp"
   append(L"if ");
-                                                            #line 5019 "PrintCLike.cpp.template"
+                                                            #line 5029 "PrintCLike.cpp.template"
                                                                       print(ifLeftParen());
                                                                       print(thiz());
-                                                            #line 8755 "PrintCLike.cpp"
+                                                            #line 8771 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 5021 "PrintCLike.cpp.template"
+                                                            #line 5031 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
-                                                            #line 8759 "PrintCLike.cpp"
+                                                            #line 8775 "PrintCLike.cpp"
   append(L" != 0");
-                                                            #line 5022 "PrintCLike.cpp.template"
+                                                            #line 5032 "PrintCLike.cpp.template"
                                                                       print(ifRightParen());
                                                                       if (isPython())
                                                                       {
@@ -8765,38 +8781,38 @@
                                                                       }
                                                                       else
                                                                       {
-                                                            #line 8769 "PrintCLike.cpp"
+                                                            #line 8785 "PrintCLike.cpp"
   append(L" {");
-                                                            #line 5029 "PrintCLike.cpp.template"
+                                                            #line 5039 "PrintCLike.cpp.template"
                                                                       }
-                                                            #line 8773 "PrintCLike.cpp"
+                                                            #line 8789 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5031 "PrintCLike.cpp.template"
+                                                            #line 5041 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 8778 "PrintCLike.cpp"
-  append(L"b");
-                                                            #line 5032 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8782 "PrintCLike.cpp"
-  append(L" = b");
-                                                            #line 5033 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
-                                                            #line 8786 "PrintCLike.cpp"
-  append(L"W; ");
-                                                            #line 5034 "PrintCLike.cpp.template"
-                                                                      print(thiz());
-                                                            #line 8790 "PrintCLike.cpp"
-  append(L"e");
-                                                            #line 5035 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(k));
                                                             #line 8794 "PrintCLike.cpp"
-  append(L" = e");
-                                                            #line 5036 "PrintCLike.cpp.template"
+  append(L"b");
+                                                            #line 5042 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(k));
                                                             #line 8798 "PrintCLike.cpp"
+  append(L" = b");
+                                                            #line 5043 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8802 "PrintCLike.cpp"
+  append(L"W; ");
+                                                            #line 5044 "PrintCLike.cpp.template"
+                                                                      print(thiz());
+                                                            #line 8806 "PrintCLike.cpp"
+  append(L"e");
+                                                            #line 5045 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8810 "PrintCLike.cpp"
+  append(L" = e");
+                                                            #line 5046 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(k));
+                                                            #line 8814 "PrintCLike.cpp"
   append(L"W");
-                                                            #line 5037 "PrintCLike.cpp.template"
+                                                            #line 5047 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(semicolon());
                                                                     if (isPython())
@@ -8805,21 +8821,21 @@
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 8809 "PrintCLike.cpp"
+                                                            #line 8825 "PrintCLike.cpp"
   append(L" ");
-                                                            #line 5045 "PrintCLike.cpp.template"
+                                                            #line 5055 "PrintCLike.cpp.template"
                                                                       for (size_t k = 1; k < grammar->k; ++k)
                                                                       {
-                                                            #line 8814 "PrintCLike.cpp"
+                                                            #line 8830 "PrintCLike.cpp"
   append(L"}");
-                                                            #line 5047 "PrintCLike.cpp.template"
+                                                            #line 5057 "PrintCLike.cpp.template"
                                                                       }
                                                                     }
                                                                   }
                                                                   print(rightBrace());
-                                                            #line 8821 "PrintCLike.cpp"
+                                                            #line 8837 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5052 "PrintCLike.cpp.template"
+                                                            #line 5062 "PrintCLike.cpp.template"
                                                                   if (! isGo())
                                                                     decreaseIndent();
                                                                 }
@@ -8829,68 +8845,68 @@
                                                                     increaseIndent();
                                                                   openMethod (voidType(), L"", L"whitespace", L"");
                                                                   print(leftBrace());
-                                                            #line 8833 "PrintCLike.cpp"
+                                                            #line 8849 "PrintCLike.cpp"
   append(L"\n");
   append(L"  if ");
-                                                            #line 5062 "PrintCLike.cpp.template"
+                                                            #line 5072 "PrintCLike.cpp.template"
                                                                   print(ifLeftParen());
                                                                   print(thiz());
-                                                            #line 8839 "PrintCLike.cpp"
+                                                            #line 8855 "PrintCLike.cpp"
   append(L"e0 != ");
-                                                            #line 5064 "PrintCLike.cpp.template"
+                                                            #line 5074 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 8843 "PrintCLike.cpp"
+                                                            #line 8859 "PrintCLike.cpp"
   append(L"b1");
-                                                            #line 5065 "PrintCLike.cpp.template"
+                                                            #line 5075 "PrintCLike.cpp.template"
                                                                   print(ifRightParen());
                                                                   increaseIndent();
                                                                   print(leftBrace());
                                                                   decreaseIndent();
-                                                            #line 8850 "PrintCLike.cpp"
+                                                            #line 8866 "PrintCLike.cpp"
   append(L"\n");
   append(L"    ");
-                                                            #line 5070 "PrintCLike.cpp.template"
+                                                            #line 5080 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 8855 "PrintCLike.cpp"
+                                                            #line 8871 "PrintCLike.cpp"
   append(L"eventHandler");
-                                                            #line 5071 "PrintCLike.cpp.template"
+                                                            #line 5081 "PrintCLike.cpp.template"
                                                                   print(arrow());
                                                                   if (isGo())
                                                                   {
-                                                            #line 8861 "PrintCLike.cpp"
+                                                            #line 8877 "PrintCLike.cpp"
   append(L"W");
-                                                            #line 5074 "PrintCLike.cpp.template"
+                                                            #line 5084 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 8867 "PrintCLike.cpp"
-  append(L"w");
-                                                            #line 5077 "PrintCLike.cpp.template"
-                                                                  }
-                                                            #line 8871 "PrintCLike.cpp"
-  append(L"hitespace(");
-                                                            #line 5078 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 8875 "PrintCLike.cpp"
-  append(L"e0, ");
-                                                            #line 5079 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 8879 "PrintCLike.cpp"
-  append(L"b1)");
-                                                            #line 5080 "PrintCLike.cpp.template"
-                                                                  print(semicolon());
                                                             #line 8883 "PrintCLike.cpp"
+  append(L"w");
+                                                            #line 5087 "PrintCLike.cpp.template"
+                                                                  }
+                                                            #line 8887 "PrintCLike.cpp"
+  append(L"hitespace(");
+                                                            #line 5088 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 8891 "PrintCLike.cpp"
+  append(L"e0, ");
+                                                            #line 5089 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 8895 "PrintCLike.cpp"
+  append(L"b1)");
+                                                            #line 5090 "PrintCLike.cpp.template"
+                                                                  print(semicolon());
+                                                            #line 8899 "PrintCLike.cpp"
   append(L"\n");
   append(L"    ");
-                                                            #line 5082 "PrintCLike.cpp.template"
+                                                            #line 5092 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 8888 "PrintCLike.cpp"
+                                                            #line 8904 "PrintCLike.cpp"
   append(L"e0 = ");
-                                                            #line 5083 "PrintCLike.cpp.template"
+                                                            #line 5093 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 8892 "PrintCLike.cpp"
+                                                            #line 8908 "PrintCLike.cpp"
   append(L"b1");
-                                                            #line 5084 "PrintCLike.cpp.template"
+                                                            #line 5094 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                   increaseIndent();
                                                                   print(rightBrace());
@@ -8898,9 +8914,9 @@
                                                                   print(rightBrace());
                                                                   if (! isGo())
                                                                     decreaseIndent();
-                                                            #line 8902 "PrintCLike.cpp"
+                                                            #line 8918 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5092 "PrintCLike.cpp.template"
+                                                            #line 5102 "PrintCLike.cpp.template"
                                                                 }
                                                                 if (! isGo())
                                                                   increaseIndent();
@@ -8908,84 +8924,84 @@
                                                                 print(leftBrace());
                                                                 if (isScala())
                                                                 {
-                                                            #line 8912 "PrintCLike.cpp"
+                                                            #line 8928 "PrintCLike.cpp"
   append(L"\n");
   append(L"  var continue = true\n");
   append(L"  var code = 0\n");
   append(L"  while (continue) {\n");
   append(L"    code = matcher(tokenSetId)");
-                                                            #line 5103 "PrintCLike.cpp.template"
+                                                            #line 5113 "PrintCLike.cpp.template"
                                                                   increaseIndent(2);
                                                                 }
                                                                 else
                                                                 {
                                                                   if (! isPython())
                                                                   {
-                                                            #line 8925 "PrintCLike.cpp"
+                                                            #line 8941 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5110 "PrintCLike.cpp.template"
+                                                            #line 5120 "PrintCLike.cpp.template"
                                                                     print((isJavascript() || isTypescript() || isHaxe() || isGo()) ? L"var" : L"int");
-                                                            #line 8930 "PrintCLike.cpp"
+                                                            #line 8946 "PrintCLike.cpp"
   append(L" code");
-                                                            #line 5111 "PrintCLike.cpp.template"
+                                                            #line 5121 "PrintCLike.cpp.template"
                                                                     if (isTypescript())
                                                                     {
-                                                            #line 8935 "PrintCLike.cpp"
+                                                            #line 8951 "PrintCLike.cpp"
   append(L": number");
-                                                            #line 5113 "PrintCLike.cpp.template"
+                                                            #line 5123 "PrintCLike.cpp.template"
                                                                     }
                                                                     else if (isGo())
                                                                     {
-                                                            #line 8941 "PrintCLike.cpp"
+                                                            #line 8957 "PrintCLike.cpp"
   append(L" int");
-                                                            #line 5116 "PrintCLike.cpp.template"
+                                                            #line 5126 "PrintCLike.cpp.template"
                                                                     }
                                                                     if (isHaxe())
                                                                     {
-                                                            #line 8947 "PrintCLike.cpp"
+                                                            #line 8963 "PrintCLike.cpp"
   append(L" = 0");
-                                                            #line 5119 "PrintCLike.cpp.template"
+                                                            #line 5129 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(semicolon());
                                                                   }
                                                                   if (isHaxe() || isPython())
                                                                   {
-                                                            #line 8955 "PrintCLike.cpp"
+                                                            #line 8971 "PrintCLike.cpp"
   append(L"\n");
   append(L"  while ");
-                                                            #line 5125 "PrintCLike.cpp.template"
+                                                            #line 5135 "PrintCLike.cpp.template"
                                                                     print(ifLeftParen());
                                                                     print(isPython() ? L"T" : L"t");
-                                                            #line 8961 "PrintCLike.cpp"
+                                                            #line 8977 "PrintCLike.cpp"
   append(L"rue");
-                                                            #line 5127 "PrintCLike.cpp.template"
+                                                            #line 5137 "PrintCLike.cpp.template"
                                                                     print(ifRightParen());
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 8968 "PrintCLike.cpp"
+                                                            #line 8984 "PrintCLike.cpp"
   append(L"\n");
   append(L"  for");
-                                                            #line 5132 "PrintCLike.cpp.template"
+                                                            #line 5142 "PrintCLike.cpp.template"
                                                                     if (! isGo())
                                                                     {
-                                                            #line 8974 "PrintCLike.cpp"
+                                                            #line 8990 "PrintCLike.cpp"
   append(L" (;;)");
-                                                            #line 5134 "PrintCLike.cpp.template"
+                                                            #line 5144 "PrintCLike.cpp.template"
                                                                     }
                                                                   }
                                                                   increaseIndent();
                                                                   print(leftBrace());
                                                                   increaseIndent();
-                                                            #line 8982 "PrintCLike.cpp"
+                                                            #line 8998 "PrintCLike.cpp"
   append(L"\n");
   append(L"code = ");
-                                                            #line 5140 "PrintCLike.cpp.template"
+                                                            #line 5150 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 8987 "PrintCLike.cpp"
+                                                            #line 9003 "PrintCLike.cpp"
   append(L"match(tokenSetId)");
-                                                            #line 5141 "PrintCLike.cpp.template"
+                                                            #line 5151 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                 }
                                                                 if (simpleWhitespace)
@@ -9012,49 +9028,49 @@
                                                                              L"if");
                                                                   if (isScala())
                                                                   {
-                                                            #line 9016 "PrintCLike.cpp"
+                                                            #line 9032 "PrintCLike.cpp"
   append(L"\n");
   append(L"  continue = false\n");
   append(L"}\n");
   append(L"else {\n");
   append(L"  ");
-                                                            #line 5171 "PrintCLike.cpp.template"
+                                                            #line 5181 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 9024 "PrintCLike.cpp"
+                                                            #line 9040 "PrintCLike.cpp"
   append(L"skip(code)\n");
   append(L"}");
-                                                            #line 5173 "PrintCLike.cpp.template"
+                                                            #line 5183 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 9031 "PrintCLike.cpp"
+                                                            #line 9047 "PrintCLike.cpp"
   append(L"\n");
   append(L"  break");
-                                                            #line 5177 "PrintCLike.cpp.template"
+                                                            #line 5187 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                     print(rightBrace());
-                                                            #line 9037 "PrintCLike.cpp"
+                                                            #line 9053 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5180 "PrintCLike.cpp.template"
+                                                            #line 5190 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 9041 "PrintCLike.cpp"
+                                                            #line 9057 "PrintCLike.cpp"
   append(L"skip(code);");
-                                                            #line 5181 "PrintCLike.cpp.template"
+                                                            #line 5191 "PrintCLike.cpp.template"
                                                                   }
                                                                 }
                                                                 else if (isScala())
                                                                 {
-                                                            #line 9048 "PrintCLike.cpp"
+                                                            #line 9064 "PrintCLike.cpp"
   append(L"\n");
   append(L"continue = false");
-                                                            #line 5186 "PrintCLike.cpp.template"
+                                                            #line 5196 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 9055 "PrintCLike.cpp"
+                                                            #line 9071 "PrintCLike.cpp"
   append(L"\n");
   append(L"break");
-                                                            #line 5190 "PrintCLike.cpp.template"
+                                                            #line 5200 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                 }
                                                                 if (simpleWhitespace)
@@ -9065,24 +9081,24 @@
                                                                 decreaseIndent();
                                                                 print(rightBrace());
                                                                 decreaseIndent();
-                                                            #line 9069 "PrintCLike.cpp"
+                                                            #line 9085 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5201 "PrintCLike.cpp.template"
+                                                            #line 5211 "PrintCLike.cpp.template"
                                                                 if (! isScala())
                                                                 {
-                                                            #line 9075 "PrintCLike.cpp"
+                                                            #line 9091 "PrintCLike.cpp"
   append(L"return ");
-                                                            #line 5203 "PrintCLike.cpp.template"
+                                                            #line 5213 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 9079 "PrintCLike.cpp"
+                                                            #line 9095 "PrintCLike.cpp"
   append(L"code");
-                                                            #line 5204 "PrintCLike.cpp.template"
+                                                            #line 5214 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
-                                                            #line 9084 "PrintCLike.cpp"
+                                                            #line 9100 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5207 "PrintCLike.cpp.template"
+                                                            #line 5217 "PrintCLike.cpp.template"
                                                                 if (! isGo())
                                                                   decreaseIndent();
                                                                 printLookaheadMethods(grammar->lookaheadSets.lookaheadWCount, true);
@@ -9096,43 +9112,43 @@
                                                               {
                                                                 if (! interfaceName.empty())
                                                                 {
-                                                            #line 9100 "PrintCLike.cpp"
+                                                            #line 9116 "PrintCLike.cpp"
   append(L"\n");
   append(L"def parse(): Unit = {\n");
   append(L"  parse_");
-                                                            #line 5222 "PrintCLike.cpp.template"
+                                                            #line 5232 "PrintCLike.cpp.template"
                                                                   print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 9106 "PrintCLike.cpp"
+                                                            #line 9122 "PrintCLike.cpp"
   append(L"()\n");
   append(L"}\n");
-                                                            #line 5225 "PrintCLike.cpp.template"
+                                                            #line 5235 "PrintCLike.cpp.template"
                                                                 }
                                                                 if (memoization)
                                                                 {
                                                                   int bits = Math::bits(grammar->conflictCount);
-                                                            #line 9114 "PrintCLike.cpp"
+                                                            #line 9130 "PrintCLike.cpp"
   append(L"\n");
   append(L"private def memoize(i: Int, e: Int, v: Int): Unit = {\n");
   append(L"  memo.put((e << ");
-                                                            #line 5231 "PrintCLike.cpp.template"
+                                                            #line 5241 "PrintCLike.cpp.template"
                                                                   print(format.toString<wchar_t>(bits));
-                                                            #line 9120 "PrintCLike.cpp"
+                                                            #line 9136 "PrintCLike.cpp"
   append(L") + i, v)\n");
   append(L"}\n");
   append(L"\n");
   append(L"private def memoized(i: Int, e: Int) = {\n");
   append(L"  memo.getOrElse((e << ");
-                                                            #line 5236 "PrintCLike.cpp.template"
+                                                            #line 5246 "PrintCLike.cpp.template"
                                                                   print(format.toString<wchar_t>(bits));
-                                                            #line 9128 "PrintCLike.cpp"
+                                                            #line 9144 "PrintCLike.cpp"
   append(L") + i, 0)\n");
   append(L"}\n");
-                                                            #line 5239 "PrintCLike.cpp.template"
+                                                            #line 5249 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 9133 "PrintCLike.cpp"
+                                                            #line 9149 "PrintCLike.cpp"
   append(L"\n");
   append(L"def error(b: Int, e: Int, s: Int, l: Int, t: Int): Int = {");
-                                                            #line 5241 "PrintCLike.cpp.template"
+                                                            #line 5251 "PrintCLike.cpp.template"
                                                               }
                                                               else
                                                               {
@@ -9143,149 +9159,149 @@
                                                               if (hasBacktracking)
                                                               {
                                                                 increaseIndent();
-                                                            #line 9147 "PrintCLike.cpp"
+                                                            #line 9163 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5252 "PrintCLike.cpp.template"
+                                                            #line 5262 "PrintCLike.cpp.template"
                                                                 print(ifLeftParen());
                                                                 if (grammar->noThrow)
                                                                 {
                                                                   print(thiz());
-                                                            #line 9155 "PrintCLike.cpp"
+                                                            #line 9171 "PrintCLike.cpp"
   append(L"viable ");
-                                                            #line 5256 "PrintCLike.cpp.template"
+                                                            #line 5266 "PrintCLike.cpp.template"
                                                                   if (isPython())
                                                                   {
-                                                            #line 9160 "PrintCLike.cpp"
+                                                            #line 9176 "PrintCLike.cpp"
   append(L"and");
-                                                            #line 5258 "PrintCLike.cpp.template"
+                                                            #line 5268 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 9166 "PrintCLike.cpp"
+                                                            #line 9182 "PrintCLike.cpp"
   append(L"&&");
-                                                            #line 5261 "PrintCLike.cpp.template"
-                                                                  }
-                                                            #line 9170 "PrintCLike.cpp"
-  append(L" ");
-                                                            #line 5262 "PrintCLike.cpp.template"
-                                                                }
-                                                            #line 9174 "PrintCLike.cpp"
-  append(L"e >= ");
-                                                            #line 5263 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 9178 "PrintCLike.cpp"
-  append(L"ex");
-                                                            #line 5264 "PrintCLike.cpp.template"
-                                                                print(ifRightParen());
-                                                                print(leftBrace());
-                                                            #line 9183 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5267 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 9188 "PrintCLike.cpp"
-  append(L"bx = b");
-                                                            #line 5268 "PrintCLike.cpp.template"
-                                                                print(semicolon());
-                                                            #line 9192 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5270 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 9197 "PrintCLike.cpp"
-  append(L"ex = e");
                                                             #line 5271 "PrintCLike.cpp.template"
-                                                                print(semicolon());
-                                                            #line 9201 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
+                                                                  }
+                                                            #line 9186 "PrintCLike.cpp"
+  append(L" ");
+                                                            #line 5272 "PrintCLike.cpp.template"
+                                                                }
+                                                            #line 9190 "PrintCLike.cpp"
+  append(L"e >= ");
                                                             #line 5273 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 9206 "PrintCLike.cpp"
-  append(L"sx = s");
+                                                            #line 9194 "PrintCLike.cpp"
+  append(L"ex");
                                                             #line 5274 "PrintCLike.cpp.template"
-                                                                print(semicolon());
-                                                            #line 9210 "PrintCLike.cpp"
+                                                                print(ifRightParen());
+                                                                print(leftBrace());
+                                                            #line 9199 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5276 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 9215 "PrintCLike.cpp"
-  append(L"lx = l");
                                                             #line 5277 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 9204 "PrintCLike.cpp"
+  append(L"bx = b");
+                                                            #line 5278 "PrintCLike.cpp.template"
                                                                 print(semicolon());
-                                                            #line 9219 "PrintCLike.cpp"
+                                                            #line 9208 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5279 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 9224 "PrintCLike.cpp"
-  append(L"tx = t");
                                                             #line 5280 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 9213 "PrintCLike.cpp"
+  append(L"ex = e");
+                                                            #line 5281 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                            #line 9217 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5283 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 9222 "PrintCLike.cpp"
+  append(L"sx = s");
+                                                            #line 5284 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                            #line 9226 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5286 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 9231 "PrintCLike.cpp"
+  append(L"lx = l");
+                                                            #line 5287 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                            #line 9235 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5289 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 9240 "PrintCLike.cpp"
+  append(L"tx = t");
+                                                            #line 5290 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
                                                                 decreaseIndent();
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 9232 "PrintCLike.cpp"
+                                                            #line 9248 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5286 "PrintCLike.cpp.template"
+                                                            #line 5296 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 9237 "PrintCLike.cpp"
+                                                            #line 9253 "PrintCLike.cpp"
   append(L"viable = ");
-                                                            #line 5287 "PrintCLike.cpp.template"
+                                                            #line 5297 "PrintCLike.cpp.template"
                                                                   if (isPython())
                                                                   {
-                                                            #line 9242 "PrintCLike.cpp"
+                                                            #line 9258 "PrintCLike.cpp"
   append(L"F");
-                                                            #line 5289 "PrintCLike.cpp.template"
+                                                            #line 5299 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 9248 "PrintCLike.cpp"
+                                                            #line 9264 "PrintCLike.cpp"
   append(L"f");
-                                                            #line 5292 "PrintCLike.cpp.template"
+                                                            #line 5302 "PrintCLike.cpp.template"
                                                                   }
-                                                            #line 9252 "PrintCLike.cpp"
+                                                            #line 9268 "PrintCLike.cpp"
   append(L"alse");
-                                                            #line 5293 "PrintCLike.cpp.template"
+                                                            #line 5303 "PrintCLike.cpp.template"
                                                                   print(semicolon());
-                                                            #line 9256 "PrintCLike.cpp"
+                                                            #line 9272 "PrintCLike.cpp"
   append(L"\n");
   append(L"  return -s");
-                                                            #line 5295 "PrintCLike.cpp.template"
+                                                            #line 5305 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                 }
                                                                 else
                                                                 {
                                                                   printFlush(1, true);
-                                                            #line 9265 "PrintCLike.cpp"
+                                                            #line 9281 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5301 "PrintCLike.cpp.template"
+                                                            #line 5311 "PrintCLike.cpp.template"
                                                                   print(beginThrowStmt());
                                                                   print(thiz());
-                                                            #line 9271 "PrintCLike.cpp"
-  append(L"bx, ");
-                                                            #line 5303 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9275 "PrintCLike.cpp"
-  append(L"ex, ");
-                                                            #line 5304 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9279 "PrintCLike.cpp"
-  append(L"sx, ");
-                                                            #line 5305 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9283 "PrintCLike.cpp"
-  append(L"lx, ");
-                                                            #line 5306 "PrintCLike.cpp.template"
-                                                                  print(thiz());
                                                             #line 9287 "PrintCLike.cpp"
+  append(L"bx, ");
+                                                            #line 5313 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9291 "PrintCLike.cpp"
+  append(L"ex, ");
+                                                            #line 5314 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9295 "PrintCLike.cpp"
+  append(L"sx, ");
+                                                            #line 5315 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9299 "PrintCLike.cpp"
+  append(L"lx, ");
+                                                            #line 5316 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9303 "PrintCLike.cpp"
   append(L"tx");
-                                                            #line 5307 "PrintCLike.cpp.template"
+                                                            #line 5317 "PrintCLike.cpp.template"
                                                                   print(endThrowStmt());
                                                                   print(semicolon());
                                                                 }
@@ -9293,45 +9309,45 @@
                                                               else
                                                               {
                                                                 printFlush(1, true);
-                                                            #line 9297 "PrintCLike.cpp"
+                                                            #line 9313 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5315 "PrintCLike.cpp.template"
+                                                            #line 5325 "PrintCLike.cpp.template"
                                                                 if (isGo())
                                                                 {
-                                                            #line 9303 "PrintCLike.cpp"
+                                                            #line 9319 "PrintCLike.cpp"
   append(L"panic(&ParseError{b, e, s, l, t");
-                                                            #line 5317 "PrintCLike.cpp.template"
+                                                            #line 5327 "PrintCLike.cpp.template"
                                                                   if (useGlr)
                                                                   {
-                                                            #line 9308 "PrintCLike.cpp"
+                                                            #line 9324 "PrintCLike.cpp"
   append(L", false");
-                                                            #line 5319 "PrintCLike.cpp.template"
+                                                            #line 5329 "PrintCLike.cpp.template"
                                                                     if (tree)
                                                                     {
-                                                            #line 9313 "PrintCLike.cpp"
+                                                            #line 9329 "PrintCLike.cpp"
   append(L", nil");
-                                                            #line 5321 "PrintCLike.cpp.template"
+                                                            #line 5331 "PrintCLike.cpp.template"
                                                                     }
                                                                   }
-                                                            #line 9318 "PrintCLike.cpp"
+                                                            #line 9334 "PrintCLike.cpp"
   append(L"})");
-                                                            #line 5323 "PrintCLike.cpp.template"
+                                                            #line 5333 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
                                                                   print(beginThrowStmt());
-                                                            #line 9325 "PrintCLike.cpp"
+                                                            #line 9341 "PrintCLike.cpp"
   append(L"b, e, s, l, t");
-                                                            #line 5327 "PrintCLike.cpp.template"
+                                                            #line 5337 "PrintCLike.cpp.template"
                                                                   print(endThrowStmt());
                                                                   print(semicolon());
                                                                 }
                                                               }
                                                               print(rightBrace());
-                                                            #line 9333 "PrintCLike.cpp"
+                                                            #line 9349 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5333 "PrintCLike.cpp.template"
+                                                            #line 5343 "PrintCLike.cpp.template"
                                                               if (! isGo())
                                                                 decreaseIndent();
                                                               if (isScala())
@@ -9354,131 +9370,131 @@
                                                                 increaseIndent();
                                                                 if (isGo())
                                                                 {
-                                                            #line 9358 "PrintCLike.cpp"
+                                                            #line 9374 "PrintCLike.cpp"
   append(L"\n");
   append(L"i := lookback[y]\n");
   append(L"l := lookback[i]\n");
   append(L"for l > x {");
-                                                            #line 5358 "PrintCLike.cpp.template"
+                                                            #line 5368 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 9367 "PrintCLike.cpp"
-  append(L"\n");
-                                                            #line 5362 "PrintCLike.cpp.template"
-                                                                  print(intVar());
-                                                            #line 9371 "PrintCLike.cpp"
-  append(L"i");
-                                                            #line 5363 "PrintCLike.cpp.template"
-                                                                  print(assign());
-                                                                  print(staticPrefix());
-                                                                  print(lookback);
-                                                                  print(leftbracket());
-                                                            #line 9378 "PrintCLike.cpp"
-  append(L"y");
-                                                            #line 5367 "PrintCLike.cpp.template"
-                                                                  print(rightbracket());
-                                                                  print(semicolon());
                                                             #line 9383 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5370 "PrintCLike.cpp.template"
+                                                            #line 5372 "PrintCLike.cpp.template"
                                                                   print(intVar());
                                                             #line 9387 "PrintCLike.cpp"
-  append(L"l");
-                                                            #line 5371 "PrintCLike.cpp.template"
+  append(L"i");
+                                                            #line 5373 "PrintCLike.cpp.template"
                                                                   print(assign());
                                                                   print(staticPrefix());
                                                                   print(lookback);
                                                                   print(leftbracket());
                                                             #line 9394 "PrintCLike.cpp"
-  append(L"i");
-                                                            #line 5375 "PrintCLike.cpp.template"
+  append(L"y");
+                                                            #line 5377 "PrintCLike.cpp.template"
                                                                   print(rightbracket());
                                                                   print(semicolon());
                                                             #line 9399 "PrintCLike.cpp"
   append(L"\n");
+                                                            #line 5380 "PrintCLike.cpp.template"
+                                                                  print(intVar());
+                                                            #line 9403 "PrintCLike.cpp"
+  append(L"l");
+                                                            #line 5381 "PrintCLike.cpp.template"
+                                                                  print(assign());
+                                                                  print(staticPrefix());
+                                                                  print(lookback);
+                                                                  print(leftbracket());
+                                                            #line 9410 "PrintCLike.cpp"
+  append(L"i");
+                                                            #line 5385 "PrintCLike.cpp.template"
+                                                                  print(rightbracket());
+                                                                  print(semicolon());
+                                                            #line 9415 "PrintCLike.cpp"
+  append(L"\n");
   append(L"while ");
-                                                            #line 5378 "PrintCLike.cpp.template"
+                                                            #line 5388 "PrintCLike.cpp.template"
                                                                   print(ifLeftParen());
-                                                            #line 9404 "PrintCLike.cpp"
+                                                            #line 9420 "PrintCLike.cpp"
   append(L"l > x");
-                                                            #line 5379 "PrintCLike.cpp.template"
+                                                            #line 5389 "PrintCLike.cpp.template"
                                                                   print(ifRightParen());
                                                                   print(leftBrace());
                                                                 }
-                                                            #line 9410 "PrintCLike.cpp"
+                                                            #line 9426 "PrintCLike.cpp"
   append(L"\n");
   append(L"  i += 2");
-                                                            #line 5383 "PrintCLike.cpp.template"
+                                                            #line 5393 "PrintCLike.cpp.template"
                                                                 print(semicolon());
-                                                            #line 9415 "PrintCLike.cpp"
+                                                            #line 9431 "PrintCLike.cpp"
   append(L"\n");
   append(L"  l = ");
-                                                            #line 5385 "PrintCLike.cpp.template"
+                                                            #line 5395 "PrintCLike.cpp.template"
                                                                 print(staticPrefix());
                                                                 print(lookback);
                                                                 print(leftbracket());
-                                                            #line 9422 "PrintCLike.cpp"
+                                                            #line 9438 "PrintCLike.cpp"
   append(L"i");
-                                                            #line 5388 "PrintCLike.cpp.template"
+                                                            #line 5398 "PrintCLike.cpp.template"
                                                                 print(rightbracket());
                                                                 print(semicolon());
                                                                 print(rightBrace());
-                                                            #line 9428 "PrintCLike.cpp"
+                                                            #line 9444 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5392 "PrintCLike.cpp.template"
+                                                            #line 5402 "PrintCLike.cpp.template"
                                                                 print(ifLeftParen());
-                                                            #line 9433 "PrintCLike.cpp"
+                                                            #line 9449 "PrintCLike.cpp"
   append(L"l < x");
-                                                            #line 5393 "PrintCLike.cpp.template"
+                                                            #line 5403 "PrintCLike.cpp.template"
                                                                 print(ifRightParen());
                                                                 print(leftBrace());
-                                                            #line 9438 "PrintCLike.cpp"
+                                                            #line 9454 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5396 "PrintCLike.cpp.template"
+                                                            #line 5406 "PrintCLike.cpp.template"
                                                                 print(returnKeyword());
-                                                            #line 9443 "PrintCLike.cpp"
+                                                            #line 9459 "PrintCLike.cpp"
   append(L"0");
-                                                            #line 5397 "PrintCLike.cpp.template"
+                                                            #line 5407 "PrintCLike.cpp.template"
                                                                 print(semicolon());
-                                                            #line 9447 "PrintCLike.cpp"
+                                                            #line 9463 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5399 "PrintCLike.cpp.template"
+                                                            #line 5409 "PrintCLike.cpp.template"
                                                                 print(elseWithBraces());
-                                                            #line 9451 "PrintCLike.cpp"
+                                                            #line 9467 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5401 "PrintCLike.cpp.template"
+                                                            #line 5411 "PrintCLike.cpp.template"
                                                                 print(returnKeyword());
                                                                 print(staticPrefix());
                                                                 print(lookback);
                                                                 print(leftbracket());
-                                                            #line 9459 "PrintCLike.cpp"
+                                                            #line 9475 "PrintCLike.cpp"
   append(L"i + 1");
-                                                            #line 5405 "PrintCLike.cpp.template"
+                                                            #line 5415 "PrintCLike.cpp.template"
                                                                 print(rightbracket());
                                                                 print(semicolon());
                                                                 print(rightBrace());
                                                                 decreaseIndent();
                                                                 print(rightBrace());
-                                                            #line 9467 "PrintCLike.cpp"
+                                                            #line 9483 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5411 "PrintCLike.cpp.template"
+                                                            #line 5421 "PrintCLike.cpp.template"
                                                                 if (isJavascript() && useGlr)
                                                                 {
-                                                            #line 9472 "PrintCLike.cpp"
+                                                            #line 9488 "PrintCLike.cpp"
   append(L"\n");
   append(L"this.count = function(code)\n");
-                                                            #line 5415 "PrintCLike.cpp.template"
+                                                            #line 5425 "PrintCLike.cpp.template"
                                                                 }
                                                                 else if (isTypescript() && useGlr)
                                                                 {
-                                                            #line 9479 "PrintCLike.cpp"
+                                                            #line 9495 "PrintCLike.cpp"
   append(L"\n");
   append(L"public count(code: number)\n");
-                                                            #line 5420 "PrintCLike.cpp.template"
+                                                            #line 5430 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
@@ -9486,135 +9502,135 @@
                                                                 }
                                                                 print(leftBrace());
                                                                 increaseIndent();
-                                                            #line 9490 "PrintCLike.cpp"
+                                                            #line 9506 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5428 "PrintCLike.cpp.template"
+                                                            #line 5438 "PrintCLike.cpp.template"
                                                                 print(intVar());
-                                                            #line 9494 "PrintCLike.cpp"
+                                                            #line 9510 "PrintCLike.cpp"
   append(L"count");
-                                                            #line 5429 "PrintCLike.cpp.template"
+                                                            #line 5439 "PrintCLike.cpp.template"
                                                                 print(assign());
-                                                            #line 9498 "PrintCLike.cpp"
+                                                            #line 9514 "PrintCLike.cpp"
   append(L"0");
-                                                            #line 5430 "PrintCLike.cpp.template"
+                                                            #line 5440 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 int stackElementSize = tree ? 3 : 2;
                                                                 if (isHaxe() || isScala())
                                                                 {
                                                                   if (useGlr)
                                                                   {
-                                                            #line 9507 "PrintCLike.cpp"
+                                                            #line 9523 "PrintCLike.cpp"
   append(L"\n");
   append(L"var node = this");
-                                                            #line 5437 "PrintCLike.cpp.template"
+                                                            #line 5447 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                     if (isScala())
                                                                     {
-                                                            #line 9514 "PrintCLike.cpp"
+                                                            #line 9530 "PrintCLike.cpp"
   append(L"\n");
   append(L"var c = code");
-                                                            #line 5441 "PrintCLike.cpp.template"
+                                                            #line 5451 "PrintCLike.cpp.template"
                                                                     }
-                                                            #line 9519 "PrintCLike.cpp"
+                                                            #line 9535 "PrintCLike.cpp"
   append(L"\n");
   append(L"while ");
-                                                            #line 5443 "PrintCLike.cpp.template"
+                                                            #line 5453 "PrintCLike.cpp.template"
                                                                     print(ifLeftParen());
-                                                            #line 9524 "PrintCLike.cpp"
+                                                            #line 9540 "PrintCLike.cpp"
   append(L"node.state >= 0");
-                                                            #line 5444 "PrintCLike.cpp.template"
+                                                            #line 5454 "PrintCLike.cpp.template"
                                                                     print(ifRightParen());
                                                                     print(leftBrace());
                                                                     if (isScala())
                                                                     {
-                                                            #line 9531 "PrintCLike.cpp"
+                                                            #line 9547 "PrintCLike.cpp"
   append(L"\n");
   append(L"  c = lookback(node.code, c)\n");
   append(L"  if (c == 0) return count\n");
   append(L"  count += 1");
-                                                            #line 5451 "PrintCLike.cpp.template"
+                                                            #line 5461 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 9540 "PrintCLike.cpp"
+                                                            #line 9556 "PrintCLike.cpp"
   append(L"\n");
   append(L"  code = lookback(node.code, code);\n");
   append(L"  if ");
-                                                            #line 5456 "PrintCLike.cpp.template"
+                                                            #line 5466 "PrintCLike.cpp.template"
                                                                       print(ifLeftParen());
-                                                            #line 9546 "PrintCLike.cpp"
+                                                            #line 9562 "PrintCLike.cpp"
   append(L"code == 0");
-                                                            #line 5457 "PrintCLike.cpp.template"
+                                                            #line 5467 "PrintCLike.cpp.template"
                                                                       print(ifRightParen());
-                                                            #line 9550 "PrintCLike.cpp"
+                                                            #line 9566 "PrintCLike.cpp"
   append(L"\n");
   append(L"    break");
-                                                            #line 5460 "PrintCLike.cpp.template"
+                                                            #line 5470 "PrintCLike.cpp.template"
                                                                       print(semicolon());
-                                                            #line 9555 "PrintCLike.cpp"
+                                                            #line 9571 "PrintCLike.cpp"
   append(L"\n");
   append(L"  count++");
-                                                            #line 5462 "PrintCLike.cpp.template"
+                                                            #line 5472 "PrintCLike.cpp.template"
                                                                       print(semicolon());
                                                                     }
-                                                            #line 9561 "PrintCLike.cpp"
+                                                            #line 9577 "PrintCLike.cpp"
   append(L"\n");
   append(L"  node = node.link");
-                                                            #line 5465 "PrintCLike.cpp.template"
+                                                            #line 5475 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 9569 "PrintCLike.cpp"
+                                                            #line 9585 "PrintCLike.cpp"
   append(L"\n");
   append(L"var t = top");
-                                                            #line 5470 "PrintCLike.cpp.template"
+                                                            #line 5480 "PrintCLike.cpp.template"
                                                                     print(semicolon());
-                                                            #line 9574 "PrintCLike.cpp"
+                                                            #line 9590 "PrintCLike.cpp"
   append(L"\n");
   append(L"var c = code");
-                                                            #line 5472 "PrintCLike.cpp.template"
-                                                                    print(semicolon());
-                                                            #line 9579 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"while (t >= 0)");
-                                                            #line 5474 "PrintCLike.cpp.template"
-                                                                    print(leftBrace());
-                                                            #line 9584 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  c = lookback(iStack");
-                                                            #line 5476 "PrintCLike.cpp.template"
-                                                                    print(leftbracket());
-                                                            #line 9589 "PrintCLike.cpp"
-  append(L"t");
-                                                            #line 5477 "PrintCLike.cpp.template"
-                                                                    print(rightbracket());
-                                                            #line 9593 "PrintCLike.cpp"
-  append(L", c)");
-                                                            #line 5478 "PrintCLike.cpp.template"
-                                                                    print(semicolon());
-                                                            #line 9597 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  if ");
-                                                            #line 5480 "PrintCLike.cpp.template"
-                                                                    print(ifLeftParen());
-                                                            #line 9602 "PrintCLike.cpp"
-  append(L"c == 0");
-                                                            #line 5481 "PrintCLike.cpp.template"
-                                                                    print(ifRightParen());
-                                                            #line 9606 "PrintCLike.cpp"
-  append(L" return count");
                                                             #line 5482 "PrintCLike.cpp.template"
                                                                     print(semicolon());
-                                                            #line 9610 "PrintCLike.cpp"
+                                                            #line 9595 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"while (t >= 0)");
+                                                            #line 5484 "PrintCLike.cpp.template"
+                                                                    print(leftBrace());
+                                                            #line 9600 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  c = lookback(iStack");
+                                                            #line 5486 "PrintCLike.cpp.template"
+                                                                    print(leftbracket());
+                                                            #line 9605 "PrintCLike.cpp"
+  append(L"t");
+                                                            #line 5487 "PrintCLike.cpp.template"
+                                                                    print(rightbracket());
+                                                            #line 9609 "PrintCLike.cpp"
+  append(L", c)");
+                                                            #line 5488 "PrintCLike.cpp.template"
+                                                                    print(semicolon());
+                                                            #line 9613 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  if ");
+                                                            #line 5490 "PrintCLike.cpp.template"
+                                                                    print(ifLeftParen());
+                                                            #line 9618 "PrintCLike.cpp"
+  append(L"c == 0");
+                                                            #line 5491 "PrintCLike.cpp.template"
+                                                                    print(ifRightParen());
+                                                            #line 9622 "PrintCLike.cpp"
+  append(L" return count");
+                                                            #line 5492 "PrintCLike.cpp.template"
+                                                                    print(semicolon());
+                                                            #line 9626 "PrintCLike.cpp"
   append(L"\n");
   append(L"  count += 1");
-                                                            #line 5484 "PrintCLike.cpp.template"
+                                                            #line 5494 "PrintCLike.cpp.template"
                                                                     print(semicolon());
-                                                            #line 9615 "PrintCLike.cpp"
+                                                            #line 9631 "PrintCLike.cpp"
   append(L"\n");
   append(L"  t -= ");
-                                                            #line 5486 "PrintCLike.cpp.template"
+                                                            #line 5496 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(stackElementSize));
                                                                     print(semicolon());
                                                                   }
@@ -9625,218 +9641,218 @@
                                                                   {
                                                                     if (isPython())
                                                                     {
-                                                            #line 9629 "PrintCLike.cpp"
+                                                            #line 9645 "PrintCLike.cpp"
   append(L"\n");
   append(L"node = self\n");
   append(L"while ");
-                                                            #line 5498 "PrintCLike.cpp.template"
+                                                            #line 5508 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 9637 "PrintCLike.cpp"
+                                                            #line 9653 "PrintCLike.cpp"
   append(L"\n");
   append(L"for ");
-                                                            #line 5502 "PrintCLike.cpp.template"
+                                                            #line 5512 "PrintCLike.cpp.template"
                                                                       print(ifLeftParen());
                                                                       if (isJavascript() || isTypescript())
                                                                       {
-                                                            #line 9644 "PrintCLike.cpp"
+                                                            #line 9660 "PrintCLike.cpp"
   append(L"var ");
-                                                            #line 5505 "PrintCLike.cpp.template"
+                                                            #line 5515 "PrintCLike.cpp.template"
                                                                       }
                                                                       else if (!isGo())
                                                                       {
-                                                            #line 9650 "PrintCLike.cpp"
+                                                            #line 9666 "PrintCLike.cpp"
   append(L"StackNode ");
-                                                            #line 5508 "PrintCLike.cpp.template"
+                                                            #line 5518 "PrintCLike.cpp.template"
                                                                       }
                                                                       if (isCpp()) print(L"*");
-                                                            #line 9655 "PrintCLike.cpp"
+                                                            #line 9671 "PrintCLike.cpp"
   append(L"node");
-                                                            #line 5510 "PrintCLike.cpp.template"
+                                                            #line 5520 "PrintCLike.cpp.template"
                                                                       if (isTypescript())
                                                                       {
-                                                            #line 9660 "PrintCLike.cpp"
+                                                            #line 9676 "PrintCLike.cpp"
   append(L": StackNode");
-                                                            #line 5512 "PrintCLike.cpp.template"
+                                                            #line 5522 "PrintCLike.cpp.template"
                                                                       }
                                                                       print(assign());
-                                                            #line 9665 "PrintCLike.cpp"
+                                                            #line 9681 "PrintCLike.cpp"
   append(L"this; ");
-                                                            #line 5514 "PrintCLike.cpp.template"
+                                                            #line 5524 "PrintCLike.cpp.template"
                                                                     }
-                                                            #line 9669 "PrintCLike.cpp"
+                                                            #line 9685 "PrintCLike.cpp"
   append(L"node");
-                                                            #line 5515 "PrintCLike.cpp.template"
+                                                            #line 5525 "PrintCLike.cpp.template"
                                                                     print(arrow());
-                                                            #line 9673 "PrintCLike.cpp"
+                                                            #line 9689 "PrintCLike.cpp"
   append(L"state >= 0");
-                                                            #line 5516 "PrintCLike.cpp.template"
+                                                            #line 5526 "PrintCLike.cpp.template"
                                                                     if (isPython())
                                                                     {
-                                                            #line 9678 "PrintCLike.cpp"
+                                                            #line 9694 "PrintCLike.cpp"
   append(L":");
-                                                            #line 5518 "PrintCLike.cpp.template"
+                                                            #line 5528 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 9684 "PrintCLike.cpp"
+                                                            #line 9700 "PrintCLike.cpp"
   append(L"; node = node");
-                                                            #line 5521 "PrintCLike.cpp.template"
+                                                            #line 5531 "PrintCLike.cpp.template"
                                                                       print(arrow());
-                                                            #line 9688 "PrintCLike.cpp"
+                                                            #line 9704 "PrintCLike.cpp"
   append(L"link");
-                                                            #line 5522 "PrintCLike.cpp.template"
+                                                            #line 5532 "PrintCLike.cpp.template"
                                                                       print(ifRightParen());
                                                                     }
                                                                     print(leftBrace());
-                                                            #line 9694 "PrintCLike.cpp"
+                                                            #line 9710 "PrintCLike.cpp"
   append(L"\n");
   append(L"  code = ");
-                                                            #line 5526 "PrintCLike.cpp.template"
+                                                            #line 5536 "PrintCLike.cpp.template"
                                                                     print(thiz());
                                                                     print(isGo() ? L"L" : L"l");
-                                                            #line 9700 "PrintCLike.cpp"
+                                                            #line 9716 "PrintCLike.cpp"
   append(L"ookback(node");
-                                                            #line 5528 "PrintCLike.cpp.template"
+                                                            #line 5538 "PrintCLike.cpp.template"
                                                                     print(arrow());
-                                                            #line 9704 "PrintCLike.cpp"
+                                                            #line 9720 "PrintCLike.cpp"
   append(L"code, code)");
-                                                            #line 5529 "PrintCLike.cpp.template"
+                                                            #line 5539 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                   }
                                                                   else
                                                                   {
                                                                     if (isPython())
                                                                     {
-                                                            #line 9713 "PrintCLike.cpp"
+                                                            #line 9729 "PrintCLike.cpp"
   append(L"\n");
   append(L"t");
-                                                            #line 5536 "PrintCLike.cpp.template"
+                                                            #line 5546 "PrintCLike.cpp.template"
                                                                       print(assign());
                                                                       print(thiz());
-                                                            #line 9719 "PrintCLike.cpp"
+                                                            #line 9735 "PrintCLike.cpp"
   append(L"top");
-                                                            #line 5538 "PrintCLike.cpp.template"
+                                                            #line 5548 "PrintCLike.cpp.template"
                                                                       print(semicolon());
-                                                            #line 9723 "PrintCLike.cpp"
+                                                            #line 9739 "PrintCLike.cpp"
   append(L"\n");
   append(L"while ");
-                                                            #line 5540 "PrintCLike.cpp.template"
+                                                            #line 5550 "PrintCLike.cpp.template"
                                                                       print(ifLeftParen());
                                                                       print(intVar());
-                                                            #line 9729 "PrintCLike.cpp"
+                                                            #line 9745 "PrintCLike.cpp"
   append(L"t >= 0");
-                                                            #line 5542 "PrintCLike.cpp.template"
+                                                            #line 5552 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 9735 "PrintCLike.cpp"
+                                                            #line 9751 "PrintCLike.cpp"
   append(L"\n");
   append(L"for ");
-                                                            #line 5546 "PrintCLike.cpp.template"
+                                                            #line 5556 "PrintCLike.cpp.template"
                                                                       print(ifLeftParen());
                                                                       print(intVar());
-                                                            #line 9741 "PrintCLike.cpp"
+                                                            #line 9757 "PrintCLike.cpp"
   append(L"t");
-                                                            #line 5548 "PrintCLike.cpp.template"
+                                                            #line 5558 "PrintCLike.cpp.template"
                                                                       print(assign());
                                                                       print(thiz());
-                                                            #line 9746 "PrintCLike.cpp"
+                                                            #line 9762 "PrintCLike.cpp"
   append(L"top; t >= 0; t -= ");
-                                                            #line 5550 "PrintCLike.cpp.template"
+                                                            #line 5560 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(stackElementSize));
                                                                     }
                                                                     print(ifRightParen());
                                                                     print(leftBrace());
-                                                            #line 9753 "PrintCLike.cpp"
+                                                            #line 9769 "PrintCLike.cpp"
   append(L"\n");
   append(L"  code = ");
-                                                            #line 5555 "PrintCLike.cpp.template"
+                                                            #line 5565 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 9758 "PrintCLike.cpp"
+                                                            #line 9774 "PrintCLike.cpp"
   append(L"lookback(");
-                                                            #line 5556 "PrintCLike.cpp.template"
+                                                            #line 5566 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 9762 "PrintCLike.cpp"
+                                                            #line 9778 "PrintCLike.cpp"
   append(L"iStack[t], code)");
-                                                            #line 5557 "PrintCLike.cpp.template"
+                                                            #line 5567 "PrintCLike.cpp.template"
                                                                     print(semicolon());
                                                                   }
-                                                            #line 9767 "PrintCLike.cpp"
+                                                            #line 9783 "PrintCLike.cpp"
   append(L"\n");
   append(L"  if ");
-                                                            #line 5560 "PrintCLike.cpp.template"
+                                                            #line 5570 "PrintCLike.cpp.template"
                                                                   print(ifLeftParen());
-                                                            #line 9772 "PrintCLike.cpp"
+                                                            #line 9788 "PrintCLike.cpp"
   append(L"code == 0");
-                                                            #line 5561 "PrintCLike.cpp.template"
+                                                            #line 5571 "PrintCLike.cpp.template"
                                                                   print(ifRightParen());
                                                                   increaseIndent();
                                                                   print(leftBrace());
-                                                            #line 9778 "PrintCLike.cpp"
+                                                            #line 9794 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5565 "PrintCLike.cpp.template"
+                                                            #line 5575 "PrintCLike.cpp.template"
                                                                   if (! isHaxe() && ! isScala())
                                                                   {
-                                                            #line 9784 "PrintCLike.cpp"
+                                                            #line 9800 "PrintCLike.cpp"
   append(L"break");
-                                                            #line 5567 "PrintCLike.cpp.template"
+                                                            #line 5577 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 9790 "PrintCLike.cpp"
+                                                            #line 9806 "PrintCLike.cpp"
   append(L"return count");
-                                                            #line 5570 "PrintCLike.cpp.template"
+                                                            #line 5580 "PrintCLike.cpp.template"
                                                                   }
                                                                   print(semicolon());
                                                                   print(rightBrace());
                                                                   decreaseIndent();
-                                                            #line 9797 "PrintCLike.cpp"
+                                                            #line 9813 "PrintCLike.cpp"
   append(L"\n");
   append(L"  count += 1");
-                                                            #line 5575 "PrintCLike.cpp.template"
+                                                            #line 5585 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                   if (isPython())
                                                                   {
                                                                     if (useGlr)
                                                                     {
-                                                            #line 9806 "PrintCLike.cpp"
+                                                            #line 9822 "PrintCLike.cpp"
   append(L"\n");
   append(L"  node = node.link");
-                                                            #line 5581 "PrintCLike.cpp.template"
+                                                            #line 5591 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 9813 "PrintCLike.cpp"
+                                                            #line 9829 "PrintCLike.cpp"
   append(L"\n");
   append(L"  t -= ");
-                                                            #line 5585 "PrintCLike.cpp.template"
+                                                            #line 5595 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>(stackElementSize));
                                                                     }
                                                                   }
                                                                 }
                                                                 print(rightBrace());
-                                                            #line 9822 "PrintCLike.cpp"
+                                                            #line 9838 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5591 "PrintCLike.cpp.template"
+                                                            #line 5601 "PrintCLike.cpp.template"
                                                                 print(returnKeyword());
-                                                            #line 9826 "PrintCLike.cpp"
+                                                            #line 9842 "PrintCLike.cpp"
   append(L"count");
-                                                            #line 5592 "PrintCLike.cpp.template"
+                                                            #line 5602 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 decreaseIndent();
                                                                 print(rightBrace());
                                                                 if (isJavascript() && useGlr)
                                                                 {
-                                                            #line 9834 "PrintCLike.cpp"
+                                                            #line 9850 "PrintCLike.cpp"
   append(L";");
-                                                            #line 5597 "PrintCLike.cpp.template"
+                                                            #line 5607 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 9838 "PrintCLike.cpp"
+                                                            #line 9854 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5599 "PrintCLike.cpp.template"
+                                                            #line 5609 "PrintCLike.cpp.template"
                                                               }
                                                             }
 
@@ -9859,103 +9875,103 @@
                                                                   print(leftBrace());
                                                                   wchar_t *kAsString = format.toString<wchar_t>(k);
                                                                   increaseIndent();
-                                                            #line 9863 "PrintCLike.cpp"
+                                                            #line 9879 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5622 "PrintCLike.cpp.template"
+                                                            #line 5632 "PrintCLike.cpp.template"
                                                                   print(ifLeftParen());
                                                                   print(thiz());
-                                                            #line 9869 "PrintCLike.cpp"
+                                                            #line 9885 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 5624 "PrintCLike.cpp.template"
+                                                            #line 5634 "PrintCLike.cpp.template"
                                                                   print(kAsString);
-                                                            #line 9873 "PrintCLike.cpp"
+                                                            #line 9889 "PrintCLike.cpp"
   append(L" == 0");
-                                                            #line 5625 "PrintCLike.cpp.template"
+                                                            #line 5635 "PrintCLike.cpp.template"
                                                                   print(ifRightParen());
                                                                   print(leftBrace());
-                                                            #line 9878 "PrintCLike.cpp"
+                                                            #line 9894 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5628 "PrintCLike.cpp.template"
+                                                            #line 5638 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 9883 "PrintCLike.cpp"
+                                                            #line 9899 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 5629 "PrintCLike.cpp.template"
+                                                            #line 5639 "PrintCLike.cpp.template"
                                                                   print(kAsString);
-                                                            #line 9887 "PrintCLike.cpp"
+                                                            #line 9903 "PrintCLike.cpp"
   append(L" = ");
-                                                            #line 5630 "PrintCLike.cpp.template"
+                                                            #line 5640 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 9891 "PrintCLike.cpp"
+                                                            #line 9907 "PrintCLike.cpp"
   append(L"match");
-                                                            #line 5631 "PrintCLike.cpp.template"
+                                                            #line 5641 "PrintCLike.cpp.template"
                                                                   if (withWhitespace)
                                                                   {
-                                                            #line 9896 "PrintCLike.cpp"
+                                                            #line 9912 "PrintCLike.cpp"
   append(L"W");
-                                                            #line 5633 "PrintCLike.cpp.template"
+                                                            #line 5643 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isScala())
                                                                   {
-                                                            #line 9902 "PrintCLike.cpp"
+                                                            #line 9918 "PrintCLike.cpp"
   append(L"er");
-                                                            #line 5636 "PrintCLike.cpp.template"
-                                                                  }
-                                                            #line 9906 "PrintCLike.cpp"
-  append(L"(tokenSetId)");
-                                                            #line 5637 "PrintCLike.cpp.template"
-                                                                  print(semicolon());
-                                                            #line 9910 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5639 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9915 "PrintCLike.cpp"
-  append(L"b");
-                                                            #line 5640 "PrintCLike.cpp.template"
-                                                                  print(kAsString);
-                                                            #line 9919 "PrintCLike.cpp"
-  append(L" = ");
-                                                            #line 5641 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9923 "PrintCLike.cpp"
-  append(L"begin");
-                                                            #line 5642 "PrintCLike.cpp.template"
-                                                                  print(semicolon());
-                                                            #line 9927 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5644 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9932 "PrintCLike.cpp"
-  append(L"e");
-                                                            #line 5645 "PrintCLike.cpp.template"
-                                                                  print(kAsString);
-                                                            #line 9936 "PrintCLike.cpp"
-  append(L" = ");
                                                             #line 5646 "PrintCLike.cpp.template"
-                                                                  print(thiz());
-                                                            #line 9940 "PrintCLike.cpp"
-  append(L"end");
+                                                                  }
+                                                            #line 9922 "PrintCLike.cpp"
+  append(L"(tokenSetId)");
                                                             #line 5647 "PrintCLike.cpp.template"
+                                                                  print(semicolon());
+                                                            #line 9926 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5649 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9931 "PrintCLike.cpp"
+  append(L"b");
+                                                            #line 5650 "PrintCLike.cpp.template"
+                                                                  print(kAsString);
+                                                            #line 9935 "PrintCLike.cpp"
+  append(L" = ");
+                                                            #line 5651 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9939 "PrintCLike.cpp"
+  append(L"begin");
+                                                            #line 5652 "PrintCLike.cpp.template"
+                                                                  print(semicolon());
+                                                            #line 9943 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5654 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9948 "PrintCLike.cpp"
+  append(L"e");
+                                                            #line 5655 "PrintCLike.cpp.template"
+                                                                  print(kAsString);
+                                                            #line 9952 "PrintCLike.cpp"
+  append(L" = ");
+                                                            #line 5656 "PrintCLike.cpp.template"
+                                                                  print(thiz());
+                                                            #line 9956 "PrintCLike.cpp"
+  append(L"end");
+                                                            #line 5657 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                   print(rightBrace());
                                                                   if (unlimitedLookahead)
                                                                   {
                                                                     if (k >= 2)
                                                                     {
-                                                            #line 9949 "PrintCLike.cpp"
+                                                            #line 9965 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5654 "PrintCLike.cpp.template"
+                                                            #line 5664 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 9953 "PrintCLike.cpp"
+                                                            #line 9969 "PrintCLike.cpp"
   append(L"lk = prefix + ");
-                                                            #line 5655 "PrintCLike.cpp.template"
+                                                            #line 5665 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 9957 "PrintCLike.cpp"
+                                                            #line 9973 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 5656 "PrintCLike.cpp.template"
+                                                            #line 5666 "PrintCLike.cpp.template"
                                                                       print(kAsString);
                                                                       print(semicolon());
                                                                     }
@@ -9964,53 +9980,53 @@
                                                                   {
                                                                     if (k == 2)
                                                                     {
-                                                            #line 9968 "PrintCLike.cpp"
-  append(L"\n");
-                                                            #line 5665 "PrintCLike.cpp.template"
-                                                                      print(thiz());
-                                                            #line 9972 "PrintCLike.cpp"
-  append(L"lk = (");
-                                                            #line 5666 "PrintCLike.cpp.template"
-                                                                      print(thiz());
-                                                            #line 9976 "PrintCLike.cpp"
-  append(L"l2 << ");
-                                                            #line 5667 "PrintCLike.cpp.template"
-                                                                      print(format.toString<wchar_t>(grammar->tokenSequenceFactory->tokenBits()));
-                                                            #line 9980 "PrintCLike.cpp"
-  append(L") | ");
-                                                            #line 5668 "PrintCLike.cpp.template"
-                                                                      print(thiz());
                                                             #line 9984 "PrintCLike.cpp"
+  append(L"\n");
+                                                            #line 5675 "PrintCLike.cpp.template"
+                                                                      print(thiz());
+                                                            #line 9988 "PrintCLike.cpp"
+  append(L"lk = (");
+                                                            #line 5676 "PrintCLike.cpp.template"
+                                                                      print(thiz());
+                                                            #line 9992 "PrintCLike.cpp"
+  append(L"l2 << ");
+                                                            #line 5677 "PrintCLike.cpp.template"
+                                                                      print(format.toString<wchar_t>(grammar->tokenSequenceFactory->tokenBits()));
+                                                            #line 9996 "PrintCLike.cpp"
+  append(L") | ");
+                                                            #line 5678 "PrintCLike.cpp.template"
+                                                                      print(thiz());
+                                                            #line 10000 "PrintCLike.cpp"
   append(L"l1");
-                                                            #line 5669 "PrintCLike.cpp.template"
+                                                            #line 5679 "PrintCLike.cpp.template"
                                                                       print(semicolon());
                                                                     }
                                                                     else if (k > 2)
                                                                     {
-                                                            #line 9991 "PrintCLike.cpp"
+                                                            #line 10007 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5674 "PrintCLike.cpp.template"
+                                                            #line 5684 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 9995 "PrintCLike.cpp"
+                                                            #line 10011 "PrintCLike.cpp"
   append(L"lk |= ");
-                                                            #line 5675 "PrintCLike.cpp.template"
+                                                            #line 5685 "PrintCLike.cpp.template"
                                                                       print(thiz());
-                                                            #line 9999 "PrintCLike.cpp"
+                                                            #line 10015 "PrintCLike.cpp"
   append(L"l");
-                                                            #line 5676 "PrintCLike.cpp.template"
+                                                            #line 5686 "PrintCLike.cpp.template"
                                                                       print(kAsString);
-                                                            #line 10003 "PrintCLike.cpp"
+                                                            #line 10019 "PrintCLike.cpp"
   append(L" << ");
-                                                            #line 5677 "PrintCLike.cpp.template"
+                                                            #line 5687 "PrintCLike.cpp.template"
                                                                       print(format.toString<wchar_t>((k - 1) * grammar->tokenSequenceFactory->tokenBits()));
                                                                       print(semicolon());
                                                                     }
                                                                   }
                                                                   decreaseIndent();
                                                                   print(rightBrace());
-                                                            #line 10012 "PrintCLike.cpp"
+                                                            #line 10028 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5684 "PrintCLike.cpp.template"
+                                                            #line 5694 "PrintCLike.cpp.template"
                                                                   if (! isGo())
                                                                     decreaseIndent();
                                                                   if (grammar->tables && k + 1 >= grammar->tables)
@@ -10036,379 +10052,379 @@
                                                                                     : stringType();
                                                                 openMethod(type, L"", L"getInput", L"", true);
                                                                 print(leftBrace());
-                                                            #line 10040 "PrintCLike.cpp"
+                                                            #line 10056 "PrintCLike.cpp"
   append(L"\n");
   append(L"  return ");
-                                                            #line 5710 "PrintCLike.cpp.template"
+                                                            #line 5720 "PrintCLike.cpp.template"
                                                                 print(thiz());
                                                                 if (useGlr && (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript()))
                                                                 {
-                                                            #line 10047 "PrintCLike.cpp"
+                                                            #line 10063 "PrintCLike.cpp"
   append(L"parser");
-                                                            #line 5713 "PrintCLike.cpp.template"
+                                                            #line 5723 "PrintCLike.cpp.template"
                                                                   print(arrow());
                                                                 }
-                                                            #line 10052 "PrintCLike.cpp"
-  append(L"input");
-                                                            #line 5715 "PrintCLike.cpp.template"
-                                                                print(semicolon());
-                                                                print(rightBrace());
-                                                                if (isJavascript())
-                                                                {
-                                                            #line 10059 "PrintCLike.cpp"
-  append(L";");
-                                                            #line 5719 "PrintCLike.cpp.template"
-                                                                }
-                                                            #line 10063 "PrintCLike.cpp"
-  append(L"\n");
-                                                            #line 5721 "PrintCLike.cpp.template"
-                                                                openMethod(intType(), L"", L"getTokenOffset", L"", true);
-                                                                print(leftBrace());
                                                             #line 10068 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  return ");
-                                                            #line 5724 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10073 "PrintCLike.cpp"
-  append(L"b0");
+  append(L"input");
                                                             #line 5725 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
                                                                 if (isJavascript())
                                                                 {
-                                                            #line 10080 "PrintCLike.cpp"
+                                                            #line 10075 "PrintCLike.cpp"
   append(L";");
                                                             #line 5729 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 10084 "PrintCLike.cpp"
+                                                            #line 10079 "PrintCLike.cpp"
   append(L"\n");
                                                             #line 5731 "PrintCLike.cpp.template"
-                                                                openMethod(intType(), L"", L"getTokenEnd", L"", true);
+                                                                openMethod(intType(), L"", L"getTokenOffset", L"", true);
                                                                 print(leftBrace());
-                                                            #line 10089 "PrintCLike.cpp"
+                                                            #line 10084 "PrintCLike.cpp"
   append(L"\n");
   append(L"  return ");
                                                             #line 5734 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 10094 "PrintCLike.cpp"
-  append(L"e0");
+                                                            #line 10089 "PrintCLike.cpp"
+  append(L"b0");
                                                             #line 5735 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
                                                                 if (isJavascript())
                                                                 {
-                                                            #line 10101 "PrintCLike.cpp"
+                                                            #line 10096 "PrintCLike.cpp"
   append(L";");
                                                             #line 5739 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 10105 "PrintCLike.cpp"
+                                                            #line 10100 "PrintCLike.cpp"
   append(L"\n");
                                                             #line 5741 "PrintCLike.cpp.template"
+                                                                openMethod(intType(), L"", L"getTokenEnd", L"", true);
+                                                                print(leftBrace());
+                                                            #line 10105 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  return ");
+                                                            #line 5744 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10110 "PrintCLike.cpp"
+  append(L"e0");
+                                                            #line 5745 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                                print(rightBrace());
+                                                                if (isJavascript())
+                                                                {
+                                                            #line 10117 "PrintCLike.cpp"
+  append(L";");
+                                                            #line 5749 "PrintCLike.cpp.template"
+                                                                }
+                                                            #line 10121 "PrintCLike.cpp"
+  append(L"\n");
+                                                            #line 5751 "PrintCLike.cpp.template"
                                                               }
                                                               if (isJavascript())
                                                               {
                                                                 if (useGlr)
                                                                 {
-                                                            #line 10113 "PrintCLike.cpp"
+                                                            #line 10129 "PrintCLike.cpp"
   append(L"\n");
   append(L"this.reset = function");
-                                                            #line 5747 "PrintCLike.cpp.template"
+                                                            #line 5757 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 10120 "PrintCLike.cpp"
+                                                            #line 10136 "PrintCLike.cpp"
   append(L"\n");
   append(L"function reset");
-                                                            #line 5751 "PrintCLike.cpp.template"
+                                                            #line 5761 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 10125 "PrintCLike.cpp"
+                                                            #line 10141 "PrintCLike.cpp"
   append(L"(l, b, e)\n");
   append(L"{");
-                                                            #line 5753 "PrintCLike.cpp.template"
+                                                            #line 5763 "PrintCLike.cpp.template"
                                                               }
                                                               else if (isTypescript())
                                                               {
-                                                            #line 10132 "PrintCLike.cpp"
+                                                            #line 10148 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5757 "PrintCLike.cpp.template"
+                                                            #line 5767 "PrintCLike.cpp.template"
                                                                 if (! performanceTest && ! useGlr)
                                                                 {
-                                                            #line 10137 "PrintCLike.cpp"
+                                                            #line 10153 "PrintCLike.cpp"
   append(L"private ");
-                                                            #line 5759 "PrintCLike.cpp.template"
+                                                            #line 5769 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 10141 "PrintCLike.cpp"
+                                                            #line 10157 "PrintCLike.cpp"
   append(L"reset(l: number, b: number, e: number)\n");
   append(L"{");
-                                                            #line 5761 "PrintCLike.cpp.template"
+                                                            #line 5771 "PrintCLike.cpp.template"
                                                               }
                                                               else if (isHaxe())
                                                               {
-                                                            #line 10148 "PrintCLike.cpp"
+                                                            #line 10164 "PrintCLike.cpp"
   append(L"\n");
   append(L"public function reset(l, b, e)\n");
   append(L"{");
-                                                            #line 5766 "PrintCLike.cpp.template"
+                                                            #line 5776 "PrintCLike.cpp.template"
                                                               }
                                                               else
                                                               {
                                                                 openMethod(voidType(), isJava() ? L"final " : L"", L"reset", L"int l, int b, int e", false, useGlr ? L"ParsingThread" : className.c_str());
                                                                 print(leftBrace());
                                                               }
-                                                            #line 10159 "PrintCLike.cpp"
+                                                            #line 10175 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5773 "PrintCLike.cpp.template"
+                                                            #line 5783 "PrintCLike.cpp.template"
                                                               if (! isPython() && ! isScala())
                                                               {
-                                                            #line 10165 "PrintCLike.cpp"
+                                                            #line 10181 "PrintCLike.cpp"
   append(L"        ");
-                                                            #line 5775 "PrintCLike.cpp.template"
+                                                            #line 5785 "PrintCLike.cpp.template"
                                                                 print(wcslen(thiz()), L" ");
                                                               }
                                                               print(thiz());
-                                                            #line 10171 "PrintCLike.cpp"
+                                                            #line 10187 "PrintCLike.cpp"
   append(L"b0 = b; ");
-                                                            #line 5778 "PrintCLike.cpp.template"
+                                                            #line 5788 "PrintCLike.cpp.template"
                                                               print(thiz());
-                                                            #line 10175 "PrintCLike.cpp"
+                                                            #line 10191 "PrintCLike.cpp"
   append(L"e0 = b");
-                                                            #line 5779 "PrintCLike.cpp.template"
+                                                            #line 5789 "PrintCLike.cpp.template"
                                                               print(semicolon());
-                                                            #line 10179 "PrintCLike.cpp"
+                                                            #line 10195 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5781 "PrintCLike.cpp.template"
+                                                            #line 5791 "PrintCLike.cpp.template"
                                                               print(thiz());
-                                                            #line 10184 "PrintCLike.cpp"
+                                                            #line 10200 "PrintCLike.cpp"
   append(L"l1 = l; ");
-                                                            #line 5782 "PrintCLike.cpp.template"
+                                                            #line 5792 "PrintCLike.cpp.template"
                                                               print(thiz());
-                                                            #line 10188 "PrintCLike.cpp"
+                                                            #line 10204 "PrintCLike.cpp"
   append(L"b1 = b; ");
-                                                            #line 5783 "PrintCLike.cpp.template"
+                                                            #line 5793 "PrintCLike.cpp.template"
                                                               print(thiz());
-                                                            #line 10192 "PrintCLike.cpp"
+                                                            #line 10208 "PrintCLike.cpp"
   append(L"e1 = e");
-                                                            #line 5784 "PrintCLike.cpp.template"
+                                                            #line 5794 "PrintCLike.cpp.template"
                                                               print(semicolon());
                                                               for (size_t k = 2; k <= grammar->k; ++k)
                                                               {
-                                                            #line 10198 "PrintCLike.cpp"
+                                                            #line 10214 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5788 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10203 "PrintCLike.cpp"
-  append(L"l");
-                                                            #line 5789 "PrintCLike.cpp.template"
-                                                                print(format.toString<wchar_t>(k));
-                                                            #line 10207 "PrintCLike.cpp"
-  append(L" = 0; ");
-                                                            #line 5790 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10211 "PrintCLike.cpp"
-  append(L"b");
-                                                            #line 5791 "PrintCLike.cpp.template"
-                                                                print(format.toString<wchar_t>(k));
-                                                            #line 10215 "PrintCLike.cpp"
-  append(L" = 0; ");
-                                                            #line 5792 "PrintCLike.cpp.template"
+                                                            #line 5798 "PrintCLike.cpp.template"
                                                                 print(thiz());
                                                             #line 10219 "PrintCLike.cpp"
-  append(L"e");
-                                                            #line 5793 "PrintCLike.cpp.template"
+  append(L"l");
+                                                            #line 5799 "PrintCLike.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
                                                             #line 10223 "PrintCLike.cpp"
+  append(L" = 0; ");
+                                                            #line 5800 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10227 "PrintCLike.cpp"
+  append(L"b");
+                                                            #line 5801 "PrintCLike.cpp.template"
+                                                                print(format.toString<wchar_t>(k));
+                                                            #line 10231 "PrintCLike.cpp"
+  append(L" = 0; ");
+                                                            #line 5802 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10235 "PrintCLike.cpp"
+  append(L"e");
+                                                            #line 5803 "PrintCLike.cpp.template"
+                                                                print(format.toString<wchar_t>(k));
+                                                            #line 10239 "PrintCLike.cpp"
   append(L" = 0");
-                                                            #line 5794 "PrintCLike.cpp.template"
+                                                            #line 5804 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                               }
-                                                            #line 10228 "PrintCLike.cpp"
+                                                            #line 10244 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5797 "PrintCLike.cpp.template"
+                                                            #line 5807 "PrintCLike.cpp.template"
                                                               print(thiz());
-                                                            #line 10233 "PrintCLike.cpp"
+                                                            #line 10249 "PrintCLike.cpp"
   append(L"end = e");
-                                                            #line 5798 "PrintCLike.cpp.template"
+                                                            #line 5808 "PrintCLike.cpp.template"
                                                               print(semicolon());
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 10239 "PrintCLike.cpp"
+                                                            #line 10255 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5802 "PrintCLike.cpp.template"
+                                                            #line 5812 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 10244 "PrintCLike.cpp"
+                                                            #line 10260 "PrintCLike.cpp"
   append(L"ex = -1");
-                                                            #line 5803 "PrintCLike.cpp.template"
+                                                            #line 5813 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 if (memoization)
                                                                 {
                                                                   if (isJavascript() || isTypescript())
                                                                   {
-                                                            #line 10252 "PrintCLike.cpp"
+                                                            #line 10268 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5809 "PrintCLike.cpp.template"
+                                                            #line 5819 "PrintCLike.cpp.template"
                                                                     print(thiz());
-                                                            #line 10257 "PrintCLike.cpp"
+                                                            #line 10273 "PrintCLike.cpp"
   append(L"memo = {};");
-                                                            #line 5810 "PrintCLike.cpp.template"
+                                                            #line 5820 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isCSharp())
                                                                   {
-                                                            #line 10263 "PrintCLike.cpp"
+                                                            #line 10279 "PrintCLike.cpp"
   append(L"\n");
   append(L"  memo.Clear();");
-                                                            #line 5814 "PrintCLike.cpp.template"
+                                                            #line 5824 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isScala())
                                                                   {
-                                                            #line 10270 "PrintCLike.cpp"
+                                                            #line 10286 "PrintCLike.cpp"
   append(L"\n");
   append(L"  memo.clear");
-                                                            #line 5818 "PrintCLike.cpp.template"
+                                                            #line 5828 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isHaxe())
                                                                   {
-                                                            #line 10277 "PrintCLike.cpp"
+                                                            #line 10293 "PrintCLike.cpp"
   append(L"\n");
   append(L"  memo = new Map();");
-                                                            #line 5822 "PrintCLike.cpp.template"
+                                                            #line 5832 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isGo())
                                                                   {
-                                                            #line 10284 "PrintCLike.cpp"
+                                                            #line 10300 "PrintCLike.cpp"
   append(L"\n");
   append(L"  this.memo = make(map[int]int)");
-                                                            #line 5826 "PrintCLike.cpp.template"
+                                                            #line 5836 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isPython())
                                                                   {
-                                                            #line 10291 "PrintCLike.cpp"
+                                                            #line 10307 "PrintCLike.cpp"
   append(L"\n");
   append(L"  self.memo = {}");
-                                                            #line 5830 "PrintCLike.cpp.template"
+                                                            #line 5840 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 10298 "PrintCLike.cpp"
+                                                            #line 10314 "PrintCLike.cpp"
   append(L"\n");
   append(L"  memo.clear();");
-                                                            #line 5834 "PrintCLike.cpp.template"
+                                                            #line 5844 "PrintCLike.cpp.template"
                                                                   }
                                                                 }
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 10306 "PrintCLike.cpp"
+                                                            #line 10322 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5839 "PrintCLike.cpp.template"
+                                                            #line 5849 "PrintCLike.cpp.template"
                                                                   print(thiz());
-                                                            #line 10311 "PrintCLike.cpp"
+                                                            #line 10327 "PrintCLike.cpp"
   append(L"viable = ");
-                                                            #line 5840 "PrintCLike.cpp.template"
+                                                            #line 5850 "PrintCLike.cpp.template"
                                                                   if (isPython())
                                                                   {
-                                                            #line 10316 "PrintCLike.cpp"
+                                                            #line 10332 "PrintCLike.cpp"
   append(L"T");
-                                                            #line 5842 "PrintCLike.cpp.template"
+                                                            #line 5852 "PrintCLike.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 10322 "PrintCLike.cpp"
+                                                            #line 10338 "PrintCLike.cpp"
   append(L"t");
-                                                            #line 5845 "PrintCLike.cpp.template"
+                                                            #line 5855 "PrintCLike.cpp.template"
                                                                   }
-                                                            #line 10326 "PrintCLike.cpp"
+                                                            #line 10342 "PrintCLike.cpp"
   append(L"rue");
-                                                            #line 5846 "PrintCLike.cpp.template"
+                                                            #line 5856 "PrintCLike.cpp.template"
                                                                   print(semicolon());
                                                                 }
                                                               }
                                                               if (tree && ! useGlr)
                                                               {
-                                                            #line 10334 "PrintCLike.cpp"
+                                                            #line 10350 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5852 "PrintCLike.cpp.template"
+                                                            #line 5862 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 10339 "PrintCLike.cpp"
+                                                            #line 10355 "PrintCLike.cpp"
   append(L"eventHandler");
-                                                            #line 5853 "PrintCLike.cpp.template"
+                                                            #line 5863 "PrintCLike.cpp.template"
                                                                 print(arrow());
                                                                 if (isGo())
                                                                 {
-                                                            #line 10345 "PrintCLike.cpp"
+                                                            #line 10361 "PrintCLike.cpp"
   append(L"R");
-                                                            #line 5856 "PrintCLike.cpp.template"
+                                                            #line 5866 "PrintCLike.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 10351 "PrintCLike.cpp"
+                                                            #line 10367 "PrintCLike.cpp"
   append(L"r");
-                                                            #line 5859 "PrintCLike.cpp.template"
+                                                            #line 5869 "PrintCLike.cpp.template"
                                                                 }
-                                                            #line 10355 "PrintCLike.cpp"
+                                                            #line 10371 "PrintCLike.cpp"
   append(L"eset(");
-                                                            #line 5860 "PrintCLike.cpp.template"
+                                                            #line 5870 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 10359 "PrintCLike.cpp"
+                                                            #line 10375 "PrintCLike.cpp"
   append(L"input)");
-                                                            #line 5861 "PrintCLike.cpp.template"
+                                                            #line 5871 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                               }
                                                               if (useGlr)
                                                               {
-                                                            #line 10366 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 5866 "PrintCLike.cpp.template"
-                                                                if (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript() || isGo())
-                                                                {
-                                                                  print(thiz());
-                                                            #line 10373 "PrintCLike.cpp"
-  append(L"parser");
-                                                            #line 5869 "PrintCLike.cpp.template"
-                                                                  print(arrow());
-                                                                }
-                                                            #line 10378 "PrintCLike.cpp"
-  append(L"maxId = 0");
-                                                            #line 5871 "PrintCLike.cpp.template"
-                                                                print(semicolon());
                                                             #line 10382 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 5873 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10387 "PrintCLike.cpp"
-  append(L"id = ");
-                                                            #line 5874 "PrintCLike.cpp.template"
+                                                            #line 5876 "PrintCLike.cpp.template"
                                                                 if (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript() || isGo())
                                                                 {
                                                                   print(thiz());
-                                                            #line 10393 "PrintCLike.cpp"
+                                                            #line 10389 "PrintCLike.cpp"
   append(L"parser");
-                                                            #line 5877 "PrintCLike.cpp.template"
+                                                            #line 5879 "PrintCLike.cpp.template"
+                                                                  print(arrow());
+                                                                }
+                                                            #line 10394 "PrintCLike.cpp"
+  append(L"maxId = 0");
+                                                            #line 5881 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                            #line 10398 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 5883 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10403 "PrintCLike.cpp"
+  append(L"id = ");
+                                                            #line 5884 "PrintCLike.cpp.template"
+                                                                if (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript() || isGo())
+                                                                {
+                                                                  print(thiz());
+                                                            #line 10409 "PrintCLike.cpp"
+  append(L"parser");
+                                                            #line 5887 "PrintCLike.cpp.template"
                                                                    print(arrow());
                                                                 }
-                                                            #line 10398 "PrintCLike.cpp"
+                                                            #line 10414 "PrintCLike.cpp"
   append(L"maxId");
-                                                            #line 5879 "PrintCLike.cpp.template"
+                                                            #line 5889 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                               }
                                                               print(rightBrace());
                                                               if (isJavascript() && useGlr)
                                                               {
-                                                            #line 10406 "PrintCLike.cpp"
+                                                            #line 10422 "PrintCLike.cpp"
   append(L";");
-                                                            #line 5884 "PrintCLike.cpp.template"
+                                                            #line 5894 "PrintCLike.cpp.template"
                                                               }
-                                                            #line 10410 "PrintCLike.cpp"
+                                                            #line 10426 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5886 "PrintCLike.cpp.template"
+                                                            #line 5896 "PrintCLike.cpp.template"
                                                               if (useGlr || isJavascript() || isTypescript() || isHaxe() || isGo() || isPython())
                                                               {
                                                               }
@@ -10416,15 +10432,15 @@
                                                               {
                                                                 openMethod(voidType(), L"", L"reset", L"");
                                                                 print(leftBrace());
-                                                            #line 10420 "PrintCLike.cpp"
+                                                            #line 10436 "PrintCLike.cpp"
   append(L"\n");
   append(L"  reset(0, 0, 0)");
-                                                            #line 5894 "PrintCLike.cpp.template"
+                                                            #line 5904 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
-                                                            #line 10426 "PrintCLike.cpp"
+                                                            #line 10442 "PrintCLike.cpp"
   append(L"\n");
-                                                            #line 5897 "PrintCLike.cpp.template"
+                                                            #line 5907 "PrintCLike.cpp.template"
                                                               }
                                                               if (! isGo())
                                                                 decreaseIndent();
@@ -10450,62 +10466,62 @@
                                                                     Token::Code plusplus = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"--");
                                                                     Token::Code minusminus = p == 0 ? -1 : p->tokenCode;
-                                                            #line 10454 "PrintCLike.cpp"
+                                                            #line 10470 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5923 "PrintCLike.cpp.template"
+                                                            #line 5933 "PrintCLike.cpp.template"
                                                                     print(ifLeftParen());
-                                                            #line 10459 "PrintCLike.cpp"
+                                                            #line 10475 "PrintCLike.cpp"
   append(L"(");
-                                                            #line 5924 "PrintCLike.cpp.template"
+                                                            #line 5934 "PrintCLike.cpp.template"
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10464 "PrintCLike.cpp"
+                                                            #line 10480 "PrintCLike.cpp"
   append(L" == ");
-                                                            #line 5926 "PrintCLike.cpp.template"
+                                                            #line 5936 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
                                                                     if (isPython())
                                                                     {
-                                                            #line 10470 "PrintCLike.cpp"
-  append(L" or ");
-                                                            #line 5929 "PrintCLike.cpp.template"
-                                                                    }
-                                                                    else
-                                                                    {
-                                                            #line 10476 "PrintCLike.cpp"
-  append(L" || ");
-                                                            #line 5932 "PrintCLike.cpp.template"
-                                                                    }
-                                                                    print(thiz());
-                                                                    print(token());
-                                                            #line 10482 "PrintCLike.cpp"
-  append(L" == ");
-                                                            #line 5935 "PrintCLike.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
                                                             #line 10486 "PrintCLike.cpp"
-  append(L")");
-                                                            #line 5937 "PrintCLike.cpp.template"
-                                                                    if (isPython())
-                                                                    {
-                                                            #line 10491 "PrintCLike.cpp"
-  append(L" and ");
+  append(L" or ");
                                                             #line 5939 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10497 "PrintCLike.cpp"
-  append(L" && ");
+                                                            #line 10492 "PrintCLike.cpp"
+  append(L" || ");
                                                             #line 5942 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
+                                                                    print(token());
+                                                            #line 10498 "PrintCLike.cpp"
+  append(L" == ");
+                                                            #line 5945 "PrintCLike.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
                                                             #line 10502 "PrintCLike.cpp"
-  append(L"followsLineTerminator");
-                                                            #line 5944 "PrintCLike.cpp.template"
-                                                                    if (! isScala())
+  append(L")");
+                                                            #line 5947 "PrintCLike.cpp.template"
+                                                                    if (isPython())
                                                                     {
                                                             #line 10507 "PrintCLike.cpp"
+  append(L" and ");
+                                                            #line 5949 "PrintCLike.cpp.template"
+                                                                    }
+                                                                    else
+                                                                    {
+                                                            #line 10513 "PrintCLike.cpp"
+  append(L" && ");
+                                                            #line 5952 "PrintCLike.cpp.template"
+                                                                    }
+                                                                    print(thiz());
+                                                            #line 10518 "PrintCLike.cpp"
+  append(L"followsLineTerminator");
+                                                            #line 5954 "PrintCLike.cpp.template"
+                                                                    if (! isScala())
+                                                                    {
+                                                            #line 10523 "PrintCLike.cpp"
   append(L"()");
-                                                            #line 5946 "PrintCLike.cpp.template"
+                                                            #line 5956 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(ifRightParen());
                                                                     tss.insert(grammar->tokenSequence(plusplus));
@@ -10517,55 +10533,55 @@
                                                                 case RETURN:
                                                                 case THROW:
                                                                   {
-                                                            #line 10521 "PrintCLike.cpp"
+                                                            #line 10537 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5958 "PrintCLike.cpp.template"
+                                                            #line 5968 "PrintCLike.cpp.template"
                                                                     print(ifLeftParen());
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10528 "PrintCLike.cpp"
+                                                            #line 10544 "PrintCLike.cpp"
   append(L" != ");
-                                                            #line 5961 "PrintCLike.cpp.template"
+                                                            #line 5971 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[semicolonToken]));
                                                                     if (isPython())
                                                                     {
-                                                            #line 10534 "PrintCLike.cpp"
+                                                            #line 10550 "PrintCLike.cpp"
   append(L" and ");
-                                                            #line 5964 "PrintCLike.cpp.template"
+                                                            #line 5974 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10540 "PrintCLike.cpp"
+                                                            #line 10556 "PrintCLike.cpp"
   append(L" && ");
-                                                            #line 5967 "PrintCLike.cpp.template"
+                                                            #line 5977 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10546 "PrintCLike.cpp"
+                                                            #line 10562 "PrintCLike.cpp"
   append(L" >= 0");
-                                                            #line 5971 "PrintCLike.cpp.template"
+                                                            #line 5981 "PrintCLike.cpp.template"
                                                                     if (isPython())
                                                                     {
-                                                            #line 10551 "PrintCLike.cpp"
+                                                            #line 10567 "PrintCLike.cpp"
   append(L" and ");
-                                                            #line 5973 "PrintCLike.cpp.template"
+                                                            #line 5983 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10557 "PrintCLike.cpp"
+                                                            #line 10573 "PrintCLike.cpp"
   append(L" && ");
-                                                            #line 5976 "PrintCLike.cpp.template"
+                                                            #line 5986 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
-                                                            #line 10562 "PrintCLike.cpp"
+                                                            #line 10578 "PrintCLike.cpp"
   append(L"followsLineTerminator");
-                                                            #line 5978 "PrintCLike.cpp.template"
+                                                            #line 5988 "PrintCLike.cpp.template"
                                                                     if (! isScala())
                                                                     {
-                                                            #line 10567 "PrintCLike.cpp"
+                                                            #line 10583 "PrintCLike.cpp"
   append(L"()");
-                                                            #line 5980 "PrintCLike.cpp.template"
+                                                            #line 5990 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(ifRightParen());
                                                                     tss.insert(grammar->tokenSequence(semicolonToken));
@@ -10578,180 +10594,180 @@
                                                                     Token::Code eof = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"}");
                                                                     Token::Code rbrace = p == 0 ? -1 : p->tokenCode;
-                                                            #line 10582 "PrintCLike.cpp"
+                                                            #line 10598 "PrintCLike.cpp"
   append(L"\n");
   append(L"if ");
-                                                            #line 5993 "PrintCLike.cpp.template"
+                                                            #line 6003 "PrintCLike.cpp.template"
                                                                     print(isPython() ? L"(" : ifLeftParen());
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10589 "PrintCLike.cpp"
+                                                            #line 10605 "PrintCLike.cpp"
   append(L" == ");
-                                                            #line 5996 "PrintCLike.cpp.template"
+                                                            #line 6006 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
                                                                     if (isPython())
                                                                     {
-                                                            #line 10595 "PrintCLike.cpp"
+                                                            #line 10611 "PrintCLike.cpp"
   append(L" or");
-                                                            #line 5999 "PrintCLike.cpp.template"
+                                                            #line 6009 "PrintCLike.cpp.template"
                                                                     }
                                                                     else if (isGo())
                                                                     {
-                                                            #line 10601 "PrintCLike.cpp"
+                                                            #line 10617 "PrintCLike.cpp"
   append(L" ||");
-                                                            #line 6002 "PrintCLike.cpp.template"
+                                                            #line 6012 "PrintCLike.cpp.template"
                                                                     }
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
                                                                     if (isGo() || isPython())
                                                                     {
-                                                            #line 10608 "PrintCLike.cpp"
+                                                            #line 10624 "PrintCLike.cpp"
   append(L"\n");
   append(L"    ");
-                                                            #line 6007 "PrintCLike.cpp.template"
+                                                            #line 6017 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10615 "PrintCLike.cpp"
+                                                            #line 10631 "PrintCLike.cpp"
   append(L"\n");
   append(L" || ");
-                                                            #line 6011 "PrintCLike.cpp.template"
+                                                            #line 6021 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10622 "PrintCLike.cpp"
+                                                            #line 10638 "PrintCLike.cpp"
   append(L" == ");
-                                                            #line 6014 "PrintCLike.cpp.template"
+                                                            #line 6024 "PrintCLike.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
                                                                     if (isPython())
                                                                     {
-                                                            #line 10628 "PrintCLike.cpp"
+                                                            #line 10644 "PrintCLike.cpp"
   append(L" or");
-                                                            #line 6017 "PrintCLike.cpp.template"
+                                                            #line 6027 "PrintCLike.cpp.template"
                                                                     }
                                                                     else if (isGo())
                                                                     {
-                                                            #line 10634 "PrintCLike.cpp"
+                                                            #line 10650 "PrintCLike.cpp"
   append(L" ||");
-                                                            #line 6020 "PrintCLike.cpp.template"
+                                                            #line 6030 "PrintCLike.cpp.template"
                                                                     }
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(eof));
                                                                     if (isGo() || isPython())
                                                                     {
-                                                            #line 10641 "PrintCLike.cpp"
+                                                            #line 10657 "PrintCLike.cpp"
   append(L"\n");
   append(L"    ");
-                                                            #line 6025 "PrintCLike.cpp.template"
-                                                                    }
-                                                                    else
-                                                                    {
-                                                            #line 10648 "PrintCLike.cpp"
-  append(L"\n");
-  append(L" || ");
-                                                            #line 6029 "PrintCLike.cpp.template"
-                                                                    }
-                                                                    print(thiz());
-                                                                    print(token());
-                                                            #line 10655 "PrintCLike.cpp"
-  append(L" != ");
-                                                            #line 6032 "PrintCLike.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolonToken]));
-                                                                    if (isPython())
-                                                                    {
-                                                            #line 10661 "PrintCLike.cpp"
-  append(L" and ");
                                                             #line 6035 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10667 "PrintCLike.cpp"
-  append(L" && ");
-                                                            #line 6038 "PrintCLike.cpp.template"
+                                                            #line 10664 "PrintCLike.cpp"
+  append(L"\n");
+  append(L" || ");
+                                                            #line 6039 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
                                                                     print(token());
-                                                            #line 10673 "PrintCLike.cpp"
-  append(L" >= 0");
+                                                            #line 10671 "PrintCLike.cpp"
+  append(L" != ");
                                                             #line 6042 "PrintCLike.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolonToken]));
                                                                     if (isPython())
                                                                     {
-                                                            #line 10678 "PrintCLike.cpp"
+                                                            #line 10677 "PrintCLike.cpp"
   append(L" and ");
-                                                            #line 6044 "PrintCLike.cpp.template"
+                                                            #line 6045 "PrintCLike.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 10684 "PrintCLike.cpp"
+                                                            #line 10683 "PrintCLike.cpp"
   append(L" && ");
-                                                            #line 6047 "PrintCLike.cpp.template"
+                                                            #line 6048 "PrintCLike.cpp.template"
+                                                                    }
+                                                                    print(thiz());
+                                                                    print(token());
+                                                            #line 10689 "PrintCLike.cpp"
+  append(L" >= 0");
+                                                            #line 6052 "PrintCLike.cpp.template"
+                                                                    if (isPython())
+                                                                    {
+                                                            #line 10694 "PrintCLike.cpp"
+  append(L" and ");
+                                                            #line 6054 "PrintCLike.cpp.template"
+                                                                    }
+                                                                    else
+                                                                    {
+                                                            #line 10700 "PrintCLike.cpp"
+  append(L" && ");
+                                                            #line 6057 "PrintCLike.cpp.template"
                                                                     }
                                                                     if (afterRbrace)
                                                                     {
-                                                            #line 10690 "PrintCLike.cpp"
+                                                            #line 10706 "PrintCLike.cpp"
   append(L"(");
-                                                            #line 6050 "PrintCLike.cpp.template"
+                                                            #line 6060 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(thiz());
-                                                            #line 10695 "PrintCLike.cpp"
+                                                            #line 10711 "PrintCLike.cpp"
   append(L"followsLineTerminator");
-                                                            #line 6052 "PrintCLike.cpp.template"
+                                                            #line 6062 "PrintCLike.cpp.template"
                                                                     if (! isScala())
                                                                     {
-                                                            #line 10700 "PrintCLike.cpp"
+                                                            #line 10716 "PrintCLike.cpp"
   append(L"()");
-                                                            #line 6054 "PrintCLike.cpp.template"
+                                                            #line 6064 "PrintCLike.cpp.template"
                                                                     }
                                                                     if (afterRbrace)
                                                                     {
                                                                       if (isPython())
                                                                       {
-                                                            #line 10708 "PrintCLike.cpp"
+                                                            #line 10724 "PrintCLike.cpp"
   append(L" || ");
-                                                            #line 6059 "PrintCLike.cpp.template"
+                                                            #line 6069 "PrintCLike.cpp.template"
                                                                       }
                                                                       else
                                                                       {
-                                                            #line 10714 "PrintCLike.cpp"
+                                                            #line 10730 "PrintCLike.cpp"
   append(L" or ");
-                                                            #line 6062 "PrintCLike.cpp.template"
+                                                            #line 6072 "PrintCLike.cpp.template"
                                                                       }
                                                                       if (isCpp() || isCSharp() || isPython())
                                                                       {
                                                                         print(thiz());
-                                                            #line 10721 "PrintCLike.cpp"
+                                                            #line 10737 "PrintCLike.cpp"
   append(L"input");
-                                                            #line 6067 "PrintCLike.cpp.template"
+                                                            #line 6077 "PrintCLike.cpp.template"
                                                             
-                                                            #line 10725 "PrintCLike.cpp"
+                                                            #line 10741 "PrintCLike.cpp"
   append(L"[");
-                                                            #line 6067 "PrintCLike.cpp.template"
+                                                            #line 6077 "PrintCLike.cpp.template"
                                                                         print(thiz());
-                                                            #line 10729 "PrintCLike.cpp"
+                                                            #line 10745 "PrintCLike.cpp"
   append(L"b0]");
-                                                            #line 6068 "PrintCLike.cpp.template"
+                                                            #line 6078 "PrintCLike.cpp.template"
                                                                       }
                                                                       else
                                                                       {
                                                                         print(thiz());
-                                                            #line 10736 "PrintCLike.cpp"
+                                                            #line 10752 "PrintCLike.cpp"
   append(L"input.char");
-                                                            #line 6072 "PrintCLike.cpp.template"
+                                                            #line 6082 "PrintCLike.cpp.template"
                                                                         if (isTypescript() || isJavascript() || isHaxe())
                                                                         {
-                                                            #line 10741 "PrintCLike.cpp"
+                                                            #line 10757 "PrintCLike.cpp"
   append(L"Code");
-                                                            #line 6075 "PrintCLike.cpp.template"
+                                                            #line 6085 "PrintCLike.cpp.template"
                                                                         }
-                                                            #line 10745 "PrintCLike.cpp"
+                                                            #line 10761 "PrintCLike.cpp"
   append(L"At(");
-                                                            #line 6076 "PrintCLike.cpp.template"
+                                                            #line 6086 "PrintCLike.cpp.template"
                                                                        print(thiz());
-                                                            #line 10749 "PrintCLike.cpp"
+                                                            #line 10765 "PrintCLike.cpp"
   append(L"b0)");
-                                                            #line 6078 "PrintCLike.cpp.template"
+                                                            #line 6088 "PrintCLike.cpp.template"
                                                                       }
-                                                            #line 10753 "PrintCLike.cpp"
+                                                            #line 10769 "PrintCLike.cpp"
   append(L" == 0x7D)");
-                                                            #line 6079 "PrintCLike.cpp.template"
+                                                            #line 6089 "PrintCLike.cpp.template"
                                                                     }
                                                                     print(isPython() ? L"):" : ifRightParen());
                                                                   }
@@ -10762,45 +10778,45 @@
                                                                 print(isScala() || isGo() ? L" { ": L" ");
                                                                 if (! tss.empty()) printCodeSequenceAnnotation(tss);
                                                                 print(isScala() || isGo() || isPython() ? L"": L"\n{");
-                                                            #line 10766 "PrintCLike.cpp"
+                                                            #line 10782 "PrintCLike.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 6090 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10771 "PrintCLike.cpp"
-  append(L"l1 = ");
-                                                            #line 6091 "PrintCLike.cpp.template"
-                                                                print(format.toString<wchar_t>(grammar->externalTokenCode[semicolonToken]));
-                                                                print(semicolon());
-                                                            #line 10776 "PrintCLike.cpp"
-  append(L" ");
-                                                            #line 6093 "PrintCLike.cpp.template"
-                                                                printCodeSequenceAnnotation(grammar->tokenSequence(semicolonToken));
-                                                            #line 10780 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 6095 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10785 "PrintCLike.cpp"
-  append(L"e1 = ");
-                                                            #line 6096 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10789 "PrintCLike.cpp"
-  append(L"b1");
-                                                            #line 6097 "PrintCLike.cpp.template"
-                                                                print(semicolon());
-                                                            #line 10793 "PrintCLike.cpp"
-  append(L"\n");
-  append(L"  ");
-                                                            #line 6099 "PrintCLike.cpp.template"
-                                                                print(thiz());
-                                                            #line 10798 "PrintCLike.cpp"
-  append(L"end = ");
                                                             #line 6100 "PrintCLike.cpp.template"
                                                                 print(thiz());
-                                                            #line 10802 "PrintCLike.cpp"
-  append(L"e1");
+                                                            #line 10787 "PrintCLike.cpp"
+  append(L"l1 = ");
                                                             #line 6101 "PrintCLike.cpp.template"
+                                                                print(format.toString<wchar_t>(grammar->externalTokenCode[semicolonToken]));
+                                                                print(semicolon());
+                                                            #line 10792 "PrintCLike.cpp"
+  append(L" ");
+                                                            #line 6103 "PrintCLike.cpp.template"
+                                                                printCodeSequenceAnnotation(grammar->tokenSequence(semicolonToken));
+                                                            #line 10796 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 6105 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10801 "PrintCLike.cpp"
+  append(L"e1 = ");
+                                                            #line 6106 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10805 "PrintCLike.cpp"
+  append(L"b1");
+                                                            #line 6107 "PrintCLike.cpp.template"
+                                                                print(semicolon());
+                                                            #line 10809 "PrintCLike.cpp"
+  append(L"\n");
+  append(L"  ");
+                                                            #line 6109 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10814 "PrintCLike.cpp"
+  append(L"end = ");
+                                                            #line 6110 "PrintCLike.cpp.template"
+                                                                print(thiz());
+                                                            #line 10818 "PrintCLike.cpp"
+  append(L"e1");
+                                                            #line 6111 "PrintCLike.cpp.template"
                                                                 print(semicolon());
                                                                 print(rightBrace());
                                                               }

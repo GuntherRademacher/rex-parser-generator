@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 20, 2024 22:15 (UTC+01) by REx v6.0 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Dec 30, 2024 21:55 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCpp.cpp.template
                                                             #line 2 "PrintCpp.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -2597,27 +2597,37 @@
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                                                             #line 2599 "PrintCpp.cpp"
   append(L"();\n");
-  append(L"                if (! quiet) fprintf(stdout, \"\\n\");");
+  append(L"                job->parser->");
                                                             #line 1851 "PrintCpp.cpp.template"
+                                                              if (useGlr)
+                                                              {
+                                                            #line 2605 "PrintCpp.cpp"
+  append(L"thread->");
+                                                            #line 1853 "PrintCpp.cpp.template"
+                                                              }
+                                                            #line 2609 "PrintCpp.cpp"
+  append(L"cleanup();\n");
+  append(L"                if (! quiet) fprintf(stdout, \"\\n\");");
+                                                            #line 1855 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2607 "PrintCpp.cpp"
+                                                            #line 2617 "PrintCpp.cpp"
   append(L"\n");
   append(L"                job->parseTreeBuilder->serialize(job->contentCounter);");
-                                                            #line 1857 "PrintCpp.cpp.template"
+                                                            #line 1861 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 2612 "PrintCpp.cpp"
+                                                            #line 2622 "PrintCpp.cpp"
   append(L"\n");
   append(L"                if (job->contentCounter->getLength() != job->content->size())\n");
   append(L"                {\n");
   append(L"                  fprintf(stderr, \"content counter saw %d but input length is %d\\n\", job->contentCounter->getLength(), job->content->size());\n");
   append(L"                  exit(1);\n");
   append(L"                }");
-                                                            #line 1863 "PrintCpp.cpp.template"
+                                                            #line 1867 "PrintCpp.cpp.template"
                                                                         }
-                                                            #line 2621 "PrintCpp.cpp"
+                                                            #line 2631 "PrintCpp.cpp"
   append(L"\n");
   append(L"                parsed += job->content->size();\n");
   append(L"              }\n");
@@ -2625,42 +2635,42 @@
   append(L"              {\n");
   append(L"                ++errorCount;\n");
   append(L"                if (quiet) fprintf(stdout, \"parsing %s\", ");
-                                                            #line 1870 "PrintCpp.cpp.template"
+                                                            #line 1874 "PrintCpp.cpp.template"
                                                                 if (! parseChars)
                                                                 {
-                                                            #line 2632 "PrintCpp.cpp"
+                                                            #line 2642 "PrintCpp.cpp"
   append(L"Utf8Encoder::encode(");
-                                                            #line 1873 "PrintCpp.cpp.template"
+                                                            #line 1877 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 2636 "PrintCpp.cpp"
+                                                            #line 2646 "PrintCpp.cpp"
   append(L"job->name->c_str()");
-                                                            #line 1875 "PrintCpp.cpp.template"
-                                                                if (! parseChars)
-                                                                {
-                                                            #line 2641 "PrintCpp.cpp"
-  append(L").c_str()");
-                                                            #line 1878 "PrintCpp.cpp.template"
-                                                                }
-                                                            #line 2645 "PrintCpp.cpp"
-  append(L");\n");
-  append(L"                fprintf(stdout, \": error:\\n%s\", ");
-                                                            #line 1880 "PrintCpp.cpp.template"
+                                                            #line 1879 "PrintCpp.cpp.template"
                                                                 if (! parseChars)
                                                                 {
                                                             #line 2651 "PrintCpp.cpp"
-  append(L"Utf8Encoder::encode(");
-                                                            #line 1883 "PrintCpp.cpp.template"
+  append(L").c_str()");
+                                                            #line 1882 "PrintCpp.cpp.template"
                                                                 }
                                                             #line 2655 "PrintCpp.cpp"
-  append(L"job->parser->getErrorMessage(pe).c_str()");
-                                                            #line 1885 "PrintCpp.cpp.template"
+  append(L");\n");
+  append(L"                fprintf(stdout, \": error:\\n%s\", ");
+                                                            #line 1884 "PrintCpp.cpp.template"
                                                                 if (! parseChars)
                                                                 {
-                                                            #line 2660 "PrintCpp.cpp"
-  append(L").c_str()");
-                                                            #line 1888 "PrintCpp.cpp.template"
+                                                            #line 2661 "PrintCpp.cpp"
+  append(L"Utf8Encoder::encode(");
+                                                            #line 1887 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 2664 "PrintCpp.cpp"
+                                                            #line 2665 "PrintCpp.cpp"
+  append(L"job->parser->getErrorMessage(pe).c_str()");
+                                                            #line 1889 "PrintCpp.cpp.template"
+                                                                if (! parseChars)
+                                                                {
+                                                            #line 2670 "PrintCpp.cpp"
+  append(L").c_str()");
+                                                            #line 1892 "PrintCpp.cpp.template"
+                                                                }
+                                                            #line 2674 "PrintCpp.cpp"
   append(L");\n");
   append(L"                delete job->parser;\n");
   append(L"                job->parser = 0;\n");
@@ -2688,14 +2698,14 @@
   append(L"\n");
   append(L"    return errorCount == 0 ? 0 : 1;\n");
   append(L"  }\n");
-                                                            #line 1916 "PrintCpp.cpp.template"
+                                                            #line 1920 "PrintCpp.cpp.template"
                                                             }
 
                                                             void PrintCpp::printPerformanceCode()
                                                             {
                                                               if (tree)
                                                               {
-                                                            #line 2699 "PrintCpp.cpp"
+                                                            #line 2709 "PrintCpp.cpp"
   append(L"\n");
   append(L"  class ContentCounter : public EventHandler\n");
   append(L"  {\n");
@@ -2704,112 +2714,112 @@
   append(L"    size_t getLength() const {return length;}\n");
   append(L"\n");
   append(L"    void reset(");
-                                                            #line 1929 "PrintCpp.cpp.template"
-                                                                print(stringType());
-                                                            #line 2710 "PrintCpp.cpp"
-  append(L"string) {length = 0;}\n");
-  append(L"    void startNonterminal(");
-                                                            #line 1931 "PrintCpp.cpp.template"
-                                                                print(stringType());
-                                                            #line 2715 "PrintCpp.cpp"
-  append(L"name, int begin)  {}\n");
-  append(L"    void endNonterminal(");
                                                             #line 1933 "PrintCpp.cpp.template"
                                                                 print(stringType());
                                                             #line 2720 "PrintCpp.cpp"
-  append(L"name, int end)  {}\n");
-  append(L"    void terminal(");
+  append(L"string) {length = 0;}\n");
+  append(L"    void startNonterminal(");
                                                             #line 1935 "PrintCpp.cpp.template"
                                                                 print(stringType());
                                                             #line 2725 "PrintCpp.cpp"
+  append(L"name, int begin)  {}\n");
+  append(L"    void endNonterminal(");
+                                                            #line 1937 "PrintCpp.cpp.template"
+                                                                print(stringType());
+                                                            #line 2730 "PrintCpp.cpp"
+  append(L"name, int end)  {}\n");
+  append(L"    void terminal(");
+                                                            #line 1939 "PrintCpp.cpp.template"
+                                                                print(stringType());
+                                                            #line 2735 "PrintCpp.cpp"
   append(L"name, int begin, int end)  {length += end - begin;}\n");
   append(L"    void whitespace(int begin, int end) {length += end - begin;}\n");
   append(L"\n");
   append(L"  private:\n");
   append(L"    size_t length;\n");
   append(L"  };\n");
-                                                            #line 1942 "PrintCpp.cpp.template"
+                                                            #line 1946 "PrintCpp.cpp.template"
                                                               }
-                                                            #line 2734 "PrintCpp.cpp"
+                                                            #line 2744 "PrintCpp.cpp"
   append(L"\n");
   append(L"  class ParseJob\n");
   append(L"  {\n");
   append(L"  public:\n");
   append(L"    ParseJob(const std::");
-                                                            #line 1947 "PrintCpp.cpp.template"
+                                                            #line 1951 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2742 "PrintCpp.cpp"
+                                                            #line 2752 "PrintCpp.cpp"
   append(L"string &n, const std::");
-                                                            #line 1948 "PrintCpp.cpp.template"
+                                                            #line 1952 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2746 "PrintCpp.cpp"
+                                                            #line 2756 "PrintCpp.cpp"
   append(L"string &c)\n");
   append(L"    : name(0), content(0), parser(0)");
-                                                            #line 1950 "PrintCpp.cpp.template"
+                                                            #line 1954 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2752 "PrintCpp.cpp"
+                                                            #line 2762 "PrintCpp.cpp"
   append(L", contentCounter(0)");
-                                                            #line 1952 "PrintCpp.cpp.template"
+                                                            #line 1956 "PrintCpp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2757 "PrintCpp.cpp"
+                                                            #line 2767 "PrintCpp.cpp"
   append(L", parseTreeBuilder(0)");
-                                                            #line 1955 "PrintCpp.cpp.template"
+                                                            #line 1959 "PrintCpp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2762 "PrintCpp.cpp"
+                                                            #line 2772 "PrintCpp.cpp"
   append(L"\n");
   append(L"    {\n");
   append(L"      name = new std::");
-                                                            #line 1959 "PrintCpp.cpp.template"
+                                                            #line 1963 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2768 "PrintCpp.cpp"
+                                                            #line 2778 "PrintCpp.cpp"
   append(L"string(n);\n");
   append(L"      content = new std::");
-                                                            #line 1961 "PrintCpp.cpp.template"
+                                                            #line 1965 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2773 "PrintCpp.cpp"
+                                                            #line 2783 "PrintCpp.cpp"
   append(L"string(c);");
-                                                            #line 1962 "PrintCpp.cpp.template"
+                                                            #line 1966 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2778 "PrintCpp.cpp"
+                                                            #line 2788 "PrintCpp.cpp"
   append(L"\n");
   append(L"      contentCounter = new ContentCounter();");
-                                                            #line 1965 "PrintCpp.cpp.template"
+                                                            #line 1969 "PrintCpp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2784 "PrintCpp.cpp"
+                                                            #line 2794 "PrintCpp.cpp"
   append(L"\n");
   append(L"      parseTreeBuilder = new ParseTreeBuilder();");
-                                                            #line 1968 "PrintCpp.cpp.template"
+                                                            #line 1972 "PrintCpp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2790 "PrintCpp.cpp"
+                                                            #line 2800 "PrintCpp.cpp"
   append(L"\n");
   append(L"      parser = new ");
-                                                            #line 1971 "PrintCpp.cpp.template"
+                                                            #line 1975 "PrintCpp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2795 "PrintCpp.cpp"
+                                                            #line 2805 "PrintCpp.cpp"
   append(L"(content->c_str()");
-                                                            #line 1972 "PrintCpp.cpp.template"
+                                                            #line 1976 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2802 "PrintCpp.cpp"
+                                                            #line 2812 "PrintCpp.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 1976 "PrintCpp.cpp.template"
+                                                            #line 1980 "PrintCpp.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 2808 "PrintCpp.cpp"
+                                                            #line 2818 "PrintCpp.cpp"
   append(L", contentCounter");
-                                                            #line 1979 "PrintCpp.cpp.template"
+                                                            #line 1983 "PrintCpp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2813 "PrintCpp.cpp"
+                                                            #line 2823 "PrintCpp.cpp"
   append(L");\n");
   append(L"    }\n");
   append(L"\n");
@@ -2818,56 +2828,56 @@
   append(L"      delete name;\n");
   append(L"      delete content;\n");
   append(L"      delete parser;");
-                                                            #line 1988 "PrintCpp.cpp.template"
+                                                            #line 1992 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2825 "PrintCpp.cpp"
+                                                            #line 2835 "PrintCpp.cpp"
   append(L"\n");
   append(L"      delete contentCounter;");
-                                                            #line 1991 "PrintCpp.cpp.template"
+                                                            #line 1995 "PrintCpp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2831 "PrintCpp.cpp"
+                                                            #line 2841 "PrintCpp.cpp"
   append(L"\n");
   append(L"      delete parseTreeBuilder;");
-                                                            #line 1994 "PrintCpp.cpp.template"
+                                                            #line 1998 "PrintCpp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2837 "PrintCpp.cpp"
+                                                            #line 2847 "PrintCpp.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"\n");
   append(L"    std::");
-                                                            #line 1999 "PrintCpp.cpp.template"
+                                                            #line 2003 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2844 "PrintCpp.cpp"
+                                                            #line 2854 "PrintCpp.cpp"
   append(L"string *name;\n");
   append(L"    std::");
-                                                            #line 2001 "PrintCpp.cpp.template"
+                                                            #line 2005 "PrintCpp.cpp.template"
                                                               if (! parseChars) append(L"w");
-                                                            #line 2849 "PrintCpp.cpp"
+                                                            #line 2859 "PrintCpp.cpp"
   append(L"string *content;\n");
   append(L"    ");
-                                                            #line 2003 "PrintCpp.cpp.template"
+                                                            #line 2007 "PrintCpp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2854 "PrintCpp.cpp"
+                                                            #line 2864 "PrintCpp.cpp"
   append(L" *parser;");
-                                                            #line 2004 "PrintCpp.cpp.template"
+                                                            #line 2008 "PrintCpp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2859 "PrintCpp.cpp"
+                                                            #line 2869 "PrintCpp.cpp"
   append(L"\n");
   append(L"    ContentCounter *contentCounter;");
-                                                            #line 2007 "PrintCpp.cpp.template"
+                                                            #line 2011 "PrintCpp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2865 "PrintCpp.cpp"
+                                                            #line 2875 "PrintCpp.cpp"
   append(L"\n");
   append(L"    ParseTreeBuilder *parseTreeBuilder;");
-                                                            #line 2010 "PrintCpp.cpp.template"
+                                                            #line 2014 "PrintCpp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2871 "PrintCpp.cpp"
+                                                            #line 2881 "PrintCpp.cpp"
   append(L"\n");
   append(L"  };\n");
   append(L"\n");
@@ -3015,25 +3025,25 @@
   append(L"      try\n");
   append(L"      {\n");
   append(L"        if (! ");
-                                                            #line 2158 "PrintCpp.cpp.template"
+                                                            #line 2162 "PrintCpp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 3021 "PrintCpp.cpp"
+                                                            #line 3031 "PrintCpp.cpp"
   append(L"::quiet) fprintf(stdout, \"loading %s\\n\", path);\n");
   append(L"        parsers.push_back(ParseJob(");
-                                                            #line 2160 "PrintCpp.cpp.template"
+                                                            #line 2164 "PrintCpp.cpp.template"
                                                               if (parseChars)
                                                               {
-                                                            #line 3027 "PrintCpp.cpp"
+                                                            #line 3037 "PrintCpp.cpp"
   append(L"std::string");
-                                                            #line 2162 "PrintCpp.cpp.template"
+                                                            #line 2166 "PrintCpp.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 3033 "PrintCpp.cpp"
+                                                            #line 3043 "PrintCpp.cpp"
   append(L"Utf8Decoder::decode");
-                                                            #line 2165 "PrintCpp.cpp.template"
+                                                            #line 2169 "PrintCpp.cpp.template"
                                                               }
-                                                            #line 3037 "PrintCpp.cpp"
+                                                            #line 3047 "PrintCpp.cpp"
   append(L"(path), read(path)));\n");
   append(L"        return 1;\n");
   append(L"      }\n");
@@ -3055,7 +3065,7 @@
   append(L"  };\n");
   append(L"\n");
   append(L"  friend class FileParser;\n");
-                                                            #line 2187 "PrintCpp.cpp.template"
+                                                            #line 2191 "PrintCpp.cpp.template"
                                                             }
 
                                                             void PrintCpp::printInterface()
@@ -3073,121 +3083,121 @@
                                                               print(lexerInstanceCode);
                                                               if (trace)
                                                               {
-                                                            #line 3077 "PrintCpp.cpp"
+                                                            #line 3087 "PrintCpp.cpp"
   append(L"\n");
   append(L"  std::");
-                                                            #line 2205 "PrintCpp.cpp.template"
+                                                            #line 2209 "PrintCpp.cpp.template"
                                                                 print(stringIntroducer()[0] ? L"w" : L"");
-                                                            #line 3082 "PrintCpp.cpp"
+                                                            #line 3092 "PrintCpp.cpp"
   append(L"string lookaheadString()\n");
   append(L"  {\n");
   append(L"    std::");
-                                                            #line 2208 "PrintCpp.cpp.template"
+                                                            #line 2212 "PrintCpp.cpp.template"
                                                                 print(stringIntroducer()[0] ? L"w" : L"");
-                                                            #line 3088 "PrintCpp.cpp"
+                                                            #line 3098 "PrintCpp.cpp"
   append(L"string result;\n");
   append(L"    if (");
-                                                            #line 2210 "PrintCpp.cpp.template"
-                                                                print(thiz());
-                                                            #line 3093 "PrintCpp.cpp"
-  append(L"l1 > 0)\n");
-  append(L"    {\n");
-  append(L"      result += ");
-                                                            #line 2213 "PrintCpp.cpp.template"
-                                                                print(staticPrefix());
-                                                            #line 3099 "PrintCpp.cpp"
-  append(L"TOKEN[");
                                                             #line 2214 "PrintCpp.cpp.template"
                                                                 print(thiz());
                                                             #line 3103 "PrintCpp.cpp"
+  append(L"l1 > 0)\n");
+  append(L"    {\n");
+  append(L"      result += ");
+                                                            #line 2217 "PrintCpp.cpp.template"
+                                                                print(staticPrefix());
+                                                            #line 3109 "PrintCpp.cpp"
+  append(L"TOKEN[");
+                                                            #line 2218 "PrintCpp.cpp.template"
+                                                                print(thiz());
+                                                            #line 3113 "PrintCpp.cpp"
   append(L"l1];");
-                                                            #line 2215 "PrintCpp.cpp.template"
+                                                            #line 2219 "PrintCpp.cpp.template"
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 3108 "PrintCpp.cpp"
+                                                            #line 3118 "PrintCpp.cpp"
   append(L"\n");
   append(L"      if (");
-                                                            #line 2218 "PrintCpp.cpp.template"
+                                                            #line 2222 "PrintCpp.cpp.template"
                                                                   print(thiz());
-                                                            #line 3113 "PrintCpp.cpp"
+                                                            #line 3123 "PrintCpp.cpp"
   append(L"l");
-                                                            #line 2219 "PrintCpp.cpp.template"
+                                                            #line 2223 "PrintCpp.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 3117 "PrintCpp.cpp"
+                                                            #line 3127 "PrintCpp.cpp"
   append(L" > 0)\n");
   append(L"      {\n");
   append(L"        result += ");
-                                                            #line 2222 "PrintCpp.cpp.template"
+                                                            #line 2226 "PrintCpp.cpp.template"
                                                                   print(stringIntroducer());
-                                                            #line 3123 "PrintCpp.cpp"
+                                                            #line 3133 "PrintCpp.cpp"
   append(L"\" \";\n");
   append(L"        result += ");
-                                                            #line 2224 "PrintCpp.cpp.template"
+                                                            #line 2228 "PrintCpp.cpp.template"
                                                                   print(staticPrefix());
-                                                            #line 3128 "PrintCpp.cpp"
+                                                            #line 3138 "PrintCpp.cpp"
   append(L"TOKEN[");
-                                                            #line 2225 "PrintCpp.cpp.template"
+                                                            #line 2229 "PrintCpp.cpp.template"
                                                                   print(thiz());
-                                                            #line 3132 "PrintCpp.cpp"
+                                                            #line 3142 "PrintCpp.cpp"
   append(L"l");
-                                                            #line 2226 "PrintCpp.cpp.template"
+                                                            #line 2230 "PrintCpp.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 3136 "PrintCpp.cpp"
+                                                            #line 3146 "PrintCpp.cpp"
   append(L"];");
-                                                            #line 2227 "PrintCpp.cpp.template"
+                                                            #line 2231 "PrintCpp.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 3144 "PrintCpp.cpp"
+                                                            #line 3154 "PrintCpp.cpp"
   append(L"\n");
   append(L"      }");
-                                                            #line 2233 "PrintCpp.cpp.template"
+                                                            #line 2237 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 3149 "PrintCpp.cpp"
+                                                            #line 3159 "PrintCpp.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    return result;\n");
   append(L"  }\n");
-                                                            #line 2238 "PrintCpp.cpp.template"
+                                                            #line 2242 "PrintCpp.cpp.template"
                                                               }
                                                               if (useGlr)
                                                               {
-                                                            #line 3158 "PrintCpp.cpp"
+                                                            #line 3168 "PrintCpp.cpp"
   append(L"\n");
   append(L"};\n");
   append(L"\n");
   append(L"ParsingThread *thread;");
-                                                            #line 2244 "PrintCpp.cpp.template"
+                                                            #line 2248 "PrintCpp.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 3166 "PrintCpp.cpp"
+                                                            #line 3176 "PrintCpp.cpp"
   append(L"\n");
   append(L"BottomUpEventHandler *eventHandler;");
-                                                            #line 2247 "PrintCpp.cpp.template"
+                                                            #line 2251 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 3171 "PrintCpp.cpp"
+                                                            #line 3181 "PrintCpp.cpp"
   append(L"\n");
   append(L"const ");
-                                                            #line 2249 "PrintCpp.cpp.template"
+                                                            #line 2253 "PrintCpp.cpp.template"
                                                                 if (parseChars)
                                                                 {
-                                                            #line 3177 "PrintCpp.cpp"
+                                                            #line 3187 "PrintCpp.cpp"
   append(L"char");
-                                                            #line 2251 "PrintCpp.cpp.template"
+                                                            #line 2255 "PrintCpp.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3183 "PrintCpp.cpp"
+                                                            #line 3193 "PrintCpp.cpp"
   append(L"wchar_t");
-                                                            #line 2254 "PrintCpp.cpp.template"
+                                                            #line 2258 "PrintCpp.cpp.template"
                                                                 }
-                                                            #line 3187 "PrintCpp.cpp"
+                                                            #line 3197 "PrintCpp.cpp"
   append(L" *input;\n");
   append(L"int size;\n");
   append(L"int maxId;\n");
-                                                            #line 2258 "PrintCpp.cpp.template"
+                                                            #line 2262 "PrintCpp.cpp.template"
                                                               }
                                                               if (lexerStaticCode == 0)
                                                               {

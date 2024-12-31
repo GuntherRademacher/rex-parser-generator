@@ -4883,6 +4883,11 @@ if ~                                                            print(ifLeftPare
                                                                       {
                                                        ~this~         }
                                                             ~, 0)~    print(semicolon());
+                                                                      if (isCpp())
+                                                                      {
+~
+  thread->stack->unshare();
+  thread->stack = 0;~                                                 }
 ~
   thread~                                                             print(arrow());
         ~l1 = code~                                                   print(semicolon());
@@ -4990,6 +4995,11 @@ if ~                                                            print(ifLeftPare
                                                                     {
 ~
   end = thread.getEnd();~                                           }
+                                                                    else if (isCpp())
+                                                                    {
+~
+  end = thread->end;
+  delete thread;~                                                   }
                                                                     else
                                                                     {
 ~
@@ -6102,3 +6112,4 @@ if ~                                                                print(isPyth
                                                                 print(rightBrace());
                                                               }
                                                             }
+

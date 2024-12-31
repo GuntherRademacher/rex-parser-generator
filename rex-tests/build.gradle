@@ -21,6 +21,9 @@ tasks.named('test') {
 }
 
 test {
+    if (project.hasProperty('USE_VALGRIND')) {
+        systemProperty 'USE_VALGRIND', project.property('USE_VALGRIND')
+    }
     afterSuite { desc, result ->
         if (!desc.parent) {
             println "\n" +

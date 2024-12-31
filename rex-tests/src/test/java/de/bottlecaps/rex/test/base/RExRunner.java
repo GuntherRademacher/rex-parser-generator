@@ -3,7 +3,6 @@ package de.bottlecaps.rex.test.base;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +44,10 @@ public class RExRunner
   protected static final String XQUERY = "net.sf.saxon.Query";
   protected static final String XSLT = "net.sf.saxon.Transform";
 
+  protected static final boolean USE_VALGRIND;
+  protected static final String VALGRIND = "valgrind";
+  protected static final String VALGRIND_COMMAND_LINE = "-q --leak-check=full --error-exitcode=42 ";
+
   protected static final String REX;
   protected static final String JAVAC;
   protected static final String JAVA;
@@ -73,8 +76,13 @@ public class RExRunner
 
   static
   {
-    Runner runner = new RExRunner().new Runner();
-    runner.cleanup();
+    String propertyValue = System.getProperty("USE_VALGRIND");
+    USE_VALGRIND = propertyValue == null
+                ? false
+                : propertyValue.isEmpty() ? true
+                                          : Boolean.parseBoolean(propertyValue);
+    
+    Runner runner = new RExRunner().new Runner(false);
 
     JAVA = executableName(runner, "java");
     assertNotNull(JAVA, "Java not found");
@@ -153,62 +161,62 @@ public class RExRunner
     return result;
   }
 
-  private void ensureScalacAvailable()
+  private void ensureScalacAvailable(Runner runner)
   {
-    assumeTrue(SCALAC != null, "\"scalac\" not found. It must be available on the PATH.");
+    Pass.assume(SCALAC != null, runner, "\"scalac\" not found. It must be available on the PATH.");
   }
 
-  private void ensureCscAvailable()
+  private void ensureCscAvailable(Runner runner)
   {
-    assumeTrue(CSC != null, "\"csc\" not found. It must be available on the PATH.");
+    Pass.assume(CSC != null, runner, "\"csc\" not found. It must be available on the PATH.");
   }
 
-  private void ensureMcsAvailable()
+  private void ensureMcsAvailable(Runner runner)
   {
-    assumeTrue(MCS != null, "\"mcs\" not found. It must be available on the PATH.");
+    Pass.assume(MCS != null, runner, "\"mcs\" not found. It must be available on the PATH.");
   }
 
-  private void ensureMonoAvailable()
+  private void ensureMonoAvailable(Runner runner)
   {
-    assumeTrue(MONO != null, "\"mono\" not found. It must be available on the PATH.");
+    Pass.assume(MONO != null, runner, "\"mono\" not found. It must be available on the PATH.");
   }
 
-  private void ensureGppAvailable()
+  private void ensureGppAvailable(Runner runner)
   {
-    assumeTrue(GPP != null, "\"g++\" not found. It must be available on the PATH.");
+    Pass.assume(GPP != null, runner, "\"g++\" not found. It must be available on the PATH.");
   }
 
-  private void ensureTscAvailable()
+  private void ensureTscAvailable(Runner runner)
   {
-    assumeTrue(TSC != null, "\"tsc\" not found. It must be available on the PATH.");
+    Pass.assume(TSC != null, runner, "\"tsc\" not found. It must be available on the PATH.");
   }
 
-  private void ensureHaxeAvailable()
+  private void ensureHaxeAvailable(Runner runner)
   {
-    assumeTrue(HAXE != null, "\"haxe\" not found. It must be available on the PATH.");
+    Pass.assume(HAXE != null, runner, "\"haxe\" not found. It must be available on the PATH.");
   }
 
-  private void ensureNekoAvailable()
+  private void ensureNekoAvailable(Runner runner)
   {
-    assumeTrue(NEKO != null, "\"neko\" not found. It must be available on the PATH.");
+    Pass.assume(NEKO != null, runner, "\"neko\" not found. It must be available on the PATH.");
   }
 
-  private void ensureNodeAvailable()
+  private void ensureNodeAvailable(Runner runner)
   {
-    assumeTrue(NODE != null, "\"node\" not found. It must be available on the PATH.");
+    Pass.assume(NODE != null, runner, "\"node\" not found. It must be available on the PATH.");
   }
 
-  private void ensureSaxonEEAvailable()
+  private void ensureSaxonEEAvailable(Runner runner)
   {
-    assumeTrue(SAXON_EE != null, "\"SAXON-EE\" not found. Its CLASSPATH entry must be in environment variable SAXON_EE.");
+    Pass.assume(SAXON_EE != null, runner, "\"SAXON-EE\" not found. Its CLASSPATH entry must be in environment variable SAXON_EE.");
   }
 
-  private void ensureGoAvailable() throws TestAbortedException {
-    assumeTrue(GO != null, "\"go\" not found. It must be available on the PATH.");
+  private void ensureGoAvailable(Runner runner) throws TestAbortedException {
+    Pass.assume(GO != null, runner, "\"go\" not found. It must be available on the PATH.");
   }
 
-  private void ensurePythonAvailable() throws TestAbortedException {
-    assumeTrue(PYTHON_VERSION[0] >= 3, "\"python3 --version\" failed. It must be available on the PATH.");
+  private void ensurePythonAvailable(Runner runner) throws TestAbortedException {
+    Pass.assume(PYTHON_VERSION[0] >= 3, runner, "\"python3 --version\" failed. It must be available on the PATH.");
   }
 
   protected static String className(String[] args, String compiler)
@@ -329,13 +337,13 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureScalacAvailable();
+    ensureScalacAvailable(runner);
 
     String className = className(runner.getArgs(), SCALAC);
     Pass.passEarlyIfPossible(runner, className + ".scala");
     if (SCALAC_VERSION[0] > 3 || SCALAC_VERSION[0] == 3 && SCALAC_VERSION[1] >= 5)
     {
-      assumeTrue(JAVAC_VERSION[0] >= 17, "Running on Java "+ JAVAC_VERSION[0] + ", but Scala 3.5+ requires Java 17 or higher");
+      Pass.assume(JAVAC_VERSION[0] >= 17, runner, "Running on Java "+ JAVAC_VERSION[0] + ", but Scala 3.5+ requires Java 17 or higher");
       runner.expectSuccess("Scala compilation", SCALA, "compile " + className + ".scala");
       runner.run(SCALA, "run " + className + ".scala -- " + runtimeOptions);
     }
@@ -356,7 +364,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureCscAvailable();
+    ensureCscAvailable(runner);
 
     String className = className(runner.getArgs(), CSC);
     Pass.passEarlyIfPossible(runner, className + ".cs");
@@ -384,13 +392,13 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureMcsAvailable();
+    ensureMcsAvailable(runner);
 
     String className = className(runner.getArgs(), MCS);
     Pass.passEarlyIfPossible(runner, className + ".cs");
     if (0 == runner.run(MCS, className + ".cs"))
     {
-      ensureMonoAvailable();
+      ensureMonoAvailable(runner);
       runner.run(MONO, runner.getFolder() + File.separator + className + ".exe " + runtimeOptions);
     }
     return runner;
@@ -405,7 +413,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureNodeAvailable();
+    ensureNodeAvailable(runner);
 
     String className = className(runner.getArgs(), NODE);
     Pass.passEarlyIfPossible(runner, className + ".js");
@@ -422,7 +430,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureTscAvailable();
+    ensureTscAvailable(runner);
 
     String baseName = className(runner.getArgs(), TSC);
     Pass.passEarlyIfPossible(runner, baseName + ".ts");
@@ -444,13 +452,21 @@ public class RExRunner
     Runner runner = new Runner();
     runner.expectSuccess("REx processing", REX, commandLine("-cpp" + charOption + " -main", rexOptions, files), files);
 
-    ensureGppAvailable();
+    ensureGppAvailable(runner);
 
     String baseName = className(runner.getArgs(), GPP);
     Pass.passEarlyIfPossible(runner, baseName + ".cpp");
     final String exeFile = baseName + ".exe";
     runner.expectSuccess("C++ compilation", GPP, "-o " + exeFile + " " + baseName + ".cpp");
-    runner.run(runner.getFolder() + File.separator + exeFile, runtimeOptions);
+    if (USE_VALGRIND)
+    {
+      runner.run(VALGRIND, VALGRIND_COMMAND_LINE +
+                 runner.getFolder() + File.separator + exeFile + " " + runtimeOptions);
+    }
+    else
+    {
+      runner.run(runner.getFolder() + File.separator + exeFile, runtimeOptions);
+    }
     return runner;
   }
 
@@ -479,13 +495,13 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureHaxeAvailable();
+    ensureHaxeAvailable(runner);
 
     String baseName = className(runner.getArgs(), HAXE);
     Pass.passEarlyIfPossible(runner, baseName + ".hx");
     if (0 == runner.run(HAXE, "-main " + baseName + " -neko " + baseName + ".n"))
     {
-      ensureNekoAvailable();
+      ensureNekoAvailable(runner);
       runner.run(NEKO, baseName + ".n " + runtimeOptions);
     }
     return runner;
@@ -500,7 +516,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensureGoAvailable();
+    ensureGoAvailable(runner);
 
     String baseName = className(runner.getArgs(), GO);
     Pass.passEarlyIfPossible(runner, baseName + ".go");
@@ -522,7 +538,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
 
-    ensurePythonAvailable();
+    ensurePythonAvailable(runner);
 
     String baseName = className(runner.getArgs(), PYTHON);
     Pass.passEarlyIfPossible(runner, baseName + ".py");
@@ -606,7 +622,7 @@ public class RExRunner
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) throw new RuntimeException(runner.summary());
 
-    ensureSaxonEEAvailable();
+    ensureSaxonEEAvailable(runner);
 
     String className = className(runner.getArgs(), JAVAC);
     Pass.passEarlyIfPossible(runner, className + ".java");
@@ -759,13 +775,23 @@ public class RExRunner
 
     public Runner()
     {
-      try
-      {
-        folder = Files.createTempDirectory(RExRunner.class.getSimpleName() + "-");
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException(e.getMessage(), e);
+      this(true);
+    }
+
+    public Runner(boolean createFolder)
+    {
+      if (createFolder) {
+        try
+        {
+          String prefix = RExRunner.class.getSimpleName() + "-" +
+            testInfo.getTestClass().get().getSimpleName() + "-" +
+            testInfo.getTestMethod().get().getName() + "-";
+          folder = Files.createTempDirectory(prefix);
+        }
+        catch (IOException e)
+        {
+          throw new RuntimeException(e.getMessage(), e);
+        }
       }
     }
 
@@ -881,6 +907,11 @@ public class RExRunner
 
     public int run(String command, String commandLine, NamedFile... input)
     {
+      if (USE_VALGRIND && command.equals(REX))
+      {
+        command = VALGRIND;
+        commandLine = VALGRIND_COMMAND_LINE + REX + " " + commandLine;
+      }
       try
       {
         List<String> environment = new ArrayList<>();
@@ -971,7 +1002,7 @@ public class RExRunner
       }
       else if (fileName.endsWith(".scala"))
       {
-        ensureScalacAvailable();
+        ensureScalacAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         if (SCALAC_VERSION[0] > 3 || SCALAC_VERSION[0] ==3 && SCALAC_VERSION[1] >= 5)
           expectSuccess("Scala compilation", SCALA, "compile " + fileName);
@@ -980,7 +1011,7 @@ public class RExRunner
       }
       else if (fileName.endsWith(".cs"))
       {
-        ensureCscAvailable();
+        ensureCscAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         expectSuccess("C# compilation", CSC, fileName);
       }
@@ -1016,13 +1047,13 @@ public class RExRunner
       }
       else if (fileName.endsWith(".cpp"))
       {
-        ensureGppAvailable();
+        ensureGppAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         expectSuccess("C++ compilation", GPP, "-Wall -c " + fileName);
       }
       else if (fileName.endsWith(".hpp"))
       {
-        ensureGppAvailable();
+        ensureGppAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         if (! fileName.startsWith("HelloWorld_REx_")
          && ! fileName.equals("XqcTtdaG.hpp")
@@ -1043,7 +1074,7 @@ public class RExRunner
       }
       else if (fileName.endsWith(".ts"))
       {
-        ensureTscAvailable();
+        ensureTscAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         expectSuccess("npm init", NPM, "init -y");
         expectSuccess("npm node types installation", NPM, "install --save-dev @types/node");
@@ -1056,13 +1087,13 @@ public class RExRunner
       }
       else if (fileName.endsWith(".hx"))
       {
-        ensureHaxeAvailable();
+        ensureHaxeAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         expectSuccess("Haxe compilation", HAXE, fileName);
       }
       else if (fileName.endsWith(".js"))
       {
-        ensureNodeAvailable();
+        ensureNodeAvailable(this);
         Pass.passEarlyIfPossible(this, path);
         File ecmaScriptParserFile;
         try
@@ -1089,3 +1120,4 @@ public class RExRunner
       .collect(Collectors.joining(File.pathSeparator));
   }
 }
+
