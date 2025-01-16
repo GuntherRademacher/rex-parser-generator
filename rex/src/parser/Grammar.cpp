@@ -164,11 +164,13 @@ void ReverseVisitor::visitGrammar(Grammar *node)
 
 bool NodeIdLess::operator()(const Node *lhs, const Node *rhs) const
 {
-  if (lhs->id < 0 || rhs->id < 0)
+  if ((lhs != 0 && lhs->id < 0) || (rhs != 0 && rhs->id < 0))
   {
     internalerr();
   }
-  return lhs->id < rhs->id;
+  int lhsId = lhs == 0 ? -1 : lhs->id;
+  int rhsId = rhs == 0 ? -1 : rhs->id;
+  return lhsId < rhsId;
 }
 
 const TokenSequenceSet *Node::conflicts(size_t k) const
