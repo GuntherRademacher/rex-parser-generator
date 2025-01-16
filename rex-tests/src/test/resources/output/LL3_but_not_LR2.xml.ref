@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file was generated on Thu Dec 26, 2024 07:37 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> -->
+<!-- This file was generated on Thu Jan 16, 2025 11:06 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> -->
 <!-- REx command line: LL3_but_not_LR2.ebnf -xml -ff -lalr 3 -->
 <g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
   <g:production id="2" name="S">
@@ -24,7 +24,7 @@
   <g:production id="17" name="a">
     <g:string id="18">a</g:string>
   </g:production>
-<parser>
+  <parser>
     <state id="0">
       <item id="5" lookahead="%OTHER~%OTHER~%OTHER">S ::= <dot>.</dot> a a</item>
       <item id="9" lookahead="%OTHER~%OTHER~%OTHER">S ::= <dot>.</dot> A a a a</item>

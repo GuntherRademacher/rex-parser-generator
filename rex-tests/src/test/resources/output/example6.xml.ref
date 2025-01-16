@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file was generated on Thu Dec 26, 2024 07:34 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> -->
+<!-- This file was generated on Thu Jan 16, 2025 11:05 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> -->
 <!-- REx command line: example6.ebnf -xml -ff -rex -lr 1 -->
 <g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
   <g:production id="2" name="S">
@@ -25,7 +25,7 @@
   <g:production id="17" name="EOF">
     <g:endOfFile/>
   </g:production>
-<parser>
+  <parser>
     <state id="0">
       <item id="3" lookahead="%OTHER">S ::= <dot>.</dot> A EOF</item>
       <item id="11" lookahead="%WS EOF">A ::= ( ( <dot>.</dot> '(' A ')' | '(' ')' ) )+</item>

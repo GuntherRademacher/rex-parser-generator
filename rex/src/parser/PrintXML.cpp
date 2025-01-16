@@ -931,9 +931,9 @@ void PrintXML::dump(Grammar *node, size_t k)
       stateById[j->second->getStateId()] = j->first;
     }
 
+    indent += 2;
     indentation();
     print(L"<parser>\n");
-    indent += 2;
     for (StateById::const_iterator j = stateById.begin(); j != stateById.end(); ++j)
     {
       ItemSet *kernel = j->second;
