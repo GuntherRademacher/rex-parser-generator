@@ -815,11 +815,6 @@ void Node::collectRestrictedCaseNodes(const ItemSet* shiftItems, NodeSet &restri
   {
     restrictions.insert(shiftRestrictions.begin(), shiftRestrictions.end());
   }
-
-  if (restrictions.empty())
-  {
-    restrictions.insert(0);
-  }
 }
 
 Production *Grammar::startSymbol() const
