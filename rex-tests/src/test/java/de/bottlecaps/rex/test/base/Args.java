@@ -1,4 +1,4 @@
-// This file was generated on Sat Oct 19, 2024 16:10 (UTC+02) by REx v5.58 which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Jan 26, 2025 19:55 (UTC+01) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -java -a test Args.ebnf
 
                                                             // line 2 "Args.ebnf"
@@ -330,7 +330,7 @@
 
   private static final String[] TOKEN =
   {
-    "(0)",
+    "%ERROR",
     "Whitespace",
     "Arg",
     "EOF"
