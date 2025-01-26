@@ -43,16 +43,8 @@ Parser and lexer generation from EBNF, multiple parsing algorithms, multiple tar
 
 ## License
 
-Copyright (c) 1979-2024 Gunther Rademacher. REx is provided under the [Apache 2 License](LICENSE).
+Copyright (c) 1979-2025 Gunther Rademacher. REx is provided under the [Apache 2 License](LICENSE).
 
 ## Thanks
 
 This project was supported by [Software GmbH](https://www.softwareag.com/).
-
-[
-  <picture>
-    <source media="(prefers-color-scheme: light)" srcset="https://www.softwareag.com/content/dam/softwareag/global/image/logos/sag/software-gmbh-logo.svg">
-    <source media="(prefers-color-scheme: dark)" srcset="https://www.softwareag.com/content/dam/softwareag/global/image/logos/sag/software-gmbh-dark-logo.svg">
-    <img width="211">
-  </picture>
-](https://www.softwareag.com)
