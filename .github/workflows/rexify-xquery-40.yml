@@ -1,0 +1,65 @@
+name: RExify XQuery 4.0 grammar
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    schedule:
+      - cron: '0 5,17 * * *'
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Setup JDK 17
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Build REx 
+      - name: Build REx Project
+        run: |
+          g++ --version
+          rex/scripts/build-gpp.sh
+          echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH
+
+      # Download and install BaseX 11.6
+      - name: Download and Install BaseX
+        run: |
+          curl -s -O https://files.basex.org/releases/11.6/BaseX116.zip
+          unzip -q BaseX116.zip
+          echo "$(pwd)/basex/bin" >> $GITHUB_PATH
+
+      # Run the RExify script
+      - name: Execute RExify Script
+        run: |
+          docs/sample-grammars/XQuery-40/rexify-xquery-40.sh
+
+      # Compare generated file with the reference
+      - name: Compare Files
+        id: compare
+        run: |
+          diff --ignore-matching-lines="^ *\\*" docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf docs/sample-grammars/XQuery-40.ebnf
+
+      # Write success message to $GITHUB_STEP_SUMMARY
+      - name: Write Success Message
+        if: success()
+        run: |
+          echo "Current [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) matches the grammar committed in this project ([XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf))." >> $GITHUB_STEP_SUMMARY
+
+      # Upload generated file as an artifact only if the diff fails
+      - name: Upload Artifact on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: XQuery-40.ebnf
+          path: docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf
+

@@ -25,6 +25,7 @@ These sample grammars demonstrate how to create functional REx parsers. The link
  - [XQuery-Update-30.ebnf](#sample-grammar-xquery-update-30ebnf)
  - [XQuery-10.ebnf](#sample-grammar-xquery-10ebnf)
  - [XQuery-30.ebnf](#sample-grammar-xquery-30ebnf)
+ - [XQuery-40.ebnf](#sample-grammar-xquery-40ebnf)
  - [XQuery-31.ebnf](#sample-grammar-xquery-31ebnf)
 
 ## Sample Grammar: [JSON.ebnf](JSON.ebnf)
@@ -94,6 +95,10 @@ This grammar is a transcription of the grammar given in the 5th edition of the [
 ## Sample Grammar: [XQuery-30.ebnf](XQuery-30.ebnf)
 
 This grammar was extracted by [RR][rr] from W3C Recommendation [XQuery 3.0: An XML Query Language](https://www.w3.org/TR/2014/REC-xquery-30-20140408/), and tweaked for working with REx. It is sLL(3).
+
+## Sample Grammar: [XQuery-40.ebnf](XQuery-40.ebnf)
+
+This grammar was created from W3C Recommendation [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). It is LALR(2).
 
 ## Sample Grammar: [XQuery-Update-30.ebnf](XQuery-Update-30.ebnf)
 

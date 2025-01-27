@@ -14,7 +14,8 @@ This is an overview of the topmost files and folders in this repository:
  │     │     ├─── 📄 build-and-test-linux.yml    # Build and test workflow for Linux
  │     │     ├─── 📄 build-and-test-macos.yml    # Build and test workflow for macOS
  │     │     ├─── 📄 build-and-test-windows.yml  # Build and test workflow for Windows
- │     │     └─── 📄 check-markdown-links.yml    # documentation link check workflow
+ │     │     ├─── 📄 check-markdown-links.yml    # documentation link check workflow
+ │     │     └─── 📄 rexify-xquery-40.yml        # XQuery 4.0 grammar adaptation 
  │     └─── 📄 dependabot.yml                    # Dependency update workflow
  ├─── 📂 docs                                    # Project documentation
  │     └─── ...
