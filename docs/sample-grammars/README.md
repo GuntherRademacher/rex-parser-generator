@@ -5,7 +5,7 @@
 &nbsp;
 # Sample Grammars
 
-These sample grammars demonstrate how to create functional REx parsers. The links below are sorted alphabetically, while the detailed sections are arranged by ascending grammar size.
+These sample grammars demonstrate how to create working REx parsers. The links below are sorted alphabetically, and the more detailed sections further down are arranged by ascending grammar size.
 
  - [CSS-Selectors-3.ebnf](#sample-grammar-css-selectors-3ebnf)
  - [EcmaScript-5.ebnf](#sample-grammar-ecmascript-5ebnf)
@@ -25,8 +25,8 @@ These sample grammars demonstrate how to create functional REx parsers. The link
  - [XQuery-Update-30.ebnf](#sample-grammar-xquery-update-30ebnf)
  - [XQuery-10.ebnf](#sample-grammar-xquery-10ebnf)
  - [XQuery-30.ebnf](#sample-grammar-xquery-30ebnf)
- - [XQuery-40.ebnf](#sample-grammar-xquery-40ebnf)
  - [XQuery-31.ebnf](#sample-grammar-xquery-31ebnf)
+ - [XQuery-40.ebnf](#sample-grammar-xquery-40ebnf)
 
 ## Sample Grammar: [JSON.ebnf](JSON.ebnf)
 
@@ -96,10 +96,6 @@ This grammar is a transcription of the grammar given in the 5th edition of the [
 
 This grammar was extracted by [RR][rr] from W3C Recommendation [XQuery 3.0: An XML Query Language](https://www.w3.org/TR/2014/REC-xquery-30-20140408/), and tweaked for working with REx. It is sLL(3).
 
-## Sample Grammar: [XQuery-40.ebnf](XQuery-40.ebnf)
-
-This grammar was created from W3C Recommendation [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). It is LALR(2).
-
 ## Sample Grammar: [XQuery-Update-30.ebnf](XQuery-Update-30.ebnf)
 
 This grammar was extracted by [RR][rr] from [XQuery Update Facility 3.0
@@ -116,6 +112,10 @@ This grammar was extracted by [RR][rr] from W3C Recommendation [XQuery 1.0: An X
 ## Sample Grammar: [Java-7.ebnf](Java-7.ebnf)
 
 This grammar is a transcription of the Java 7 grammar found in [The Java® Language Specification](https://docs.oracle.com/javase/specs/jls/se7/html/) documents on [Syntax](https://docs.oracle.com/javase/specs/jls/se7/html/jls-18.html) and [Lexical Structure](https://docs.oracle.com/javase/specs/jls/se7/html/jls-3.html). It has subsequently been tweaked for working with REx, but there are still unresolved conflicts for both LL and LR constructions. Still parsers can be constructed from it when using backtracking (`-ll 2 -backtrack`) or GLR parsing (`-glalr 2`). The backtracking sLL(2) parser will in doubt select the first conflicting alternative, if successful, while the GLR parser will potentially report an ambiguity, should there be one.
+
+## Sample Grammar: [XQuery-40.ebnf](XQuery-40.ebnf)
+
+This grammar was created from W3C Recommendation [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). It is LALR(2).
 
 &nbsp;
 ---

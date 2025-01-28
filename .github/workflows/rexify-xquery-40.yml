@@ -1,12 +1,10 @@
-name: RExify XQuery 4.0 grammar
-
 on:
   workflow_dispatch:
   pull_request:
     branches:
       - main
-    schedule:
-      - cron: '0 5,17 * * *'
+  schedule:
+    - cron: '30 6,18 * * *'
 
 jobs:
   run-script:
@@ -24,7 +22,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Build REx 
+      # Build REx
       - name: Build REx Project
         run: |
           g++ --version
@@ -40,26 +38,22 @@ jobs:
 
       # Run the RExify script
       - name: Execute RExify Script
-        run: |
-          docs/sample-grammars/XQuery-40/rexify-xquery-40.sh
+        run: docs/sample-grammars/XQuery-40/rexify-xquery-40.sh
 
       # Compare generated file with the reference
       - name: Compare Files
         id: compare
-        run: |
-          diff --ignore-matching-lines="^ *\\*" docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf docs/sample-grammars/XQuery-40.ebnf
+        run: diff --ignore-matching-lines="^ *\\*" docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf docs/sample-grammars/XQuery-40.ebnf
 
       # Write success message to $GITHUB_STEP_SUMMARY
       - name: Write Success Message
         if: success()
-        run: |
-          echo "Current [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) matches the grammar committed in this project ([XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf))." >> $GITHUB_STEP_SUMMARY
+        run: echo "Current [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) matches the grammar committed in this project ([XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf))." >> $GITHUB_STEP_SUMMARY
 
-      # Upload generated file as an artifact only if the diff fails
+      # Upload generated file as an artifact if the diff fails
       - name: Upload Artifact on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: XQuery-40.ebnf
           path: docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf
-

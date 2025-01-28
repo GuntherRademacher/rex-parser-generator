@@ -46,16 +46,7 @@ declare variable $reserved-function-names :=
 (:~ Productions in the grammar that are unused. :)
 declare variable $obsolete-production-names :=
 (
-  "StringConstructorStart",
-  "StringInterpolationStart",
-  "StringInterpolationEnd",
-  "StringConstructorEnd",
-  "TagQName",
-  "EndTagQName",
-  "ProcessingInstructionStart",
-  "ProcessingInstructionEnd",
-  "DirCommentContentChar",
-  "DirCommentContentDashChar"
+  'AnnotatedDecl'
 );
 
 (:~
@@ -72,6 +63,15 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
+  (: Restore ValueExpr to the previous state where it referenced ValidateExpr and ExtensionExpr,
+   : these were possibly removed inadvertently in 
+   :)
+  local:rule
+  (
+    function($node) {$node/self::g:production[count(*) eq 1 and g:ref/@name eq "SimpleMapExpr"]/@name = "ValueExpr"},
+    function($node) {local:ast("ValueExpr ::= ValidateExpr | ExtensionExpr | SimpleMapExpr")}	
+  ),
+
   (: Add EOF to the end of the Module production. :)
   local:rule
   (
