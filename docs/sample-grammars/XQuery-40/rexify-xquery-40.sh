@@ -7,12 +7,6 @@ echo "...creating build directory: $BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-echo "...fetching EBNF grammar"
-curl --silent -O https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/java/de/bottlecaps/railroad/core/Parser.ebnf
-
-echo "...generating EBNF parser"
-rex -q -xquery -tree Parser.ebnf
-
 echo "...RExifying XQuery 4.0 grammar"
 basex -smethod=text ../$(basename "$0" .sh).xq > XQuery-40.ebnf
 

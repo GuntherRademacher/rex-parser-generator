@@ -6,8 +6,8 @@ import module namespace b = "de/bottlecaps/railroad/xq/ast-to-ebnf.xq" at
                             "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq";
 import module namespace e = "de/bottlecaps/railroad/xq/html-to-ebnf.xq" at
                             "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq";
-import module namespace p = "Parser" at
-                            "build/Parser.xquery";
+import module namespace p = "de/bottlecaps/railroad/xq/ebnf-parser.xquery" at
+                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery";
 
 (:~ The runtime environment time zone offset. :)
 declare variable $tz-offset := - xs:integer(timezone-from-dateTime(current-dateTime()) div xs:dayTimeDuration('PT1M'));
