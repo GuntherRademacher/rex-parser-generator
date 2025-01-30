@@ -15,7 +15,6 @@ Additionally, the transformation is integrated into a GitHub workflow: [rexify-x
 
 The prerequisites for running the transformation in the rexify script are:
 
- - curl
  - Java 11 or higher
  - [BaseX 11.6](https://basex.org/download/) or higher
  - [REx 6.1](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher
@@ -36,10 +35,10 @@ The following rules are applied during the transformation:
 
 - Remove the "type" keyword from the `NamedRecordTypeDecl` production. It was inadvertently added by [3c4ddb0](https://github.com/qt4cg/qtspecs/commit/3c4ddb0d8e06321fabde5e5a6db97810d03a61a6).
 
-- Refer to `EQName^Token` instead of `EQName` in the `UnreservedName` production.  
+- Reference `EQName^Token` instead of `EQName` in the `UnreservedName` production.  
   `EQName` will become a new nonterminal allowing both `EQName^Token` and keywords. This change allows unreserved keywords.
 
-- Refer to `NCName^Token` instead of `NCName` in the `UnreservedNCName` production.  
+- Reference `NCName^Token` instead of `NCName` in the `UnreservedNCName` production.  
   `NCName` will become a new nonterminal allowing both `NCName^Token` and keywords. This change allows unreserved keywords.
 
 - Prevent `$reserved-function-names` from being used as unqualified function names by replacing `EQName` with the new nonterminal `UnreservedFunctionName` in the following productions:
