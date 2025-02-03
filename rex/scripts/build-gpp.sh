@@ -5,6 +5,8 @@
 #   - g++ (Ubuntu 9.3.0-17ubuntu1~20.04) 9.3.0
 #   - g++ (SUSE Linux) 11.2.1 20210816 [revision 056e324ce46a7924b5cf10f61010cf9dd2ca10e9]
 
+GPP="${GPP:-g++}"
+
 set -e
 cd "$(dirname "$0")/.."
 rm -f -r build
@@ -16,12 +18,12 @@ for CPP in $(find src -name '*.cpp'); do
   mkdir -p build/obj/${CPP%/*}
   echo $CPP
   set +e
-  g++ -std=gnu++17 -O3 -Wall -c -o $OBJ $CPP
+  $GPP -std=gnu++17 -O3 -Wall -c -o $OBJ $CPP
   set -e
 done
 
 mkdir -p build/bin
-CMD="g++ -o build/bin/rex $OBJECTS"
+CMD="$GPP -o build/bin/rex $OBJECTS"
 echo $CMD
 $CMD
 
