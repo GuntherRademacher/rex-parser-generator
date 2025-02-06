@@ -46,13 +46,22 @@ Follow these steps to create a REx executable:
 
 E.g.
 
- - in Linux or macOS `bash`:
+ - in Linux `bash`:
 
    ```sh
    git clone https://github.com/GuntherRademacher/rex-parser-generator.git
    cd rex-parser-generator
    rex/scripts/build-gpp.sh
-   export PATH=`realpath rex/build/bin`:$PATH
+   export PATH=$(cd rex/build/bin && pwd):$PATH
+   ```
+
+ - in macOS `zsh`:
+
+   ```sh
+   git clone https://github.com/GuntherRademacher/rex-parser-generator.git
+   cd rex-parser-generator
+   rex/scripts/build-clang.sh
+   export PATH=$(cd rex/build/bin && pwd):$PATH
    ```
 
  - in Windows `cmd`:
