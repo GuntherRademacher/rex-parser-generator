@@ -6,6 +6,7 @@
 #   - clang version 13.0.0 (openSUSE Tumbleweed 20211019
 #   - clang version 14.0.6 (Centos Stream 8)
 #   - clang version 15.0.7 (Centos Stream 8)
+#   - Apple clang version 16.0.0 (clang-1600.0.26.6)
 
 set -e
 cd "$(dirname "$0")/.."
