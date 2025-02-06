@@ -7,10 +7,18 @@ echo "...creating build directory: $BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-echo "...RExifying XQuery 4.0 grammar"
-basex -smethod=text ../$(basename "$0" .sh).xq > XQuery-40.ebnf
+rexify() {
+    local INPUT="$1"
+    local OUTPUT="$2"
 
-echo "...running LALR(2) construction on XQuery 4.0 grammar"
-rex -lalr 2 XQuery-40.ebnf
+    echo "...RExifying $INPUT into $OUTPUT"
+    basex -bspecification-url="$INPUT" -smethod=text "../$(basename "$0" .sh).xq" > "$OUTPUT"
+
+    echo "...running LALR(2) construction on $OUTPUT"
+    rex -lalr 2 "$OUTPUT"
+}
+
+rexify "https://qt4cg.org/specifications/xquery-40/xquery-40.html" "XQuery-40.ebnf"
+rexify "https://qt4cg.org/specifications/xquery-40/xpath-40.html" "XPath-40.ebnf"
 
 echo "...done"

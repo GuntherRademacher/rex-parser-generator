@@ -1,8 +1,13 @@
-# RExification of XQuery 4.0 Grammar
+<link rel="stylesheet" href="../../markdown.css">
 
-This folder contains the scripts used to adapt the grammar from the [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) to the grammar file [XQuery-40.ebnf](../XQuery-40.ebnf), from which an LALR(2) parser can be generated successfully using REx.
+# RExification of XQuery and XPath 4.0 Grammars
 
-The transformation logic is implemented in XQuery and can be found in [rexify-xquery-40.xq](rexify-xquery-40.xq). It leverages an EBNF grammar and several XQuery modules from the [RR](https://github.com/GuntherRademacher/rr) project. 
+This folder contains the scripts used to adapt the grammars
+
+ - from the [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) to the grammar file [XQuery-40.ebnf](../XQuery-40.ebnf) for creating which an LALR(2) parser,
+ - from the [XPath 4.0 specification](https://qt4cg.org/specifications/xquery-40/xpath-40.html) to the grammar file [XPath-40.ebnf](../XPath-40.ebnf) for creating which an LALR(1) parser.
+
+The transformation logic is implemented in XQuery and can be found in [rexify-xquery-40.xq](rexify-xquery-40.xq). It leverages several XQuery modules from the [RR](https://github.com/GuntherRademacher/rr) project. 
 
 The transformation process is automated via:
 
@@ -15,9 +20,9 @@ Additionally, the transformation is integrated into a GitHub workflow: [rexify-x
 
 The prerequisites for running the transformation in the rexify script are:
 
- - Java 11 or higher
- - [BaseX 11.6](https://basex.org/download/) or higher
- - [REx 6.1](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher
+ - Java 11 or higher,
+ - [BaseX 11.7](https://basex.org/download/) or higher,
+ - [REx 6.1](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher.
 
 ## Transformation Logic
 

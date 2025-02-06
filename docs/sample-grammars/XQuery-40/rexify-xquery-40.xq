@@ -9,19 +9,21 @@ import module namespace e = "de/bottlecaps/railroad/xq/html-to-ebnf.xq" at
 import module namespace p = "de/bottlecaps/railroad/xq/ebnf-parser.xquery" at
                             "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery";
 
-(:~ The runtime environment time zone offset. :)
-declare variable $tz-offset := - xs:integer(timezone-from-dateTime(current-dateTime()) div xs:dayTimeDuration('PT1M'));
+(:~ The specification URL. :)
+declare variable $specification-url external;
 
-(:~ The XQuery 4.0 grammar. :)
-declare variable $xquery-grammar :=
-  local:extract-grammar("https://qt4cg.org/specifications/xquery-40/xquery-40.html");
+(:~ The specification grammar. :)
+declare variable $specification-grammar := local:extract-grammar($specification-url);
 
-(:~ External grammars that contain productions referenced by the XQuery 4.0 grammar. :)
+(:~ External grammars that contain productions referenced by the specification grammar. :)
 declare variable $external-grammars :=
 (
   local:extract-grammar("https://www.w3.org/TR/REC-xml/"),
   local:extract-grammar("https://www.w3.org/TR/REC-xml-names/")
 );
+
+(:~ The runtime environment time zone offset. :)
+declare variable $tz-offset := - xs:integer(timezone-from-dateTime(current-dateTime()) div xs:dayTimeDuration('PT1M'));
 
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
@@ -43,12 +45,6 @@ declare variable $reserved-function-names :=
   'typeswitch'
 );
 
-(:~ Productions in the grammar that are unused. :)
-declare variable $obsolete-production-names :=
-(
-  'AnnotatedDecl'
-);
-
 (:~
  : This is the structure of a rewriting rule:
  : - condition: a condition that tells whether this rule applies to some node
@@ -63,36 +59,48 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
-  (: Restore ValueExpr to the previous state where it referenced ValidateExpr and ExtensionExpr,
-   : these were possibly removed inadvertently in 
+  (: Remove productions AnnotatedDecl and CharRef, when not referenced. The former occurs in the
+   : XQuery 4.0 grammar, the latter in the XPath 4.0 grammar.
    :)
   local:rule
   (
-    function($node) {$node/self::g:production[count(*) eq 1 and g:ref/@name eq "SimpleMapExpr"]/@name = "ValueExpr"},
-    function($node) {local:ast("ValueExpr ::= ValidateExpr | ExtensionExpr | SimpleMapExpr")}	
+    function($node)
+    {
+      $node/self::g:production/@name = ("AnnotatedDecl", "CharRef")
+      and not(root($node)//g:ref/@name = $node/self::g:production/@name)
+    },
+    function($node) {text {""}}
   ),
-
-  (: Add EOF to the end of the Module production. :)
+  (: Restore ValueExpr to the previous state where it referenced ValidateExpr and ExtensionExpr,
+   : these were possibly removed inadvertently in https://github.com/qt4cg/qtspecs/pull/1732
+   : from the XQuery 4.0 grammar
+   :)
   local:rule
   (
-    function($node) {$node/self::g:production/@name = "Module"},
-	function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
+    function($node)
+    {
+      $node/self::g:production[count(*) eq 1
+      and g:ref/@name eq "SimpleMapExpr"]/@name = "ValueExpr"
+      and root($node)[.//g:production/@name = "ExtensionExpr" and not(.//g:ref = "ExtensionExpr")]
+      and root($node)[.//g:production/@name = "SimpleMapExpr" and not(.//g:ref = "SimpleMapExpr")]
+    },
+    function($node) {local:ast("ValueExpr ::= ValidateExpr | ExtensionExpr | SimpleMapExpr")}
   ),
 
-  (: Remove obsolete productions, which are left over in the grammar, but not used any more. :)
+  (: Add EOF to the end of the Module or XPath production. :)
   local:rule
   (
-    function($node) {$node/self::g:production/@name = $obsolete-production-names},
-	function($node) {text {"/*", $node/@name, "*/"}}
+    function($node) {$node/self::g:production/@name = ("Module", "XPath")},
+    function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
   ),
-  
+
   (: Remove the "type" keyword from the NamedRecordTypeDecl production. It was inadvertently added
    : by https://github.com/qt4cg/qtspecs/commit/3c4ddb0d8e06321fabde5e5a6db97810d03a61a6
    :)
   local:rule
   (
     function($node) {$node/self::g:string[. eq "type"]/parent::g:production/@name = "NamedRecordTypeDecl"},
-    function($node) {text {"/* type */"}}
+    function($node) {text {""}}
   ),
   
   (: Rather than EQName, refer to token EQName^Token in production UnreservedName. EQName will be a
@@ -102,7 +110,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node/self::g:ref[@name eq "EQName"]/parent::g:production/@name = "UnreservedName"},
-	function($node) {local:ast("_ ::= QName^Token | URIQualifiedName")/g:choice}
+    function($node) {local:ast("_ ::= QName^Token | URIQualifiedName")/g:choice}
   ),
   
   (: Rather than NCName, refer to token NCName^Token in production UnreservedNCName. NCName will be a
@@ -112,7 +120,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node/self::g:ref[@name eq "NCName"]/parent::g:production/@name = "UnreservedNCName"},
-	function($node) {<g:ref name="NCName" context="Token"/>}
+    function($node) {<g:ref name="NCName" context="Token"/>}
   ),
   
   (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
@@ -127,11 +135,11 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node)
-	{
-	  $node/self::g:ref[@name eq "EQName"]/ancestor::g:production
-	  /@name = ("FunctionCall", "FunctionDecl", "NamedFunctionRef", "ArrowStaticFunction")
-	},
-	function($node) {<g:ref name="UnreservedFunctionName"/>}
+    {
+      $node/self::g:ref[@name eq "EQName"]/ancestor::g:production
+      /@name = ("FunctionCall", "FunctionDecl", "NamedFunctionRef", "ArrowStaticFunction")
+    },
+    function($node) {<g:ref name="UnreservedFunctionName"/>}
   ),
   
   (: Replace RelativePathExpr? in production PathExpr by an ordered choice between RelativePathExpr
@@ -141,7 +149,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'RelativePathExpr']/ancestor::g:production/@name = "PathExpr"},
-	function($node) {local:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
+    function($node) {local:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
   ),
 
   (: Replace the production "PositionalArguments ::= (Argument ++ ',')", or rather
@@ -158,16 +166,16 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node)
-	{
-	  $node/self::g:production
-	  [count(*) eq 2
-	   and *[1]/self::g:ref/@name eq "Argument"
-	   and *[2]/self::g:zeroOrMore[count(*) eq 2
-								   and *[1]/self::g:string eq ","
-								   and *[2]/self::g:ref/@name eq "Argument"]
-	  ]/@name = "PositionalArguments"
+    {
+      $node/self::g:production
+      [count(*) eq 2
+       and *[1]/self::g:ref/@name eq "Argument"
+       and *[2]/self::g:zeroOrMore[count(*) eq 2
+                                   and *[1]/self::g:string eq ","
+                                   and *[2]/self::g:ref/@name eq "Argument"]
+      ]/@name = "PositionalArguments"
     },
-	function($node) {local:ast("PositionalArguments ::= Argument | PositionalArguments ',' Argument")}
+    function($node) {local:ast("PositionalArguments ::= Argument | PositionalArguments ',' Argument")}
   ),
 
   (: Replace OccurrenceIndicator? in production SequenceType by an ordered choice between
@@ -178,7 +186,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'OccurrenceIndicator']/ancestor::g:production/@name = "SequenceType"},
-	function($node) {local:ast("_ ::= OccurrenceIndicator /")/g:orderedChoice}
+    function($node) {local:ast("_ ::= OccurrenceIndicator /")/g:orderedChoice}
   ),
 
   (: Remove productions containing an exclusion operator "-", and Wildcard, from their original
@@ -189,7 +197,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {exists($node/self::g:production[@name = ("Wildcard", "Comment") or .//g:subtract])},
-	function($node) {text {"/*", $node/@name, "*/"}}
+    function($node) {text {""}}
   ),
 
   (: Process the <?TOKENS?> separator, by adding some prodcutions to the syntax section preceding it,
@@ -222,12 +230,12 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node instance of processing-instruction(TOKENS)},
-	function($node as node())
-	{
-	  let $grammar := root($node)
-	  let $keywords := local:keywords($grammar)
-	  return
-	  (
+    function($node as node())
+    {
+      let $grammar := root($node)
+      let $keywords := local:keywords($grammar)
+      return
+      (
         <g:production name="QName">
           <g:choice>
             <g:ref name="UnreservedFunctionName"/>
@@ -246,26 +254,26 @@ declare variable $rules as local:rule+ :=
             {$keywords!element g:string {.}}
           </g:choice>
         </g:production>,
-		local:ast("Whitespace ::= S^WS | Comment /* ws: definition */"),
-		$grammar/g:production[@name = "Comment"],
-		
+        local:ast("Whitespace ::= S^WS | Comment /* ws: definition */"),
+        $grammar/g:production[@name = "Comment"],
+        
         $node, (: i.e. the <?TOKENS?> separator:)
-		
-		$grammar/g:production[exists(.//g:subtract) and not(@name = ("CommentContents", $obsolete-production-names))],
-	    local:ast("CommentContents
-			::= ( ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) ) &amp;':'
-			  | ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) &amp;'('"),
-		$grammar/g:production[@name = "Wildcard"],
-		local:ast("EOF ::= $"),
+        
+        $grammar/g:production[exists(.//g:subtract) and @name ne "CommentContents"],
+        local:ast("CommentContents
+            ::= ( ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) ) &amp;':'
+              | ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) &amp;'('"),
+        $grammar/g:production[@name = "Wildcard"],
+        local:ast("EOF ::= $"),
         element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
-		let $keywords := local:keywords($grammar)
-    	return
-	    (
+        let $keywords := local:keywords($grammar)
+        return
+        (
           $keywords!element g:preference {<g:ref name="QName" context="Token"/>, element g:string{.}},
           $keywords!element g:preference {<g:ref name="NCName" context="Token"/>, element g:string{.}}
         )
-	  )
-	}
+      )
+    }
   )
 );
 
@@ -284,7 +292,7 @@ declare function local:rewrite($node as node(), $todo as local:rule*) as node()*
   else
     let $rule := $todo[1]
     return
-	  if ($rule?condition($node)) then
+      if ($rule?condition($node)) then
         $rule?action($node)
       else
         local:rewrite($node, subsequence($todo, 2))
@@ -303,8 +311,8 @@ declare function local:rewrite($nodes as node()*) as node()*
   let $replacement := local:rewrite($node, $rules)
   return
     if (exists($replacement)) then
-	  $replacement
-	else
+      $replacement
+    else
       typeswitch ($node)
       case document-node() return document {local:rewrite($node/node())}
       case element() return element {node-name($node)} {local:rewrite(($node/@*, $node/node()))}
@@ -335,25 +343,25 @@ declare function local:extract-grammar($uri as xs:string) as document-node()
  :)
 declare function local:collect-external-productions(
     $done as element(g:production)*,
-	$todo as xs:string*) as element(g:production)*
+    $todo as xs:string*) as element(g:production)*
 {
   if (empty($todo)) then
     $done
   else
     let $name := $todo[1]
-	let $todo := subsequence($todo, 2)
-	return
-	  if ($done/self::g:production[@name eq $name]) then
-	    local:collect-external-productions($done, $todo)
-	  else
-	    let $p := $external-grammars/g:grammar/g:production[@name eq $name]
-		return
-		  if (empty($p)) then
-		    error(xs:QName("local:collect-external-productions"), concat("missing nonterminal: ", $name))
-		  else if (count($p) gt 1) then
-		    error(xs:QName("local:collect-external-productions"), concat("multiple definitions found for: ", $name))
-		  else
-		    local:collect-external-productions(($done, $p), ($p//g:ref/@name, $todo))
+    let $todo := subsequence($todo, 2)
+    return
+      if ($done/self::g:production[@name eq $name]) then
+        local:collect-external-productions($done, $todo)
+      else
+        let $p := $external-grammars/g:grammar/g:production[@name eq $name]
+        return
+          if (empty($p)) then
+            error(xs:QName("local:collect-external-productions"), concat("missing nonterminal: ", $name))
+          else if (count($p) gt 1) then
+            error(xs:QName("local:collect-external-productions"), concat("multiple definitions found for: ", $name))
+          else
+            local:collect-external-productions(($done, $p), ($p//g:ref/@name, $todo))
 };
 
 (:~
@@ -369,32 +377,38 @@ declare function local:include-external-productions($nodes as node()*) as node()
   for $node in $nodes
   return
     typeswitch ($node)
-	case document-node() return
-	  error()
-	case element(g:grammar) return
-      let $nodes := local:include-external-productions($node/node())
-	  return
-	    element g:grammar
-		{
-		  for $node in $nodes
-	      where not($node/self::g:production) or empty($nodes[. << $node and @name eq $node/@name and deep-equal(., $node)])
-	      return $node
-		}
-	case element() return
+    case document-node() return
+      error()
+    case element(g:grammar) return
+      let $nodes :=
+        local:include-external-productions
+        ((
+          $node/node(),
+          (: the following is needed, but possibly only referenced in extra-grammatical text :)
+          $external-grammars//g:production[@name eq "S"]
+        ))
+      return
+        element g:grammar
+        {
+          for $node in $nodes
+          where not($node/self::g:production) or empty($nodes[. << $node and @name eq $node/@name and deep-equal(., $node)])
+          return $node
+        }
+    case element() return
       let $xhref := $node/@xhref
-	  let $elements :=
+      let $elements :=
         if (empty($xhref)) then
-		  $node
+          $node
         else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml#NT-")) then
-		  local:collect-external-productions((), $node/@name)
+          local:collect-external-productions((), $node/@name)
         else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml-names/#NT-")) then
-		  local:collect-external-productions((), $node/@name)
-		else
-		  error(xs:QName("local:include-external-productions"), concat("unexpected xhref attribute: ", $xhref))
-	  for $e in $elements
-	  return element {node-name($e)} {$e/@*, local:include-external-productions($e/node())}
-	default
-	  return $node
+          local:collect-external-productions((), $node/@name)
+        else
+          error(xs:QName("local:include-external-productions"), concat("unexpected xhref attribute: ", $xhref))
+      for $e in $elements
+      return element {node-name($e)} {$e/@*, local:include-external-productions($e/node())}
+    default
+      return $node
 };
 
 (:~ Parse an EBNF grammar fragment and return its XML representation.
@@ -414,24 +428,24 @@ declare function local:ast($ebnf as xs:string) as element(g:production)*
  : @return the ordered sequence of productions 
  :)
 declare function local:depth-first(
-	$done as element(g:production)*,
-	$todo as element(g:production)*) as element(g:production)*
+    $done as element(g:production)*,
+    $todo as element(g:production)*) as element(g:production)*
 {
   if (empty($todo)) then 
     $done
   else
     let $production := $todo[1]
-	let $others := subsequence($todo, 2)
-	let $refs := distinct-values($production//g:ref[empty(@context)]/string(@name))
+    let $others := subsequence($todo, 2)
+    let $refs := distinct-values($production//g:ref[empty(@context)]/string(@name))
     return
-	  local:depth-first
-	  (
-	    ($done, $production),
-		(
+      local:depth-first
+      (
+        ($done, $production),
+        (
           for $ref in $refs return $others[@name eq $ref],
-	      $others[not(@name = $refs)]
-	    )
-	  )
+          $others[not(@name = $refs)]
+        )
+      )
 };
  
 (:~ Transform a grammar such that its productions occur in depth-first order.
@@ -447,26 +461,26 @@ declare function local:depth-first($grammar as element(g:grammar))
    let $start :=
      for $production in $syntax
      let $refs := $syntax//g:ref[@name eq $production/@name and empty(@context)]
-	 where empty($refs)
-	 return $production
+     where empty($refs)
+     return $production
    let $syntax := local:depth-first((), ($start, $syntax[not(@name = $start/@name)]))
    let $used-tokens :=
      for $name in distinct-values
-	 (
+     (
        for $ref in $syntax//g:ref
        let $name := string($ref/@name)
-	   where exists($ref/@context) or empty($syntax[@name = $name])
-	   return $name
-	 )
-	 return $tokens[@name = $name]
+       where exists($ref/@context) or empty($syntax[@name = $name])
+       return $name
+     )
+     return $tokens[@name = $name]
    let $tokens := local:depth-first((), ($used-tokens, $tokens[not(@name = $used-tokens/@name)]))
    return
      <g:grammar>{
-	   $syntax,
-	   $separator,
-	   $tokens,
-	   $grammar/*[not(self::g:production)]
-	 }</g:grammar>
+       $syntax,
+       $separator,
+       $tokens,
+       $grammar/*[not(self::g:production)]
+     }</g:grammar>
 };
 
 (:~ Collect the sequence of keywords of a grammar.
@@ -478,17 +492,17 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 {
   let $tokens-separator := $grammar//processing-instruction(TOKENS)
   let $syntax := $grammar/*[. << $tokens-separator]
-  for $keyword in distinct-values($syntax//g:string[matches(., "^[a-zA-Z].*$")])
+  for $keyword in distinct-values(($syntax//g:string[matches(., "^[a-zA-Z].*$")], $reserved-function-names))
   order by $keyword
   return $keyword
 };
 
 concat
 (
-  $xquery-grammar/comment()
+  $specification-grammar/comment()
   => replace("\*/", "* and transformed by " || resolve-uri("") => replace(".*/", "") || "&#xA; */"), 
 
-  $xquery-grammar/g:grammar
+  $specification-grammar/g:grammar
   => local:include-external-productions()
   => local:rewrite()
   => local:depth-first()
