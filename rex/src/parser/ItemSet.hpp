@@ -127,12 +127,12 @@ public:
   }
 };
 
-class DominoSets : public std::map<Dominoes *, int, DominoSetLess, Alloc<std::pair<const Dominoes *, int> > >
-{                 typedef std::map<Dominoes *, int, DominoSetLess, Alloc<std::pair<const Dominoes *, int> > >
+class DominoSets : public std::map<Dominoes *, int, DominoSetLess, Alloc<std::map<Dominoes *, int>::value_type> >
+{                 typedef std::map<Dominoes *, int, DominoSetLess, Alloc<std::map<Dominoes *, int>::value_type> >
                           super;
 public:
   DominoSets()
-  : super(DominoSetLess(), Alloc<Dominoes *>(__FILE__, __LINE__))
+  : super(DominoSetLess(), Alloc<std::map<Dominoes *, int>::value_type>(__FILE__, __LINE__))
   {}
 
   ~DominoSets()
@@ -142,7 +142,7 @@ public:
   {
     for (iterator i = begin(); i != end(); ++i)
     {
-      Dominoes* const j = i->first;
+      const Dominoes* const j = i->first;
       delete j;
     }
   }
@@ -180,14 +180,14 @@ public:
   }
 };
 
-class ItemSet : private std::map<Node *, const TokenSequenceSetAccessor *, NodeIdLess, Alloc<std::pair<const Node *, const TokenSequenceSetAccessor *> > >
-{               typedef std::map<Node *, const TokenSequenceSetAccessor *, NodeIdLess, Alloc<std::pair<const Node *, const TokenSequenceSetAccessor *> > >
+class ItemSet : private std::map<Node *, const TokenSequenceSetAccessor *, NodeIdLess, Alloc<std::map<Node *, const TokenSequenceSetAccessor *>::value_type> >
+{               typedef std::map<Node *, const TokenSequenceSetAccessor *, NodeIdLess, Alloc<std::map<Node *, const TokenSequenceSetAccessor *>::value_type> >
                         super;
                 typedef super::value_type
                         value_type;
 public:
   ItemSet(const char *file = __FILE__, size_t line = __LINE__)
-  : super(NodeIdLess(), Alloc<std::pair<const Node *, const TokenSequenceSetAccessor *> >(file, line))
+  : super(NodeIdLess(), Alloc<std::map<Node *, const TokenSequenceSetAccessor *>::value_type>(file, line))
   {}
 
   typedef super::const_iterator const_iterator;
@@ -535,11 +535,11 @@ public:
 class LrState
 {
 private:
-  typedef std::map<Node *, Transition, NodeIdLess, Alloc<std::pair<const Node *, Transition> > > StateBySymbol;
+  typedef std::map<Node *, Transition, NodeIdLess, Alloc<std::map<Node *, Transition>::value_type> > StateBySymbol;
 
 public:
   LrState()
-  : stateBySymbol(StateBySymbol::key_compare(), Alloc<std::pair<Node *, Transition> >(__FILE__, __LINE__))
+  : stateBySymbol(StateBySymbol::key_compare(), Alloc<std::map<Node *, Transition>::value_type>(__FILE__, __LINE__))
   , id(-1)
   , lookahead(0)
   , compressedShiftMatch(0)
@@ -763,8 +763,8 @@ typedef std::pair<int, int> AppendixEntry;
 
 // map kernel items to transition set
 
-class LrStates : private std::map<ItemSet *, LrState *, KernelItemSetLess, Alloc<std::pair<const ItemSet *, LrState *> > >
-{                typedef std::map<ItemSet *, LrState *, KernelItemSetLess, Alloc<std::pair<const ItemSet *, LrState *> > >
+class LrStates : private std::map<ItemSet *, LrState *, KernelItemSetLess, Alloc<std::map<ItemSet *, LrState *>::value_type> >
+{                typedef std::map<ItemSet *, LrState *, KernelItemSetLess, Alloc<std::map<ItemSet *, LrState *>::value_type> >
                          super;
 public:
   enum ActionType
@@ -785,7 +785,7 @@ public:
   typedef std::map<ItemSet *, const TokenSequenceSet *, ItemSetLess> Conflicts;
 
   LrStates (Grammar *grammar, bool lalr)
-  : super(KernelItemSetLess(lalr), Alloc<std::pair<const ItemSet *, LrState *> >(__FILE__, __LINE__))
+  : super(KernelItemSetLess(lalr), Alloc<std::map<ItemSet *, LrState *>::value_type>(__FILE__, __LINE__))
   , grammar(grammar)
   , tokenSequenceSets(grammar->tokenSequenceSets)
   , conflicts(0)

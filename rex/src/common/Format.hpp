@@ -190,10 +190,10 @@ public:
     char tz[16] = {dtime == 0 ? (char) 0 : dtime > 0 ? '-' : '+'};
     if (dtime < 0) dtime = - dtime;
 
-    sprintf(tz + 1, "%02d%c%02d", dtime / 3600, dtime % 3600 == 0 ? 0 : ':', dtime % 3600 / 60);
+    snprintf(tz + 1, sizeof(tz) - 1, "%02d%c%02d", dtime / 3600, dtime % 3600 == 0 ? 0 : ':', dtime % 3600 / 60);
 
     char s[64];
-    sprintf(s, "%.3s %.3s %d, %4d %02d:%02d (UTC%s)",
+    snprintf(s, sizeof s, "%.3s %.3s %d, %4d %02d:%02d (UTC%s)",
       &days[localTime.tm_wday * 3],
       &months[localTime.tm_mon * 3],
       localTime.tm_mday,

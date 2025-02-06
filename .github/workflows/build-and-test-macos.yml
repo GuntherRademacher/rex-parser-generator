@@ -2,6 +2,11 @@ name: Build REx and run tests (macOS)
 
 on:
   workflow_dispatch:
+    inputs:
+      xcode_version:
+        description: "Specify Xcode version, e.g. Xcode_16.2.app (leave blank for latest available)"
+        required: false
+        default: ""
   pull_request:
     branches:
       - main
@@ -14,16 +19,30 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      - name: Select Xcode Version
+        run: |
+          ls /Applications | grep Xcode
+
+          if [ -n "${{ inputs.xcode_version }}" ]; then
+            selected_xcode="/Applications/${{ inputs.xcode_version }}"
+            if [ ! -d "$selected_xcode" ]; then
+              echo "❌ Error: Specified Xcode version $selected_xcode does not exist!"
+              exit 1
+            fi
+            echo "✅ Using requested Xcode version: $selected_xcode"
+          else
+            selected_xcode=$(ls -d /Applications/Xcode*.app | sort -V | tail -n 1)
+            echo "✅ Using latest Xcode version: $selected_xcode"
+          fi
+
+          sudo xcode-select -s "$selected_xcode/Contents/Developer"
+          clang --version
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Use GNU g++
-        run: ln -sf $(brew --prefix)/bin/g++-14 /usr/local/bin/g++
-
       - name: Build C++ Project
-        run: |
-          g++ --version
-          rex/scripts/build-gpp.sh
+        run: rex/scripts/build-clang.sh
 
       - name: Add Executable to PATH
         run: echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH

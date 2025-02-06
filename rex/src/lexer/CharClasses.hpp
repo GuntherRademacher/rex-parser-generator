@@ -1,4 +1,3 @@
-
 /*
  * CharClasses.h
  *
@@ -24,12 +23,12 @@ public:
 };
 
 template <class CHARSET>
-class Classification : public std::map<const CHARSET *, CHARSET *, std::less<const CHARSET *>, Alloc<std::pair<const CHARSET *, CHARSET *> > >
-{                     typedef std::map<const CHARSET *, CHARSET *, std::less<const CHARSET *>, Alloc<std::pair<const CHARSET *, CHARSET *> > >
+class Classification : public std::map<const CHARSET *const, CHARSET *, std::less<const CHARSET *>, Alloc<std::pair<const CHARSET *const, CHARSET *> > >
+{                     typedef std::map<const CHARSET *const, CHARSET *, std::less<const CHARSET *>, Alloc<std::pair<const CHARSET *const, CHARSET *> > >
                       super;
 public:
   Classification()
-  : super(std::less<const CHARSET *>(), Alloc<std::pair<const CHARSET *, CHARSET *> >(__FILE__, __LINE__))
+  : super(std::less<const CHARSET *>(), Alloc<std::pair<const CHARSET *const, CHARSET *> >(__FILE__, __LINE__))
   {}
 };
 

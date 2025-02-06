@@ -9,6 +9,7 @@
 #define PTRLESS_HPP
 
 #include <string.h>
+#include <wchar.h>
 
 template <class T>
 struct PtrLess

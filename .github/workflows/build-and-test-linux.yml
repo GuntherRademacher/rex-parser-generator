@@ -2,6 +2,11 @@ name: Build REx and run tests (Linux)
 
 on:
   workflow_dispatch:
+    inputs:
+      gcc_version:
+        description: "Specify g++ compiler version, e.g. g++-14 (leave blank for latest available)"
+        required: false
+        default: ""
   pull_request:
     branches:
       - main
@@ -14,13 +19,30 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      - name: Select g++ Version
+        run: |
+          ls /usr/bin | grep ^g++- | sort -V
+          
+          if [ -n "${{ inputs.gcc_version }}" ]; then
+            selected_gcc="${{ inputs.gcc_version }}"
+            if ! ls /usr/bin/$selected_gcc &>/dev/null; then
+              echo "❌ Error: Specified g++ version '$selected_gcc' does not exist!"
+              exit 1
+            fi
+            echo "✅ Using requested g++ version: $selected_gcc"
+          else
+            selected_gcc=$(ls /usr/bin | grep ^g++- | sort -V | tail -n 1)
+            echo "✅ Using latest g++ version: $selected_gcc"
+          fi
+
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/$selected_gcc 100
+          g++ --version
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Build C++ Project
-        run: |
-          g++ --version
-          rex/scripts/build-gpp.sh
+        run: rex/scripts/build-gpp.sh
 
       - name: Add Executable to PATH
         run: echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH

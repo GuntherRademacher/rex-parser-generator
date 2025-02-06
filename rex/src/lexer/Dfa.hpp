@@ -278,12 +278,12 @@ public:
   DfaState *shift;
 };
 
-class TransitionMap : public std::map<const ConstructionCharSet *, TransitionDescriptor, PtrLess<const ConstructionCharSet>, Alloc<std::pair<const ConstructionCharSet *, TransitionDescriptor> > >
-{                    typedef std::map<const ConstructionCharSet *, TransitionDescriptor, PtrLess<const ConstructionCharSet>, Alloc<std::pair<const ConstructionCharSet *, TransitionDescriptor> > >
+class TransitionMap : public std::map<const ConstructionCharSet *const, TransitionDescriptor, PtrLess<const ConstructionCharSet>, Alloc<std::pair<const ConstructionCharSet *const, TransitionDescriptor> > >
+{                    typedef std::map<const ConstructionCharSet *const, TransitionDescriptor, PtrLess<const ConstructionCharSet>, Alloc<std::pair<const ConstructionCharSet *const, TransitionDescriptor> > >
                      super;
 public:
   TransitionMap()
-  : super(key_compare(), Alloc<std::pair<const ConstructionCharSet *, TransitionDescriptor> >(__FILE__, __LINE__))
+  : super(key_compare(), Alloc<std::pair<const ConstructionCharSet *const, TransitionDescriptor> >(__FILE__, __LINE__))
   {}
 
   void consolidate(CharSets<const ConstructionCharSet> &transitionSets);
@@ -300,12 +300,12 @@ private:
   DfaStates *dfaStates;
 };
 
-class TransitionsByDfaGroup : public std::map<const DfaState *, const ConstructionCharSet *, TransitionsByDfaGroupLess, Alloc<std::pair<const DfaState *, const ConstructionCharSet *> > >
-{                            typedef std::map<const DfaState *, const ConstructionCharSet *, TransitionsByDfaGroupLess, Alloc<std::pair<const DfaState *, const ConstructionCharSet *> > >
+class TransitionsByDfaGroup : public std::map<const DfaState *const, const ConstructionCharSet *, TransitionsByDfaGroupLess, Alloc<std::pair<const DfaState *const, const ConstructionCharSet *> > >
+{                            typedef std::map<const DfaState *const, const ConstructionCharSet *, TransitionsByDfaGroupLess, Alloc<std::pair<const DfaState *const, const ConstructionCharSet *> > >
                              super;
 public:
   TransitionsByDfaGroup(DfaStates *d)
-  : super(TransitionsByDfaGroupLess(d), Alloc<std::pair<const DfaState *, const ConstructionCharSet *> >(__FILE__, __LINE__))
+  : super(TransitionsByDfaGroupLess(d), Alloc<std::pair<const DfaState *const, const ConstructionCharSet *> >(__FILE__, __LINE__))
   , dfaStates(d)
   {}
 

@@ -23,12 +23,12 @@
 #include <stdio.h>
 #include <string.h>
 
-class VarsInAlphabeticalOrder : public std::map<const char *, CGVariable, PtrLess<char>, Alloc<std::pair<const char *, CGVariable> > >
-{                              typedef std::map<const char *, CGVariable, PtrLess<char>, Alloc<std::pair<const char *, CGVariable> > >
+class VarsInAlphabeticalOrder : public std::map<const char *const, CGVariable, PtrLess<char>, Alloc<std::pair<const char *const, CGVariable> > >
+{                              typedef std::map<const char *const, CGVariable, PtrLess<char>, Alloc<std::pair<const char *const, CGVariable> > >
                                super;
 public:
   VarsInAlphabeticalOrder()
-  : super(key_compare(), Alloc<std::pair<const char *, CGVariable> >(__FILE__, __LINE__))
+  : super(key_compare(), Alloc<std::pair<const char *const, CGVariable> >(__FILE__, __LINE__))
   {}
 };
 

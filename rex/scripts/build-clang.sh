@@ -18,12 +18,12 @@ for CPP in $(find src -name '*.cpp'); do
   mkdir -p build/obj/${CPP%/*}
   echo $CPP
   set +e
-  clang++ `llvm-config --cflags` -c -o $OBJ $CPP
+  clang++ -std=gnu++17 -c -o $OBJ $CPP
   set -e
 done
 
 mkdir -p build/bin
-CMD="clang++ `llvm-config --ldflags`-o build/bin/rex $OBJECTS `llvm-config --libs`"
+CMD="clang++ -o build/bin/rex $OBJECTS"
 echo $CMD
 $CMD
 
