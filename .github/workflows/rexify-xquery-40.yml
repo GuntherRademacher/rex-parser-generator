@@ -56,8 +56,8 @@ jobs:
           echo "Grammars transformed from current specifications match those committed in this project:" >> $GITHUB_STEP_SUMMARY
           echo "| Specification | Grammar |" >> $GITHUB_STEP_SUMMARY
           echo "|---------------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> $GITHUB_STEP_SUMMARY
-          echo "| [XPath 4.0 specification](https://qt4cg.org/specifications/xquery-40/xpath-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> $GITHUB_STEP_SUMMARY
+          echo "| [XQuery 4.0](https://qt4cg.org/specifications/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> $GITHUB_STEP_SUMMARY
+          echo "| [XPath 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> $GITHUB_STEP_SUMMARY
 
       # Upload generated files as artifacts if the diff fails
       - name: Upload Artifacts on Failure
