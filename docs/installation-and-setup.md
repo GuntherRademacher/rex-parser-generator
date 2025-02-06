@@ -28,8 +28,9 @@ REx can be built on Linux, macOS, and Windows. As a prerequisite, a C++ compiler
 The build scripts have been tested most recently on
 
  - g++ versions 6.3 through 14.2
- - clang 10.0
+ - clang 10.0 through 17.0.6
  - clang-cl 19.1
+ - Apple clang 16.0.0
  - Microsoft Visual C++ 19.41.
 
 In addition, for running the supplied tests, a Java Development Kit is necessary. This should be JDK 11 or higher. When going for tests of all target platforms, JDK 17 or higher is recommended, as some of them may ask for that (e.g. newer releases of Scala).
