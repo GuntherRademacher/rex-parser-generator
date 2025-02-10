@@ -26,7 +26,7 @@ ContextChoice
 LexicalChoice
          ::= LexicalSequence ( '|' LexicalSequence )*
 ContextExpression
-         ::= LexicalSequence ( '&' LexicalItem )?
+         ::= LexicalSequence ( '&' LexicalSequence )?
 LexicalSequence
          ::=
            | LexicalItem ( '-' LexicalItem | LexicalItem* )
@@ -89,7 +89,7 @@ Name     ::= NameStartChar NameChar*
 Space    ::= ( #x9 | #xD | #x20 )+
            | #xA
 DirPIContents
-         ::= ( [^?#x9#xD#x20#xA] | '?'+ [^?>] ) ( [^?] | '?'+ [^?>] )* '?'* &'?>'
+         ::= ( [^?#x9#xD#x20#xA] | '?'+ [^?>] ) ( [^?] | '?'+ [^?>] )* '?'* & '?>'
 StringLiteral
          ::= '"' [^"#x9#xA#xD]* '"'
            | "'" [^'#x9#xA#xD]* "'"
@@ -97,7 +97,7 @@ CaretName
          ::= '^' Name?
 CharCode ::= '#x' [0-9a-fA-F]+
 Char     ::= [^#x9#xA#xD#x23#x5D]
-           | '#' &[^0-9a-fA-F]
+           | '#' & [^0-9a-fA-F]
 CharRange
          ::= Char '-' Char
 CharCodeRange
@@ -108,7 +108,7 @@ MultiLineComment
          ::= '/*' ( ( .* - ( .* '*/' .* ) ) - ( Space* 'ws' Space* ':' .* ) ) '*/'
 EOF      ::= $
 EquivalenceLookAhead
-         ::= &( '[' ( Char | CharCode | CharRange | CharCodeRange ) ']' Whitespace? '==' )
+         ::= & '[' ( Char | CharCode | CharRange | CharCodeRange ) ']' Whitespace? '=='
 Whitespace
          ::= ( Space | SingleLineComment | MultiLineComment )+
           /* ws: definition */

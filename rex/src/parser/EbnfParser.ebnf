@@ -125,7 +125,7 @@ LexicalChoice     ::= LexicalSequence                   <?rex Choice *choice = 0
                                                           }
                                                         ?>
 ContextExpression ::= LexicalSequence
-                      ( "&" LexicalItem                 <?rex
+                      ( "&" LexicalSequence             <?rex
                                                           Node *rhs = currentNode->isolateLastChild();
                                                           currentNode->addChild(new Context(currentNode->isolateLastChild(), rhs));
                                                         ?>
@@ -254,13 +254,13 @@ Name              ::= NameStartChar (NameChar)*
 
 Space             ::= (#x9 | #xD | #x20)+ | #xA
 DirPIContents     ::= ([^?#x9#xD#x20#xA] | '?'+ [^?>])
-                      ([^?]              | '?'+ [^?>])* '?'* &'?>'
+                      ([^?]              | '?'+ [^?>])* '?'* & '?>'
 StringLiteral     ::= ('"' [^"#x9#xA#xD]* '"')
                     | ("'" [^'#x9#xA#xD]* "'")
 CaretName         ::= "^" Name?
 CharCode          ::= "#x" [0-9a-fA-F]+
 Char              ::= [^#x9#xA#xD#x23#x5D]
-                    | '#' &[^0-9a-fA-F]
+                    | '#' & [^0-9a-fA-F]
 CharRange         ::= Char "-" Char
 CharCodeRange     ::= CharCode "-" CharCode
 SingleLineComment ::= '//' [^#xA]* #xA?
