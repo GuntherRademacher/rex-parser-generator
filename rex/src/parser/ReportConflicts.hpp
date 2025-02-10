@@ -118,7 +118,7 @@ private:
         fprintf(stdout, "    %ls\n", i->toString(grammar).c_str());
       }
     }
-    if (count >= LIMIT && ! ff)
+    if (count > LIMIT && ! ff)
     {
       fprintf(stdout, "    ... %ls more\n", Format().toString<wchar_t>(count - LIMIT));
     }
