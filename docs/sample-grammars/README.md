@@ -78,7 +78,7 @@ This grammar has been extracted by [RR][rr] from W3C Recommendation [SPARQL Quer
 
 ## Sample Grammar: [XPath-40.ebnf](XPath-40.ebnf)
 
-This grammar was created from W3C Editor's Draft [XML Path Language (XPath) 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). It is LALR(1).
+This grammar was created from the W3C Editor's Draft [XML Path Language (XPath) 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) by applying the transformation script in folder [XQuery-40](XQuery-40/). Adapting the grammar for REx is still a work in progress. The grammar is LALR(1).
 
 ## Sample Grammar: [XQuery-Update-10.ebnf](XQuery-Update-10.ebnf)
 
@@ -119,7 +119,7 @@ This grammar is a transcription of the Java 7 grammar found in [The Java® Langu
 
 ## Sample Grammar: [XQuery-40.ebnf](XQuery-40.ebnf)
 
-This grammar was created from W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). It is LALR(2).
+This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). Adapting the grammar for REx is still a work in progress. The grammar is LALR(2).
 
 &nbsp;
 ---

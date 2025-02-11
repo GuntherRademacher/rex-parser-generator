@@ -59,48 +59,42 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
-  (: Remove productions AnnotatedDecl and CharRef, when not referenced. The former occurs in the
-   : XQuery 4.0 grammar, the latter in the XPath 4.0 grammar.
+  (: Add missing preceding-sibling axis
+   : (see https://github.com/qt4cg/qtspecs/issues/1785)
    :)
+  local:rule
+  (
+    function($node) {$node/self::g:string[parent::g:choice] = "preceding-sibling-or-self"},
+    function($node) {element g:string {"preceding-sibling"}, $node}
+  ),
+  
+  (: Allow zero or more arrow target expressions
+   : (see https://github.com/qt4cg/qtspecs/issues/1785)
+   :)
+  local:rule
+  (
+    function($node) {$node/self::g:choice/parent::g:production/@name = "ArrowExpr"},
+    function($node) {element g:zeroOrMore {$node}}
+  ),
+
+  (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
+   : by new nonterminal UnreservedFunctionName in productions FunctionCall, FunctionDecl,
+   : NamedFunctionRef, and ArrowStaticFunction. This basically implements extra-grammatical
+   : constraint /* xgc: reserved-function-names */
+   : (see https://qt4cg.org/specifications/xquery-40/xquery-40.html#extra-grammatical-constraints).
+   :
+   : In ArrowStaticFunction, the annotation is missing in the spec, as pointed out in
+   : https://github.com/qt4cg/qtspecs/issues/1716, but we still add it here to avoid the necessity
+   : for unlimited lookahead, which REx cannot provide.
+   :)   
   local:rule
   (
     function($node)
     {
-      $node/self::g:production/@name = ("AnnotatedDecl", "CharRef")
-      and not(root($node)//g:ref/@name = $node/self::g:production/@name)
+      $node/self::g:ref[@name eq "EQName"]/ancestor::g:production
+      /@name = ("FunctionCall", "FunctionDecl", "NamedFunctionRef", "ArrowStaticFunction")
     },
-    function($node) {text {""}}
-  ),
-  (: Restore ValueExpr to the previous state where it referenced ValidateExpr and ExtensionExpr,
-   : these were possibly removed inadvertently in https://github.com/qt4cg/qtspecs/pull/1732
-   : from the XQuery 4.0 grammar
-   :)
-  local:rule
-  (
-    function($node)
-    {
-      $node/self::g:production[count(*) eq 1
-      and g:ref/@name eq "SimpleMapExpr"]/@name = "ValueExpr"
-      and root($node)[.//g:production/@name = "ExtensionExpr" and not(.//g:ref = "ExtensionExpr")]
-      and root($node)[.//g:production/@name = "SimpleMapExpr" and not(.//g:ref = "SimpleMapExpr")]
-    },
-    function($node) {local:ast("ValueExpr ::= ValidateExpr | ExtensionExpr | SimpleMapExpr")}
-  ),
-
-  (: Add EOF to the end of the Module or XPath production. :)
-  local:rule
-  (
-    function($node) {$node/self::g:production/@name = ("Module", "XPath")},
-    function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
-  ),
-
-  (: Remove the "type" keyword from the NamedRecordTypeDecl production. It was inadvertently added
-   : by https://github.com/qt4cg/qtspecs/commit/3c4ddb0d8e06321fabde5e5a6db97810d03a61a6
-   :)
-  local:rule
-  (
-    function($node) {$node/self::g:string[. eq "type"]/parent::g:production/@name = "NamedRecordTypeDecl"},
-    function($node) {text {""}}
+    function($node) {<g:ref name="UnreservedFunctionName"/>}
   ),
   
   (: Rather than EQName, refer to token EQName^Token in production UnreservedName. EQName will be a
@@ -121,25 +115,6 @@ declare variable $rules as local:rule+ :=
   (
     function($node) {$node/self::g:ref[@name eq "NCName"]/parent::g:production/@name = "UnreservedNCName"},
     function($node) {<g:ref name="NCName" context="Token"/>}
-  ),
-  
-  (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
-   : by new nonterminal UnreservedFunctionName in productions FunctionCall, FunctionDecl,
-   : NamedFunctionRef, and ArrowStaticFunction. This basically implements extra-grammatical
-   : constraint /* xgc: reserved-function-names */
-   : (see https://qt4cg.org/specifications/xquery-40/xquery-40.html#extra-grammatical-constraints).
-   : In ArrowStaticFunction, the annotation is missing in the spec, as pointed out in
-   : https://github.com/qt4cg/qtspecs/issues/1716, but we still add it here to avoid the necessity
-   : for unlimited lookahead, which REx cannot provide.
-   :)   
-  local:rule
-  (
-    function($node)
-    {
-      $node/self::g:ref[@name eq "EQName"]/ancestor::g:production
-      /@name = ("FunctionCall", "FunctionDecl", "NamedFunctionRef", "ArrowStaticFunction")
-    },
-    function($node) {<g:ref name="UnreservedFunctionName"/>}
   ),
   
   (: Replace RelativePathExpr? in production PathExpr by an ordered choice between RelativePathExpr
@@ -217,11 +192,13 @@ declare variable $rules as local:rule+ :=
    :  - the Whitespace production: Whitespace ::= S^WS | Comment /* ws: definition */
    :  - the Comment production that originally was in the lexical section.
    : The following is added to the lexical section:
-   :  - all productions containing an exclusion operator, some of which originally occured in the 
-   :    syntax section, except for CommentContents, which needs a replacement.
-   :  - the replacement for CommentContents, that adds lexical lookahead in order to prevent the
-   :    greedy lexer from comsuming a comment terminator or a nested comment introducer.
    :  - the Wildcard production from the syntax section
+   :  - all productions containing an exclusion operator, some of which originally occured in the 
+   :    syntax section, except those needing a replacement: "CDataSectionContents", 
+   :     "DirPIContents", "PragmaContents", "StringConstructorChars", "CommentContents"
+   :  - the replacements for "CDataSectionContents", "DirPIContents", "PragmaContents", 
+   :    "StringConstructorChars", "CommentContents", adding lexical lookahead in order to prevent
+   :    the greedy lexer from comsuming parts of the terminating character sequence.
    :  - an EOF production
    :  - a preference for Wildcard over "*" for parser states where both are expected. This has been
    :    taken over from the XQuery 3.1 grammar and might need to be re-checked.
@@ -259,23 +236,64 @@ declare variable $rules as local:rule+ :=
         
         $node, (: i.e. the <?TOKENS?> separator:)
         
-        $grammar/g:production[exists(.//g:subtract) and @name ne "CommentContents"],
-        local:ast("CommentContents
-            ::= ( ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) ) &amp;':'
-              | ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) &amp;'('"),
-        $grammar/g:production[@name = "Wildcard"],
-        local:ast("EOF ::= $"),
-        element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
-        let $keywords := local:keywords($grammar)
+        $grammar/g:production[@name = "Wildcard" or exists(.//g:subtract) and not(@name = ("CDataSectionContents", "DirPIContents", "PragmaContents", "StringConstructorChars", "CommentContents"))],
+
+        local:lookahead("CDataSectionContents", element g:string {"]]"}),
+        local:lookahead("DirPIContents", element g:string {"?"}),
+        local:lookahead("PragmaContents", element g:string {"#"}),
+        local:lookahead("StringConstructorChars", element g:choice {element g:string {"`{"}, element g:string {"]`"}}),
+
+        let $comment-contents := $grammar/g:production[@name = "CommentContents"]
+        let $nodes := $comment-contents/node()
         return
-        (
-          $keywords!element g:preference {<g:ref name="QName" context="Token"/>, element g:string{.}},
-          $keywords!element g:preference {<g:ref name="NCName" context="Token"/>, element g:string{.}}
-        )
+          element g:production
+          {
+            $comment-contents/@*,
+            element g:choice
+            {
+              element g:context {element g:subtract {$nodes, element g:sequence { element g:zeroOrMore { element g:ref {attribute name {"Char"}}}, element g:string {"("}}}, element g:string {':'}},
+              element g:context {$nodes, element g:string {'('}}
+            }
+          },
+
+        local:ast("EOF ::= $"),
+        
+        element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
+        $keywords!element g:preference {<g:ref name="QName" context="Token"/>, element g:string{.}},
+        $keywords!element g:preference {<g:ref name="NCName" context="Token"/>, element g:string{.}}
       )
     }
+  ),
+  
+  (: Add EOF to the end of the Module or XPath production. :)
+  local:rule
+  (
+    function($node) {$node/self::g:production/@name = ("Module", "XPath")},
+    function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
   )
+
 );
+
+(:~
+ : Add lexical lookahead to a production. 
+ : @param $name production name 
+ : @param $lookahead lexical lookahead
+ :)
+declare function local:lookahead($name as xs:string, $lookahead as node()) as element(g:production)?
+{
+  let $nodes := $specification-grammar//g:production[@name eq $name]/*
+  where $nodes
+  return
+    element g:production
+    {
+      attribute name {$name},
+      element g:context
+      {
+        if (count($nodes) eq 1) then $nodes else element g:sequence {$nodes},
+        $lookahead
+      }
+    }
+};
 
 (:~
  : Find the first matching one in a sequence of rules to a given node and apply its action to the
@@ -492,7 +510,12 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 {
   let $tokens-separator := $grammar//processing-instruction(TOKENS)
   let $syntax := $grammar/*[. << $tokens-separator]
-  for $keyword in distinct-values(($syntax//g:string[matches(., "^[a-zA-Z].*$")], $reserved-function-names))
+  for $keyword in
+    distinct-values((
+      $syntax//g:string[matches(., "^[a-zA-Z].*$")],
+      $reserved-function-names,
+      "preceding-sibling" (: currently missing in the spec :)
+    ))
   order by $keyword
   return $keyword
 };
