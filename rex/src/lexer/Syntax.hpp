@@ -452,9 +452,9 @@ public:
     }
     else
     {
-      tokenString += '(';
+      tokenString += "'(";
       tokenString += format.toString<char>(id);
-      tokenString += ')';
+      tokenString += ")'";
     }
 
   //    printf("token %d: %s\n", tokenStrings.size(), tokenString.c_str());

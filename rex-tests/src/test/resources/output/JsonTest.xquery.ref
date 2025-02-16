@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Mon Nov 1, 2021 13:47 (UTC+01) by REx v5.54 which is Copyright (c) 1979-2021 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Fri Feb 14, 2025 16:48 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: JsonTest.rex :)
 (:~
  : The tokenizer that was generated for the JsonTest grammar.
@@ -90,7 +90,7 @@ declare variable $p:TOKEN as xs:string+ :=
 (
   "EPSILON",
   "ERROR",
-  "(2)",
+  "'(2)'",
   "eof",
   "string",
   "number",
