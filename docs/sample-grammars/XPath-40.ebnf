@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 11, 2025, 21:00 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 18, 2025, 21:17 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -25,7 +25,7 @@ VarNameAndType
          ::= '$' EQName TypeDeclaration?
 EQName   ::= QName
            | URIQualifiedName
-QName    ::= UnreservedFunctionName
+QName    ::= UnreservedFunctionQName
            | 'attribute'
            | 'comment'
            | 'document-node'
@@ -41,8 +41,8 @@ QName    ::= UnreservedFunctionName
            | 'if'
            | 'switch'
            | 'typeswitch'
-UnreservedFunctionName
-         ::= QName^Token
+UnreservedFunctionQName
+         ::= UnreservedQName
            | 'ancestor'
            | 'ancestor-or-self'
            | 'and'
@@ -105,6 +105,10 @@ UnreservedFunctionName
            | 'union'
            | 'value'
            | 'values'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
 TypeDeclaration
          ::= 'as' SequenceType
 SequenceType
@@ -151,7 +155,7 @@ SchemaAttributeTest
 AttributeName
          ::= EQName
 PITest   ::= 'processing-instruction' '(' ( NCName | StringLiteral )? ')'
-NCName   ::= NCName^Token
+NCName   ::= UnreservedNCName
            | 'ancestor'
            | 'ancestor-or-self'
            | 'and'
@@ -229,6 +233,10 @@ NCName   ::= NCName^Token
            | 'union'
            | 'value'
            | 'values'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
 CommentTest
          ::= 'comment' '(' ')'
 TextTest ::= 'text' '(' ')'
@@ -384,7 +392,10 @@ ParenthesizedExpr
 ContextValueRef
          ::= '.'
 FunctionCall
-         ::= UnreservedFunctionName ArgumentList
+         ::= UnreservedFunctionEQName ArgumentList
+UnreservedFunctionEQName
+         ::= UnreservedFunctionQName
+           | URIQualifiedName
 ArgumentList
          ::= '(' ( PositionalArguments ( ',' KeywordArguments )? | KeywordArguments )? ')'
 PositionalArguments
@@ -402,7 +413,7 @@ FunctionItemExpr
          ::= NamedFunctionRef
            | InlineFunctionExpr
 NamedFunctionRef
-         ::= UnreservedFunctionName '#' IntegerLiteral
+         ::= UnreservedFunctionEQName '#' IntegerLiteral
 InlineFunctionExpr
          ::= ( 'function' | 'fn' ) FunctionSignature? FunctionBody
 FunctionSignature
@@ -484,20 +495,14 @@ AbbrevForwardStep
          ::= '@' NodeTest
            | SimpleNodeTest
 SequenceArrowTarget
-         ::= '=>' ArrowTarget
+         ::= ( '=>' | '=＞' ) ArrowTarget
 ArrowTarget
-         ::= ArrowStaticFunction ArgumentList
-           | ArrowDynamicFunction PositionalArgumentList
-ArrowStaticFunction
-         ::= UnreservedFunctionName
-ArrowDynamicFunction
-         ::= VarRef
-           | InlineFunctionExpr
-           | ParenthesizedExpr
+         ::= FunctionCall
+           | DynamicFunctionCall
 MappingArrowTarget
-         ::= '=!>' ArrowTarget
+         ::= ( '=!>' | '=!＞' ) ArrowTarget
 LookupArrowTarget
-         ::= '=?>' NCName PositionalArgumentList
+         ::= ( '=?>' | '=?＞' ) NCName PositionalArgumentList
 CastTarget
          ::= TypeName
            | ChoiceItemType
@@ -512,13 +517,13 @@ ValueComp
 GeneralComp
          ::= '='
            | '!='
-           | '<'
-           | '<='
-           | '>'
-           | '>='
+           | ( '<' | '＜' )
+           | ( '<=' | '＜=' )
+           | ( '>' | '＞' )
+           | ( '>=' | '＞=' )
 NodeComp ::= 'is'
-           | '<<'
-           | '>>'
+           | ( '<<' | '＜＜' )
+           | ( '>>' | '＞＞' )
 Whitespace
          ::= S^WS
            | Comment
@@ -619,9 +624,11 @@ DoubleLiteral
          ::= ( '.' Digits | Digits ( '.' Digits? )? ) [eE] [+#x2D]? Digits
           /* ws: explicit */
 StringTemplateFixedPart
-         ::= ( Char - ( '{' | '}' | '`' ) | '{{' | '}}' | '``' )*
+         ::= ( Char - ( '{' | '}' | '`' ) | '{{' | '}}' | '``' )+
           /* ws: explicit */
 EOF      ::= $
+UnreservedQName
+         ::= QName - ReservedName
 QName    ::= PrefixedName
            | UnprefixedName
 PrefixedName
@@ -631,13 +638,105 @@ LocalPart
          ::= NCName
 UnprefixedName
          ::= LocalPart
+ReservedName
+         ::= 'ancestor'
+           | 'ancestor-or-self'
+           | 'and'
+           | 'array'
+           | 'as'
+           | 'at'
+           | 'attribute'
+           | 'cast'
+           | 'castable'
+           | 'child'
+           | 'comment'
+           | 'descendant'
+           | 'descendant-or-self'
+           | 'div'
+           | 'document-node'
+           | 'element'
+           | 'else'
+           | 'empty-sequence'
+           | 'enum'
+           | 'eq'
+           | 'every'
+           | 'except'
+           | 'fn'
+           | 'following'
+           | 'following-or-self'
+           | 'following-sibling'
+           | 'following-sibling-or-self'
+           | 'for'
+           | 'function'
+           | 'ge'
+           | 'gt'
+           | 'idiv'
+           | 'if'
+           | 'in'
+           | 'instance'
+           | 'intersect'
+           | 'is'
+           | 'item'
+           | 'items'
+           | 'key'
+           | 'keys'
+           | 'le'
+           | 'let'
+           | 'lt'
+           | 'map'
+           | 'member'
+           | 'mod'
+           | 'namespace'
+           | 'namespace-node'
+           | 'ne'
+           | 'node'
+           | 'of'
+           | 'or'
+           | 'otherwise'
+           | 'pairs'
+           | 'parent'
+           | 'preceding'
+           | 'preceding-or-self'
+           | 'preceding-sibling'
+           | 'preceding-sibling-or-self'
+           | 'processing-instruction'
+           | 'record'
+           | 'return'
+           | 'satisfies'
+           | 'schema-attribute'
+           | 'schema-element'
+           | 'self'
+           | 'some'
+           | 'switch'
+           | 'text'
+           | 'then'
+           | 'to'
+           | 'treat'
+           | 'typeswitch'
+           | 'union'
+           | 'value'
+           | 'values'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
+UnreservedNCName
+         ::= NCName - ReservedName
 S        ::= ( #x20 | #x9 | #xD | #xA )+
 CommentContents
          ::= ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) & ':'
            | Char+ - ( Char* ( '(:' | ':)' ) Char* ) & '('
           /* ws: explicit */
+NonNCNameChar
+         ::= $
+           | ':'
+           | Char - NameChar
+DelimitingChar
+         ::= NonNCNameChar
+           | '-'
 '*'       << Wildcard
-QName^Token
-          << 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
-NCName^Token
-          << 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
+DelimitingChar
+          \\ DecimalLiteral DoubleLiteral IntegerLiteral
+NonNCNameChar
+          \\ UnreservedQName UnreservedNCName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
+Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '<<' '<=' '<'

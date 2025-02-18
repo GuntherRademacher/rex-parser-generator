@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Feb 11, 2025, 20:57 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Feb 18, 2025, 21:16 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -13,7 +13,7 @@ LibraryModule
          ::= ModuleDecl Prolog
 ModuleDecl
          ::= 'module' 'namespace' NCName '=' URILiteral Separator
-NCName   ::= NCName^Token
+NCName   ::= UnreservedNCName
            | 'NaN'
            | 'allowing'
            | 'ancestor'
@@ -161,6 +161,10 @@ NCName   ::= NCName^Token
            | 'window'
            | 'xquery'
            | 'zero-digit'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
 URILiteral
          ::= StringLiteral
 Prolog   ::= ( ( DefaultNamespaceDecl | Setter | NamespaceDecl | Import ) Separator )* ( ( ContextValueDecl | VarDecl | FunctionDecl | ItemTypeDecl | NamedRecordTypeDecl | OptionDecl ) Separator )*
@@ -198,7 +202,7 @@ DecimalFormatDecl
          ::= 'declare' ( 'decimal-format' EQName | 'default' 'decimal-format' ) ( DFPropertyName '=' StringLiteral )*
 EQName   ::= QName
            | URIQualifiedName
-QName    ::= UnreservedFunctionName
+QName    ::= UnreservedFunctionQName
            | 'attribute'
            | 'comment'
            | 'document-node'
@@ -214,8 +218,8 @@ QName    ::= UnreservedFunctionName
            | 'if'
            | 'switch'
            | 'typeswitch'
-UnreservedFunctionName
-         ::= QName^Token
+UnreservedFunctionQName
+         ::= UnreservedQName
            | 'NaN'
            | 'allowing'
            | 'ancestor'
@@ -348,6 +352,10 @@ UnreservedFunctionName
            | 'window'
            | 'xquery'
            | 'zero-digit'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
 DFPropertyName
          ::= 'decimal-separator'
            | 'grouping-separator'
@@ -688,7 +696,10 @@ ParenthesizedExpr
 ContextValueRef
          ::= '.'
 FunctionCall
-         ::= UnreservedFunctionName ArgumentList
+         ::= UnreservedFunctionEQName ArgumentList
+UnreservedFunctionEQName
+         ::= UnreservedFunctionQName
+           | URIQualifiedName
 ArgumentList
          ::= '(' ( PositionalArguments ( ',' KeywordArguments )? | KeywordArguments )? ')'
 PositionalArguments
@@ -766,7 +777,7 @@ CompNodeName
            | UnreservedName
            | '{' Expr '}'
 UnreservedName
-         ::= QName^Token
+         ::= UnreservedQName
            | URIQualifiedName
 EnclosedContentExpr
          ::= EnclosedExpr
@@ -778,8 +789,6 @@ CompNodeNCName
          ::= StringLiteral
            | UnreservedNCName
            | '{' Expr '}'
-UnreservedNCName
-         ::= NCName^Token
 CompTextConstructor
          ::= 'text' EnclosedExpr
 CompCommentConstructor
@@ -790,7 +799,7 @@ FunctionItemExpr
          ::= NamedFunctionRef
            | InlineFunctionExpr
 NamedFunctionRef
-         ::= UnreservedFunctionName '#' IntegerLiteral
+         ::= UnreservedFunctionEQName '#' IntegerLiteral
 InlineFunctionExpr
          ::= Annotation* ( 'function' | 'fn' ) FunctionSignature? FunctionBody
 FunctionSignature
@@ -827,8 +836,7 @@ StringConstructorContent
          ::= StringConstructorChars ( StringInterpolation StringConstructorChars )*
           /* ws: explicit */
 StringInterpolation
-         ::= '`{' Expr? '}`'
-          /* ws: explicit */
+         ::= '`' EnclosedExpr '`'
 UnaryLookup
          ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
 Modifier ::= 'pairs'
@@ -881,20 +889,14 @@ AbbrevForwardStep
          ::= '@' NodeTest
            | SimpleNodeTest
 SequenceArrowTarget
-         ::= '=>' ArrowTarget
+         ::= ( '=>' | '=＞' ) ArrowTarget
 ArrowTarget
-         ::= ArrowStaticFunction ArgumentList
-           | ArrowDynamicFunction PositionalArgumentList
-ArrowStaticFunction
-         ::= UnreservedFunctionName
-ArrowDynamicFunction
-         ::= VarRef
-           | InlineFunctionExpr
-           | ParenthesizedExpr
+         ::= FunctionCall
+           | DynamicFunctionCall
 MappingArrowTarget
-         ::= '=!>' ArrowTarget
+         ::= ( '=!>' | '=!＞' ) ArrowTarget
 LookupArrowTarget
-         ::= '=?>' NCName PositionalArgumentList
+         ::= ( '=?>' | '=?＞' ) NCName PositionalArgumentList
 CastTarget
          ::= TypeName
            | ChoiceItemType
@@ -909,18 +911,18 @@ ValueComp
 GeneralComp
          ::= '='
            | '!='
-           | '<'
-           | '<='
-           | '>'
-           | '>='
+           | ( '<' | '＜' )
+           | ( '<=' | '＜=' )
+           | ( '>' | '＞' )
+           | ( '>=' | '＞=' )
 NodeComp ::= 'is'
-           | '<<'
-           | '>>'
+           | ( '<<' | '＜＜' )
+           | ( '>>' | '＞＞' )
 VarDefaultValue
          ::= ExprSingle
 VarDecl  ::= 'declare' Annotation* 'variable' VarNameAndType ( ':=' VarValue | 'external' ( ':=' VarDefaultValue )? )
 FunctionDecl
-         ::= 'declare' Annotation* 'function' UnreservedFunctionName '(' ParamListWithDefaults? ')' TypeDeclaration? ( FunctionBody | 'external' )
+         ::= 'declare' Annotation* 'function' UnreservedFunctionEQName '(' ParamListWithDefaults? ')' TypeDeclaration? ( FunctionBody | 'external' )
 ParamListWithDefaults
          ::= ParamWithDefault ( ',' ParamWithDefault )*
 ParamWithDefault
@@ -977,13 +979,9 @@ Char     ::= #x9
            | [#x10000-#x10FFFF]
 CDataSectionContents
          ::= Char* - ( Char* ']]>' Char* ) & ']]'
-S        ::= ( #x20 | #x9 | #xD | #xA )+
-DirCommentContents
-         ::= ( Char - '-' | '-' ( Char - '-' ) )*
-          /* ws: explicit */
-ElementContentChar
-         ::= Char - [{}<&]
-PITarget ::= Name - ( ( 'X' | 'x' ) ( 'M' | 'm' ) ( 'L' | 'l' ) )
+UnreservedNCName
+         ::= NCName - ReservedName
+NCName   ::= Name - ( Char* ':' Char* )
 Name     ::= NameStartChar NameChar*
 NameStartChar
          ::= ':'
@@ -1009,6 +1007,165 @@ NameChar ::= NameStartChar
            | #xB7
            | [#x0300-#x036F]
            | [#x203F-#x2040]
+ReservedName
+         ::= 'NaN'
+           | 'allowing'
+           | 'ancestor'
+           | 'ancestor-or-self'
+           | 'and'
+           | 'array'
+           | 'as'
+           | 'ascending'
+           | 'at'
+           | 'attribute'
+           | 'base-uri'
+           | 'boundary-space'
+           | 'by'
+           | 'case'
+           | 'cast'
+           | 'castable'
+           | 'catch'
+           | 'child'
+           | 'collation'
+           | 'comment'
+           | 'construction'
+           | 'context'
+           | 'copy-namespaces'
+           | 'count'
+           | 'decimal-format'
+           | 'decimal-separator'
+           | 'declare'
+           | 'default'
+           | 'descendant'
+           | 'descendant-or-self'
+           | 'descending'
+           | 'digit'
+           | 'div'
+           | 'document'
+           | 'document-node'
+           | 'element'
+           | 'else'
+           | 'empty'
+           | 'empty-sequence'
+           | 'encoding'
+           | 'end'
+           | 'enum'
+           | 'eq'
+           | 'every'
+           | 'except'
+           | 'exponent-separator'
+           | 'external'
+           | 'false'
+           | 'fixed'
+           | 'fn'
+           | 'following'
+           | 'following-or-self'
+           | 'following-sibling'
+           | 'following-sibling-or-self'
+           | 'for'
+           | 'function'
+           | 'ge'
+           | 'greatest'
+           | 'group'
+           | 'grouping-separator'
+           | 'gt'
+           | 'idiv'
+           | 'if'
+           | 'import'
+           | 'in'
+           | 'infinity'
+           | 'inherit'
+           | 'instance'
+           | 'intersect'
+           | 'is'
+           | 'item'
+           | 'items'
+           | 'key'
+           | 'keys'
+           | 'lax'
+           | 'le'
+           | 'least'
+           | 'let'
+           | 'lt'
+           | 'map'
+           | 'member'
+           | 'minus-sign'
+           | 'mod'
+           | 'module'
+           | 'namespace'
+           | 'namespace-node'
+           | 'ne'
+           | 'next'
+           | 'no-inherit'
+           | 'no-preserve'
+           | 'node'
+           | 'of'
+           | 'only'
+           | 'option'
+           | 'or'
+           | 'order'
+           | 'ordered'
+           | 'ordering'
+           | 'otherwise'
+           | 'pairs'
+           | 'parent'
+           | 'pattern-separator'
+           | 'per-mille'
+           | 'percent'
+           | 'preceding'
+           | 'preceding-or-self'
+           | 'preceding-sibling'
+           | 'preceding-sibling-or-self'
+           | 'preserve'
+           | 'previous'
+           | 'processing-instruction'
+           | 'record'
+           | 'return'
+           | 'satisfies'
+           | 'schema'
+           | 'schema-attribute'
+           | 'schema-element'
+           | 'self'
+           | 'sliding'
+           | 'some'
+           | 'stable'
+           | 'start'
+           | 'strict'
+           | 'strip'
+           | 'switch'
+           | 'text'
+           | 'then'
+           | 'to'
+           | 'treat'
+           | 'true'
+           | 'try'
+           | 'tumbling'
+           | 'type'
+           | 'typeswitch'
+           | 'union'
+           | 'unordered'
+           | 'validate'
+           | 'value'
+           | 'values'
+           | 'variable'
+           | 'version'
+           | 'when'
+           | 'where'
+           | 'while'
+           | 'window'
+           | 'xquery'
+           | 'zero-digit'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
+S        ::= ( #x20 | #x9 | #xD | #xA )+
+DirCommentContents
+         ::= ( Char - '-' | '-' ( Char - '-' ) )*
+          /* ws: explicit */
+ElementContentChar
+         ::= Char - [{}<&]
+PITarget ::= NCName - ( ( 'X' | 'x' ) ( 'M' | 'm' ) ( 'L' | 'l' ) )
 DirPIContents
          ::= Char* - ( Char* '?>' Char* ) & '?'
 URIQualifiedName
@@ -1017,7 +1174,6 @@ URIQualifiedName
 BracedURILiteral
          ::= 'Q' '{' ( PredefinedEntityRef | CharRef | [^&{}] )* '}'
           /* ws: explicit */
-NCName   ::= Name - ( Char* ':' Char* )
 IntegerLiteral
          ::= Digits
           /* ws: explicit */
@@ -1062,8 +1218,10 @@ QuotAttrContentChar
 StringConstructorChars
          ::= Char* - ( Char* ( '`{' | ']``' ) Char* ) & ( '`{' | ']`' )
 StringTemplateFixedPart
-         ::= ( Char - ( '{' | '}' | '`' ) | '{{' | '}}' | '``' )*
+         ::= ( Char - ( '{' | '}' | '`' ) | '{{' | '}}' | '``' )+
           /* ws: explicit */
+UnreservedQName
+         ::= QName - ReservedName
 QName    ::= PrefixedName
            | UnprefixedName
 PrefixedName
@@ -1077,8 +1235,20 @@ CommentContents
          ::= ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) & ':'
            | Char+ - ( Char* ( '(:' | ':)' ) Char* ) & '('
           /* ws: explicit */
+NonNCNameChar
+         ::= $
+           | ':'
+           | Char - NameChar
+DelimitingChar
+         ::= NonNCNameChar
+           | '-'
+NonQuestionMark
+         ::= [^?]
 '*'       << Wildcard
-QName^Token
-          << 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
-NCName^Token
-          << 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
+DelimitingChar
+          \\ DecimalLiteral DoubleLiteral IntegerLiteral
+NonNCNameChar
+          \\ UnreservedQName UnreservedNCName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
+Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '</' '<<' '<='
+NonQuestionMark
+          \\ '<'
