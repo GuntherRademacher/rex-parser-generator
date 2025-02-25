@@ -59,15 +59,6 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
-  (: Change ArrowExpr to handle a choice of target expressions, rather than a sequence. This fixes
-   : https://github.com/qt4cg/qtspecs/issues/1818
-   :)
-  local:rule
-  (
-    function($node) {$node/self::g:zeroOrMore/parent::g:production/@name = "ArrowExpr"},
-    function($node) {element g:zeroOrMore {element g:choice {$node/node()}}}
-  ),
-
   (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
    : by new nonterminal UnreservedFunctionEQName in productions FunctionCall, FunctionDecl, and
    : NamedFunctionRef. This basically implements extra-grammatical constraint

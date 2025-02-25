@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Feb 18, 2025, 21:16 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Feb 25, 2025, 20:35 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -892,7 +892,9 @@ SequenceArrowTarget
          ::= ( '=>' | '=＞' ) ArrowTarget
 ArrowTarget
          ::= FunctionCall
-           | DynamicFunctionCall
+           | RestrictedDynamicCall
+RestrictedDynamicCall
+         ::= ( VarRef | ParenthesizedExpr | FunctionItemExpr | MapConstructor | ArrayConstructor ) PositionalArgumentList
 MappingArrowTarget
          ::= ( '=!>' | '=!＞' ) ArrowTarget
 LookupArrowTarget
