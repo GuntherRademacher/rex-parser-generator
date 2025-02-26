@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 25, 2025, 20:35 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Feb 26, 2025, 08:18 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -347,7 +347,7 @@ CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
 PipelineExpr
          ::= ArrowExpr ( '->' ArrowExpr )*
 ArrowExpr
-         ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget | LookupArrowTarget )*
+         ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
          ::= ( '-' | '+' )* ValueExpr
 ValueExpr
@@ -415,7 +415,9 @@ FunctionItemExpr
 NamedFunctionRef
          ::= UnreservedFunctionEQName '#' IntegerLiteral
 InlineFunctionExpr
-         ::= ( 'function' | 'fn' ) FunctionSignature? FunctionBody
+         ::= MethodAnnotation* ( 'function' | 'fn' ) FunctionSignature? FunctionBody
+MethodAnnotation
+         ::= '%method'
 FunctionSignature
          ::= '(' ParamList ')' TypeDeclaration?
 ParamList
@@ -503,8 +505,6 @@ RestrictedDynamicCall
          ::= ( VarRef | ParenthesizedExpr | FunctionItemExpr | MapConstructor | ArrayConstructor ) PositionalArgumentList
 MappingArrowTarget
          ::= ( '=!>' | '=!＞' ) ArrowTarget
-LookupArrowTarget
-         ::= ( '=?>' | '=?＞' ) NCName PositionalArgumentList
 CastTarget
          ::= TypeName
            | ChoiceItemType

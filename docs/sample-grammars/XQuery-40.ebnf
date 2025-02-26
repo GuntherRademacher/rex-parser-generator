@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Feb 25, 2025, 20:35 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Feb 26, 2025, 08:18 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -642,7 +642,7 @@ CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
 PipelineExpr
          ::= ArrowExpr ( '->' ArrowExpr )*
 ArrowExpr
-         ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget | LookupArrowTarget )*
+         ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
          ::= ( '-' | '+' )* ValueExpr
 ValueExpr
@@ -897,8 +897,6 @@ RestrictedDynamicCall
          ::= ( VarRef | ParenthesizedExpr | FunctionItemExpr | MapConstructor | ArrayConstructor ) PositionalArgumentList
 MappingArrowTarget
          ::= ( '=!>' | '=!＞' ) ArrowTarget
-LookupArrowTarget
-         ::= ( '=?>' | '=?＞' ) NCName PositionalArgumentList
 CastTarget
          ::= TypeName
            | ChoiceItemType
