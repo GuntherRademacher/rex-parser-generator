@@ -16,13 +16,8 @@ jobs:
       # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      # Setup JDK 17
-      - name: Setup JDK 17
-        uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          path: rex-parser-generator
 
       # Build REx
       - name: Build REx Project
@@ -30,6 +25,14 @@ jobs:
           g++ --version
           rex/scripts/build-gpp.sh
           echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH
+        working-directory: rex-parser-generator
+
+      # Setup JDK 17
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
       # Download and install BaseX 11.6
       - name: Download and Install BaseX
@@ -40,29 +43,52 @@ jobs:
 
       # Run the RExify script
       - name: Execute RExify Script
-        run: docs/sample-grammars/XQuery-40/rexify-xquery-40.sh
+        run: ./rexify-xquery-40.sh
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
+
+      # Checkout qt4cg/qt4tests repository at the same level as the current project
+      - name: Checkout qt4tests Repository
+        uses: actions/checkout@v4
+        with:
+          repository: qt4cg/qt4tests
+          path: qt4tests
+
+      # Run process-tests.sh with "xquery"
+      - name: Run process-tests.sh for XQuery
+        run: ./process-tests.sh xquery >> build/xquery.log
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
+
+      # Run process-tests.sh with "xpath"
+      - name: Run process-tests.sh for XPath
+        run: ./process-tests.sh xpath >> build/xpath.log
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
 
       # Compare generated file with the reference
       - name: Compare Files
         id: compare
         run: |
-          diff --ignore-matching-lines="^ *\\*" docs/sample-grammars/XQuery-40/build/XQuery-40.ebnf docs/sample-grammars/XQuery-40.ebnf
-          diff --ignore-matching-lines="^ *\\*" docs/sample-grammars/XQuery-40/build/XPath-40.ebnf docs/sample-grammars/XPath-40.ebnf
+          diff --ignore-matching-lines="^ *\\*" ../XQuery-40.ebnf build/XQuery-40.ebnf
+          diff --ignore-matching-lines="^ *\\*" ../XPath-40.ebnf  build/XPath-40.ebnf
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
 
       # Write success message to $GITHUB_STEP_SUMMARY
       - name: Write Success Message
         if: success()
         run: |
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xquery.log >> $GITHUB_STEP_SUMMARY
+          echo >> $GITHUB_STEP_SUMMARY
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xpath.log >> $GITHUB_STEP_SUMMARY
+          echo >> $GITHUB_STEP_SUMMARY
           echo "Grammars transformed from current specifications match those committed in this project:" >> $GITHUB_STEP_SUMMARY
           echo "| Specification | Grammar |" >> $GITHUB_STEP_SUMMARY
           echo "|---------------|---------|" >> $GITHUB_STEP_SUMMARY
           echo "| [XQuery 4.0](https://qt4cg.org/specifications/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> $GITHUB_STEP_SUMMARY
-          echo "| [XPath 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> $GITHUB_STEP_SUMMARY
+          echo "| [XPath 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) | [XPath-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> $GITHUB_STEP_SUMMARY
 
-      # Upload generated files as artifacts if the diff fails
+     # Upload generated files as artifacts if the diff fails
       - name: Upload Artifacts on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: docs/sample-grammars/XQuery-40/build
+          path: rex-parser-generator/docs/sample-grammars/XQuery-40/build

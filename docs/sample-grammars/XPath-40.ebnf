@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Feb 26, 2025, 08:18 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Mon Mar 3, 2025, 20:46 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -345,7 +345,7 @@ CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget '?'? )?
 CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
 PipelineExpr
-         ::= ArrowExpr ( '->' ArrowExpr )*
+         ::= ArrowExpr ( ( '->' | '-＞' ) ArrowExpr )*
 ArrowExpr
          ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
@@ -729,16 +729,22 @@ CommentContents
          ::= ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) & ':'
            | Char+ - ( Char* ( '(:' | ':)' ) Char* ) & '('
           /* ws: explicit */
-NonNCNameChar
+QNameOrKeywordDelimiter
          ::= $
            | ':'
            | Char - NameChar
-DelimitingChar
-         ::= NonNCNameChar
+NCNameDelimiter
+         ::= $ $
+           | ( Char - NameChar ) ( $ | Char )
+           | ':' ( Char - NameStartChar )
+NumericLiteralDelimiter
+         ::= QNameOrKeywordDelimiter
            | '-'
 '*'       << Wildcard
-DelimitingChar
-          \\ DecimalLiteral DoubleLiteral IntegerLiteral
-NonNCNameChar
-          \\ UnreservedQName UnreservedNCName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
+QNameOrKeywordDelimiter
+          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
 Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '<<' '<=' '<'
+NCNameDelimiter
+          \\ UnreservedNCName
+NumericLiteralDelimiter
+          \\ DecimalLiteral DoubleLiteral IntegerLiteral

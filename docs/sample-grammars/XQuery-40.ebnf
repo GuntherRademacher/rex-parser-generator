@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Feb 26, 2025, 08:18 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Mon Mar 3, 2025, 12:00 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -640,7 +640,7 @@ CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget '?'? )?
 CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
 PipelineExpr
-         ::= ArrowExpr ( '->' ArrowExpr )*
+         ::= ArrowExpr ( ( '->' | '-＞' ) ArrowExpr )*
 ArrowExpr
          ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
@@ -725,7 +725,7 @@ DirectConstructor
            | DirCommentConstructor
            | DirPIConstructor
 DirElemConstructor
-         ::= '<' QName DirAttributeList ( '/>' | '>' DirElemContent* '</' QName S? '>' )
+         ::= '<'^DirElemConstructor QName DirAttributeList ( '/>' | '>' DirElemContent* '</' QName S? '>' )
           /* ws: explicit */
 DirAttributeList
          ::= ( S ( QName S? '=' S? DirAttributeValue )? )*
@@ -911,7 +911,7 @@ ValueComp
 GeneralComp
          ::= '='
            | '!='
-           | ( '<' | '＜' )
+           | ( '<'^GeneralComp | '＜' )
            | ( '<=' | '＜=' )
            | ( '>' | '＞' )
            | ( '>=' | '＞=' )
@@ -1235,20 +1235,30 @@ CommentContents
          ::= ( Char+ - ( Char* ( '(:' | ':)' ) Char* ) ) - ( Char* '(' ) & ':'
            | Char+ - ( Char* ( '(:' | ':)' ) Char* ) & '('
           /* ws: explicit */
-NonNCNameChar
+QNameOrKeywordDelimiter
          ::= $
            | ':'
            | Char - NameChar
-DelimitingChar
-         ::= NonNCNameChar
+NCNameDelimiter
+         ::= $ $
+           | ( Char - NameChar ) ( $ | Char )
+           | ':' ( Char - NameStartChar )
+NumericLiteralDelimiter
+         ::= QNameOrKeywordDelimiter
            | '-'
-NonQuestionMark
+GeneralCompDelimiter
          ::= [^?]
+DirElemConstructorDelimiter
+         ::= QName ( S QName S? '=' | S? [/>] )
 '*'       << Wildcard
-DelimitingChar
-          \\ DecimalLiteral DoubleLiteral IntegerLiteral
-NonNCNameChar
-          \\ UnreservedQName UnreservedNCName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
+QNameOrKeywordDelimiter
+          \\ UnreservedQName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
 Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '</' '<<' '<='
-NonQuestionMark
-          \\ '<'
+NCNameDelimiter
+          \\ UnreservedNCName
+NumericLiteralDelimiter
+          \\ DecimalLiteral DoubleLiteral IntegerLiteral
+GeneralCompDelimiter
+          \\ '<'^GeneralComp
+DirElemConstructorDelimiter
+          \\ '<'^DirElemConstructor

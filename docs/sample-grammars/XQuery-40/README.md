@@ -31,3 +31,10 @@ The original grammar from the specification is first transformed into an XML rep
 Each rule consists of two components: a condition and an action. The condition is a predicate that determines whether the rule applies to a given node, while the action specifies the replacement for the node. This replacement may be a single node or a sequence of nodes.
 
 For more information, inspect the XQuery code in [rexify-xquery-40.xq](rexify-xquery-40.xq), in particular the sequence of transformation rules in `$rules`.
+
+## Test Execution
+
+These scripts run the tests from [qt4cq/qt4tests](https://github.com/qt4cg/qt4tests) on the generated parsers:
+
+- [process-tests.bat](process-tests.bat) for Windows,
+- [process-tests.sh](process-tests.sh) for Linux or macOS.

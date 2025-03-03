@@ -59,6 +59,24 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
+  (: Add context "DirElemConstructor" to "<" intruducing a direct element constructor. This serves
+   : for distinguishing it from a "<" operator in a general comparison.
+   :)
+  local:rule
+  (
+    function($node) {$node/self::g:string[ancestor::g:production/@name eq "DirElemConstructor"] = "<"},
+    function($node) {<g:string context="DirElemConstructor">&lt;</g:string>}
+  ),
+  
+  (: Add context "GeneralComp" to "<" in a general comparison. This serves for distinguishing it
+   : from a "<" operator introducing a direct element constructor.
+   :)
+  local:rule
+  (
+    function($node) {$node/self::g:string[ancestor::g:production/@name eq "GeneralComp"] = "<" and root($node)//g:production/@name = "DirElemConstructor"},
+    function($node) {element g:choice {<g:string context="GeneralComp">&lt;</g:string>, element g:string {"&#xFF1C;"}}}
+  ),
+  
   (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
    : by new nonterminal UnreservedFunctionEQName in productions FunctionCall, FunctionDecl, and
    : NamedFunctionRef. This basically implements extra-grammatical constraint
@@ -303,37 +321,45 @@ declare variable $rules as local:rule+ :=
         (: Add an EOF production. :)
         local:ast("EOF ::= $"),
 
-        (: Add fragment NonNCNameChar for being used as lexical lookahead. :)
-        local:ast("NonNCNameChar ::= $ | ':' | Char - NameChar"),
+        (: Add fragment QNameOrKeywordDelimiter for being used as lexical lookahead. :)
+        local:ast("QNameOrKeywordDelimiter ::= $ | ':' | Char - NameChar"),
 
-        (: Add fragment DelimitingChar for being used as lexical lookahead. :)
-        local:ast("DelimitingChar ::= NonNCNameChar | '-'"),
+        (: Add fragment NCNameDelimiter for being used as lexical lookahead. :)
+        local:ast("NCNameDelimiter ::= $ $ | ( Char - NameChar ) ( $ | Char ) | ':' ( Char - NameStartChar )"),
+
+        (: Add fragment NumericLiteralDelimiter for being used as lexical lookahead. :)
+        local:ast("NumericLiteralDelimiter ::= QNameOrKeywordDelimiter | '-'"),
 
         (: Add a lexer preference for Wildcard over "*". :)
         element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
 
-        (: Add lexical lookahead for numeric literals. :)
-        ("DecimalLiteral", "DoubleLiteral", "IntegerLiteral")     !element g:delimiter {<g:ref name="DelimitingChar"/>,  <g:ref name="{.}"/>},
-
-        (: Add lexical lookahead for names. :)
-        ("UnreservedQName", "UnreservedNCName")                   !element g:delimiter {<g:ref name="NonNCNameChar"/>,   <g:ref name="{.}"/>},
-
-        (: Add lexical lookahead for keywords. :)
-        ($keywords[not(matches(., "^[&#xFF1C;&#xFF1E;]"))])       !element g:delimiter {<g:ref name="NonNCNameChar"/>,   element g:string {.}},
+        (: Add lexical lookahead for QNames. :)
+        ("UnreservedQName")                                       !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, <g:ref name="{.}"/>},
 
         (: Add lexical lookahead for full-width operators. :)
-        ($full-width-operators[matches(., "^[&#xFF1C;&#xFF1E;]")])!element g:delimiter {<g:ref name="Char"/>,            element g:string {.}},
+        ($full-width-operators[matches(., "^[&#xFF1C;&#xFF1E;]")])!element g:delimiter {<g:ref name="Char"/>,                    element g:string {.}},
 
         (: Add lexical lookahead for operators starting with "<". :)
-        ("</", "<<", "<=")[contains($grammar, .)]                 !element g:delimiter {<g:ref name="Char"/>,            element g:string {.}},
+        ("</", "<<", "<=")[contains($grammar, .)]                 !element g:delimiter {<g:ref name="Char"/>,                    element g:string {.}},
+
+        (: Add lexical lookahead for NCNames. :)
+        ("UnreservedNCName")                                      !element g:delimiter {<g:ref name="NCNameDelimiter"/>,         <g:ref name="{.}"/>},
+
+        (: Add lexical lookahead for numeric literals. :)
+        ("DecimalLiteral", "DoubleLiteral", "IntegerLiteral")     !element g:delimiter {<g:ref name="NumericLiteralDelimiter"/>, <g:ref name="{.}"/>},
+
+        (: Add lexical lookahead for keywords. :)
+        ($keywords[not(matches(., "^[&#xFF1C;&#xFF1E;]"))])       !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, element g:string {.}},
 
         (: Add lexical lookahead for "<". :)
-        if (not($grammar//g:string = "<?")) then
+        if (not($grammar//g:production/@name = "DirElemConstructor")) then
           element g:delimiter {<g:ref name="Char"/>, element g:string {"<"}}
         else
         (
-          local:ast("NonQuestionMark ::= [^?]"),
-          element g:delimiter {<g:ref name="NonQuestionMark"/>, element g:string {"<"}}
+          local:ast("GeneralCompDelimiter ::= [^?]"),
+          local:ast("DirElemConstructorDelimiter ::= QName ( S QName S? '=' | S? [/>] )"),
+          element g:delimiter {<g:ref name="GeneralCompDelimiter"/>, <g:string context="GeneralComp">&lt;</g:string>},
+          element g:delimiter {<g:ref name="DirElemConstructorDelimiter"/>, <g:string context="DirElemConstructor">&lt;</g:string>}
         )
       )
     }
@@ -587,7 +613,7 @@ declare function local:full-width-operators($nodes as element()+) as xs:string*
   distinct-values
   (
     $nodes/descendant-or-self::g:string
-    [ancestor::g:production/@name ne "DirElemConstructor" and . = ("<", "<=", ">", ">=", "<<", ">>", "=>", "=!>", "=?>")]
+    [ancestor::g:production/@name ne "DirElemConstructor" and . = ("<", "<=", ">", ">=", "<<", ">>", "=>", "->", "=!>", "=?>")]
   )
   !replace(replace(., "<", "&#xFF1C;"), ">", "&#xFF1E;")
 };
