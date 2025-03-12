@@ -15,7 +15,8 @@ declare variable $xquery-known-failures as xs:string* :=
 (
   "fo-test-map-of-pairs-008",            (: bad test - map entry syntax in map:pair function call :)
   "fo-test-map-of-pairs-009",            (: bad test - unexpected right parenthesis :)
-  "fo-test-map-of-pairs-010"             (: bad test - map entry syntax in map:pair function call :)
+  "fo-test-map-of-pairs-010",            (: bad test - map entry syntax in map:pair function call :)
+  "fo-test-map-of-pairs-011"             (: bad test - map entry syntax in map:pair function call :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -31,6 +32,7 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-map-of-pairs-008",            (: bad test - map entry syntax in map:pair function call :)
   "fo-test-map-of-pairs-009",            (: bad test - unexpected right parenthesis :)
   "fo-test-map-of-pairs-010",            (: bad test - map entry syntax in map:pair function call :)
+  "fo-test-map-of-pairs-011",            (: bad test - map entry syntax in map:pair function call :)
   "fo-test-fn-every-010"                 (: missing XQ40+ dependency in generated test :)
 );
 

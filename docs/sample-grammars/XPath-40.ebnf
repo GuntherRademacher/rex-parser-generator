@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Mon Mar 3, 2025, 20:46 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Mar 12, 2025, 21:31 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -446,7 +446,8 @@ StringTemplateVariablePart
          ::= EnclosedExpr
           /* ws: explicit */
 UnaryLookup
-         ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
+         ::= Lookup
+Lookup   ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
 Modifier ::= 'pairs'
            | 'keys'
            | 'values'
@@ -458,8 +459,11 @@ KeySpecifier
            | VarRef
            | ParenthesizedExpr
            | LookupWildcard
+           | TypeSpecifier
 LookupWildcard
          ::= '*'
+TypeSpecifier
+         ::= '~' '(' SequenceType ')'
 FilterExpr
          ::= PostfixExpr Predicate
 Predicate
@@ -470,7 +474,6 @@ PositionalArgumentList
          ::= '(' PositionalArguments? ')'
 LookupExpr
          ::= PostfixExpr Lookup
-Lookup   ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
 AxisStep ::= ( ReverseStep | ForwardStep ) Predicate*

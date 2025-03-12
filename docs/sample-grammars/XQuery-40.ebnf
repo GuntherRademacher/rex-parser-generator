@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Mon Mar 3, 2025, 12:00 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Mar 12, 2025, 21:31 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -838,7 +838,8 @@ StringConstructorContent
 StringInterpolation
          ::= '`' EnclosedExpr '`'
 UnaryLookup
-         ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
+         ::= Lookup
+Lookup   ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
 Modifier ::= 'pairs'
            | 'keys'
            | 'values'
@@ -850,8 +851,11 @@ KeySpecifier
            | VarRef
            | ParenthesizedExpr
            | LookupWildcard
+           | TypeSpecifier
 LookupWildcard
          ::= '*'
+TypeSpecifier
+         ::= '~' '(' SequenceType ')'
 FilterExpr
          ::= PostfixExpr Predicate
 Predicate
@@ -862,7 +866,6 @@ PositionalArgumentList
          ::= '(' PositionalArguments? ')'
 LookupExpr
          ::= PostfixExpr Lookup
-Lookup   ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
 AxisStep ::= ( ReverseStep | ForwardStep ) Predicate*
