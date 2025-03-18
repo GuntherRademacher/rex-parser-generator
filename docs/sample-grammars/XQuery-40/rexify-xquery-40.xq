@@ -59,19 +59,6 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
-  (: Remove "ItemType" from "TypeSpecifier" in order to avoid ambiguities as reported in
-   : https://github.com/qt4cg/qtspecs/issues/1866
-   :)
-  local:rule
-  (
-    function($node)
-    {
-      $node/self::g:production/@name = "TypeSpecifier" and
-      deep-equal($node, local:ast("TypeSpecifier ::= '~' ( ItemType | '(' SequenceType ')' )"))
-    },
-    function($node) {local:ast("TypeSpecifier ::= '~' '(' SequenceType ')'")}
-  ),
-  
   (: Add context "DirElemConstructor" to "<" introducing a direct element constructor. This serves
    : for distinguishing it from a "<" operator in a general comparison.
    :)

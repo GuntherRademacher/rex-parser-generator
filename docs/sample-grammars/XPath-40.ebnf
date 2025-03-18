@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Mar 12, 2025, 21:31 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Mar 18, 2025, 21:40 (UTC+01)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -463,7 +463,7 @@ KeySpecifier
 LookupWildcard
          ::= '*'
 TypeSpecifier
-         ::= '~' '(' SequenceType ')'
+         ::= '~[' SequenceType ']'
 FilterExpr
          ::= PostfixExpr Predicate
 Predicate
