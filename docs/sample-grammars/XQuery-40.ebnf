@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Mar 18, 2025, 21:40 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Apr 8, 2025, 21:16 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -62,6 +62,7 @@ NCName   ::= UnreservedNCName
            | 'exponent-separator'
            | 'external'
            | 'false'
+           | 'finally'
            | 'fixed'
            | 'fn'
            | 'following'
@@ -264,6 +265,7 @@ UnreservedFunctionQName
            | 'exponent-separator'
            | 'external'
            | 'false'
+           | 'finally'
            | 'fixed'
            | 'following'
            | 'following-or-self'
@@ -609,11 +611,13 @@ BracedAction
 EnclosedExpr
          ::= '{' Expr? '}'
 TryCatchExpr
-         ::= TryClause CatchClause+
+         ::= TryClause ( CatchClause+ FinallyClause? | FinallyClause )
 TryClause
          ::= 'try' EnclosedExpr
 CatchClause
          ::= 'catch' NameTestUnion EnclosedExpr
+FinallyClause
+         ::= 'finally' EnclosedExpr
 OrExpr   ::= AndExpr ( 'or' AndExpr )*
 AndExpr  ::= ComparisonExpr ( 'and' ComparisonExpr )*
 ComparisonExpr
@@ -1059,6 +1063,7 @@ ReservedName
            | 'exponent-separator'
            | 'external'
            | 'false'
+           | 'finally'
            | 'fixed'
            | 'fn'
            | 'following'
@@ -1255,7 +1260,7 @@ DirElemConstructorDelimiter
          ::= QName ( S QName S? '=' | S? [/>] )
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ UnreservedQName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
+          \\ UnreservedQName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'finally' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'pairs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'values' 'variable' 'version' 'when' 'where' 'while' 'window' 'xquery' 'zero-digit'
 Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '</' '<<' '<='
 NCNameDelimiter
           \\ UnreservedNCName
