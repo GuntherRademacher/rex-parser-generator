@@ -7,11 +7,11 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.1'
     testImplementation 'net.sf.saxon:Saxon-HE:12.5', {
         exclude group: "xml-apis", module: "xml-apis"
     }
-    testImplementation 'org.basex:basex:11.7'
+    testImplementation 'org.basex:basex:11.8'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
