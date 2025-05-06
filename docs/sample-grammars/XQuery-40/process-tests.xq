@@ -13,11 +13,6 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  "fo-test-map-of-pairs-008",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-map-of-pairs-009",            (: bad test - unexpected right parenthesis :)
-  "fo-test-map-of-pairs-010",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-map-of-pairs-011",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-fn-function-identity-004"     (: bad test - unexpected right brace :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -30,12 +25,7 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-function-annotations-002", (: missing XQ40+ dependency in generated test :)
   "fo-test-fn-function-annotations-003", (: missing XQ40+ dependency in generated test :)
   "fo-test-fn-sort-with-005",            (: missing XQ40+ dependency in generated test :)
-  "fo-test-map-of-pairs-008",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-map-of-pairs-009",            (: bad test - unexpected right parenthesis :)
-  "fo-test-map-of-pairs-010",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-map-of-pairs-011",            (: bad test - map entry syntax in map:pair function call :)
-  "fo-test-fn-every-010",                (: missing XQ40+ dependency in generated test :)
-  "fo-test-fn-function-identity-004"     (: bad test - unexpected right brace :)
+  "fo-test-fn-every-010"                 (: missing XQ40+ dependency in generated test :)
 );
 
 declare variable $parse :=
