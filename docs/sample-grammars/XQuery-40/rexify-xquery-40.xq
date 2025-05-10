@@ -330,6 +330,9 @@ declare variable $rules as local:rule+ :=
         (: Add fragment NumericLiteralDelimiter for being used as lexical lookahead. :)
         local:ast("NumericLiteralDelimiter ::= QNameOrKeywordDelimiter | '-'"),
 
+        (: Add fragment LeftParenDelimiter for being used as a lexical lookahead :)
+        local:ast("LeftParenDelimiter ::= [^#:]")[$grammar//g:production/@name = "Pragma"],
+        
         (: Add a lexer preference for Wildcard over "*". :)
         element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
 
@@ -360,7 +363,10 @@ declare variable $rules as local:rule+ :=
           local:ast("DirElemConstructorDelimiter ::= QName ( S QName S? '=' | S? [/>] )"),
           element g:delimiter {<g:ref name="GeneralCompDelimiter"/>, <g:string context="GeneralComp">&lt;</g:string>},
           element g:delimiter {<g:ref name="DirElemConstructorDelimiter"/>, <g:string context="DirElemConstructor">&lt;</g:string>}
-        )
+        ),
+        
+        (: Add lexical lookahead for "<". :)
+        element g:delimiter {<g:ref name="LeftParenDelimiter"/>, element g:string {"("}}[$grammar//g:production/@name = "Pragma"]
       )
     }
   ),

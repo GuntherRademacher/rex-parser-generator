@@ -13,6 +13,7 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
+  "fo-test-fn-element-to-map-006"        (: excess right parenthesis at the end :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=

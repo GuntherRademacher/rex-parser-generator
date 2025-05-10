@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue May 6, 2025, 22:48 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Sat May 10, 2025, 09:37 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -1257,6 +1257,8 @@ NCNameDelimiter
 NumericLiteralDelimiter
          ::= QNameOrKeywordDelimiter
            | '-'
+LeftParenDelimiter
+         ::= [^:#x23]
 GeneralCompDelimiter
          ::= [^?]
 DirElemConstructorDelimiter
@@ -1273,3 +1275,5 @@ GeneralCompDelimiter
           \\ '<'^GeneralComp
 DirElemConstructorDelimiter
           \\ '<'^DirElemConstructor
+LeftParenDelimiter
+          \\ '('
