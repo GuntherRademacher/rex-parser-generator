@@ -11,7 +11,7 @@ This tutorial will guide you through creating and running a parser in Java for a
 
 A Java compiler will be used, so a **Java Development Kit (JDK)** is needed. Ensure you have a JDK installed on your machine, and if not installed, download a JDK and install it.
 
-These days REx generated parsers are tested with Java 11 and higher. They should work with newer versions, and they may or may not work with older versions. In any case it may be worth a try, if necessary.
+These days REx generated parsers are tested with Java 17 and higher. They should work with newer versions, and they may or may not work with older versions. In any case it may be worth a try, if necessary.
 
 ## Step 1: Define the Grammar
 

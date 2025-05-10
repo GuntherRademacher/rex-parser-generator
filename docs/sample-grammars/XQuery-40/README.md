@@ -20,8 +20,8 @@ Additionally, the transformation is integrated into a GitHub workflow: [rexify-x
 
 The prerequisites for running the transformation in the rexify script are:
 
- - Java 11 or higher,
- - [BaseX 11.6](https://basex.org/download/) or higher,
+ - Java 17 or higher,
+ - [BaseX 11.9](https://basex.org/download/) or higher,
  - [REx 6.1](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher.
 
 ## Transformation Logic

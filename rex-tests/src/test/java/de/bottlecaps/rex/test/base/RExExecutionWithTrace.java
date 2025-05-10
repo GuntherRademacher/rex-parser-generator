@@ -91,12 +91,12 @@ public abstract class RExExecutionWithTrace extends RExExecutionWithResult
     }
     try
     {
-      if (trace.startsWith("trace\""))
+      if (trace.startsWith("trace: \""))
       {
         trace = trace
-          .replaceAll("^trace\"", "")
+          .replaceAll("^trace: \"", "")
           .replaceAll("\"$", "")
-          .replaceAll("\"\ntrace\"", "\n")
+          .replaceAll("\"\ntrace: \"", "\n")
           .replaceAll("\"\"", "\"")
           .replaceAll("&amp;", "&");
       }

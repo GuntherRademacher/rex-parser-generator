@@ -34,11 +34,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      # Download and install BaseX 11.6
+      # Download and install BaseX 11.9
       - name: Download and Install BaseX
         run: |
-          curl -s -O https://files.basex.org/releases/11.7/BaseX117.zip
-          unzip -q BaseX117.zip
+          curl -s -O https://files.basex.org/releases/11.9/BaseX119.zip
+          unzip -q BaseX119.zip
           echo "$(pwd)/basex/bin" >> $GITHUB_PATH
 
       # Run the RExify script

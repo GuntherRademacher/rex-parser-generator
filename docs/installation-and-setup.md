@@ -118,7 +118,7 @@ The table below shows the compile and runtime commands that the tests will use.
 Before running the tests, make sure that
 
  - the REx executable is available on the `PATH`. If not, extend the `PATH` as explained [above](#downloading-and-building-rex).
- - a Java Development Kit (JDK) for Java 11 or higher is available. The Scala tests, for Scala version 3.5 or higher, even require Java 17 or higher, and they will be skipped if unavailable.
+ - a Java Development Kit (JDK) for Java 17 or higher is available.
  - the compilers are available for any target platforms that you want to have included in the test.
 
 For running the tests, go to the `rex-tests` folder and run this command:

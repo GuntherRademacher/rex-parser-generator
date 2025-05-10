@@ -128,8 +128,8 @@ public class RExRunner
   public static void beforeAll()
   {
     assertNotNull(REX, "REx executable not found. It must be available on the PATH.");
-    assertTrue(JAVAC_VERSION[0] >= 11,
-        "At least Java 11 is needed. \"" + JAVAC + " -version\" returned: " + JAVAC_VERSION_STRING);
+    assertTrue(JAVAC_VERSION[0] >= 17,
+        "At least Java 17 is needed. \"" + JAVAC + " -version\" returned: " + JAVAC_VERSION_STRING);
   }
 
   private static String executableName(Runner runner, String name) {
