@@ -13,6 +13,33 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
+  "K2-ComputeConAttr-63",                (: uses outdated constructor syntax    :)
+  "K2-ComputeConAttr-64",                (: uses outdated constructor syntax    :)
+  "K2-ComputeConElem-18",                (: uses outdated constructor syntax    :)
+  "K2-ComputeConElem-19",                (: uses outdated constructor syntax    :)
+  "K-ExtensionExpression-3",             (: uses outdated pragma syntax         :)
+  "K-ExtensionExpression-4a",            (: uses outdated pragma syntax         :)
+  "K-ExtensionExpression-6",             (: uses outdated pragma syntax         :)
+  "K-ExtensionExpression-7",             (: uses outdated pragma syntax         :)
+  "K-ExtensionExpression-8",             (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-1",            (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-2",            (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-3",            (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-4",            (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-5",            (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-11",           (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-12",           (: uses outdated pragma syntax         :)
+  "K2-ExtensionExpression-17",           (: uses outdated pragma syntax         :)
+  "pragma-no-namespace-001",             (: uses outdated pragma syntax         :)
+  "pragma-no-namespace-002",             (: uses outdated pragma syntax         :)
+  "pragma-no-namespace-003",             (: uses outdated pragma syntax         :)
+  "pragma-no-namespace-004",             (: uses outdated pragma syntax         :)
+  "pragma-no-namespace-005",             (: uses outdated pragma syntax         :)
+  "Literals-40-048",                     (: incorrect QNameLiteral with spaces  :)
+  "Literals-40-049",                     (: incorrect QNameLiteral with spaces  :)
+  "Literals-40-925",                     (: valid syntax, but error expected    :)
+  "validate-as-105",                     (: uses outdated pragma syntax         :)
+  "fo-test-fn-deep-equal-015",           (: excess right paren following QName  :)
   "fo-test-fn-element-to-map-006"        (: excess right parenthesis at the end :)
 );
 
@@ -26,7 +53,10 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-function-annotations-002", (: missing XQ40+ dependency in generated test :)
   "fo-test-fn-function-annotations-003", (: missing XQ40+ dependency in generated test :)
   "fo-test-fn-sort-with-005",            (: missing XQ40+ dependency in generated test :)
-  "fo-test-fn-every-010"                 (: missing XQ40+ dependency in generated test :)
+  "fo-test-fn-every-010",                (: missing XQ40+ dependency in generated test :)
+  "Literals-40-048",                     (: incorrect QNameLiteral with spaces         :)
+  "Literals-40-049",                     (: incorrect QNameLiteral with spaces         :)
+  "fo-test-fn-deep-equal-015"            (: excess right paren following QName         :)
 );
 
 declare variable $parse :=

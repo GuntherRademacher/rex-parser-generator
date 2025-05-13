@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Sat May 10, 2025, 09:37 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue May 13, 2025, 22:29 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -660,7 +660,7 @@ ValidationMode
            | 'strict'
 ExtensionExpr
          ::= Pragma+ '{' Expr? '}'
-Pragma   ::= '(#' S? EQName ( S PragmaContents )? '#)'
+Pragma   ::= '(#' S EQName ( S PragmaContents )? '#)'
           /* ws: explicit */
 SimpleMapExpr
          ::= PathExpr ( '!' PathExpr )*
@@ -697,6 +697,7 @@ Literal  ::= NumericLiteral
            | QNameLiteral
 QNameLiteral
          ::= '#' EQName
+          /* ws: explicit */
 VarRef   ::= '$' EQName
 ParenthesizedExpr
          ::= '(' Expr? ')'
@@ -780,7 +781,7 @@ CompDocConstructor
 CompElemConstructor
          ::= 'element' CompNodeName EnclosedContentExpr
 CompNodeName
-         ::= StringLiteral
+         ::= QNameLiteral
            | UnreservedName
            | '{' Expr '}'
 UnreservedName
@@ -1257,8 +1258,6 @@ NCNameDelimiter
 NumericLiteralDelimiter
          ::= QNameOrKeywordDelimiter
            | '-'
-LeftParenDelimiter
-         ::= [^:#x23]
 GeneralCompDelimiter
          ::= [^?]
 DirElemConstructorDelimiter
@@ -1275,5 +1274,4 @@ GeneralCompDelimiter
           \\ '<'^GeneralComp
 DirElemConstructorDelimiter
           \\ '<'^DirElemConstructor
-LeftParenDelimiter
-          \\ '('
+S         \\ '(#'
