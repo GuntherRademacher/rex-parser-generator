@@ -13,7 +13,6 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  "Literals-40-925a",                    (: duplicate result                    :)
   "fo-test-fn-deep-equal-015",           (: excess right paren following QName  :)
   "fo-test-fn-element-to-map-006"        (: excess right parenthesis at the end :)
 );
