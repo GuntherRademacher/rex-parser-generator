@@ -414,7 +414,7 @@ def getTokenSet(tokenSetId):~                                 }
                         ~.TOKEN[j])
         size += 1
       j += 1
-      f >>= 1
+      f = (f >> 1) & 0x7fffffff
   return tokenSet~                                            generateData();
                                                               indent--;
                                                               if (! variable("embedded").boolean())

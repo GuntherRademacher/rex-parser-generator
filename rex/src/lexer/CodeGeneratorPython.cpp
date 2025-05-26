@@ -1,4 +1,4 @@
-// This file was generated on Sun Jan 26, 2025 19:55 (UTC+01) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun May 25, 2025 20:38 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorPython.cpp.template
                                                             #line 1 "CodeGeneratorPython.cpp.template"
                                                             // generate CodeGeneratorPython.cpp using this command:
@@ -741,7 +741,7 @@
   append(L".TOKEN[j])\n");
   append(L"        size += 1\n");
   append(L"      j += 1\n");
-  append(L"      f >>= 1\n");
+  append(L"      f = (f >> 1) & 0x7fffffff\n");
   append(L"  return tokenSet");
                                                             #line 418 "CodeGeneratorPython.cpp.template"
                                                               generateData();
