@@ -268,10 +268,9 @@ MultiLineComment  ::= '/*' ( ( .* - ( .* '*/' .* ) ) - ( Space* 'ws' Space* ':' 
 EOF               ::= $
 EquivalenceLookAhead
                   ::= & ("[" ( Char | CharCode | CharRange | CharCodeRange ) "]" Whitespace? "==")
-Whitespace        ::= ( Space
-                      | SingleLineComment
-                      | MultiLineComment
-                      )+
+Whitespace        ::= Space+
+                    | SingleLineComment
+                    | MultiLineComment
                    /* ws: definition */
 
 // EoF

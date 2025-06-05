@@ -110,5 +110,7 @@ EOF      ::= $
 EquivalenceLookAhead
          ::= & '[' ( Char | CharCode | CharRange | CharCodeRange ) ']' Whitespace? '=='
 Whitespace
-         ::= ( Space | SingleLineComment | MultiLineComment )+
+         ::= Space+
+           | SingleLineComment
+           | MultiLineComment
           /* ws: definition */

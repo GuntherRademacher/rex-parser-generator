@@ -23,7 +23,7 @@
                             font-weight: normal;
                           }
     rect, circle, polygon {fill: #132E1A; stroke: #132E1A;}
-    rect.terminal         {fill: #C6E7CE; stroke: #132E1A; stroke-width: 1;}
+    rect.terminal         {fill: #c6e7ce; stroke: #132E1A; stroke-width: 1;}
     rect.nonterminal      {fill: #C6CEE7; stroke: #132E1A; stroke-width: 1;}
     rect.text             {fill: none; stroke: none;}
     polygon.regexp        {fill: #E7C6DF; stroke: #132E1A; stroke-width: 1;}
