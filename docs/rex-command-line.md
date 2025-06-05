@@ -36,6 +36,12 @@ Enhance or modify the parsing behavior with these options:
 | `-backtrack`  | Allow PEG-style backtracking for LL-conflicts.                  |
 | `-asi`        | Handle EcmaScript automatic semicolon insertion (LL(1) only).   |
 
+## Lexer Options
+
+| Option                     | Description                                                  |
+|----------------------------|--------------------------------------------------------------|
+| `-contextindependentlexer` | Generate a single lexer, rather than context-dependent ones. |
+
 ## Target Languages
 
 REx can generate the parser in multiple programming languages. Unless the `-name` option is used (see below), an output file will be written that has the same name as the input grammar, but a file extension suitable for the target language. In some cases the name is capitalized to meet the requirements of the target language.

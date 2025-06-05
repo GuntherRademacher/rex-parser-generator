@@ -65,6 +65,8 @@ This eliminates the need for manually setting up rules for different lexical sta
 
 At runtime, lexer operation is driven by the parser. The parser sends a request to the lexer for the next token and passes the information about allowable token set. The lexer then responds with an expected token out out this set, or with an error, if none can be found.
 
+In cases where this is not desirable, it can be explicitly turned off by using command line option `-contextindependentlexer` when generating with REx.
+
 &nbsp;
 ---
 [⇦ Previous page](rex-command-line.md) &nbsp;&nbsp;│&nbsp;&nbsp; [⇧ Back to index](../README.md#-rex-parser-generator) &nbsp;&nbsp;│&nbsp;&nbsp; [Next page ⇨ ](ebnf-notation.md)
