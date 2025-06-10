@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue May 13, 2025, 22:29 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Jun 10, 2025, 20:22 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -794,9 +794,12 @@ CompAttrConstructor
 CompNamespaceConstructor
          ::= 'namespace' CompNodeNCName EnclosedExpr
 CompNodeNCName
-         ::= StringLiteral
+         ::= MarkedNCName
            | UnreservedNCName
            | '{' Expr '}'
+MarkedNCName
+         ::= '#' NCName
+          /* ws: explicit */
 CompTextConstructor
          ::= 'text' EnclosedExpr
 CompCommentConstructor

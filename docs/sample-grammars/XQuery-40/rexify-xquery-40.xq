@@ -373,8 +373,14 @@ declare variable $rules as local:rule+ :=
   (
     function($node) {$node/self::g:production/@name = ("Module", "XPath")},
     function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
-  )
+  ),
 
+  (: Remove MarkedNCName production where it is unused. :)
+  local:rule
+  (
+    function($node) {$node/self::g:production/@name = "MarkedNCName"},
+    function($node) {($node[@name = root(.)//g:ref/@name], text {""})[1]}
+  )
 );
 
 (:~
