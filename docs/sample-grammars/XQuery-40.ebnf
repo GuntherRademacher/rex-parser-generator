@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Jun 10, 2025, 20:22 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Jun 24, 2025, 20:57 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -441,6 +441,7 @@ Annotation
 AnnotationValue
          ::= StringLiteral
            | '-'? NumericLiteral
+           | QNameLiteral
            | 'true' '(' ')'
            | 'false' '(' ')'
 NumericLiteral
@@ -449,6 +450,8 @@ NumericLiteral
            | BinaryIntegerLiteral
            | DecimalLiteral
            | DoubleLiteral
+QNameLiteral
+         ::= '#' EQName
 AnyFunctionType
          ::= ( 'function' | 'fn' ) '(' '*' ')'
 TypedFunctionType
@@ -533,7 +536,18 @@ ForEntryValueBinding
 LetClause
          ::= 'let' LetBinding ( ',' LetBinding )*
 LetBinding
+         ::= LetValueBinding
+           | LetSequenceBinding
+           | LetArrayBinding
+           | LetMapBinding
+LetValueBinding
          ::= VarNameAndType ':=' ExprSingle
+LetSequenceBinding
+         ::= '$' '(' VarNameAndType ( ',' VarNameAndType )* ')' TypeDeclaration? ':=' ExprSingle
+LetArrayBinding
+         ::= '$' '[' VarNameAndType ( ',' VarNameAndType )* ']' TypeDeclaration? ':=' ExprSingle
+LetMapBinding
+         ::= '$' '{' VarNameAndType ( ',' VarNameAndType )* '}' TypeDeclaration? ':=' ExprSingle
 WindowClause
          ::= 'for' ( TumblingWindowClause | SlidingWindowClause )
 TumblingWindowClause
@@ -695,9 +709,6 @@ PrimaryExpr
 Literal  ::= NumericLiteral
            | StringLiteral
            | QNameLiteral
-QNameLiteral
-         ::= '#' EQName
-          /* ws: explicit */
 VarRef   ::= '$' EQName
 ParenthesizedExpr
          ::= '(' Expr? ')'
@@ -799,7 +810,6 @@ CompNodeNCName
            | '{' Expr '}'
 MarkedNCName
          ::= '#' NCName
-          /* ws: explicit */
 CompTextConstructor
          ::= 'text' EnclosedExpr
 CompCommentConstructor
