@@ -11,7 +11,7 @@ dependencies {
     testImplementation 'net.sf.saxon:Saxon-HE:12.7', {
         exclude group: "xml-apis", module: "xml-apis"
     }
-    testImplementation 'org.basex:basex:11.9'
+    testImplementation 'org.basex:basex:12.0'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
