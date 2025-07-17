@@ -2,6 +2,10 @@ name: RExify XQuery 4.0 grammar
 
 on:
   workflow_dispatch:
+    inputs:
+      spec-path-segment:
+        description: "Path segment for spec (e.g., 'specifications' or 'pr/nnnn')"
+        required: false
   pull_request:
     branches:
       - main
@@ -24,7 +28,7 @@ jobs:
         run: |
           g++ --version
           rex/scripts/build-gpp.sh
-          echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH
+          echo "$(pwd)/rex/build/bin" >> "$GITHUB_PATH"
         working-directory: rex-parser-generator
 
       # Setup JDK 17
@@ -39,12 +43,14 @@ jobs:
         run: |
           curl -s -O https://files.basex.org/releases/11.9/BaseX119.zip
           unzip -q BaseX119.zip
-          echo "$(pwd)/basex/bin" >> $GITHUB_PATH
+          echo "$(pwd)/basex/bin" >> "$GITHUB_PATH"
 
       # Run the RExify script
       - name: Execute RExify Script
-        run: ./rexify-xquery-40.sh
         working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
+        run: |
+          echo "Using SPEC_PATH_SEGMENT=${{ inputs.spec-path-segment }}"
+          ./rexify-xquery-40.sh "${{ inputs.spec-path-segment }}"
 
       # Checkout qt4cg/qt4tests repository at the same level as the current project
       - name: Checkout qt4tests Repository
@@ -75,17 +81,23 @@ jobs:
       - name: Write Success Message
         if: success()
         run: |
-          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xquery.log >> $GITHUB_STEP_SUMMARY
-          echo >> $GITHUB_STEP_SUMMARY
-          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xpath.log >> $GITHUB_STEP_SUMMARY
-          echo >> $GITHUB_STEP_SUMMARY
-          echo "Grammars transformed from current specifications match those committed in this project:" >> $GITHUB_STEP_SUMMARY
-          echo "| Specification | Grammar |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|---------|" >> $GITHUB_STEP_SUMMARY
-          echo "| [XQuery 4.0](https://qt4cg.org/specifications/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> $GITHUB_STEP_SUMMARY
-          echo "| [XPath 4.0](https://qt4cg.org/specifications/xquery-40/xpath-40.html) | [XPath-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> $GITHUB_STEP_SUMMARY
+          # Use default if input is empty
+          SPEC_PATH_SEGMENT="${{ inputs.spec-path-segment }}"
+          if [ -z "$SPEC_PATH_SEGMENT" ]; then
+            SPEC_PATH_SEGMENT="specifications"
+          fi
 
-     # Upload generated files as artifacts if the diff fails
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xquery.log >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xpath.log >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "Grammars transformed from current specifications match those committed in this project:" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Specification | Grammar |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------------|---------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| [XQuery 4.0](https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> "$GITHUB_STEP_SUMMARY"
+          echo "| [XPath 4.0](https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xpath-40.html) | [XPath-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> "$GITHUB_STEP_SUMMARY"
+
+      # Upload generated files as artifacts if the diff fails
       - name: Upload Artifacts on Failure
         if: failure()
         uses: actions/upload-artifact@v4
