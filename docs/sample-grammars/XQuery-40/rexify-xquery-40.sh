@@ -9,6 +9,10 @@ BASEX=$(dirname $(dirname $(command -v basex)))
 export CLASSPATH=".:$BASEX/BaseX.jar:$BASEX/lib/*"
 BASEX_JVM="-Dorg.basex.catalog=file:///$CATALOG"
 
+SPEC_PATH_SEGMENT="${1:-specifications}"
+XQUERY_SPEC="https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xquery-40.html"
+XPATH_SPEC="https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xpath-40.html"
+
 [ ! -d "$BUILD_DIR" ] && { echo "...creating build directory: $BUILD_DIR"; mkdir "$BUILD_DIR"; }
 [ ! -d "$CACHE" ] && { echo "...creating cache directory: $CACHE"; mkdir "$CACHE"; }
 
@@ -19,7 +23,7 @@ download() {
     local url="$2"
     if [[ ! -f "$file" ]]; then
         echo "...downloading $file"
-        curl -sS -o "$file" "$url"
+        curl -fsS -o "$file" "$url"
     else
         echo "...$file is already present in cache"
     fi
@@ -33,8 +37,8 @@ cat > catalog.xml <<EOF
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
 EOF
 
-download xquery-40.html     https://qt4cg.org/specifications/xquery-40/xquery-40.html
-download xpath-40.html      https://qt4cg.org/specifications/xquery-40/xpath-40.html
+download xquery-40.html     $XQUERY_SPEC
+download xpath-40.html      $XPATH_SPEC
 download xml.html           https://www.w3.org/TR/REC-xml/
 download xml-names.html     https://www.w3.org/TR/REC-xml-names/
 download cst-to-ast.xq      https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq
@@ -63,7 +67,7 @@ rexify() {
     javac -d . "$class.java"
 }
 
-rexify https://qt4cg.org/specifications/xquery-40/xquery-40.html XQuery-40.ebnf
-rexify https://qt4cg.org/specifications/xquery-40/xpath-40.html XPath-40.ebnf
+rexify $XQUERY_SPEC XQuery-40.ebnf
+rexify $XPATH_SPEC XPath-40.ebnf
 
 echo "...done"

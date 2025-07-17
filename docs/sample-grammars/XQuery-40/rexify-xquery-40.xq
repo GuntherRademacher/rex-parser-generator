@@ -1,4 +1,5 @@
 declare namespace g = "http://www.w3.org/2001/03/XPath/grammar";
+declare namespace xhtml = "http://www.w3.org/1999/xhtml";
 
 import module namespace a = "de/bottlecaps/railroad/xq/cst-to-ast.xq" at
                             "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq";
@@ -27,23 +28,18 @@ declare variable $tz-offset := - xs:integer(timezone-from-dateTime(current-dateT
 
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
-(
-  'attribute',
-  'comment',
-  'document-node',
-  'element',
-  'namespace-node',
-  'node',
-  'schema-attribute',
-  'schema-element',
-  'processing-instruction',
-  'text',
-  'fn',
-  'function',
-  'if',
-  'switch',
-  'typeswitch'
-);
+  let $names := html-doc($specification-url)
+    //@id[. = "id-reserved-fn-names"]
+    /ancestor-or-self::xhtml:div[1]
+    //xhtml:blockquote
+    /xhtml:p
+    /text()
+    /string()
+  return
+    if (exists($names)) then
+      $names
+    else
+      error(xs:QName("reserved-function-names"), "failed to retrieve reserved function names");
 
 (:~
  : This is the structure of a rewriting rule:
