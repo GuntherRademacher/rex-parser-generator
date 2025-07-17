@@ -1,11 +1,11 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Jun 24, 2025, 20:57 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Thu Jul 17, 2025, 20:38 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
-XPath    ::= Expr EOF
-Expr     ::= ExprSingle ( ',' ExprSingle )*
+MapKeyExpr
+         ::= ExprSingle
 ExprSingle
          ::= ForExpr
            | LetExpr
@@ -36,17 +36,25 @@ QName    ::= UnreservedFunctionQName
            | 'schema-element'
            | 'processing-instruction'
            | 'text'
+           | 'array'
+           | 'enum'
            | 'fn'
            | 'function'
+           | 'gnode'
+           | 'get'
            | 'if'
+           | 'item'
+           | 'jnode-type'
+           | 'map'
+           | 'record'
            | 'switch'
+           | 'type'
            | 'typeswitch'
 UnreservedFunctionQName
          ::= UnreservedQName
            | 'ancestor'
            | 'ancestor-or-self'
            | 'and'
-           | 'array'
            | 'as'
            | 'at'
            | 'cast'
@@ -57,7 +65,6 @@ UnreservedFunctionQName
            | 'div'
            | 'else'
            | 'empty-sequence'
-           | 'enum'
            | 'eq'
            | 'every'
            | 'except'
@@ -73,14 +80,10 @@ UnreservedFunctionQName
            | 'instance'
            | 'intersect'
            | 'is'
-           | 'item'
-           | 'items'
            | 'key'
-           | 'keys'
            | 'le'
            | 'let'
            | 'lt'
-           | 'map'
            | 'member'
            | 'mod'
            | 'namespace'
@@ -88,13 +91,11 @@ UnreservedFunctionQName
            | 'of'
            | 'or'
            | 'otherwise'
-           | 'pairs'
            | 'parent'
            | 'preceding'
            | 'preceding-or-self'
            | 'preceding-sibling'
            | 'preceding-sibling-or-self'
-           | 'record'
            | 'return'
            | 'satisfies'
            | 'self'
@@ -104,7 +105,6 @@ UnreservedFunctionQName
            | 'treat'
            | 'union'
            | 'value'
-           | 'values'
            | '＜'
            | '＜＜'
            | '＞'
@@ -114,19 +114,23 @@ TypeDeclaration
 SequenceType
          ::= 'empty-sequence' '(' ')'
            | ItemType ( OccurrenceIndicator / )
-ItemType ::= AnyItemTest
-           | TypeName
-           | KindTest
+ItemType ::= RegularItemType
            | FunctionType
+           | TypeName
+           | ChoiceItemType
+RegularItemType
+         ::= AnyItemTest
+           | NodeKindTest
+           | GNodeType
+           | JNodeType
            | MapType
            | ArrayType
            | RecordType
            | EnumerationType
-           | ChoiceItemType
 AnyItemTest
          ::= 'item' '(' ')'
-TypeName ::= EQName
-KindTest ::= DocumentTest
+NodeKindTest
+         ::= DocumentTest
            | ElementTest
            | AttributeTest
            | SchemaElementTest
@@ -135,7 +139,7 @@ KindTest ::= DocumentTest
            | CommentTest
            | TextTest
            | NamespaceNodeTest
-           | AnyKindTest
+           | AnyNodeKindTest
 DocumentTest
          ::= 'document-node' '(' ( ElementTest | SchemaElementTest | NameTestUnion )? ')'
 ElementTest
@@ -144,6 +148,7 @@ NameTestUnion
          ::= NameTest ( '|' NameTest )*
 NameTest ::= EQName
            | Wildcard
+TypeName ::= EQName
 SchemaElementTest
          ::= 'schema-element' '(' ElementName ')'
 ElementName
@@ -186,6 +191,8 @@ NCName   ::= UnreservedNCName
            | 'for'
            | 'function'
            | 'ge'
+           | 'get'
+           | 'gnode'
            | 'gt'
            | 'idiv'
            | 'if'
@@ -194,9 +201,8 @@ NCName   ::= UnreservedNCName
            | 'intersect'
            | 'is'
            | 'item'
-           | 'items'
+           | 'jnode-type'
            | 'key'
-           | 'keys'
            | 'le'
            | 'let'
            | 'lt'
@@ -210,7 +216,6 @@ NCName   ::= UnreservedNCName
            | 'of'
            | 'or'
            | 'otherwise'
-           | 'pairs'
            | 'parent'
            | 'preceding'
            | 'preceding-or-self'
@@ -229,10 +234,10 @@ NCName   ::= UnreservedNCName
            | 'then'
            | 'to'
            | 'treat'
+           | 'type'
            | 'typeswitch'
            | 'union'
            | 'value'
-           | 'values'
            | '＜'
            | '＜＜'
            | '＞'
@@ -242,17 +247,12 @@ CommentTest
 TextTest ::= 'text' '(' ')'
 NamespaceNodeTest
          ::= 'namespace-node' '(' ')'
-AnyKindTest
+AnyNodeKindTest
          ::= 'node' '(' ')'
-FunctionType
-         ::= AnyFunctionType
-           | TypedFunctionType
-AnyFunctionType
-         ::= ( 'function' | 'fn' ) '(' '*' ')'
-TypedFunctionType
-         ::= ( 'function' | 'fn' ) '(' ( TypedFunctionParam ( ',' TypedFunctionParam )* )? ')' 'as' SequenceType
-TypedFunctionParam
-         ::= ( '$' EQName 'as' )? SequenceType
+GNodeType
+         ::= 'gnode' '(' ')'
+JNodeType
+         ::= 'jnode-type' '(' SequenceType? ')'
 MapType  ::= AnyMapType
            | TypedMapType
 AnyMapType
@@ -282,6 +282,15 @@ ExtensibleFlag
          ::= ',' '*'
 EnumerationType
          ::= 'enum' '(' StringLiteral ( ',' StringLiteral )* ')'
+FunctionType
+         ::= AnyFunctionType
+           | TypedFunctionType
+AnyFunctionType
+         ::= ( 'function' | 'fn' ) '(' '*' ')'
+TypedFunctionType
+         ::= ( 'function' | 'fn' ) '(' ( TypedFunctionParam ( ',' TypedFunctionParam )* )? ')' 'as' SequenceType
+TypedFunctionParam
+         ::= ( '$' EQName 'as' )? SequenceType
 ChoiceItemType
          ::= '(' ItemType ( '|' ItemType )* ')'
 OccurrenceIndicator
@@ -324,6 +333,7 @@ QuantifiedExpr
 QuantifierBinding
          ::= VarNameAndType 'in' ExprSingle
 IfExpr   ::= 'if' '(' Expr ')' ( UnbracedActions | BracedAction )
+Expr     ::= ExprSingle ( ',' ExprSingle )*
 UnbracedActions
          ::= 'then' ExprSingle 'else' ExprSingle
 BracedAction
@@ -441,11 +451,7 @@ FunctionBody
 MapConstructor
          ::= 'map'? '{' ( MapConstructorEntry ( ',' MapConstructorEntry )* )? '}'
 MapConstructorEntry
-         ::= MapKeyExpr ':' MapValueExpr
-MapKeyExpr
-         ::= ExprSingle
-MapValueExpr
-         ::= ExprSingle
+         ::= ExprSingle ( ':' ExprSingle )?
 ArrayConstructor
          ::= SquareArrayConstructor
            | CurlyArrayConstructor
@@ -461,11 +467,7 @@ StringTemplateVariablePart
           /* ws: explicit */
 UnaryLookup
          ::= Lookup
-Lookup   ::= ( '?' | '??' ) ( Modifier '::' )? KeySpecifier
-Modifier ::= 'pairs'
-           | 'keys'
-           | 'values'
-           | 'items'
+Lookup   ::= '?' KeySpecifier
 KeySpecifier
          ::= NCName
            | IntegerLiteral
@@ -473,11 +475,8 @@ KeySpecifier
            | VarRef
            | ParenthesizedExpr
            | LookupWildcard
-           | TypeSpecifier
 LookupWildcard
          ::= '*'
-TypeSpecifier
-         ::= '~[' SequenceType ']'
 FilterExpr
          ::= PostfixExpr Predicate
 Predicate
@@ -490,29 +489,25 @@ LookupExpr
          ::= PostfixExpr Lookup
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
-AxisStep ::= ( ReverseStep | ForwardStep ) Predicate*
-ReverseStep
-         ::= ReverseAxis NodeTest
-           | AbbrevReverseStep
-ReverseAxis
-         ::= ( 'ancestor' | 'ancestor-or-self' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' ) '::'
+AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*
+AbbreviatedStep
+         ::= '..'
+           | '@' NodeTest
+           | SimpleNodeTest
 NodeTest ::= UnionNodeTest
            | SimpleNodeTest
 UnionNodeTest
          ::= '(' SimpleNodeTest ( '|' SimpleNodeTest )* ')'
 SimpleNodeTest
-         ::= KindTest
-           | NameTest
-AbbrevReverseStep
-         ::= '..'
-ForwardStep
-         ::= ForwardAxis NodeTest
-           | AbbrevForwardStep
-ForwardAxis
-         ::= ( 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'namespace' | 'self' ) '::'
-AbbrevForwardStep
-         ::= '@' NodeTest
-           | SimpleNodeTest
+         ::= TypeTest
+           | Selector
+TypeTest ::= RegularItemType
+           | 'type' '(' SequenceType ')'
+Selector ::= EQName
+           | Wildcard
+           | 'get' '(' Expr ')'
+FullStep ::= Axis NodeTest
+Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'namespace' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
 SequenceArrowTarget
          ::= ( '=>' | '=＞' ) ArrowTarget
 ArrowTarget
@@ -543,6 +538,9 @@ GeneralComp
 NodeComp ::= 'is'
            | ( '<<' | '＜＜' )
            | ( '>>' | '＞＞' )
+MapValueExpr
+         ::= ExprSingle
+XPath    ::= Expr EOF
 Whitespace
          ::= S^WS
            | Comment
@@ -688,6 +686,8 @@ ReservedName
            | 'for'
            | 'function'
            | 'ge'
+           | 'get'
+           | 'gnode'
            | 'gt'
            | 'idiv'
            | 'if'
@@ -696,9 +696,8 @@ ReservedName
            | 'intersect'
            | 'is'
            | 'item'
-           | 'items'
+           | 'jnode-type'
            | 'key'
-           | 'keys'
            | 'le'
            | 'let'
            | 'lt'
@@ -712,7 +711,6 @@ ReservedName
            | 'of'
            | 'or'
            | 'otherwise'
-           | 'pairs'
            | 'parent'
            | 'preceding'
            | 'preceding-or-self'
@@ -731,10 +729,10 @@ ReservedName
            | 'then'
            | 'to'
            | 'treat'
+           | 'type'
            | 'typeswitch'
            | 'union'
            | 'value'
-           | 'values'
            | '＜'
            | '＜＜'
            | '＞'
@@ -759,7 +757,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'items' 'key' 'keys' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'pairs' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'typeswitch' 'union' 'value' 'values'
+          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'item' 'jnode-type' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'type' 'typeswitch' 'union' 'value'
 Char      \\ '＜' '＜=' '＞' '＞=' '＜＜' '＞＞' '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
