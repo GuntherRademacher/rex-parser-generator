@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -720,14 +721,56 @@ public class TestRegression extends AbstractSinglePlatformTest
     });
   }
 
-/*
- *          alts::=                        EMBEDDED_1
-                 't'?
-   EMBEDDED_1::=                        <?javax System.out.println("alts.peek().addAlt(new Alt());");?>
-                                        <?xquery let $state := (trace((), "alts.peek().addAlt(new Alt());"), $state)?>
+  @Test
+  public void testGoPackage() throws Exception
+  {
+    Pass.expectPass(() ->
+    {
+      NamedFile ebnf = new NamedFile
+      (
+        "grammar.ebnf",
+        "S ::= 'x'"
+      );
 
-<?TOKENS?>
+      NamedFile main = new NamedFile
+      (
+        "main.go",
+        "package main",
+        "",
+        "import (",
+        "  \"m/pkg\"",
+        ")",
+        "",
+        "func main() {",
+        "  pkg.Main()",
+        "}"
+      );
 
-          eof::= $
- */
+      String commandLine = commandLine("-go -main -tree", "-name pkg.file", ebnf);
+      Runner runner = new Runner();
+      String folder = runner.getFolder();
+      runner.setFolder(folder + File.separator + "pkg");
+      if (0 == runner.run(REX, commandLine, ebnf))
+      {
+        ensureGoAvailable(runner);
+  
+        Pass.passEarlyIfPossible(runner, "file.go");
+        
+        runner.setFolder(folder);
+        if (0 != runner.run(GO, "mod init m")) throw new RuntimeException(runner.summary());
+        if (0 == runner.run(GO, "build", main))
+        {
+          runner.run(folder + File.separator + "m", "{x}", main);
+        }
+      }
+
+      String summary = runner.summary();
+      assertEquals(0, runner.getExitCode(), summary);
+      assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><S><TOKEN>x</TOKEN></S>",
+          runner.getStdout().trim(),
+          summary);
+      Pass.passNormally(runner);
+    });
+  }
+
 }

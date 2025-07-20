@@ -91,31 +91,40 @@ public:
     useGlr(false)
   {
     wFileName = aClassName;
-    className = Format::acceptableName<WString>(aClassName, true);
+    className = aClassName;
     interfaceName = Format::acceptableName<WString>(anInterfaceName, true);
+
+    className = Format::acceptableName<WString>(aClassName, true);
+
+    if (targetLanguage == JAVA || targetLanguage == SCALA || targetLanguage == GO || targetLanguage == CSHARP )
+    {
+      const wchar_t *cn = aClassName;
+      const wchar_t *lastPeriod = wcsrchr(cn, L'.');
+      if (lastPeriod)
+      {
+        packageName = WString(cn, lastPeriod - cn).c_str();
+        className = WString(lastPeriod + 1).c_str();
+        wFileName = className;
+      }
+      if (targetLanguage == JAVA || targetLanguage == SCALA)
+      {
+        packageName = Format::acceptableName<WString>(packageName.c_str(), true);
+        className = Format::acceptableName<WString>(className.c_str(), true);
+        wFileName = className;
+      }
+    }
+    else if (targetLanguage == HAXE)
+    {
+      wFileName = className;
+    }
 
     if (targetLanguage == HAXE || targetLanguage == GO)
     {
       if (! iswupper(className[0]))
       {
         className[0] = towupper(className[0]);
+        if (targetLanguage == HAXE) wFileName = className;
       }
-    }
-
-    if (targetLanguage == JAVA || targetLanguage == CSHARP || targetLanguage == SCALA)
-    {
-      const wchar_t *cn = className.c_str();
-      const wchar_t *lastPeriod = wcsrchr(cn, L'.');
-      if (lastPeriod)
-      {
-        packageName = WString(cn, lastPeriod - cn);
-        className = WString(lastPeriod + 1);
-      }
-    }
-
-    if (targetLanguage == JAVA || targetLanguage == SCALA || targetLanguage == HAXE)
-    {
-      wFileName = className;
     }
 
     wFileName += extension;
