@@ -1,11 +1,11 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Thu Jul 17, 2025, 20:38 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jul 23, 2025, 07:41 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
-MapKeyExpr
-         ::= ExprSingle
+XPath    ::= Expr EOF
+Expr     ::= ExprSingle ( ',' ExprSingle )*
 ExprSingle
          ::= ForExpr
            | LetExpr
@@ -333,7 +333,6 @@ QuantifiedExpr
 QuantifierBinding
          ::= VarNameAndType 'in' ExprSingle
 IfExpr   ::= 'if' '(' Expr ')' ( UnbracedActions | BracedAction )
-Expr     ::= ExprSingle ( ',' ExprSingle )*
 UnbracedActions
          ::= 'then' ExprSingle 'else' ExprSingle
 BracedAction
@@ -538,9 +537,6 @@ GeneralComp
 NodeComp ::= 'is'
            | ( '<<' | '＜＜' )
            | ( '>>' | '＞＞' )
-MapValueExpr
-         ::= ExprSingle
-XPath    ::= Expr EOF
 Whitespace
          ::= S^WS
            | Comment

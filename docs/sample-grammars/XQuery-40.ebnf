@@ -1,35 +1,205 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Jul 17, 2025, 20:38 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Jul 23, 2025, 07:41 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
-MapKeyExpr
-         ::= ExprSingle
-ExprSingle
-         ::= FLWORExpr
-           | QuantifiedExpr
-           | SwitchExpr
-           | TypeswitchExpr
-           | IfExpr
-           | TryCatchExpr
-           | OrExpr
-FLWORExpr
-         ::= InitialClause IntermediateClause* ReturnClause
-InitialClause
-         ::= ForClause
-           | LetClause
-           | WindowClause
-ForClause
-         ::= 'for' ForBinding ( ',' ForBinding )*
-ForBinding
-         ::= ForItemBinding
-           | ForMemberBinding
-           | ForEntryBinding
-ForItemBinding
-         ::= VarNameAndType AllowingEmpty? PositionalVar? 'in' ExprSingle
-VarNameAndType
-         ::= '$' EQName TypeDeclaration?
+Module   ::= VersionDecl? ( LibraryModule | MainModule ) EOF
+VersionDecl
+         ::= 'xquery' ( 'encoding' StringLiteral | 'version' StringLiteral ( 'encoding' StringLiteral )? ) Separator
+Separator
+         ::= ';'
+LibraryModule
+         ::= ModuleDecl Prolog
+ModuleDecl
+         ::= 'module' 'namespace' NCName '=' URILiteral Separator
+NCName   ::= UnreservedNCName
+           | 'NaN'
+           | 'allowing'
+           | 'ancestor'
+           | 'ancestor-or-self'
+           | 'and'
+           | 'array'
+           | 'as'
+           | 'ascending'
+           | 'at'
+           | 'attribute'
+           | 'base-uri'
+           | 'boundary-space'
+           | 'by'
+           | 'case'
+           | 'cast'
+           | 'castable'
+           | 'catch'
+           | 'child'
+           | 'collation'
+           | 'comment'
+           | 'construction'
+           | 'context'
+           | 'copy-namespaces'
+           | 'count'
+           | 'decimal-format'
+           | 'decimal-separator'
+           | 'declare'
+           | 'default'
+           | 'descendant'
+           | 'descendant-or-self'
+           | 'descending'
+           | 'digit'
+           | 'div'
+           | 'document'
+           | 'document-node'
+           | 'element'
+           | 'else'
+           | 'empty'
+           | 'empty-sequence'
+           | 'encoding'
+           | 'end'
+           | 'enum'
+           | 'eq'
+           | 'every'
+           | 'except'
+           | 'exponent-separator'
+           | 'external'
+           | 'false'
+           | 'finally'
+           | 'fixed'
+           | 'fn'
+           | 'following'
+           | 'following-or-self'
+           | 'following-sibling'
+           | 'following-sibling-or-self'
+           | 'for'
+           | 'function'
+           | 'ge'
+           | 'get'
+           | 'gnode'
+           | 'greatest'
+           | 'group'
+           | 'grouping-separator'
+           | 'gt'
+           | 'idiv'
+           | 'if'
+           | 'import'
+           | 'in'
+           | 'infinity'
+           | 'inherit'
+           | 'instance'
+           | 'intersect'
+           | 'is'
+           | 'item'
+           | 'jnode-type'
+           | 'key'
+           | 'lax'
+           | 'le'
+           | 'least'
+           | 'let'
+           | 'lt'
+           | 'map'
+           | 'member'
+           | 'minus-sign'
+           | 'mod'
+           | 'module'
+           | 'namespace'
+           | 'namespace-node'
+           | 'ne'
+           | 'next'
+           | 'no-inherit'
+           | 'no-preserve'
+           | 'node'
+           | 'of'
+           | 'only'
+           | 'option'
+           | 'or'
+           | 'order'
+           | 'ordered'
+           | 'ordering'
+           | 'otherwise'
+           | 'parent'
+           | 'pattern-separator'
+           | 'per-mille'
+           | 'percent'
+           | 'preceding'
+           | 'preceding-or-self'
+           | 'preceding-sibling'
+           | 'preceding-sibling-or-self'
+           | 'preserve'
+           | 'previous'
+           | 'processing-instruction'
+           | 'record'
+           | 'return'
+           | 'satisfies'
+           | 'schema'
+           | 'schema-attribute'
+           | 'schema-element'
+           | 'self'
+           | 'sliding'
+           | 'some'
+           | 'stable'
+           | 'start'
+           | 'strict'
+           | 'strip'
+           | 'switch'
+           | 'text'
+           | 'then'
+           | 'to'
+           | 'treat'
+           | 'true'
+           | 'try'
+           | 'tumbling'
+           | 'type'
+           | 'typeswitch'
+           | 'union'
+           | 'unordered'
+           | 'validate'
+           | 'value'
+           | 'variable'
+           | 'version'
+           | 'when'
+           | 'where'
+           | 'while'
+           | 'window'
+           | 'xquery'
+           | 'zero-digit'
+           | '＜'
+           | '＜＜'
+           | '＞'
+           | '＞＞'
+URILiteral
+         ::= StringLiteral
+Prolog   ::= ( ( DefaultNamespaceDecl | Setter | NamespaceDecl | Import ) Separator )* ( ( ContextValueDecl | VarDecl | FunctionDecl | ItemTypeDecl | NamedRecordTypeDecl | OptionDecl ) Separator )*
+DefaultNamespaceDecl
+         ::= 'declare' 'fixed'? 'default' ( 'element' | 'function' ) 'namespace' URILiteral
+Setter   ::= BoundarySpaceDecl
+           | DefaultCollationDecl
+           | BaseURIDecl
+           | ConstructionDecl
+           | OrderingModeDecl
+           | EmptyOrderDecl
+           | CopyNamespacesDecl
+           | DecimalFormatDecl
+BoundarySpaceDecl
+         ::= 'declare' 'boundary-space' ( 'preserve' | 'strip' )
+DefaultCollationDecl
+         ::= 'declare' 'default' 'collation' URILiteral
+BaseURIDecl
+         ::= 'declare' 'base-uri' URILiteral
+ConstructionDecl
+         ::= 'declare' 'construction' ( 'strip' | 'preserve' )
+OrderingModeDecl
+         ::= 'declare' 'ordering' ( 'ordered' | 'unordered' )
+EmptyOrderDecl
+         ::= 'declare' 'default' 'order' 'empty' ( 'greatest' | 'least' )
+CopyNamespacesDecl
+         ::= 'declare' 'copy-namespaces' PreserveMode ',' InheritMode
+PreserveMode
+         ::= 'preserve'
+           | 'no-preserve'
+InheritMode
+         ::= 'inherit'
+           | 'no-inherit'
+DecimalFormatDecl
+         ::= 'declare' ( 'decimal-format' EQName | 'default' 'decimal-format' ) ( DFPropertyName '=' StringLiteral )*
 EQName   ::= QName
            | URIQualifiedName
 QName    ::= UnreservedFunctionQName
@@ -186,8 +356,31 @@ UnreservedFunctionQName
            | '＜＜'
            | '＞'
            | '＞＞'
-TypeDeclaration
-         ::= 'as' SequenceType
+DFPropertyName
+         ::= 'decimal-separator'
+           | 'grouping-separator'
+           | 'infinity'
+           | 'minus-sign'
+           | 'NaN'
+           | 'percent'
+           | 'per-mille'
+           | 'zero-digit'
+           | 'digit'
+           | 'pattern-separator'
+           | 'exponent-separator'
+NamespaceDecl
+         ::= 'declare' 'namespace' NCName '=' URILiteral
+Import   ::= SchemaImport
+           | ModuleImport
+SchemaImport
+         ::= 'import' 'schema' SchemaPrefix? URILiteral ( 'at' URILiteral ( ',' URILiteral )* )?
+SchemaPrefix
+         ::= 'namespace' NCName '='
+           | 'fixed'? 'default' 'element' 'namespace'
+ModuleImport
+         ::= 'import' 'module' ( 'namespace' NCName '=' )? URILiteral ( 'at' URILiteral ( ',' URILiteral )* )?
+ContextValueDecl
+         ::= 'declare' 'context' ( 'value' ( 'as' SequenceType )? | 'item' ( 'as' ItemType )? ) ( ':=' VarValue | 'external' ( ':=' VarDefaultValue )? )
 SequenceType
          ::= 'empty-sequence' '(' ')'
            | ItemType ( OccurrenceIndicator / )
@@ -237,158 +430,6 @@ SchemaAttributeTest
 AttributeName
          ::= EQName
 PITest   ::= 'processing-instruction' '(' ( NCName | StringLiteral )? ')'
-NCName   ::= UnreservedNCName
-           | 'NaN'
-           | 'allowing'
-           | 'ancestor'
-           | 'ancestor-or-self'
-           | 'and'
-           | 'array'
-           | 'as'
-           | 'ascending'
-           | 'at'
-           | 'attribute'
-           | 'base-uri'
-           | 'boundary-space'
-           | 'by'
-           | 'case'
-           | 'cast'
-           | 'castable'
-           | 'catch'
-           | 'child'
-           | 'collation'
-           | 'comment'
-           | 'construction'
-           | 'context'
-           | 'copy-namespaces'
-           | 'count'
-           | 'decimal-format'
-           | 'decimal-separator'
-           | 'declare'
-           | 'default'
-           | 'descendant'
-           | 'descendant-or-self'
-           | 'descending'
-           | 'digit'
-           | 'div'
-           | 'document'
-           | 'document-node'
-           | 'element'
-           | 'else'
-           | 'empty'
-           | 'empty-sequence'
-           | 'encoding'
-           | 'end'
-           | 'enum'
-           | 'eq'
-           | 'every'
-           | 'except'
-           | 'exponent-separator'
-           | 'external'
-           | 'false'
-           | 'finally'
-           | 'fixed'
-           | 'fn'
-           | 'following'
-           | 'following-or-self'
-           | 'following-sibling'
-           | 'following-sibling-or-self'
-           | 'for'
-           | 'function'
-           | 'ge'
-           | 'get'
-           | 'gnode'
-           | 'greatest'
-           | 'group'
-           | 'grouping-separator'
-           | 'gt'
-           | 'idiv'
-           | 'if'
-           | 'import'
-           | 'in'
-           | 'infinity'
-           | 'inherit'
-           | 'instance'
-           | 'intersect'
-           | 'is'
-           | 'item'
-           | 'jnode-type'
-           | 'key'
-           | 'lax'
-           | 'le'
-           | 'least'
-           | 'let'
-           | 'lt'
-           | 'map'
-           | 'member'
-           | 'minus-sign'
-           | 'mod'
-           | 'module'
-           | 'namespace'
-           | 'namespace-node'
-           | 'ne'
-           | 'next'
-           | 'no-inherit'
-           | 'no-preserve'
-           | 'node'
-           | 'of'
-           | 'only'
-           | 'option'
-           | 'or'
-           | 'order'
-           | 'ordered'
-           | 'ordering'
-           | 'otherwise'
-           | 'parent'
-           | 'pattern-separator'
-           | 'per-mille'
-           | 'percent'
-           | 'preceding'
-           | 'preceding-or-self'
-           | 'preceding-sibling'
-           | 'preceding-sibling-or-self'
-           | 'preserve'
-           | 'previous'
-           | 'processing-instruction'
-           | 'record'
-           | 'return'
-           | 'satisfies'
-           | 'schema'
-           | 'schema-attribute'
-           | 'schema-element'
-           | 'self'
-           | 'sliding'
-           | 'some'
-           | 'stable'
-           | 'start'
-           | 'strict'
-           | 'strip'
-           | 'switch'
-           | 'text'
-           | 'then'
-           | 'to'
-           | 'treat'
-           | 'true'
-           | 'try'
-           | 'tumbling'
-           | 'type'
-           | 'typeswitch'
-           | 'union'
-           | 'unordered'
-           | 'validate'
-           | 'value'
-           | 'variable'
-           | 'version'
-           | 'when'
-           | 'where'
-           | 'while'
-           | 'window'
-           | 'xquery'
-           | 'zero-digit'
-           | '＜'
-           | '＜＜'
-           | '＞'
-           | '＞＞'
 CommentTest
          ::= 'comment' '(' ')'
 TextTest ::= 'text' '(' ')'
@@ -459,6 +500,33 @@ OccurrenceIndicator
          ::= '?'
            | '*'
            | '+'
+VarValue ::= ExprSingle
+ExprSingle
+         ::= FLWORExpr
+           | QuantifiedExpr
+           | SwitchExpr
+           | TypeswitchExpr
+           | IfExpr
+           | TryCatchExpr
+           | OrExpr
+FLWORExpr
+         ::= InitialClause IntermediateClause* ReturnClause
+InitialClause
+         ::= ForClause
+           | LetClause
+           | WindowClause
+ForClause
+         ::= 'for' ForBinding ( ',' ForBinding )*
+ForBinding
+         ::= ForItemBinding
+           | ForMemberBinding
+           | ForEntryBinding
+ForItemBinding
+         ::= VarNameAndType AllowingEmpty? PositionalVar? 'in' ExprSingle
+VarNameAndType
+         ::= '$' EQName TypeDeclaration?
+TypeDeclaration
+         ::= 'as' SequenceType
 AllowingEmpty
          ::= 'allowing' 'empty'
 PositionalVar
@@ -519,8 +587,6 @@ GroupByClause
          ::= 'group' 'by' GroupingSpec ( ',' GroupingSpec )*
 GroupingSpec
          ::= VarName ( TypeDeclaration? ':=' ExprSingle )? ( 'collation' URILiteral )?
-URILiteral
-         ::= StringLiteral
 OrderByClause
          ::= 'stable'? 'order' 'by' OrderSpec ( ',' OrderSpec )*
 OrderSpec
@@ -868,76 +934,6 @@ GeneralComp
 NodeComp ::= 'is'
            | ( '<<' | '＜＜' )
            | ( '>>' | '＞＞' )
-MapValueExpr
-         ::= ExprSingle
-Module   ::= VersionDecl? ( LibraryModule | MainModule ) EOF
-VersionDecl
-         ::= 'xquery' ( 'encoding' StringLiteral | 'version' StringLiteral ( 'encoding' StringLiteral )? ) Separator
-Separator
-         ::= ';'
-LibraryModule
-         ::= ModuleDecl Prolog
-ModuleDecl
-         ::= 'module' 'namespace' NCName '=' URILiteral Separator
-Prolog   ::= ( ( DefaultNamespaceDecl | Setter | NamespaceDecl | Import ) Separator )* ( ( ContextValueDecl | VarDecl | FunctionDecl | ItemTypeDecl | NamedRecordTypeDecl | OptionDecl ) Separator )*
-DefaultNamespaceDecl
-         ::= 'declare' 'fixed'? 'default' ( 'element' | 'function' ) 'namespace' URILiteral
-Setter   ::= BoundarySpaceDecl
-           | DefaultCollationDecl
-           | BaseURIDecl
-           | ConstructionDecl
-           | OrderingModeDecl
-           | EmptyOrderDecl
-           | CopyNamespacesDecl
-           | DecimalFormatDecl
-BoundarySpaceDecl
-         ::= 'declare' 'boundary-space' ( 'preserve' | 'strip' )
-DefaultCollationDecl
-         ::= 'declare' 'default' 'collation' URILiteral
-BaseURIDecl
-         ::= 'declare' 'base-uri' URILiteral
-ConstructionDecl
-         ::= 'declare' 'construction' ( 'strip' | 'preserve' )
-OrderingModeDecl
-         ::= 'declare' 'ordering' ( 'ordered' | 'unordered' )
-EmptyOrderDecl
-         ::= 'declare' 'default' 'order' 'empty' ( 'greatest' | 'least' )
-CopyNamespacesDecl
-         ::= 'declare' 'copy-namespaces' PreserveMode ',' InheritMode
-PreserveMode
-         ::= 'preserve'
-           | 'no-preserve'
-InheritMode
-         ::= 'inherit'
-           | 'no-inherit'
-DecimalFormatDecl
-         ::= 'declare' ( 'decimal-format' EQName | 'default' 'decimal-format' ) ( DFPropertyName '=' StringLiteral )*
-DFPropertyName
-         ::= 'decimal-separator'
-           | 'grouping-separator'
-           | 'infinity'
-           | 'minus-sign'
-           | 'NaN'
-           | 'percent'
-           | 'per-mille'
-           | 'zero-digit'
-           | 'digit'
-           | 'pattern-separator'
-           | 'exponent-separator'
-NamespaceDecl
-         ::= 'declare' 'namespace' NCName '=' URILiteral
-Import   ::= SchemaImport
-           | ModuleImport
-SchemaImport
-         ::= 'import' 'schema' SchemaPrefix? URILiteral ( 'at' URILiteral ( ',' URILiteral )* )?
-SchemaPrefix
-         ::= 'namespace' NCName '='
-           | 'fixed'? 'default' 'element' 'namespace'
-ModuleImport
-         ::= 'import' 'module' ( 'namespace' NCName '=' )? URILiteral ( 'at' URILiteral ( ',' URILiteral )* )?
-ContextValueDecl
-         ::= 'declare' 'context' ( 'value' ( 'as' SequenceType )? | 'item' ( 'as' ItemType )? ) ( ':=' VarValue | 'external' ( ':=' VarDefaultValue )? )
-VarValue ::= ExprSingle
 VarDefaultValue
          ::= ExprSingle
 VarDecl  ::= 'declare' Annotation* 'variable' VarNameAndType ( ':=' VarValue | 'external' ( ':=' VarDefaultValue )? )
