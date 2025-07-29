@@ -108,7 +108,7 @@ declare variable $rules as local:rule+ :=
     function($node) {text {""}}
   ),
 
-  (: Replace RelativePathExpr? in production PathExpr by an ordered choice between RelativePathExpr
+  (: Replace RelativePathExpr? in production AbsolutePathExpr by an ordered choice between RelativePathExpr
    : and nothing. This implements extra-grammatical constraint /* xgc: leading-lone-slash */
    : (see https://qt4cg.org/specifications/xquery-40/xquery-40.html#extra-grammatical-constraints).
    :
@@ -119,7 +119,7 @@ declare variable $rules as local:rule+ :=
     function($node)
     {
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'RelativePathExpr']
-      /ancestor::g:production/@name = "PathExpr"
+      /ancestor::g:production/@name = "AbsolutePathExpr"
     },
     function($node) {local:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
   ),
