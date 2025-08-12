@@ -46,25 +46,19 @@ declare variable $xpath-known-failures as xs:string* :=
 );
 
 declare variable $parse :=
-  switch ($language)
-  {
-    case "xquery" return 
-      switch ($implementation)
-      {
-        case "java" return xquery-java:parse-Module#1
-        case "xquery" return xquery-xquery:parse-Module#1
-        default return error(xs:QName("process-tests"), "unsupported parser implementation language: " || $implementation)
-      }
-    case "xpath" return 
-      switch ($implementation)
-      {
-        case "java" return xpath-java:parse-XPath#1
-        case "xquery" return xpath-xquery:parse-XPath#1
-        default return error(xs:QName("process-tests"), "unsupported parser implementation language: " || $implementation)
-      }
-    default return
-      error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
-  };
+  switch ()
+  case $implementation eq "java" return
+    switch ($language)
+    case "xquery" return xquery-java:parse-Module#1
+    case "xpath" return xpath-java:parse-XPath#1
+    default return error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
+  case $implementation eq "xquery" return
+    switch ($language)
+    case "xquery" return xquery-xquery:parse-Module#1
+    case "xpath" return xpath-xquery:parse-XPath#1
+    default return error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
+  case matches($implementation, "^https?://") return local:parse#1
+  default return error(xs:QName("process-tests"), "unsupported parser implementation: " || $implementation);
 
 declare variable $filter := upper-case(substring($language, 1, 2)) || '(\d\d\+|40)';
 declare variable $known-failures := if ($language eq "xquery") then $xquery-known-failures else $xpath-known-failures;
@@ -74,6 +68,29 @@ declare variable $expected-fail := 1;
 declare variable $unexpected-pass := 2;
 declare variable $unexpected-fail := 3;
 declare variable $skipped := 4;
+
+declare function local:parse($input) {
+  let $request :=
+    <http:request method="POST">
+      <http:header name="Accept" value="application/json"/>
+      <http:body method="text" media-type="application/json">{json:serialize({"input": $input, "errorsOnly": true()})}</http:body>
+    </http:request>
+  let $response := http:send-request($request, $implementation)
+  return
+    if ($response[1]/@status = '200') then
+      let $json := parse-json(json:serialize($response[2]))
+      return
+        if ($json?success) then
+          ()
+        else
+          <ERROR>{json:serialize({"errors": $json?errors, "input": $json?input})}</ERROR>
+    else
+      error(xs:QName("local:parse"), json:serialize({
+        'status': $response[1]/@status/string(),
+        'message': $response[1]/@message/string(),
+        'response': $response[2]
+      }))
+};
 
 declare function local:msg($indent, $content)
 {
