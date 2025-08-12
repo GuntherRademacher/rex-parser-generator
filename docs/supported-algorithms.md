@@ -59,7 +59,7 @@ The lexer in REx is always generated as a set of deterministic finite automata (
 
 ### Context dependent tokenization
 
-REx automatically does context dependent lexing. This means that for each state of the parser, a specific lexer is generated that recognizes only the tokens that are valid continuations expected by the parser in this particlar state.
+REx automatically does context dependent lexing. This means that for each state of the parser, a specific lexer is generated that recognizes only the tokens that are valid continuations expected by the parser in this particular state.
 
 This eliminates the need for manually setting up rules for different lexical states, as it is sometimes supported in other parser generators. Rather the approach taken by REx exploits the parser's context information to pre-select the token set allowed in a given situation.
 
