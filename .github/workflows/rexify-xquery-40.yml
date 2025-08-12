@@ -19,7 +19,7 @@ jobs:
     steps:
       # Checkout the repository
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: rex-parser-generator
 
@@ -54,7 +54,7 @@ jobs:
 
       # Checkout qt4cg/qt4tests repository at the same level as the current project
       - name: Checkout qt4tests Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: qt4cg/qt4tests
           path: qt4tests

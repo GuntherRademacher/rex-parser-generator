@@ -39,7 +39,7 @@ jobs:
           g++ --version
 
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build C++ Project
         run: rex/scripts/build-gpp.sh
