@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Jul 29, 2025, 19:31 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Aug 12, 2025, 21:13 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -394,6 +394,7 @@ PostfixExpr
            | FilterExpr
            | DynamicFunctionCall
            | LookupExpr
+           | MethodCall
            | FilterExprAM
 PrimaryExpr
          ::= Literal
@@ -471,14 +472,13 @@ StringTemplate
           /* ws: explicit */
 StringTemplateVariablePart
          ::= EnclosedExpr
-          /* ws: explicit */
 UnaryLookup
          ::= Lookup
 Lookup   ::= '?' KeySpecifier
 KeySpecifier
          ::= NCName
-           | IntegerLiteral
-           | StringLiteral
+           | Literal
+           | ContextValueRef
            | VarRef
            | ParenthesizedExpr
            | LookupWildcard
@@ -494,6 +494,8 @@ PositionalArgumentList
          ::= '(' PositionalArguments? ')'
 LookupExpr
          ::= PostfixExpr Lookup
+MethodCall
+         ::= PostfixExpr '?>' NCName PositionalArgumentList
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
 AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*

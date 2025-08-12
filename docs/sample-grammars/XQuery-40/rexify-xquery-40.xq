@@ -182,12 +182,13 @@ declare variable $rules as local:rule+ :=
     function($node)
     {
       $node/self::g:production/@name = "StringInterpolation"
+      and empty($node/@whitespace-spec)
       and count($node/*) eq 3
       and $node/g:string = '`{'
       and $node/g:string = '}`'
       and $node/g:optional[count(*) eq 1]/g:ref/@name = "Expr"
     },
-    function($node) {local:ast("StringInterpolation ::= '`' EnclosedExpr '`'")}
+    function($node) {local:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
   (: Add alternative representation of operators containing "<" or ">" using the full-width versions
@@ -273,7 +274,8 @@ declare variable $rules as local:rule+ :=
         (: Move all production using an exclusion operator from the syntax section, except for those
          : that need additional changes.
          :)
-        $grammar/g:production[exists(.//g:subtract) and not(@name = ("CDataSectionContents", "DirPIContents", "PragmaContents", "StringConstructorChars", "CommentContents", "StringTemplateFixedPart", "PITarget"))],
+        $grammar/g:production[exists(.//g:subtract) and not(@name = ("CDataSectionContents", "DirPIContents", "PragmaContents", "StringConstructorChars", "CommentContents",
+        "PITarget"))],
 
         (: Add lexical lookahead to CDataSectionContents. :)
         local:lookahead("CDataSectionContents", element g:string {"]]"}),
@@ -295,10 +297,6 @@ declare variable $rules as local:rule+ :=
         let $pi-target := $grammar/g:production[@name eq "PITarget"]
         where $pi-target
         return local:ast(replace(b:render($pi-target), "Name", "NCName")),
-
-        (: Avoid the "`{" and "}`" operators in StringTemplateFixedPart by using EnclosedExpr. :)
-        let $string-template-fixed-art := $grammar/g:production[@name = "StringTemplateFixedPart"]
-        return element g:production {$string-template-fixed-art/@*, element g:oneOrMore {$string-template-fixed-art/g:zeroOrMore/node()}},
 
         (: Rewrite CommentContents to use the necessary lexical lookahead. :)
         let $comment-contents := $grammar/g:production[@name = "CommentContents"]

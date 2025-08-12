@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Jul 29, 2025, 19:30 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Aug 12, 2025, 21:13 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -705,6 +705,7 @@ PostfixExpr
            | FilterExpr
            | DynamicFunctionCall
            | LookupExpr
+           | MethodCall
            | FilterExprAM
 PrimaryExpr
          ::= Literal
@@ -860,7 +861,6 @@ StringTemplate
           /* ws: explicit */
 StringTemplateVariablePart
          ::= EnclosedExpr
-          /* ws: explicit */
 StringConstructor
          ::= '``[' StringConstructorContent ']``'
           /* ws: explicit */
@@ -869,13 +869,14 @@ StringConstructorContent
           /* ws: explicit */
 StringInterpolation
          ::= '`' EnclosedExpr '`'
+          /* ws: explicit */
 UnaryLookup
          ::= Lookup
 Lookup   ::= '?' KeySpecifier
 KeySpecifier
          ::= NCName
-           | IntegerLiteral
-           | StringLiteral
+           | Literal
+           | ContextValueRef
            | VarRef
            | ParenthesizedExpr
            | LookupWildcard
@@ -891,6 +892,8 @@ PositionalArgumentList
          ::= '(' PositionalArguments? ')'
 LookupExpr
          ::= PostfixExpr Lookup
+MethodCall
+         ::= PostfixExpr '?>' NCName PositionalArgumentList
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
 AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*
@@ -1208,6 +1211,7 @@ URIQualifiedName
 BracedURILiteral
          ::= 'Q' '{' ( PredefinedEntityRef | CharRef | [^&{}] )* '}'
           /* ws: explicit */
+EOF      ::= $
 IntegerLiteral
          ::= Digits
           /* ws: explicit */
@@ -1215,7 +1219,6 @@ Digits   ::= DecDigit ( ( DecDigit | '_' )* DecDigit )?
           /* ws: explicit */
 DecDigit ::= [0-9]
           /* ws: explicit */
-EOF      ::= $
 Wildcard ::= '*'
            | NCName ':*'
            | '*:' NCName
