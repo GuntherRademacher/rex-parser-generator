@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Aug 12, 2025, 21:13 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Aug 19, 2025, 18:43 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -108,10 +108,6 @@ UnreservedFunctionQName
            | 'treat'
            | 'union'
            | 'value'
-           | '＜'
-           | '＜＜'
-           | '＞'
-           | '＞＞'
 TypeDeclaration
          ::= 'as' SequenceType
 SequenceType
@@ -244,10 +240,6 @@ NCName   ::= UnreservedNCName
            | 'typeswitch'
            | 'union'
            | 'value'
-           | '＜'
-           | '＜＜'
-           | '＞'
-           | '＞＞'
 CommentTest
          ::= 'comment' '(' ')'
 TextTest ::= 'text' '(' ')'
@@ -371,7 +363,7 @@ CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget '?'? )?
 CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
 PipelineExpr
-         ::= ArrowExpr ( ( '->' | '-＞' ) ArrowExpr )*
+         ::= ArrowExpr ( '->' ArrowExpr )*
 ArrowExpr
          ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
@@ -518,14 +510,14 @@ Selector ::= EQName
 FullStep ::= Axis NodeTest
 Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'namespace' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
 SequenceArrowTarget
-         ::= ( '=>' | '=＞' ) ArrowTarget
+         ::= '=>' ArrowTarget
 ArrowTarget
          ::= FunctionCall
            | RestrictedDynamicCall
 RestrictedDynamicCall
          ::= ( VarRef | ParenthesizedExpr | FunctionItemExpr | MapConstructor | ArrayConstructor ) PositionalArgumentList
 MappingArrowTarget
-         ::= ( '=!>' | '=!＞' ) ArrowTarget
+         ::= '=!>' ArrowTarget
 CastTarget
          ::= TypeName
            | ChoiceItemType
@@ -540,19 +532,19 @@ ValueComp
 GeneralComp
          ::= '='
            | '!='
-           | ( '<' | '＜' )
-           | ( '<=' | '＜=' )
-           | ( '>' | '＞' )
-           | ( '>=' | '＞=' )
+           | '<'
+           | '<='
+           | '>'
+           | '>='
 NodeComp ::= 'is'
            | 'is-not'
            | NodePrecedes
            | NodeFollows
 NodePrecedes
-         ::= ( '<<' | '＜＜' )
+         ::= '<<'
            | 'precedes'
 NodeFollows
-         ::= ( '>>' | '＞＞' )
+         ::= '>>'
            | 'follows'
 Whitespace
          ::= S^WS
@@ -749,10 +741,6 @@ ReservedName
            | 'typeswitch'
            | 'union'
            | 'value'
-           | '＜'
-           | '＜＜'
-           | '＞'
-           | '＞＞'
 UnreservedNCName
          ::= NCName - ReservedName
 S        ::= ( #x20 | #x9 | #xD | #xA )+
@@ -774,7 +762,7 @@ NumericLiteralDelimiter
 '*'       << Wildcard
 QNameOrKeywordDelimiter
           \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'type' 'typeswitch' 'union' 'value'
-Char      \\ '＜' '＜=' '＞' '＞=' '＞＞' '＜＜' '<<' '<=' '<'
+Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
 NumericLiteralDelimiter
