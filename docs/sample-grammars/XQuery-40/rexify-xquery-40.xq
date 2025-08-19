@@ -191,15 +191,6 @@ declare variable $rules as local:rule+ :=
     function($node) {local:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
-  (: Add alternative representation of operators containing "<" or ">" using the full-width versions
-   : of these characters.
-   :)
-  local:rule
-  (
-    function($node) {$node/self::g:string and exists(local:full-width-operators($node))},
-    function($node) {element g:choice {$node, local:full-width-operators($node)!element g:string {.}}}
-  ),
-
   (: Process the <?TOKENS?> separator, by adding some prodcutions to the syntax section preceding
    : it, and some more to the lexical section following it. Whitespace and comment processing need
    : to go to the syntax section, because the nested comments are non-regular and thus cannot be
@@ -215,7 +206,6 @@ declare variable $rules as local:rule+ :=
     {
       let $grammar := root($node)
       let $keywords := local:keywords($grammar)
-      let $full-width-operators := local:full-width-operators($grammar)
       return
       (
         (: Add new production UnreservedFunctionEQName for restricting valid function names. :)
@@ -329,9 +319,6 @@ declare variable $rules as local:rule+ :=
 
         (: Add lexical lookahead for QNames. :)
         ("UnreservedQName")                                       !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, <g:ref name="{.}"/>},
-
-        (: Add lexical lookahead for full-width operators. :)
-        ($full-width-operators[matches(., "^[&#xFF1C;&#xFF1E;]")])!element g:delimiter {<g:ref name="Char"/>,                    element g:string {.}},
 
         (: Add lexical lookahead for operators starting with "<". :)
         ("</", "<<", "<=")[contains($grammar, .)]                 !element g:delimiter {<g:ref name="Char"/>,                    element g:string {.}},
@@ -604,23 +591,6 @@ declare function local:depth-first($grammar as element(g:grammar))
      }</g:grammar>
 };
 
-(:~
- : Calculate additional full-width operators for operators containing a less-than or greater-than
- : character.
- :
- : @param nodes the grammar fragment where to search for original operators
- : @return the corresponding full-width operators
- :)
-declare function local:full-width-operators($nodes as element()+) as xs:string*
-{
-  distinct-values
-  (
-    $nodes/descendant-or-self::g:string
-    [ancestor::g:production/@name ne "DirElemConstructor" and . = ("<", "<=", ">", ">=", "<<", ">>", "=>", "->", "=!>", "=?>")]
-  )
-  !replace(replace(., "<", "&#xFF1C;"), ">", "&#xFF1E;")
-};
-
 (:~ Collect the sequence of keywords of a grammar.
  :
  : @param $grammar the grammar
@@ -633,8 +603,7 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
   for $keyword in
     distinct-values((
       $syntax//g:string[matches(., "^[a-zA-Z].*$")],
-      $reserved-function-names,
-      local:full-width-operators($grammar)[matches(., "^[&#xFF1C;&#xFF1E;]+$")]
+      $reserved-function-names
     ))
   order by $keyword
   return $keyword
