@@ -21,7 +21,9 @@ declare variable $xquery-known-failures as xs:string* :=
   "fo-test-fn-jtree-003",                  (: excess right parenthesis              :)
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest     :)
   "fo-test-fn-jnode-position-001",         (: missing comma                         :)
-  "fo-test-fn-jnode-position-002"          (: missing comma                         :)
+  "fo-test-fn-jnode-position-002",         (: missing comma                         :)
+  "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis     :)
+  "fo-test-fn-outermost-002"               (: unmotivated quote and parenthesis     :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -42,7 +44,9 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-jtree-003",                  (: excess right parenthesis                   :)
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest          :)
   "fo-test-fn-jnode-position-001",         (: missing comma                              :)
-  "fo-test-fn-jnode-position-002"          (: missing comma                              :)
+  "fo-test-fn-jnode-position-002",         (: missing comma                              :)
+  "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis          :)
+  "fo-test-fn-outermost-002"               (: unmotivated quote and parenthesis          :)
 );
 
 declare variable $parse :=
