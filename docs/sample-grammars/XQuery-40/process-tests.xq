@@ -23,7 +23,8 @@ declare variable $xquery-known-failures as xs:string* :=
   "fo-test-fn-jnode-position-001",         (: missing comma                         :)
   "fo-test-fn-jnode-position-002",         (: missing comma                         :)
   "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis     :)
-  "fo-test-fn-outermost-002"               (: unmotivated quote and parenthesis     :)
+  "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis     :)
+  "fo-test-fn-jnode-content-002"           (: missing parentheses around sequence   :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -46,7 +47,8 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-jnode-position-001",         (: missing comma                              :)
   "fo-test-fn-jnode-position-002",         (: missing comma                              :)
   "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis          :)
-  "fo-test-fn-outermost-002"               (: unmotivated quote and parenthesis          :)
+  "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis          :)
+  "fo-test-fn-jnode-content-002"           (: missing parentheses around sequence        :)
 );
 
 declare variable $parse :=
@@ -143,9 +145,11 @@ declare function local:supported($node)
 {
   empty($node/qtfc:dependency[
     @type = 'spec' and not(matches(@value, $filter)) or
-    @type = ('xml-version', 'xsd-version') and @value = ('1.1', '1.0:4-') or
+    @type = ('xml-version', 'xsd-version') and @value = ('1.1', '1.0:4-')
+                                                                          or
     @type = "feature" and @value = "XQUpdate" and string(@satisfied) = ("", "true") or
     @type = "feature" and not(@value = "XQUpdate") and string(@satisfied) = 'false'
+
   ])
 };
 
@@ -167,9 +171,9 @@ declare function local:test-case($path, $test-case)
   if (not(local:supported($test-case))) then
     $skipped
   else
-    let $test := $test-case/qtfc:test
-    let $file := $test/@file
     let $expect-error := $test-case/qtfc:result//qtfc:error/@code = "XPST0003"
+    for $test in $test-case/qtfc:test
+    let $file := $test/@file
     let $query :=
       if ($file) then
         fn() {unparsed-text(resolve-uri($file, base-uri($test-case)))}

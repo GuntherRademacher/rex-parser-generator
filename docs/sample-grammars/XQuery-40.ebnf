@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Aug 19, 2025, 18:42 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Aug 21, 2025, 20:27 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -904,7 +904,7 @@ TypeTest ::= RegularItemType
            | 'type' '(' SequenceType ')'
 Selector ::= EQName
            | Wildcard
-           | 'get' '(' Expr ')'
+           | 'get' '(' ExprSingle ')'
 FullStep ::= Axis NodeTest
 Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
 SequenceArrowTarget
