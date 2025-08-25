@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Aug 21, 2025, 20:27 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Sun Aug 24, 2025, 22:50 (UTC+02)
  * and transformed by rexify-xquery-40.xq
  */
 
@@ -930,7 +930,7 @@ ValueComp
 GeneralComp
          ::= '='
            | '!='
-           | ( '<'^GeneralComp | '＜' )
+           | '<'^GeneralComp
            | '<='
            | '>'
            | '>='
