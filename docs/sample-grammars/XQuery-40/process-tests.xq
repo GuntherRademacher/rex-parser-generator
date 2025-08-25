@@ -1,7 +1,15 @@
 import module namespace xquery-xquery = "de/bottlecaps/rex/XQuery-40" at "build/XQuery-40.xquery";
-import module namespace xquery-java = "java:de.bottlecaps.rex.XQuery_40";
-import module namespace xpath-xquery = "de/bottlecaps/rex/XPath-40" at "build/XPath-40.xquery";
-import module namespace xpath-java = "java:de.bottlecaps.rex.XPath_40";
+import module namespace xquery-java   = "java:de.bottlecaps.rex.XQuery_40";
+import module namespace xquery-full-text-update-xquery
+                                      = "de/bottlecaps/rex/XQuery-Full-Text-Update-40" at "build/XQuery-Full-Text-Update-40.xquery";
+import module namespace xquery-full-text-update-java
+                                      = "java:de.bottlecaps.rex.XQuery_Full_Text_Update_40";
+import module namespace xpath-xquery  = "de/bottlecaps/rex/XPath-40" at "build/XPath-40.xquery";
+import module namespace xpath-java    = "java:de.bottlecaps.rex.XPath_40";
+import module namespace xpath-full-text-xquery
+                                      = "de/bottlecaps/rex/XPath-Full-Text-40" at "build/XPath-Full-Text-40.xquery";
+import module namespace xpath-full-text-java
+                                      = "java:de.bottlecaps.rex.XPath_Full_Text_40";
 
 declare namespace qtfc = "http://www.w3.org/2010/09/qt-fots-catalog";
 
@@ -24,7 +32,10 @@ declare variable $xquery-known-failures as xs:string* :=
   "fo-test-fn-jnode-position-002",         (: missing comma                         :)
   "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis     :)
   "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis     :)
-  "fo-test-fn-jnode-content-002"           (: missing parentheses around sequence   :)
+  "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence   :)
+  "stf-insert-002",                        (: uses reserved attribute name 'type'   :)
+  "stf-insert-after-003",                  (: uses reserved attribute name 'type'   :)
+  "stf-replace-node-005"                   (: uses reserved attribute name 'type'   :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -56,18 +67,22 @@ declare variable $parse :=
   case $implementation eq "java" return
     switch ($language)
     case "xquery" return xquery-java:parse-Module#1
+    case "xquery-full-text-update" return xquery-full-text-update-java:parse-Module#1
     case "xpath" return xpath-java:parse-XPath#1
+    case "xpath-full-text" return xpath-full-text-java:parse-XPath#1
     default return error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
   case $implementation eq "xquery" return
     switch ($language)
     case "xquery" return xquery-xquery:parse-Module#1
+    case "xquery-full-text-update" return xquery-full-text-update-xquery:parse-Module#1
     case "xpath" return xpath-xquery:parse-XPath#1
+    case "xpath-full-text" return xpath-full-text-xquery:parse-XPath#1
     default return error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
   case matches($implementation, "^https?://") return local:parse#1
   default return error(xs:QName("process-tests"), "unsupported parser implementation: " || $implementation);
 
 declare variable $filter := upper-case(substring($language, 1, 2)) || '(\d\d\+|40)';
-declare variable $known-failures := if ($language eq "xquery") then $xquery-known-failures else $xpath-known-failures;
+declare variable $known-failures := if (contains($language, "xpath")) then $xpath-known-failures else $xquery-known-failures;
 
 declare variable $expected-pass := 0;
 declare variable $expected-fail := 1;
@@ -145,11 +160,9 @@ declare function local:supported($node)
 {
   empty($node/qtfc:dependency[
     @type = 'spec' and not(matches(@value, $filter)) or
-    @type = ('xml-version', 'xsd-version') and @value = ('1.1', '1.0:4-')
-                                                                          or
-    @type = "feature" and @value = "XQUpdate" and string(@satisfied) = ("", "true") or
-    @type = "feature" and not(@value = "XQUpdate") and string(@satisfied) = 'false'
-
+    @type = ('xml-version', 'xsd-version') and @value = ('1.1', '1.0:4-') or
+    not(contains($language, "update")) and @type = "feature" and @value = "XQUpdate" and string(@satisfied) = ("", "true") or
+    not(contains($language, "update")) and @type = "feature" and not(@value = "XQUpdate") and string(@satisfied) = 'false'
   ])
 };
 

@@ -17,22 +17,31 @@ if not exist "%BUILD_DIR%" (echo ...creating build directory: %BUILD_DIR% & mkdi
 if not exist "%CACHE%" (echo ...creating cache directory: %CACHE% & mkdir %CACHE% || exit /b )
 
 cd %CACHE% || exit/b
+
 echo ^<?xml version="1.0"?^>>catalog.xml
 echo ^<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog"^>>>catalog.xml
-call :download  xquery-40.html     %XQUERY_SPEC% || exit/b
-call :download  xpath-40.html      %XPATH_SPEC% || exit/b
-call :download  xml.html           https://www.w3.org/TR/REC-xml/ || exit/b
-call :download  xml-names.html     https://www.w3.org/TR/REC-xml-names/ || exit/b
-call :download  cst-to-ast.xq      https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq || exit/b
-call :download  ast-to-ebnf.xq     https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq || exit/b
-call :download  html-to-ebnf.xq    https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq || exit/b
-call :download  ebnf-parser.xquery https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery || exit/b
+echo   ^<uri name="unify-grammar.xq" uri="file:///%CD:\=/%/../../unify-grammar.xq"/^>>>catalog.xml
+
+call :download xquery-40.html          %XQUERY_SPEC% || exit/b
+call :download xpath-40.html           %XPATH_SPEC% || exit/b
+call :download xml.html                https://www.w3.org/TR/REC-xml/ || exit/b
+call :download xml-names.html          https://www.w3.org/TR/REC-xml-names/ || exit/b
+call :download xquery-update-30.html   https://www.w3.org/TR/xquery-update-30/ || exit/b
+call :download xpath-full-text-30.html https://www.w3.org/TR/xpath-full-text-30/ || exit/b
+
+call :download cst-to-ast.xq            https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq || exit/b
+call :download ast-to-ebnf.xq           https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq || exit/b
+call :download html-to-ebnf.xq          https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq || exit/b
+call :download ebnf-parser.xquery       https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery || exit/b
+
 echo ^</catalog^>>>catalog.xml
 
 cd "%BUILD_DIR%" || exit /b
 
-call :rexify %XQUERY_SPEC% XQuery-40.ebnf || exit /b
-call :rexify %XPATH_SPEC% XPath-40.ebnf || exit /b
+call :rexify %XQUERY_SPEC% XQuery-40.ebnf                  false false || exit /b
+call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-40.ebnf true  true  || exit /b
+call :rexify %XPATH_SPEC%  XPath-40.ebnf                   false false || exit /b
+call :rexify %XPATH_SPEC%  XPath-Full-Text-40.ebnf         false true  || exit /b
 echo ...done
 
 exit /b
@@ -47,11 +56,13 @@ exit/b
 :rexify
 set "HTML=%1"
 set "EBNF=%2"
+set "WITH_UPDATE=%3"
+set "WITH_FULL_TEXT=%4"
 set "NAME=%~n2"
 set "CLASS=%NAME:-=_%"
 
 echo ...RExifying %HTML% into %EBNF%
-java %BASEX_JVM% org.basex.BaseX -bspecification-url="%HTML%" -smethod=text ../%~n0.xq > "%EBNF%" || exit /b
+java %BASEX_JVM% org.basex.BaseX -bwith-update="%WITH_UPDATE%" -bwith-full-text="%WITH_FULL_TEXT%" -bspecification-url="%HTML%" -smethod=text ../%~n0.xq > "%EBNF%" || exit /b
 
 echo ...generating parser for %EBNF% in XQuery
 rex -lalr 2 -xquery -name de/bottlecaps/rex/%NAME% %EBNF% || exit /b

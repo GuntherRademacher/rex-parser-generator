@@ -64,9 +64,19 @@ jobs:
         run: ./process-tests.sh xquery >> build/xquery.log
         working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
 
+      # Run process-tests.sh with "xquery-full-text-update"
+      - name: Run process-tests.sh for XQuery-Full-Text-Update
+        run: ./process-tests.sh xquery-full-text-update >> build/xquery-full-text-update.log
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
+
       # Run process-tests.sh with "xpath"
       - name: Run process-tests.sh for XPath
         run: ./process-tests.sh xpath >> build/xpath.log
+        working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
+
+      # Run process-tests.sh with "xpath-full-text"
+      - name: Run process-tests.sh for XPath-Full-Text
+        run: ./process-tests.sh xpath-full-text >> build/xpath-full-text.log
         working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
 
       # Compare generated file with the reference
@@ -89,7 +99,11 @@ jobs:
 
           cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xquery.log >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xquery-full-text-update.log >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
           cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xpath.log >> "$GITHUB_STEP_SUMMARY"
+          echo >> "$GITHUB_STEP_SUMMARY"
+          cat rex-parser-generator/docs/sample-grammars/XQuery-40/build/xpath-full-text.log >> "$GITHUB_STEP_SUMMARY"
           echo >> "$GITHUB_STEP_SUMMARY"
           echo "Grammars transformed from current specifications match those committed in this project:" >> "$GITHUB_STEP_SUMMARY"
           echo "| Specification | Grammar |" >> "$GITHUB_STEP_SUMMARY"

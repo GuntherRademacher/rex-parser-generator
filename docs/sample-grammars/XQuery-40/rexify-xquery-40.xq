@@ -1,35 +1,23 @@
-declare namespace g = "http://www.w3.org/2001/03/XPath/grammar";
-declare namespace xhtml = "http://www.w3.org/1999/xhtml";
+declare namespace g = 'http://www.w3.org/2001/03/XPath/grammar';
+declare namespace xhtml = 'http://www.w3.org/1999/xhtml';
 
-import module namespace a = "de/bottlecaps/railroad/xq/cst-to-ast.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq";
-import module namespace b = "de/bottlecaps/railroad/xq/ast-to-ebnf.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq";
-import module namespace e = "de/bottlecaps/railroad/xq/html-to-ebnf.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq";
-import module namespace p = "de/bottlecaps/railroad/xq/ebnf-parser.xquery" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery";
+import module namespace u = 'unify-grammar.xq' at 'unify-grammar.xq';
+import module namespace b = 'de/bottlecaps/railroad/xq/ast-to-ebnf.xq' at
+                            'https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq';
 
 (:~ The specification URL. :)
 declare variable $specification-url external;
 
-(:~ The specification grammar. :)
-declare variable $specification-grammar := local:extract-grammar($specification-url);
+(:~ Whether to include XQuery Update Facility 3.0 :)
+declare variable $with-update as xs:boolean external := false();
 
-(:~ External grammars that contain productions referenced by the specification grammar. :)
-declare variable $external-grammars :=
-(
-  local:extract-grammar("https://www.w3.org/TR/REC-xml/"),
-  local:extract-grammar("https://www.w3.org/TR/REC-xml-names/")
-);
-
-(:~ The runtime environment time zone offset. :)
-declare variable $tz-offset := - xs:integer(timezone-from-dateTime(current-dateTime()) div xs:dayTimeDuration('PT1M'));
+(:~ Whether to include XQuery and XPath Full Text 3.0 :)
+declare variable $with-full-text as xs:boolean external := false();
 
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
   let $names := html-doc($specification-url)
-    //@id[. = "id-reserved-fn-names"]
+    //@id[. = 'id-reserved-fn-names']
     /ancestor-or-self::xhtml:div[1]
     //xhtml:blockquote
     /xhtml:p
@@ -39,7 +27,7 @@ declare variable $reserved-function-names :=
     if (exists($names)) then
       $names
     else
-      error(xs:QName("reserved-function-names"), "failed to retrieve reserved function names");
+      error(xs:QName('reserved-function-names'), 'failed to retrieve reserved function names');
 
 (:~
  : This is the structure of a rewriting rule:
@@ -55,22 +43,22 @@ declare record local:rule
 (:~ The actual rewriting rules. :)
 declare variable $rules as local:rule+ :=
 (
-  (: Add context "DirElemConstructor" to "<" introducing a direct element constructor. This serves
-   : for distinguishing it from a "<" operator in a general comparison.
+  (: Add context 'DirElemConstructor' to '<' introducing a direct element constructor. This serves
+   : for distinguishing it from a '<' operator in a general comparison.
    :)
   local:rule
   (
-    function($node) {$node/self::g:string[ancestor::g:production/@name eq "DirElemConstructor"] = "<"},
-    function($node) {<g:string context="DirElemConstructor">&lt;</g:string>}
+    function($node) {$node/self::g:string[ancestor::g:production/@name eq 'DirElemConstructor'] = '<'},
+    function($node) {<g:string context='DirElemConstructor'>&lt;</g:string>}
   ),
   
-  (: Add context "GeneralComp" to "<" in a general comparison. This serves for distinguishing it
-   : from a "<" operator introducing a direct element constructor.
+  (: Add context 'GeneralComp' to '<' in a general comparison. This serves for distinguishing it
+   : from a '<' operator introducing a direct element constructor.
    :)
   local:rule
   (
-    function($node) {$node/self::g:string[ancestor::g:production/@name eq "GeneralComp"] = "<" and root($node)//g:production/@name = "DirElemConstructor"},
-    function($node) {element g:choice {<g:string context="GeneralComp">&lt;</g:string>, element g:string {"&#xFF1C;"}}}
+    function($node) {$node/self::g:string[ancestor::g:production/@name eq 'GeneralComp'] = '<' and root($node)//g:production/@name = 'DirElemConstructor'},
+    function($node) {<g:string context='GeneralComp'>&lt;</g:string>}
   ),
   
   (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
@@ -95,7 +83,7 @@ declare variable $rules as local:rule+ :=
   local:rule
   (
     function($node) {$node/self::g:ref[@name eq "EQName"]/parent::g:production/@name = "UnreservedName"},
-    function($node) {local:ast("_ ::= UnreservedQName | URIQualifiedName")/g:choice}
+    function($node) {u:ast("_ ::= UnreservedQName | URIQualifiedName")/g:choice}
   ),
 
   (: Remove production UnreservedNCName. This is done because the NCName token will be renamed to
@@ -121,7 +109,7 @@ declare variable $rules as local:rule+ :=
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'RelativePathExpr']
       /ancestor::g:production/@name = "AbsolutePathExpr"
     },
-    function($node) {local:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
+    function($node) {u:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
   ),
 
   (: Replace the production "PositionalArguments ::= (Argument ++ ',')", or rather
@@ -147,7 +135,7 @@ declare variable $rules as local:rule+ :=
                                    and *[2]/self::g:ref/@name eq "Argument"]
       ]/@name = "PositionalArguments"
     },
-    function($node) {local:ast("PositionalArguments ::= Argument | PositionalArguments ',' Argument")}
+    function($node) {u:ast("PositionalArguments ::= Argument | PositionalArguments ',' Argument")}
   ),
 
   (: Replace OccurrenceIndicator? in production SequenceType by an ordered choice between
@@ -162,7 +150,7 @@ declare variable $rules as local:rule+ :=
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'OccurrenceIndicator']
       /ancestor::g:production/@name = "SequenceType"
     },
-    function($node) {local:ast("_ ::= OccurrenceIndicator /")/g:orderedChoice}
+    function($node) {u:ast("_ ::= OccurrenceIndicator /")/g:orderedChoice}
   ),
 
   (: Remove productions containing an exclusion operator "-", and Wildcard, from their original
@@ -188,7 +176,7 @@ declare variable $rules as local:rule+ :=
       and $node/g:string = '}`'
       and $node/g:optional[count(*) eq 1]/g:ref/@name = "Expr"
     },
-    function($node) {local:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
+    function($node) {u:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
   (: Process the <?TOKENS?> separator, by adding some prodcutions to the syntax section preceding
@@ -204,12 +192,12 @@ declare variable $rules as local:rule+ :=
     function($node) {$node instance of processing-instruction(TOKENS)},
     function($node as node())
     {
-      let $grammar := root($node)
+      let $grammar := root($node)/g:grammar
       let $keywords := local:keywords($grammar)
       return
       (
         (: Add new production UnreservedFunctionEQName for restricting valid function names. :)
-        local:ast("UnreservedFunctionEQName ::= UnreservedFunctionQName | URIQualifiedName"),
+        u:ast("UnreservedFunctionEQName ::= UnreservedFunctionQName | URIQualifiedName"),
 
         (: Add a QName production providing a choice of unreserved and reserved function names. :)
         <g:production name="QName">
@@ -238,7 +226,7 @@ declare variable $rules as local:rule+ :=
         </g:production>,
 
         (: Add the Whitespace production. :)
-        local:ast("Whitespace ::= S^WS | Comment /* ws: definition */"),
+        u:ast("Whitespace ::= S^WS | Comment /* ws: definition */"),
 
         (: Move the Comment production from the lexical section. :)
         $grammar/g:production[@name = "Comment"],
@@ -247,10 +235,10 @@ declare variable $rules as local:rule+ :=
         $node,
 
         (: Introduce the UnreservedQName token, excluding keywords from the QName fragment. :)
-        local:ast("UnreservedQName ::= QName - ReservedName"),
+        u:ast("UnreservedQName ::= QName - ReservedName"),
 
         (: Introduce the UnreservedNCName token, excluding keywords from the NCName fragment. :)
-        local:ast("UnreservedNCName ::= NCName - ReservedName"),
+        u:ast("UnreservedNCName ::= NCName - ReservedName"),
 
         (: Add the ReservedName fragment, enumerating the keywords in a choice operator. :)
         element g:production
@@ -268,17 +256,18 @@ declare variable $rules as local:rule+ :=
         "PITarget"))],
 
         (: Add lexical lookahead to CDataSectionContents. :)
-        local:lookahead("CDataSectionContents", element g:string {"]]"}),
+        local:lookahead($grammar, "CDataSectionContents", element g:string {"]]"}),
 
         (: Add lexical lookahead to DirPIContents. :)
-        local:lookahead("DirPIContents", element g:string {"?"}),
+        local:lookahead($grammar, "DirPIContents", element g:string {"?"}),
 
         (: Add lexical lookahead to PragmaContents. :)
-        local:lookahead("PragmaContents", element g:string {"#"}),
+        local:lookahead($grammar, "PragmaContents", element g:string {"#"}),
 
         (: Add lexical lookahead to StringConstructorChars. :)
         local:lookahead
         (
+          $grammar,
           "StringConstructorChars",
           element g:choice {element g:string {"`{"}, element g:string {"]`"}}
         ),
@@ -286,7 +275,7 @@ declare variable $rules as local:rule+ :=
         (: In PITarget, if present, replace Name by NCName. :)
         let $pi-target := $grammar/g:production[@name eq "PITarget"]
         where $pi-target
-        return local:ast(replace(b:render($pi-target), "Name", "NCName")),
+        return u:ast(replace(b:render($pi-target), "Name", "NCName")),
 
         (: Rewrite CommentContents to use the necessary lexical lookahead. :)
         let $comment-contents := $grammar/g:production[@name = "CommentContents"]
@@ -303,16 +292,16 @@ declare variable $rules as local:rule+ :=
           },
 
         (: Add an EOF production. :)
-        local:ast("EOF ::= $"),
+        u:ast("EOF ::= $"),
 
         (: Add fragment QNameOrKeywordDelimiter for being used as lexical lookahead. :)
-        local:ast("QNameOrKeywordDelimiter ::= $ | ':' | Char - NameChar"),
+        u:ast("QNameOrKeywordDelimiter ::= $ | ':' | Char - NameChar"),
 
         (: Add fragment NCNameDelimiter for being used as lexical lookahead. :)
-        local:ast("NCNameDelimiter ::= $ $ | ( Char - NameChar ) ( $ | Char ) | ':' ( Char - NameStartChar )"),
+        u:ast("NCNameDelimiter ::= $ $ | ( Char - NameChar ) ( $ | Char ) | ':' ( Char - NameStartChar )"),
 
         (: Add fragment NumericLiteralDelimiter for being used as lexical lookahead. :)
-        local:ast("NumericLiteralDelimiter ::= QNameOrKeywordDelimiter | '-'"),
+        u:ast("NumericLiteralDelimiter ::= QNameOrKeywordDelimiter | '-'"),
 
         (: Add a lexer preference for Wildcard over "*". :)
         element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
@@ -330,15 +319,15 @@ declare variable $rules as local:rule+ :=
         ("DecimalLiteral", "DoubleLiteral", "IntegerLiteral")     !element g:delimiter {<g:ref name="NumericLiteralDelimiter"/>, <g:ref name="{.}"/>},
 
         (: Add lexical lookahead for keywords. :)
-        ($keywords[not(matches(., "^[&#xFF1C;&#xFF1E;]"))])       !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, element g:string {.}},
+        $keywords                                                 !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, element g:string {.}},
 
         (: Add lexical lookahead for "<". :)
         if (not($grammar//g:production/@name = "DirElemConstructor")) then
           element g:delimiter {<g:ref name="Char"/>, element g:string {"<"}}
         else
         (
-          local:ast("GeneralCompDelimiter ::= [^?]"),
-          local:ast("DirElemConstructorDelimiter ::= QName ( S QName S? '=' | S? [/>] )"),
+          u:ast("GeneralCompDelimiter ::= [^?]"),
+          u:ast("DirElemConstructorDelimiter ::= QName ( S QName S? '=' | S? [/>] )"),
           element g:delimiter {<g:ref name="GeneralCompDelimiter"/>, <g:string context="GeneralComp">&lt;</g:string>},
           element g:delimiter {<g:ref name="DirElemConstructorDelimiter"/>, <g:string context="DirElemConstructor">&lt;</g:string>}
         ),
@@ -366,12 +355,14 @@ declare variable $rules as local:rule+ :=
 
 (:~
  : Add lexical lookahead to a production.
+ :
+ : @param $grammar the grammar
  : @param $name production name
  : @param $lookahead lexical lookahead
  :)
-declare function local:lookahead($name as xs:string, $lookahead as node()) as element(g:production)?
+declare function local:lookahead($grammar as element(g:grammar), $name as xs:string, $lookahead as node()) as element(g:production)?
 {
-  let $nodes := $specification-grammar//g:production[@name eq $name]/*
+  let $nodes := $grammar//g:production[@name eq $name]/*
   where $nodes
   return
     element g:production
@@ -386,11 +377,11 @@ declare function local:lookahead($name as xs:string, $lookahead as node()) as el
 };
 
 (:~
- : Find the first matching one in a sequence of rules to a given node and apply its action to the
- : node.
+ : Find the first rule from a sequence of rules that mathches with a given node and apply its
+ : action to the node.
  :
  : @param $node the node
- : @param $the rules#
+ : @param $todo the rules
  : @return the node, or the replacement, if any
  :)
 declare function local:rewrite($node as node(), $todo as local:rule*) as node()*
@@ -427,170 +418,6 @@ declare function local:rewrite($nodes as node()*) as node()*
       default return $node
 };
 
-(:~
- : Extract an EBNF grammar from a W3 document, parse it, and transform the parse tree to the
- : grammar's XML representation.
- :
- : @param $uri the URI of the spec containing the spec
- : @return the grammar
- :)
-declare function local:extract-grammar($uri as xs:string) as document-node()
-{
-  let $extract := e:extract($uri, html:parse(unparsed-text($uri)), $tz-offset)
-  let $parse := p:parse-Grammar(string($extract))
-  return document {comment {$extract/text()[1]}, a:ast($parse)}
-};
-
-(:~
- : For a given sequence of production names, collect the corresponding productions
- : from $external-grammars, along with all referenced productions.
- :
- : @param $done the partial result, empty in the initial call, but used in tail calls
- : @param $todo the sequence of names of production to be collected
- : @return the collected sequence production elements
- :)
-declare function local:collect-external-productions(
-    $done as element(g:production)*,
-    $todo as xs:string*) as element(g:production)*
-{
-  if (empty($todo)) then
-    $done
-  else
-    let $name := $todo[1]
-    let $todo := subsequence($todo, 2)
-    return
-      if ($done/self::g:production[@name eq $name]) then
-        local:collect-external-productions($done, $todo)
-      else
-        let $p := $external-grammars/g:grammar/g:production[@name eq $name]
-        return
-          if (empty($p)) then
-            error(xs:QName("local:collect-external-productions"), concat("missing nonterminal: ", $name))
-          else if (count($p) gt 1) then
-            error(xs:QName("local:collect-external-productions"), concat("multiple definitions found for: ", $name))
-          else
-            local:collect-external-productions(($done, $p), ($p//g:ref/@name, $todo))
-};
-
-(:~
- : Rewrite a sequence of nodes, including any referenced external productions in place of
- : g:production[@xhref].
- :
- : @param $nodes the input node sequence
- : @return a sequence of nodes made up of the rewritten node and the possibly inlined
- :         productions from external grammars
- :)
-declare function local:include-external-productions($nodes as node()*) as node()*
-{
-  for $node in $nodes
-  return
-    typeswitch ($node)
-    case document-node() return
-      error()
-    case element(g:grammar) return
-      let $nodes :=
-        local:include-external-productions
-        ((
-          $node/node(),
-          (: the following is needed, but possibly only referenced in extra-grammatical text :)
-          $external-grammars//g:production[@name eq "S"]
-        ))
-      return
-        element g:grammar
-        {
-          for $node in $nodes
-          where not($node/self::g:production) or empty($nodes[. << $node and @name eq $node/@name and deep-equal(., $node)])
-          return $node
-        }
-    case element() return
-      let $xhref := $node/@xhref
-      let $elements :=
-        if (empty($xhref)) then
-          $node
-        else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml#NT-")) then
-          local:collect-external-productions((), $node/@name)
-        else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml-names/#NT-")) then
-          local:collect-external-productions((), $node/@name)
-        else
-          error(xs:QName("local:include-external-productions"), concat("unexpected xhref attribute: ", $xhref))
-      for $e in $elements
-      return element {node-name($e)} {$e/@*, local:include-external-productions($e/node())}
-    default
-      return $node
-};
-
-(:~ Parse an EBNF grammar fragment and return its XML representation.
- :
- : @param $ebnf the grammar fragment
- : @return the XML representation
- :)
-declare function local:ast($ebnf as xs:string) as element(g:*)*
-{
-  a:ast(p:parse-Grammar($ebnf))/g:*
-};
-
-(:~ Establish depth first order of a sequence of productions.
- :
- : @param $done a partial result, empty on the intial call
- : @param $todo the productions to be ordered
- : @return the ordered sequence of productions
- :)
-declare function local:depth-first(
-    $done as element(g:production)*,
-    $todo as element(g:production)*) as element(g:production)*
-{
-  if (empty($todo)) then
-    $done
-  else
-    let $production := $todo[1]
-    let $others := subsequence($todo, 2)
-    let $refs := distinct-values($production//g:ref[empty(@context)]/string(@name))
-    return
-      local:depth-first
-      (
-        ($done, $production),
-        (
-          for $ref in $refs return $others[@name eq $ref],
-          $others[not(@name = $refs)]
-        )
-      )
-};
-
-(:~ Transform a grammar such that its productions occur in depth-first order.
- :
- : @param $grammar the grammar
- : @return the transformed grammar with productions in depth first order
- :)
-declare function local:depth-first($grammar as element(g:grammar))
-{
-   let $separator := $grammar//processing-instruction(TOKENS)
-   let $syntax := $grammar/g:production[not(. >> $separator)]
-   let $tokens := $grammar/g:production[. >> $separator]
-   let $start :=
-     for $production in $syntax
-     let $refs := $syntax//g:ref[@name eq $production/@name and empty(@context)]
-     where empty($refs)
-     return $production
-   let $syntax := local:depth-first((), ($start, $syntax[not(@name = $start/@name)]))
-   let $used-tokens :=
-     for $name in distinct-values
-     (
-       for $ref in $syntax//g:ref
-       let $name := string($ref/@name)
-       where exists($ref/@context) or empty($syntax[@name = $name])
-       return $name
-     )
-     return $tokens[@name = $name]
-   let $tokens := local:depth-first((), ($used-tokens, $tokens[not(@name = $used-tokens/@name)]))
-   return
-     <g:grammar>{
-       $syntax,
-       $separator,
-       $tokens,
-       $grammar/*[not(self::g:production)]
-     }</g:grammar>
-};
-
 (:~ Collect the sequence of keywords of a grammar.
  :
  : @param $grammar the grammar
@@ -611,12 +438,14 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 
 concat
 (
-  $specification-grammar/comment()
-  => replace("\*/", "* and transformed by " || resolve-uri("") => replace(".*/", "") || "&#xA; */"),
-
-  $specification-grammar/g:grammar
-  => local:include-external-productions()
-  => local:rewrite()
-  => local:depth-first()
-  => b:render()
+  let $grammar := u:unify($specification-url, $with-update, $with-full-text)
+  return
+  (
+    $grammar/comment()
+    => replace("\*/", "* and transformed by " || resolve-uri("") => replace(".*/", "") || "&#xA; */"),
+    $grammar
+    => local:rewrite()
+    => u:depth-first()
+    => b:render()
+  )
 )
