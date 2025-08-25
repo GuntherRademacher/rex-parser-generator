@@ -35,6 +35,7 @@ download() {
 cat > catalog.xml <<EOF
 <?xml version="1.0"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <uri name="unify-grammar.xq" uri="file://$(pwd)/../../unify-grammar.xq"/>
 EOF
 
 download xquery-40.html          $XQUERY_SPEC
