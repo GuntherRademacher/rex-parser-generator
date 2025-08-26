@@ -71,19 +71,19 @@ declare variable $rules as local:rule+ :=
   (
     function($node)
     {
-      $node/self::g:ref[@name eq "EQName"]/ancestor::g:production
-      /@name = ("FunctionCall", "FunctionDecl", "NamedFunctionRef")
+      $node/self::g:ref[@name eq 'EQName']/ancestor::g:production
+      /@name = ('FunctionCall', 'FunctionDecl', 'NamedFunctionRef')
     },
-    function($node) {<g:ref name="UnreservedFunctionEQName"/>}
+    function($node) {<g:ref name='UnreservedFunctionEQName'/>}
   ),
 
-  (: Replae "UnreservedName ::= EQName" by "UnreservedName ::= UnreservedQName | URIQualifiedName".
+  (: Replace 'UnreservedName ::= EQName' by 'UnreservedName ::= UnreservedQName | URIQualifiedName'.
    : UnreservedQName will be added as a new token that disallows reserved names.
    :)
   local:rule
   (
-    function($node) {$node/self::g:ref[@name eq "EQName"]/parent::g:production/@name = "UnreservedName"},
-    function($node) {u:ast("_ ::= UnreservedQName | URIQualifiedName")/g:choice}
+    function($node) {$node/self::g:ref[@name eq 'EQName']/parent::g:production/@name = 'UnreservedName'},
+    function($node) {u:ast('_ ::= UnreservedQName | URIQualifiedName')/g:choice}
   ),
 
   (: Remove production UnreservedNCName. This is done because the NCName token will be renamed to
@@ -92,8 +92,8 @@ declare variable $rules as local:rule+ :=
    :)
   local:rule
   (
-    function($node) {$node/self::g:production/@name = "UnreservedNCName"},
-    function($node) {text {""}}
+    function($node) {$node/self::g:production/@name = 'UnreservedNCName'},
+    function($node) {text {''}}
   ),
 
   (: Replace RelativePathExpr? in production AbsolutePathExpr by an ordered choice between RelativePathExpr
@@ -107,18 +107,18 @@ declare variable $rules as local:rule+ :=
     function($node)
     {
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'RelativePathExpr']
-      /ancestor::g:production/@name = "AbsolutePathExpr"
+      /ancestor::g:production/@name = 'AbsolutePathExpr'
     },
-    function($node) {u:ast("_ ::= RelativePathExpr /")/g:orderedChoice}
+    function($node) {u:ast('_ ::= RelativePathExpr /')/g:orderedChoice}
   ),
 
   (: Replace the production "PositionalArguments ::= (Argument ++ ',')", or rather
-   : "PositionalArguments ::= Argument (',' Argument)*" (after resolution of the "++" operator),
+   : "PositionalArguments ::= Argument (',' Argument)*" (after resolution of the '++' operator),
    : by the left-recursive variant
    : "PositionalArguments ::= Argument | PositionalArguments ',' Argument".
    : This reduces the necessary lookahead from 3 to 2. The original requires a reduction to
    : PositionalArguments when moving on from positional to keyword arguments, which cannot be done
-   : without looking ahead at least 3 tokens, the comma, a QName, and a ":=" operator. With the
+   : without looking ahead at least 3 tokens, the comma, a QName, and a ':=' operator. With the
    : replacement, there is a different distribution over parser states, and we can get away with
    : a lookahead of 2. This is important because on this grammar, with keywords not reserved, REx
    : can do LALR(2) in a matter of seconds, while LALR(3) takes about half an hour.
@@ -129,11 +129,11 @@ declare variable $rules as local:rule+ :=
     {
       $node/self::g:production
       [count(*) eq 2
-       and *[1]/self::g:ref/@name eq "Argument"
+       and *[1]/self::g:ref/@name eq 'Argument'
        and *[2]/self::g:zeroOrMore[count(*) eq 2
-                                   and *[1]/self::g:string eq ","
-                                   and *[2]/self::g:ref/@name eq "Argument"]
-      ]/@name = "PositionalArguments"
+                                   and *[1]/self::g:string eq ','
+                                   and *[2]/self::g:ref/@name eq 'Argument']
+      ]/@name = 'PositionalArguments'
     },
     function($node) {u:ast("PositionalArguments ::= Argument | PositionalArguments ',' Argument")}
   ),
@@ -148,20 +148,20 @@ declare variable $rules as local:rule+ :=
     function($node)
     {
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'OccurrenceIndicator']
-      /ancestor::g:production/@name = "SequenceType"
+      /ancestor::g:production/@name = 'SequenceType'
     },
-    function($node) {u:ast("_ ::= OccurrenceIndicator /")/g:orderedChoice}
+    function($node) {u:ast('_ ::= OccurrenceIndicator /')/g:orderedChoice}
   ),
 
-  (: Remove productions containing an exclusion operator "-", and Wildcard, from their original
+  (: Remove productions containing an exclusion operator '-', and Wildcard, from their original
    : lcoation in the syntax section of the grammar. The will be placed in the lexical section by
    : the rule that processes the <?TOKENS?> separator. Also remove Comment from the its original
    : location in the lexical section, the <?TOKENS?> rule will add it to the syntax section.
    :)
   local:rule
   (
-    function($node) {exists($node/self::g:production[@name = ("Wildcard", "Comment") or .//g:subtract])},
-    function($node) {text {""}}
+    function($node) {exists($node/self::g:production[@name = ('Wildcard', 'Comment') or .//g:subtract])},
+    function($node) {text {''}}
   ),
 
   (: Rewrite StringInterpolation to use EnclosedExpr rather than Expr with tokens '`{' and '}`'. :)
@@ -169,12 +169,12 @@ declare variable $rules as local:rule+ :=
   (
     function($node)
     {
-      $node/self::g:production/@name = "StringInterpolation"
+      $node/self::g:production/@name = 'StringInterpolation'
       and empty($node/@whitespace-spec)
       and count($node/*) eq 3
       and $node/g:string = '`{'
       and $node/g:string = '}`'
-      and $node/g:optional[count(*) eq 1]/g:ref/@name = "Expr"
+      and $node/g:optional[count(*) eq 1]/g:ref/@name = 'Expr'
     },
     function($node) {u:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
@@ -197,12 +197,12 @@ declare variable $rules as local:rule+ :=
       return
       (
         (: Add new production UnreservedFunctionEQName for restricting valid function names. :)
-        u:ast("UnreservedFunctionEQName ::= UnreservedFunctionQName | URIQualifiedName"),
+        u:ast('UnreservedFunctionEQName ::= UnreservedFunctionQName | URIQualifiedName'),
 
         (: Add a QName production providing a choice of unreserved and reserved function names. :)
-        <g:production name="QName">
+        <g:production name='QName'>
           <g:choice>
-            <g:ref name="UnreservedFunctionQName"/>
+            <g:ref name='UnreservedFunctionQName'/>
             {$reserved-function-names!element g:string {.}}
           </g:choice>
         </g:production>,
@@ -210,75 +210,75 @@ declare variable $rules as local:rule+ :=
         (: Add an UnreservedFunctionQName production providing a choice of unreserved QNames
          : and keywords.
          :)
-        <g:production name="UnreservedFunctionQName">
+        <g:production name='UnreservedFunctionQName'>
           <g:choice>
-            <g:ref name="UnreservedQName"/>
+            <g:ref name='UnreservedQName'/>
             {$keywords[not(. = $reserved-function-names)]!element g:string {.}}
           </g:choice>
         </g:production>,
 
         (: Add an NCQName production providing a choice of unreserved NCNames and keywords. :)
-        <g:production name="NCName">
+        <g:production name='NCName'>
           <g:choice>
-            <g:ref name="UnreservedNCName"/>
+            <g:ref name='UnreservedNCName'/>
             {$keywords!element g:string {.}}
           </g:choice>
         </g:production>,
 
         (: Add the Whitespace production. :)
-        u:ast("Whitespace ::= S^WS | Comment /* ws: definition */"),
+        u:ast('Whitespace ::= S^WS | Comment /* ws: definition */'),
 
         (: Move the Comment production from the lexical section. :)
-        $grammar/g:production[@name = "Comment"],
+        $grammar/g:production[@name = 'Comment'],
 
         (: The <?TOKENS?> separator, the lexical section begins here. :)
         $node,
 
         (: Introduce the UnreservedQName token, excluding keywords from the QName fragment. :)
-        u:ast("UnreservedQName ::= QName - ReservedName"),
+        u:ast('UnreservedQName ::= QName - ReservedName'),
 
         (: Introduce the UnreservedNCName token, excluding keywords from the NCName fragment. :)
-        u:ast("UnreservedNCName ::= NCName - ReservedName"),
+        u:ast('UnreservedNCName ::= NCName - ReservedName'),
 
         (: Add the ReservedName fragment, enumerating the keywords in a choice operator. :)
         element g:production
         {
-          attribute name {"ReservedName"}, element g:choice {$keywords!element g:string {.}}
+          attribute name {'ReservedName'}, element g:choice {$keywords!element g:string {.}}
         },
 
         (: Move Wildcard from the syntax section. :)
-        $grammar/g:production[@name = "Wildcard"],
+        $grammar/g:production[@name = 'Wildcard'],
 
         (: Move all production using an exclusion operator from the syntax section, except for those
          : that need additional changes.
          :)
-        $grammar/g:production[exists(.//g:subtract) and not(@name = ("CDataSectionContents", "DirPIContents", "PragmaContents", "StringConstructorChars", "CommentContents",
-        "PITarget"))],
+        $grammar/g:production[exists(.//g:subtract) and not(@name = ('CDataSectionContents', 'DirPIContents', 'PragmaContents', 'StringConstructorChars', 'CommentContents',
+        'PITarget'))],
 
         (: Add lexical lookahead to CDataSectionContents. :)
-        local:lookahead($grammar, "CDataSectionContents", element g:string {"]]"}),
+        local:lookahead($grammar, 'CDataSectionContents', element g:string {']]'}),
 
         (: Add lexical lookahead to DirPIContents. :)
-        local:lookahead($grammar, "DirPIContents", element g:string {"?"}),
+        local:lookahead($grammar, 'DirPIContents', element g:string {'?'}),
 
         (: Add lexical lookahead to PragmaContents. :)
-        local:lookahead($grammar, "PragmaContents", element g:string {"#"}),
+        local:lookahead($grammar, 'PragmaContents', element g:string {'#'}),
 
         (: Add lexical lookahead to StringConstructorChars. :)
         local:lookahead
         (
           $grammar,
-          "StringConstructorChars",
-          element g:choice {element g:string {"`{"}, element g:string {"]`"}}
+          'StringConstructorChars',
+          element g:choice {element g:string {'`{'}, element g:string {']`'}}
         ),
 
         (: In PITarget, if present, replace Name by NCName. :)
-        let $pi-target := $grammar/g:production[@name eq "PITarget"]
+        let $pi-target := $grammar/g:production[@name eq 'PITarget']
         where $pi-target
-        return u:ast(replace(b:render($pi-target), "Name", "NCName")),
+        return u:ast(replace(b:render($pi-target), 'Name', 'NCName')),
 
         (: Rewrite CommentContents to use the necessary lexical lookahead. :)
-        let $comment-contents := $grammar/g:production[@name = "CommentContents"]
+        let $comment-contents := $grammar/g:production[@name = 'CommentContents']
         let $nodes := $comment-contents/node()
         return
           element g:production
@@ -286,13 +286,13 @@ declare variable $rules as local:rule+ :=
             $comment-contents/@*,
             element g:choice
             {
-              element g:context {element g:subtract {$nodes, element g:sequence { element g:zeroOrMore { element g:ref {attribute name {"Char"}}}, element g:string {"("}}}, element g:string {':'}},
+              element g:context {element g:subtract {$nodes, element g:sequence { element g:zeroOrMore { element g:ref {attribute name {'Char'}}}, element g:string {'('}}}, element g:string {':'}},
               element g:context {$nodes, element g:string {'('}}
             }
           },
 
         (: Add an EOF production. :)
-        u:ast("EOF ::= $"),
+        u:ast('EOF ::= $'),
 
         (: Add fragment QNameOrKeywordDelimiter for being used as lexical lookahead. :)
         u:ast("QNameOrKeywordDelimiter ::= $ | ':' | Char - NameChar"),
@@ -303,37 +303,37 @@ declare variable $rules as local:rule+ :=
         (: Add fragment NumericLiteralDelimiter for being used as lexical lookahead. :)
         u:ast("NumericLiteralDelimiter ::= QNameOrKeywordDelimiter | '-'"),
 
-        (: Add a lexer preference for Wildcard over "*". :)
-        element g:preference {element g:string{'*'}, <g:ref name="Wildcard"/>},
+        (: Add a lexer preference for Wildcard over '*'. :)
+        element g:preference {element g:string{'*'}, <g:ref name='Wildcard'/>},
 
         (: Add lexical lookahead for QNames. :)
-        ("UnreservedQName")                                       !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, <g:ref name="{.}"/>},
+        ('UnreservedQName')                                       !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, <g:ref name='{.}'/>},
 
-        (: Add lexical lookahead for operators starting with "<". :)
-        ("</", "<<", "<=")[contains($grammar, .)]                 !element g:delimiter {<g:ref name="Char"/>,                    element g:string {.}},
+        (: Add lexical lookahead for operators starting with '<'. :)
+        ('</', '<<', '<=')[contains($grammar, .)]                 !element g:delimiter {<g:ref name='Char'/>,                    element g:string {.}},
 
         (: Add lexical lookahead for NCNames. :)
-        ("UnreservedNCName")                                      !element g:delimiter {<g:ref name="NCNameDelimiter"/>,         <g:ref name="{.}"/>},
+        ('UnreservedNCName')                                      !element g:delimiter {<g:ref name='NCNameDelimiter'/>,         <g:ref name='{.}'/>},
 
         (: Add lexical lookahead for numeric literals. :)
-        ("DecimalLiteral", "DoubleLiteral", "IntegerLiteral")     !element g:delimiter {<g:ref name="NumericLiteralDelimiter"/>, <g:ref name="{.}"/>},
+        ('DecimalLiteral', 'DoubleLiteral', 'IntegerLiteral')     !element g:delimiter {<g:ref name='NumericLiteralDelimiter'/>, <g:ref name='{.}'/>},
 
         (: Add lexical lookahead for keywords. :)
-        $keywords                                                 !element g:delimiter {<g:ref name="QNameOrKeywordDelimiter"/>, element g:string {.}},
+        $keywords                                                 !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, element g:string {.}},
 
-        (: Add lexical lookahead for "<". :)
-        if (not($grammar//g:production/@name = "DirElemConstructor")) then
-          element g:delimiter {<g:ref name="Char"/>, element g:string {"<"}}
+        (: Add lexical lookahead for '<'. :)
+        if (not($grammar//g:production/@name = 'DirElemConstructor')) then
+          element g:delimiter {<g:ref name='Char'/>, element g:string {'<'}}
         else
         (
-          u:ast("GeneralCompDelimiter ::= [^?]"),
+          u:ast('GeneralCompDelimiter ::= [^?]'),
           u:ast("DirElemConstructorDelimiter ::= QName ( S QName S? '=' | S? [/>] )"),
-          element g:delimiter {<g:ref name="GeneralCompDelimiter"/>, <g:string context="GeneralComp">&lt;</g:string>},
-          element g:delimiter {<g:ref name="DirElemConstructorDelimiter"/>, <g:string context="DirElemConstructor">&lt;</g:string>}
+          element g:delimiter {<g:ref name='GeneralCompDelimiter'/>, <g:string context='GeneralComp'>&lt;</g:string>},
+          element g:delimiter {<g:ref name='DirElemConstructorDelimiter'/>, <g:string context='DirElemConstructor'>&lt;</g:string>}
         ),
 
-        (: Add lexical lookahead for "(#". :)
-        element g:delimiter {<g:ref name="S"/>, element g:string {"(#"}}[$grammar//g:string = "(#"]
+        (: Add lexical lookahead for '(#'. :)
+        element g:delimiter {<g:ref name='S'/>, element g:string {'(#'}}[$grammar//g:string = '(#']
       )
     }
   ),
@@ -341,15 +341,15 @@ declare variable $rules as local:rule+ :=
   (: Add EOF to the end of the Module or XPath production. :)
   local:rule
   (
-    function($node) {$node/self::g:production/@name = ("Module", "XPath")},
-    function($node) {element g:production {$node/@*, $node/node(), <g:ref name="EOF"/>}}
+    function($node) {$node/self::g:production/@name = ('Module', 'XPath')},
+    function($node) {element g:production {$node/@*, $node/node(), <g:ref name='EOF'/>}}
   ),
 
   (: Remove MarkedNCName production where it is unused. :)
   local:rule
   (
-    function($node) {$node/self::g:production/@name = "MarkedNCName"},
-    function($node) {($node[@name = root(.)//g:ref/@name], text {""})[1]}
+    function($node) {$node/self::g:production/@name = 'MarkedNCName'},
+    function($node) {($node[@name = root(.)//g:ref/@name], text {''})[1]}
   )
 );
 
@@ -429,7 +429,7 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
   let $syntax := $grammar/*[. << $tokens-separator]
   for $keyword in
     distinct-values((
-      $syntax//g:string[matches(., "^[a-zA-Z].*$")],
+      $syntax//g:string[matches(., '^[a-zA-Z].*$')],
       $reserved-function-names
     ))
   order by $keyword
@@ -439,13 +439,11 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 concat
 (
   let $grammar := u:unify($specification-url, $with-update, $with-full-text)
-  return
-  (
-    $grammar/comment()
-    => replace("\*/", "* and transformed by " || resolve-uri("") => replace(".*/", "") || "&#xA; */"),
-    $grammar
     => local:rewrite()
     => u:depth-first()
-    => b:render()
+  return
+  (
+    replace($grammar/comment(), '\*/', '* adapted for REx by ' || replace(static-base-uri(), '.*/', '') || '&#xA; */'),
+    b:render($grammar)
   )
 )

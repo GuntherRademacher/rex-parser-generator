@@ -9,26 +9,35 @@
  : - extend the XQuery and XPath 4.0 grammars by grammar rules from the Update and Full Text
  :     extensions
  :)
-module namespace u = "unify-grammar.xq";
+module namespace u = 'unify-grammar.xq';
 
-declare namespace g = "http://www.w3.org/2001/03/XPath/grammar";
-declare namespace xhtml = "http://www.w3.org/1999/xhtml";
+declare namespace g = 'http://www.w3.org/2001/03/XPath/grammar';
+declare namespace xhtml = 'http://www.w3.org/1999/xhtml';
 
-import module namespace a = "de/bottlecaps/railroad/xq/cst-to-ast.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq";
-import module namespace b = "de/bottlecaps/railroad/xq/ast-to-ebnf.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq";
-import module namespace e = "de/bottlecaps/railroad/xq/html-to-ebnf.xq" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq";
-import module namespace p = "de/bottlecaps/railroad/xq/ebnf-parser.xquery" at
-                            "https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery";
+import module namespace a = 'de/bottlecaps/railroad/xq/cst-to-ast.xq' at
+                            'https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/cst-to-ast.xq';
+import module namespace b = 'de/bottlecaps/railroad/xq/ast-to-ebnf.xq' at
+                            'https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ast-to-ebnf.xq';
+import module namespace e = 'de/bottlecaps/railroad/xq/html-to-ebnf.xq' at
+                            'https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/html-to-ebnf.xq';
+import module namespace p = 'de/bottlecaps/railroad/xq/ebnf-parser.xquery' at
+                            'https://raw.githubusercontent.com/GuntherRademacher/rr/refs/heads/basex/src/main/resources/de/bottlecaps/railroad/xq/ebnf-parser.xquery';
+
+(:~ External specs that contain productions referenced by the specification grammar. :)
+declare variable $u:external-specs :=
+(
+  'https://www.w3.org/TR/REC-xml/',
+  'https://www.w3.org/TR/REC-xml-names/'
+);
 
 (:~ External grammars that contain productions referenced by the specification grammar. :)
-declare variable $u:external-grammars := 
-(
-  u:extract-grammar("https://www.w3.org/TR/REC-xml/"),
-  u:extract-grammar("https://www.w3.org/TR/REC-xml-names/")
-);
+declare variable $u:external-grammars := $u:external-specs ! u:extract-grammar(.);
+
+(:~ The XQuery Update 3.0 specification URL :)
+declare variable $u:xquery-update-spec := 'https://www.w3.org/TR/xquery-update-30/';
+
+(:~ The XQuery and XPath Full Text 3.0 specification URL :)
+declare variable $u:xquery-and-xpath-full-text-spec := 'https://www.w3.org/TR/xpath-full-text-30/';
 
 (:~ The runtime environment time zone offset. :)
 declare variable $u:tz-offset := - xs:integer(timezone-from-dateTime(current-dateTime()) div xs:dayTimeDuration('PT1M'));
@@ -78,9 +87,9 @@ declare function u:collect-external-productions(
         let $p := $u:external-grammars/g:grammar/g:production[@name eq $name]
         return
           if (empty($p)) then
-            error(xs:QName("u:collect-external-productions"), concat("missing nonterminal: ", $name))
+            error(xs:QName('u:collect-external-productions'), concat('missing nonterminal: ', $name))
           else if (count($p) gt 1) then
-            error(xs:QName("u:collect-external-productions"), concat("multiple definitions found for: ", $name))
+            error(xs:QName('u:collect-external-productions'), concat('multiple definitions found for: ', $name))
           else
             u:collect-external-productions(($done, $p), ($p//g:ref/@name, $todo))
 };
@@ -99,14 +108,18 @@ declare function u:include-external-productions($nodes as node()*) as node()*
   return
     typeswitch ($node)
     case document-node() return
-      document {u:include-external-productions($node/node())}
+      document
+      {
+        comment {replace($node/comment(), ' \*/', string-join($u:external-specs ! ` * with references to {.} resolved and inlined{char(10)}`) || ' */')},
+        u:include-external-productions($node/*)
+      }
     case element(g:grammar) return
       let $nodes :=
         u:include-external-productions
         ((
           $node/node(),
           (: the following is needed, but possibly only referenced in extra-grammatical text :)
-          $u:external-grammars//g:production[@name eq "S"]
+          $u:external-grammars//g:production[@name eq 'S']
         ))
       return
         element g:grammar
@@ -120,12 +133,12 @@ declare function u:include-external-productions($nodes as node()*) as node()*
       let $elements :=
         if (empty($xhref)) then
           $node
-        else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml#NT-")) then
+        else if (starts-with($xhref, 'http://www.w3.org/TR/REC-xml#NT-')) then
           u:collect-external-productions((), $node/@name)
-        else if (starts-with($xhref, "http://www.w3.org/TR/REC-xml-names/#NT-")) then
+        else if (starts-with($xhref, 'http://www.w3.org/TR/REC-xml-names/#NT-')) then
           u:collect-external-productions((), $node/@name)
         else
-          error(xs:QName("u:include-external-productions"), concat("unexpected xhref attribute: ", $xhref))
+          error(xs:QName('u:include-external-productions'), concat('unexpected xhref attribute: ', $xhref))
       for $e in $elements
       return element {node-name($e)} {$e/@*, u:include-external-productions($e/node())}
     default
@@ -145,23 +158,27 @@ declare function u:include-xquery-update($nodes as node()*, $xquery-update-30-gr
   return
     typeswitch ($node)
     case document-node() return
-      document {u:include-xquery-update($node/node(), $xquery-update-30-grammar)}
+      document
+      {
+        comment {replace($node/comment(), ' \*/', ` * with productions from {$u:xquery-update-spec} added{char(10)} */`)},
+        u:include-xquery-update($node/*, $xquery-update-30-grammar)
+      }
     case element(g:ref) return
-      if ($node/@name eq "UnaryExpr") then
-        <g:ref name="TransformWithExpr"/>
-      else if ($node[@name eq "Annotation"]/parent::g:zeroOrMore/parent::g:production/@name eq "FunctionDecl") then
-        <g:choice>{$node}<g:ref name="CompatibilityAnnotation"/></g:choice>
-      else if ($node[@name eq "CopyNamespacesDecl"]/parent::g:choice) then
-        (<g:ref name="RevalidationDecl"/>, $node)
-      else if ($node[@name eq "OrExpr"]/parent::g:choice/parent::g:production/@name eq "ExprSingle") then
+      if ($node/@name eq 'UnaryExpr') then
+        <g:ref name='TransformWithExpr'/>
+      else if ($node[@name eq 'Annotation']/parent::g:zeroOrMore/parent::g:production/@name eq 'FunctionDecl') then
+        <g:choice>{$node}<g:ref name='CompatibilityAnnotation'/></g:choice>
+      else if ($node[@name eq 'CopyNamespacesDecl']/parent::g:choice) then
+        (<g:ref name='RevalidationDecl'/>, $node)
+      else if ($node[@name eq 'OrExpr']/parent::g:choice/parent::g:production/@name eq 'ExprSingle') then
         (
           $node,
-          <g:ref name="InsertExpr"/>,
-          <g:ref name="DeleteExpr"/>,
-          <g:ref name="RenameExpr"/>,
-          <g:ref name="ReplaceExpr"/>,
-          <g:ref name="UpdatingFunctionCall"/>,
-          <g:ref name="CopyModifyExpr"/>
+          <g:ref name='InsertExpr'/>,
+          <g:ref name='DeleteExpr'/>,
+          <g:ref name='RenameExpr'/>,
+          <g:ref name='ReplaceExpr'/>,
+          <g:ref name='UpdatingFunctionCall'/>,
+          <g:ref name='CopyModifyExpr'/>
         )
       else
         $node
@@ -171,22 +188,22 @@ declare function u:include-xquery-update($nodes as node()*, $xquery-update-30-gr
     (
       for $p in $xquery-update-30-grammar//g:production[@name =
         (
-          "CompatibilityAnnotation",
-          "TransformWithExpr",
-          "RevalidationDecl",
-          "InsertExprTargetChoice",
-          "InsertExpr",
-          "DeleteExpr",
-          "ReplaceExpr",
-          "RenameExpr",
-          "SourceExpr",
-          "TargetExpr",
-          "NewNameExpr",
-          "UpdatingFunctionCall",
-          "CopyModifyExpr"
+          'CompatibilityAnnotation',
+          'TransformWithExpr',
+          'RevalidationDecl',
+          'InsertExprTargetChoice',
+          'InsertExpr',
+          'DeleteExpr',
+          'ReplaceExpr',
+          'RenameExpr',
+          'SourceExpr',
+          'TargetExpr',
+          'NewNameExpr',
+          'UpdatingFunctionCall',
+          'CopyModifyExpr'
         )
       ]
-      return u:ast(b:render($p) => replace(" '\$' VarName ", " VarName ")),
+      return u:ast(b:render($p) => replace(" '\$' VarName ", ' VarName ')),
       $node
     )
     default return
@@ -206,19 +223,23 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
   return
     typeswitch ($node)
     case document-node() return
-      document {u:include-full-text($node/node(), $full-text-30-grammar)}
+      document
+      {
+        comment {replace($node/comment(), ' \*/', ` * augmented with productions from {$u:xquery-and-xpath-full-text-spec}{char(10)} */`)},
+        u:include-full-text($node/*, $full-text-30-grammar)
+      }
     case element(g:string) return
-      if ($node[ancestor::g:production/@name eq "ForItemBinding"] eq "in") then
-        (<g:optional><g:ref name="FTScoreVar"/></g:optional>, $node)
+      if ($node[ancestor::g:production/@name eq 'ForItemBinding'] eq 'in') then
+        (<g:optional><g:ref name='FTScoreVar'/></g:optional>, $node)
       else
         $node
     case element(g:ref) return
-      if ($node[@name eq "Import"]/parent::g:choice/ancestor::g:production/@name eq "Prolog") then
-        ($node, <g:ref name="FTOptionDecl"/>)
-      else if ($node[@name eq "StringConcatExpr"]/ancestor::g:production/@name eq "OtherwiseExpr") then
-        <g:ref name="FTContainsExpr"/>
-      else if ($node[@name eq "VarNameAndType"]/parent::g:production/@name eq "LetValueBinding") then
-        <g:choice>{$node}<g:ref name="FTScoreVar"/></g:choice>
+      if ($node[@name eq 'Import']/parent::g:choice/ancestor::g:production/@name eq 'Prolog') then
+        ($node, <g:ref name='FTOptionDecl'/>)
+      else if ($node[@name eq 'StringConcatExpr']/ancestor::g:production/@name eq 'OtherwiseExpr') then
+        <g:ref name='FTContainsExpr'/>
+      else if ($node[@name eq 'VarNameAndType']/parent::g:production/@name eq 'LetValueBinding') then
+        <g:choice>{$node}<g:ref name='FTScoreVar'/></g:choice>
       else
         $node
     case element() return
@@ -226,10 +247,10 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
     case processing-instruction(TOKENS) return
     (
       for $p in $full-text-30-grammar//g:production[
-        starts-with(@name, "FT") and (@name ne "FTOptionDecl" or u:is-xquery($node))
-        or not(u:is-xquery($node)) and @name = ("Pragma", "PragmaContents", "URILiteral")
+        starts-with(@name, 'FT') and (@name ne 'FTOptionDecl' or u:is-xquery($node))
+        or not(u:is-xquery($node)) and @name = ('Pragma', 'PragmaContents', 'URILiteral')
       ]
-      return u:ast(b:render($p) => replace(" '\$' VarName ", " VarName ")),
+      return u:ast(b:render($p) => replace(" '\$' VarName ", ' VarName ')),
       $node
     )
     default return
@@ -278,7 +299,7 @@ declare function u:depth-first(
  : @param $grammar the grammar
  : @return the transformed grammar with productions in depth first order
  :)
-declare function u:depth-first($grammar as document-node())
+declare function u:depth-first($grammar as document-node()) as document-node()
 {
    let $separator := $grammar/g:grammar/processing-instruction(TOKENS)
    let $syntax := $grammar/g:grammar/g:production[not(. >> $separator)]
@@ -300,12 +321,15 @@ declare function u:depth-first($grammar as document-node())
      return $tokens[@name = $name]
    let $tokens := u:depth-first((), ($used-tokens, $tokens[not(@name = $used-tokens/@name)]))
    return
-     <g:grammar>{
-       $syntax,
-       $separator,
-       $tokens,
-       $grammar/g:grammar/*[not(self::g:production)]
-     }</g:grammar>
+     document {
+       comment {replace($grammar/comment(), ' \*/', ` * reordered into depth-first order{char(10)} */`)},
+       element g:grammar {
+         $syntax,
+         $separator,
+         $tokens,
+         $grammar/g:grammar/*[not(self::g:production)]
+       }
+     }
 };
 
 (:~
@@ -316,12 +340,12 @@ declare function u:depth-first($grammar as document-node())
  :)
 declare function u:is-xquery($node as node()) as xs:boolean
 {
-  if (root($node)//g:production/@name = "Module") then
+  if (root($node)//g:production/@name = 'Module') then
     true()
-  else if (root($node)//g:production/@name = "XPath") then
+  else if (root($node)//g:production/@name = 'XPath') then
     false()
   else
-    error(xs:QName("u:is-xquery"), "grammar is neither XQuery nor XPath")
+    error(xs:QName('u:is-xquery'), 'grammar is neither XQuery nor XPath')
 };
 
 (:~
@@ -340,17 +364,17 @@ declare function u:unify($specification-url, $with-update, $with-full-text) as d
     u:include-external-productions($specification-grammar)
   let $grammar :=
     if ($with-update and u:is-xquery($grammar)) then
-      u:include-xquery-update($grammar, u:extract-grammar("https://www.w3.org/TR/xquery-update-30/"))
+      u:include-xquery-update($grammar, u:extract-grammar($u:xquery-update-spec))
     else
       $grammar
   let $grammar :=
     if ($with-full-text) then
       let $appendix :=
         if (u:is-xquery($specification-grammar)) then
-          "A EBNF for XQuery 3.0 Grammar with Full Text extensions"
+          'A EBNF for XQuery 3.0 Grammar with Full Text extensions'
         else
-          "B EBNF for XPath 3.0 Grammar with Full-Text extensions"
-      return u:include-full-text($grammar, u:extract-grammar("https://www.w3.org/TR/xpath-full-text-30/", $appendix))
+          'B EBNF for XPath 3.0 Grammar with Full-Text extensions'
+      return u:include-full-text($grammar, u:extract-grammar($u:xquery-and-xpath-full-text-spec, $appendix))
     else
       $grammar
   return $grammar

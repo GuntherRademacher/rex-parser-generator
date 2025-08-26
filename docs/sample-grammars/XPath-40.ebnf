@@ -1,7 +1,10 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Thu Aug 21, 2025, 20:28 (UTC+02)
- * and transformed by rexify-xquery-40.xq
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Aug 26, 2025, 12:55 (UTC+02)
+ * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
+ * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
+ * reordered into depth-first order
+ * adapted for REx by rexify-xquery-40.xq
  */
 
 XPath    ::= Expr EOF
