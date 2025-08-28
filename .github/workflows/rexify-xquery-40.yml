@@ -62,7 +62,7 @@ jobs:
       # Download XPath Full Test Test Suite
       - name: Download XPath Full Test Test Suite
         run: |
-          curl -s -O https://dev.w3.org/cvsweb/~checkout~/2007/xpath-full-text-10-test-suite/XQFTTS_1_0_4.zip?rev=1.2;content-type=application%2Fzip
+          curl -s -O "https://dev.w3.org/cvsweb/~checkout~/2007/xpath-full-text-10-test-suite/XQFTTS_1_0_4.zip?rev=1.2;content-type=application%2Fzip"
           mkdir XQFTTS
           cd XQFTTS
           unzip -q ../XQFTTS_1_0_4.zip
