@@ -203,7 +203,7 @@ declare function u:include-xquery-update($nodes as node()*, $xquery-update-30-gr
           'CopyModifyExpr'
         )
       ]
-      return u:ast(b:render($p) => replace(" '\$' VarName ", ' VarName ')),
+      return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
       $node
     )
     default return
@@ -250,7 +250,7 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
         starts-with(@name, 'FT') and (@name ne 'FTOptionDecl' or u:is-xquery($node))
         or not(u:is-xquery($node)) and @name = ('Pragma', 'PragmaContents', 'URILiteral')
       ]
-      return u:ast(b:render($p) => replace(" '\$' VarName ", ' VarName ')),
+      return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
       $node
     )
     default return

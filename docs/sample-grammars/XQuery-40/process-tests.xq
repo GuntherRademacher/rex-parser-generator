@@ -12,8 +12,10 @@ import module namespace xpath-full-text-java
                                       = "java:de.bottlecaps.rex.XPath_Full_Text_40";
 
 declare namespace qtfc = "http://www.w3.org/2010/09/qt-fots-catalog";
+declare namespace ftts = "http://www.w3.org/2005/02/query-test-full-text";
 
-declare variable $root as xs:string external;
+declare variable $root1 as xs:string external := ();
+declare variable $root2 as xs:string external := ();
 declare variable $language as xs:string external := "xquery";
 declare variable $implementation as xs:string external := "java";
 declare variable $skip as xs:string* external := ();
@@ -59,7 +61,26 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-jnode-position-002",         (: missing comma                              :)
   "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis          :)
   "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis          :)
-  "fo-test-fn-jnode-content-002"           (: missing parentheses around sequence        :)
+  "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence        :)
+  
+  (: XPath Full Text test suite :)
+  "examples-364-5",                        (: direct element constructor                 :)
+  "examples-364-5a",                       (: direct element constructor                 :)
+  "ForScoreExpr-Var3",                     (:variable declaration                        :)
+  "FTScope-q1",                            (: direct element constructor                 :)
+  "FTScope-q2",                            (: direct element constructor                 :)
+  "FTScope-q3",                            (: direct element constructor                 :)
+  "FTScope-q4",                            (: direct element constructor                 :)
+  "unconstrained-examples-364-5",          (: direct element constructor                 :)
+  "unconstrained-examples-364-5a",         (: direct element constructor                 :)
+  "FTScope-unconstrained-q1",              (: direct element constructor                 :)
+  "FTScope-unconstrained-q2",              (: direct element constructor                 :)
+  "FTScope-unconstrained-q3",              (: direct element constructor                 :)
+  "FTScope-unconstrained-q4",              (: direct element constructor                 :)
+  "ForScoreExpr-unconstrained-Var3",       (: variable declaration                       :)
+  "Catalog001",                            (: direct element constructor                 :)
+  "Catalog002",                            (: direct element constructor                 :)
+  "Catalog003"                             (: direct element constructor                 :)
 );
 
 declare variable $parse :=
@@ -121,39 +142,39 @@ declare function local:msg($indent, $content)
 
 declare function local:parse($path, $name, $query as fn() as xs:string, $expect-error)
 {
-    let $error :=
-      try
-      {
-        $parse($query())
-      }
-      catch err:FOUT1190
-      {
-        <ERROR>{local-name-from-QName($err:code), $err:description}</ERROR>
-      }
-    let $msg := fn() {local:msg(0, "...processing " || $path || (", test-case: " || $name || ", expect-error: " || $expect-error)[exists($name)])}
-    return
-      if (empty($error)) then
-        if ($expect-error) then
-          if ($name = $known-failures) then
-            (if ($verbose) {$msg()}, $expected-fail)
-          else
-            ($msg(), local:msg(1, "expected syntax error has not occured"), $unexpected-fail)
-        else 
-          if ($name = $known-failures) then
-            ($msg(), local:msg(1, "test passed unexpectedly"), $unexpected-pass)
-          else
-            (if ($verbose) {$msg()}, $expected-pass)
-      else
-        if ($expect-error) then
-          if ($name = $known-failures) then
-            ($msg(), local:msg(1, "test passed unexpectedly"), $unexpected-pass)
-          else
-            (if ($verbose) {$msg()}, $expected-pass)
+  let $error :=
+    try
+    {
+      $parse($query())
+    }
+    catch *
+    {
+      <ERROR>{local-name-from-QName($err:code), $err:description}</ERROR>
+    }
+  let $msg := fn() {local:msg(0, "...processing " || $path || (", test-case: " || $name || ", expect-error: " || $expect-error)[exists($name)])}
+  return
+    if (empty($error)) then
+      if ($expect-error) then
+        if ($name = $known-failures) then
+          (if ($verbose) {$msg()}, $expected-fail)
         else
-          if ($name = $known-failures) then
-            (if ($verbose) {$msg()}, $expected-fail)
-          else
-            ($msg(), local:msg(1, $error), $unexpected-fail)
+          ($msg(), local:msg(1, "expected syntax error has not occured"), $unexpected-fail)
+      else 
+        if ($name = $known-failures) then
+          ($msg(), local:msg(1, "test passed unexpectedly"), $unexpected-pass)
+        else
+          (if ($verbose) {$msg()}, $expected-pass)
+    else
+      if ($expect-error) then
+        if ($name = $known-failures) then
+          ($msg(), local:msg(1, "test passed unexpectedly"), $unexpected-pass)
+        else
+          (if ($verbose) {$msg()}, $expected-pass)
+      else
+        if ($name = $known-failures) then
+          (if ($verbose) {$msg()}, $expected-fail)
+        else
+          ($msg(), local:msg(1, $error), $unexpected-fail)
 };
 
 declare function local:supported($node)
@@ -176,13 +197,13 @@ declare function local:test-set($path, $test-set)
       for $test-case in $test-set/qtfc:test-case
       return local:test-case($path, $test-case)
     else
-      $test-set/qtfc:test-case/$skipped
+      $test-set/qtfc:test-case/qtfc:test/$skipped
 };
 
 declare function local:test-case($path, $test-case)
 {
   if (not(local:supported($test-case))) then
-    $skipped
+    $test-case/qtfc:test/$skipped
   else
     let $expect-error := $test-case/qtfc:result//qtfc:error/@code = "XPST0003"
     for $test in $test-case/qtfc:test
@@ -193,6 +214,28 @@ declare function local:test-case($path, $test-case)
       else
         fn() {string($test)}
     return local:parse($path, $test-case/@name, $query, $expect-error)
+};
+
+declare function local:ftts-test($path, $test-case)
+{
+  if (contains($language, "xpath") and not(xs:boolean($test-case/@is-XPath2))) then
+    $skipped
+  else
+    let $name := $test-case/@name
+    let $test-suite := $test-case/ancestor::ftts:test-suite
+    let $offset-path := $test-suite/@XQueryQueryOffsetPath
+    let $extension := $test-suite/@XQueryFileExtension
+    let $file := resolve-uri(concat($offset-path, $test-case/@FilePath, $test-case/ftts:query/@name, $extension), base-uri($test-case))
+    let $query := fn() {
+      let $query := unparsed-text($file)
+      return
+        if (contains($language, "xpath")) then
+          replace($query, "^.*\(: insert-end :\)", "", "s")
+        else
+          $query
+    }
+    return
+      local:parse($file, $name, $query, $test-case/@scenario eq "parse-error" or $test-case/ftts:expected-error = "XPST0003")  
 };
 
 declare function local:process($path)
@@ -214,33 +257,42 @@ declare function local:process($path)
       case $catalog as element(qtfc:catalog) return
         for $test-set in $catalog/qtfc:test-set
         return local:test-set($path, $test-set)
+      case $catalog as element(ftts:test-suite) return
+        for $test-case in $catalog//ftts:test-case
+        return
+          if (contains($language, "full-text")) then
+            local:ftts-test($path, $test-case)
+          else
+            $skipped
       case $test-set as element(qtfc:test-set) return
         local:test-set($path, $test-set)
       default return
         ()
-    else if ($language eq "xquery" and matches($path, "\.xq[^.]*$", "i")) then
+    else if (contains($language, "xquery") and matches($path, "\.xq[^.]*$", "i")) then
       let $query := fn() {unparsed-text($path)}
       return local:parse($path, (), $query, false())
-    else if ($language eq "xpath" and matches($path, "\.xp[^.]*$", "i")) then
+    else if (contains($language, "xpath") and matches($path, "\.xp[^.]*$", "i")) then
       let $query := fn() {unparsed-text($path)}
       return local:parse($path, (), $query, false())
     else 
       ()
 };
 
-declare function local:traverse($path as xs:string)
+declare function local:traverse($paths as xs:string*)
 {
-  if (not(file:is-dir($path))) then
-    local:process(replace($path, "^\./", ""))
-  else
-    let $path := replace($path || "/", "[\\/][\\/]?", "/")
-    for $entry in file:list($path)
-      let $entry := $path || $entry
-      where matches($entry, "([\\/]|\.(xml|xq.*))$", "i")
-      return local:traverse($entry)
+  for $path in $paths
+  return
+    if (not(file:is-dir($path))) then
+      local:process(replace($path, "^\./", ""))
+    else
+      let $path := replace($path || "/", "[\\/][\\/]?", "/")
+      for $entry in file:list($path)
+        let $entry := $path || $entry
+        where matches($entry, "([\\/]|\.(xml|xq.*))$", "i")
+        return local:traverse($entry)
 };
 
-let $result := local:traverse($root)
+let $result := local:traverse(($root1, $root2))
 return
   "Test results for " || $language || " parser in " || $implementation || ":&#xA;" ||
   "&#xA;" ||

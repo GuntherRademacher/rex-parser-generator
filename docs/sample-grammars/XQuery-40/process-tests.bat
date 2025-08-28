@@ -16,6 +16,6 @@ if "%1"=="" (set "LANGUAGE=xquery") else (set "LANGUAGE=%1")
 if "%2"=="" (set "IMPLEMENTATION=java") else (set "IMPLEMENTATION=%2")
 if "%3"=="" (set "VERBOSE=false") else (set "VERBOSE=%3")
 
-java org.basex.BaseX "-blanguage=%LANGUAGE%" "-bimplementation=%IMPLEMENTATION%" "-bverbose=%VERBOSE%" "-broot=..\..\..\..\qt4tests\catalog.xml" ../process-tests.xq || exit /b
+java org.basex.BaseX "-blanguage=%LANGUAGE%" "-bimplementation=%IMPLEMENTATION%" "-bverbose=%VERBOSE%" "-broot1=..\..\..\..\qt4tests\catalog.xml" "-broot2=..\..\..\..\XQFTTS\XQFTTSCatalog.xml" ../process-tests.xq || exit /b
 
 exit /b
