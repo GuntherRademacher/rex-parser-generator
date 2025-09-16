@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Aug 26, 2025, 12:54 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Sep 16, 2025, 21:52 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -888,7 +888,7 @@ PositionalArgumentList
 LookupExpr
          ::= PostfixExpr Lookup
 MethodCall
-         ::= PostfixExpr '?>' NCName PositionalArgumentList
+         ::= PostfixExpr '=?>' NCName PositionalArgumentList
 FilterExprAM
          ::= PostfixExpr '?[' Expr ']'
 AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*

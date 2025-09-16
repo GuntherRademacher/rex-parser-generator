@@ -248,7 +248,7 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
     (
       for $p in $full-text-30-grammar//g:production[
         starts-with(@name, 'FT') and (@name ne 'FTOptionDecl' or u:is-xquery($node))
-        or not(u:is-xquery($node)) and @name = ('Pragma', 'PragmaContents', 'URILiteral')
+        or not(u:is-xquery($node)) and @name = ('Pragma', 'PragmaContents')
       ]
       return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
       $node
