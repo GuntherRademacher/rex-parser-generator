@@ -8,7 +8,7 @@ repositories {
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
-    testImplementation 'net.sf.saxon:Saxon-HE:12.8', {
+    testImplementation 'net.sf.saxon:Saxon-HE:12.9', {
         exclude group: "xml-apis", module: "xml-apis"
     }
     testImplementation 'org.basex:basex:12.0'
