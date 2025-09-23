@@ -23,14 +23,7 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  "fo-test-fn-type-of-013",                (: unmotivated square brackets           :)
-  "fo-test-fn-distinct-ordered-nodes-002", (: unmotivated curly braces              :)
-  "fo-test-fn-jtree-003",                  (: excess right parenthesis              :)
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest     :)
-  "fo-test-fn-jnode-position-001",         (: missing comma                         :)
-  "fo-test-fn-jnode-position-002",         (: missing comma                         :)
-  "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis     :)
-  "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis     :)
   "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence   :)
 
   (: XQuery Update :)
@@ -51,14 +44,7 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-every-010",                  (: missing XQ dependency in generated test :)
   "fo-test-fn-hash-009",                   (: missing XQ dependency in generated test :)
   "fo-test-fn-hash-010",                   (: missing XQ dependency in generated test :)
-  "fo-test-fn-type-of-013",                (: unmotivated square brackets             :)
-  "fo-test-fn-distinct-ordered-nodes-002", (: unmotivated curly braces                :)
-  "fo-test-fn-jtree-003",                  (: excess right parenthesis                :)
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest       :)
-  "fo-test-fn-jnode-position-001",         (: missing comma                           :)
-  "fo-test-fn-jnode-position-002",         (: missing comma                           :)
-  "fo-test-fn-innermost-002",              (: unmotivated quote and parenthesis       :)
-  "fo-test-fn-outermost-002",              (: unmotivated quote and parenthesis       :)
   "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence     :)
   
   (: XPath Full Text test suite :)

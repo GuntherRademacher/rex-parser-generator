@@ -278,7 +278,7 @@ declare function u:depth-first(
     $todo as element(g:production)*) as element(g:production)*
 {
   if (empty($todo)) then
-    $done
+    element g:grammar {$done}/*
   else
     let $production := $todo[1]
     let $others := subsequence($todo, 2)
