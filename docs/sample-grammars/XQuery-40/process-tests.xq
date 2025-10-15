@@ -25,6 +25,7 @@ declare variable $xquery-known-failures as xs:string* :=
 (
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest     :)
   "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence   :)
+  "fo-test-fn-parse-QName-005",            (: excess quotes on namespace prefix     :)
 
   (: XQuery Update :)
 
@@ -46,6 +47,7 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-hash-010",                   (: missing XQ dependency in generated test :)
   "fo-test-fn-jnode-selector-002",         (: StringLiteral instead of NodeTest       :)
   "fo-test-fn-jnode-content-002",          (: missing parentheses around sequence     :)
+  "fo-test-fn-parse-QName-005",            (: excess quotes on namespace prefix       :)
   
   (: XPath Full Text test suite :)
 
