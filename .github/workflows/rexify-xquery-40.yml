@@ -122,7 +122,7 @@ jobs:
       # Upload generated files as artifacts if the diff fails
       - name: Upload Artifacts on Failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build
           path: rex-parser-generator/docs/sample-grammars/XQuery-40/build
