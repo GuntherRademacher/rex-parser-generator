@@ -542,11 +542,6 @@ void LrState::buildAppendixes(Grammar *grammar)
       const TokenSequence &ts = *i;
       IntSet appendix = appendixByTokenSequence[ts].first;
 
-      if (appendix.size() < 2)
-      {
-        internalerr();
-      }
-
       int entry = 0;
       int offset = -1;
       for (IntSet::const_iterator j = appendix.begin(); j != appendix.end(); ++j)

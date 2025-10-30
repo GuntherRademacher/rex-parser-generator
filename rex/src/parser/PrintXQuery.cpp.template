@@ -1890,8 +1890,8 @@ declare function p:memoize($state as item()+,
     {
       $errors[@e = max($errors/xs:integer(@e))][last()]/@*,
       $memo/value,
-      element value {attribute key {$e0 * ~                     print(factor);
-                                          ~ + $dpi}, $v}
+      <value key='{$e0 * ~                                      print(factor);
+                         ~ + $dpi}'>{$v}</value>
     },
   subsequence($state, $p:memo + 1)
 };

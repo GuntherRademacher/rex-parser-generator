@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Fri Oct 24, 2025 23:25 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q relax-ng-compact.ebnf -xquery -tree -main -backtrack -ll 2 :)
 
 declare namespace p="relax-ng-compact";
@@ -6036,7 +6036,7 @@ declare function p:memoize($state as item()+,
     {
       $errors[@e = max($errors/xs:integer(@e))][last()]/@*,
       $memo/value,
-      element value {attribute key {$e0 * 4 + $dpi}, $v}
+      <value key='{$e0 * 4 + $dpi}'>{$v}</value>
     },
   subsequence($state, $p:memo + 1)
 };

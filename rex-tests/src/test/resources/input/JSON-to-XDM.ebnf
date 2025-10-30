@@ -36,7 +36,7 @@ object   ::=                                                <?j2x let $count := 
                                                                 element {node-name($state[$count])}
                                                                 {
                                                                   $state[$count]/@*,
-                                                                  attribute type {"object"},
+                                                                  attribute {"type"} {"object"},
                                                                   $state[position() > $count]
                                                                 }
                                                               )
@@ -63,7 +63,7 @@ array    ::=                                                <?j2x let $count := 
                                                                 element {node-name($state[$count])}
                                                                 {
                                                                   $state[$count]/@*,
-                                                                  attribute type {"array"},
+                                                                  attribute {"type"} {"array"},
                                                                   $state[position() > $count]
                                                                 }
                                                               )
@@ -124,7 +124,7 @@ whitespace
                                                                 element {node-name($state[last()])}
                                                                 {
                                                                   $state[last()]/@*,
-                                                                  attribute type {$type},
+                                                                  attribute {"type"} {$type},
                                                                   text {$value}
                                                                 }
                                                               };
