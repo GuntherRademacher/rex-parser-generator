@@ -1,13 +1,14 @@
 (:~
  : Functions to
  : - extract EBNF grammars from the specifications of XQuery 4.0, XPath 4.0
- : - extract EBNF from specifications referred to by the above XML 1.0, XML Names 1.0
+ : - extract EBNF from specifications referred to by the above: XML 1.0, XML Names 1.0
  : - extract EBNF from specifications that define extensions to XQuery and XPath:
  :     XQuery Update 3.0, XQuery and XPath Full Text 3.0
  : - in the XQuery and XPath 4.0 grammars, resolve the references to grammar rules that are
  :     defined in XML or XML Names
  : - extend the XQuery and XPath 4.0 grammars by grammar rules from the Update and Full Text
  :     extensions
+ : - modify and extend the XQuery 4.0 grammar to handle BaseX extensions
  :)
 module namespace u = 'unify-grammar.xq';
 
@@ -257,6 +258,68 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
       $node
 };
 
+(:~
+ : Extend grammar fragments with BaseX extensions.
+ :
+ : @param $nodes the nodes to be extended
+ : @return the nodes with BaseX extensions applied
+ :)
+declare function u:include-basex($nodes as node()*) as node()*
+{
+  for $node in $nodes
+  return
+    typeswitch ($node)
+    case document-node() return
+      document
+      {
+        comment {replace($node/comment(), ' \*/', ` * augmented with BaseX extensions {char(10)} */`)},
+        u:include-basex($node/*)
+      }
+    case element(g:ref) return
+    (
+      if ($node/@name eq "FTExtensionOption" and $node/parent::g:choice/parent::g:production/@name eq "FTMatchOption") then
+        ($node, <g:ref name="FTFuzzyOption"/>)
+      else if ($node/@name eq "BracedAction") then
+        <g:ref name="BracedActions"/>
+      else if ($node/@name eq "UnreservedName") then
+        <g:ref name="EQName"/>
+      else if ($node/@name eq "UpdatingFunctionCall" and $node/parent::g:choice/parent::g:production/@name eq "ExprSingle") then
+        ()
+      else if ($node/@name eq "CastableExpr" and $node/ancestor::g:production/@name eq "TreatExpr") then
+        <g:ref name="CoerceExpr"/>
+      else if ($node/@name eq "PostfixExpr" and $node/ancestor::g:production/@name eq "DynamicFunctionCall") then
+        u:ast("DynamicFunctionCall ::= 'invoke'? 'updating'? 'nondeterministic'? PostfixExpr")/*
+      else
+        $node
+    )
+    case element(g:string) return
+      if ($node eq "node" and $node/ancestor::g:production/@name = ("ReplaceExpr", "RenameExpr")) then
+        u:ast("_ ::= 'node' | 'nodes'")//g:choice
+      else
+        $node
+    case element() return
+    (
+      if ($node/self::g:production/@name = ("UnreservedName", "UnbracedActions", "BracedAction", "UpdatingFunctionCall")) then
+        ()
+      else if ($node/self::g:production/@name eq "TransformWithExpr" and
+        deep-equal($node/*, u:ast("TransformWithExpr ::= UnaryExpr ( 'transform' 'with' '{' Expr? '}' )?")/*)) then
+        u:ast("TransformWithExpr ::= UnaryExpr ( ( 'transform' 'with' | 'update' ) '{' Expr? '}' )*")
+      else
+        element {node-name($node)} {u:include-basex(($node/@*, $node/node()))}
+    )
+    case processing-instruction(TOKENS) return
+    (
+      u:ast("CoerceExpr ::= CastableExpr ( 'coerce' 'to' SequenceType )?"),
+      u:ast("FTFuzzyOption ::= 'fuzzy' ( IntegerLiteral 'errors' )?"),
+      u:ast("BracedActions ::= EnclosedExpr 'else' BracedElseAction | EnclosedExpr"),
+      u:ast("BracedElseAction ::= 'if' '(' Expr ')' BracedActions | EnclosedExpr"),
+      u:ast("UnbracedActions ::= 'then' ExprSingle 'else' ExprSingle | 'then' ExprSingle"),
+      $node
+    )
+    default return
+      $node
+};
+
 (:~ Parse an EBNF grammar fragment and return its XML representation.
  :
  : @param $ebnf the grammar fragment
@@ -357,7 +420,7 @@ declare function u:is-xquery($node as node()) as xs:boolean
  : @param $with-full-text whether to extend with Full Text rules
  : @return unified grammar
  :)
-declare function u:unify($specification-url, $with-update, $with-full-text) as document-node()
+declare function u:unify($specification-url, $with-update, $with-full-text, $with-basex) as document-node()
 {
   let $specification-grammar := u:extract-grammar($specification-url)
   let $grammar :=
@@ -375,6 +438,11 @@ declare function u:unify($specification-url, $with-update, $with-full-text) as d
         else
           'B EBNF for XPath 3.0 Grammar with Full-Text extensions'
       return u:include-full-text($grammar, u:extract-grammar($u:xquery-and-xpath-full-text-spec, $appendix))
+    else
+      $grammar
+  let $grammar :=
+    if ($with-basex and u:is-xquery($grammar)) then
+      u:include-basex($grammar)
     else
       $grammar
   return $grammar

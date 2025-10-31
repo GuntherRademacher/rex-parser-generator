@@ -38,10 +38,11 @@ echo ^</catalog^>>>catalog.xml
 
 cd "%BUILD_DIR%" || exit /b
 
-call :rexify %XQUERY_SPEC% XQuery-40.ebnf                  false false || exit /b
-call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-40.ebnf true  true  || exit /b
-call :rexify %XPATH_SPEC%  XPath-40.ebnf                   false false || exit /b
-call :rexify %XPATH_SPEC%  XPath-Full-Text-40.ebnf         false true  || exit /b
+call :rexify %XQUERY_SPEC% XQuery-40.ebnf                         -lalr 2 false false false || exit /b
+call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-40.ebnf        -lalr 2 true  true  false || exit /b
+call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 1 true  true  true  || exit /b
+call :rexify %XPATH_SPEC%  XPath-40.ebnf                          -lalr 1 false false false || exit /b
+call :rexify %XPATH_SPEC%  XPath-Full-Text-40.ebnf                -lalr 2 false true  false || exit /b
 echo ...done
 
 exit /b
@@ -56,18 +57,21 @@ exit/b
 :rexify
 set "HTML=%1"
 set "EBNF=%2"
-set "WITH_UPDATE=%3"
-set "WITH_FULL_TEXT=%4"
+set "ALGORITHM=%3"
+set "LOOKAHEAD=%4"
+set "WITH_UPDATE=%5"
+set "WITH_FULL_TEXT=%6"
+set "WITH_BASEX=%7"
 set "NAME=%~n2"
 set "CLASS=%NAME:-=_%"
 
 echo ...RExifying %HTML% into %EBNF%
-java %BASEX_JVM% org.basex.BaseX -bwith-update="%WITH_UPDATE%" -bwith-full-text="%WITH_FULL_TEXT%" -bspecification-url="%HTML%" -smethod=text ../%~n0.xq > "%EBNF%" || exit /b
+java %BASEX_JVM% org.basex.BaseX -bwith-update="%WITH_UPDATE%" -bwith-full-text="%WITH_FULL_TEXT%" -bwith-basex="%WITH_BASEX%" -bspecification-url="%HTML%" -smethod=text ../%~n0.xq > "%EBNF%" || exit /b
 
 echo ...generating parser for %EBNF% in XQuery
-rex -lalr 2 -xquery -name de/bottlecaps/rex/%NAME% %EBNF% || exit /b
+rex %ALGORITHM% %LOOKAHEAD% -xquery -name de/bottlecaps/rex/%NAME% %EBNF% || exit /b
 echo ...generating parser for %EBNF% in Java
-rex -lalr 2 -java -basex -name de.bottlecaps.rex.%CLASS% %EBNF% || exit /b
+rex %ALGORITHM% %LOOKAHEAD% -java -basex -name de.bottlecaps.rex.%CLASS% %EBNF% || exit /b
 echo ...compiling %CLASS%
 javac -d . %CLASS%.java
 

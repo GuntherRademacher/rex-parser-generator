@@ -56,25 +56,29 @@ cd "$BUILD_DIR"
 rexify() {
     local html="$1"
     local ebnf="$2"
-    local with_update="$3"
-    local with_full_text="$4"
+    local algorithm="$3"
+    local lookahead="$4"
+    local with_update="$5"
+    local with_full_text="$6"
+    local with_basex="$7"
     local name="$(basename "$ebnf" .ebnf)"
     local class="${name//-/_}"
     
     echo "...RExifying $html into $ebnf"
-    java $BASEX_JVM org.basex.BaseX -bwith-update="$with_update" -bwith-full-text="$with_full_text" -bspecification-url="$html" -smethod=text "../$(basename "$0" .sh).xq" > "$ebnf"
+    java $BASEX_JVM org.basex.BaseX -bwith-update="$with_update" -bwith-full-text="$with_full_text" -bwith-basex="$with_basex" -bspecification-url="$html" -smethod=text "../$(basename "$0" .sh).xq" > "$ebnf"
     
     echo "...generating parser for $ebnf in XQuery"
-    rex -lalr 2 -xquery -name "de/bottlecaps/rex/$name" "$ebnf"
+    rex $algorithm $lookahead -xquery -name "de/bottlecaps/rex/$name" "$ebnf"
     echo "...generating parser for $ebnf in Java"
-    rex -lalr 2 -java -basex -name "de.bottlecaps.rex.$class" "$ebnf"
+    rex $algorithm $lookahead -java -basex -name "de.bottlecaps.rex.$class" "$ebnf"
     echo "...compiling $class"
     javac -d . "$class.java"
 }
 
-rexify $XQUERY_SPEC XQuery-40.ebnf                  false false
-rexify $XQUERY_SPEC XQuery-Full-Text-Update-40.ebnf true  true 
-rexify $XPATH_SPEC  XPath-40.ebnf                   false false
-rexify $XPATH_SPEC  XPath-Full-Text-40.ebnf         false true 
+rexify $XQUERY_SPEC XQuery-40.ebnf                         -lalr 2 false false false
+rexify $XQUERY_SPEC XQuery-Full-Text-Update-40.ebnf        -lalr 2 true  true  false
+rexify $XQUERY_SPEC XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 1 true  true  true
+rexify $XPATH_SPEC  XPath-40.ebnf                          -lalr 1 false false false
+rexify $XPATH_SPEC  XPath-Full-Text-40.ebnf                -lalr 2 false true  false
 
 echo "...done"

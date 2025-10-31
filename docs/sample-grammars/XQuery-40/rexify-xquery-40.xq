@@ -14,6 +14,9 @@ declare variable $with-update as xs:boolean external := false();
 (:~ Whether to include XQuery and XPath Full Text 3.0 :)
 declare variable $with-full-text as xs:boolean external := false();
 
+(:~ Whether to include BaseX specialties :)
+declare variable $with-basex as xs:boolean external := false();
+
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
   let $names := html-doc($specification-url)
@@ -179,6 +182,12 @@ declare variable $rules as local:rule+ :=
     function($node) {u:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
+  (: Replace choice by orderedChoice for BaseX' else-less if :)
+  local:rule(
+    function($node) {$node/self::g:choice/ancestor::g:production/@name = ("UnbracedActions", "BracedActions")},
+    function($node) {element g:orderedChoice {$node/*}}
+  ),
+  
   (: Process the <?TOKENS?> separator, by adding some prodcutions to the syntax section preceding
    : it, and some more to the lexical section following it. Whitespace and comment processing need
    : to go to the syntax section, because the nested comments are non-regular and thus cannot be
@@ -438,7 +447,7 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 
 concat
 (
-  let $grammar := u:unify($specification-url, $with-update, $with-full-text)
+  let $grammar := u:unify($specification-url, $with-update, $with-full-text, $with-basex)
     => local:rewrite()
     => u:depth-first()
   return
