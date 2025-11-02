@@ -272,7 +272,7 @@ declare function u:include-basex($nodes as node()*) as node()*
     case document-node() return
       document
       {
-        comment {replace($node/comment(), ' \*/', ` * augmented with BaseX extensions {char(10)} */`)},
+        comment {replace($node/comment(), ' \*/', ` * augmented with BaseX extensions{char(10)} */`)},
         u:include-basex($node/*)
       }
     case element(g:ref) return
