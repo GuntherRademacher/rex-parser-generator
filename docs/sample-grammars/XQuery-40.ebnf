@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Oct 15, 2025, 20:34 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Nov 11, 2025, 18:55 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -213,9 +213,9 @@ QName    ::= UnreservedFunctionQName
            | 'element'
            | 'namespace-node'
            | 'node'
+           | 'processing-instruction'
            | 'schema-attribute'
            | 'schema-element'
-           | 'processing-instruction'
            | 'text'
            | 'array'
            | 'enum'
