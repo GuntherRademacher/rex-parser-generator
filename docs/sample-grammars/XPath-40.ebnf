@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Nov 11, 2025, 18:57 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jan 7, 2026, 08:09 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -39,6 +39,7 @@ NCName   ::= UnreservedNCName
            | 'eq'
            | 'every'
            | 'except'
+           | 'false'
            | 'fn'
            | 'following'
            | 'following-or-self'
@@ -95,6 +96,7 @@ NCName   ::= UnreservedNCName
            | 'then'
            | 'to'
            | 'treat'
+           | 'true'
            | 'type'
            | 'typeswitch'
            | 'union'
@@ -164,6 +166,7 @@ UnreservedFunctionQName
            | 'eq'
            | 'every'
            | 'except'
+           | 'false'
            | 'following'
            | 'following-or-self'
            | 'following-sibling'
@@ -204,6 +207,7 @@ UnreservedFunctionQName
            | 'then'
            | 'to'
            | 'treat'
+           | 'true'
            | 'union'
            | 'value'
 TypeDeclaration
@@ -267,7 +271,20 @@ AnyNodeKindTest
 GNodeType
          ::= 'gnode' '(' ')'
 JNodeType
-         ::= 'jnode' '(' SequenceType? ')'
+         ::= 'jnode' '(' ( ( '*' | NCName | Constant ) ( ',' ( '*' | SequenceType ) )? )? ')'
+Constant ::= StringLiteral
+           | '-'? NumericLiteral
+           | QNameLiteral
+           | 'true' '(' ')'
+           | 'false' '(' ')'
+NumericLiteral
+         ::= IntegerLiteral
+           | HexIntegerLiteral
+           | BinaryIntegerLiteral
+           | DecimalLiteral
+           | DoubleLiteral
+QNameLiteral
+         ::= '#' EQName
 MapType  ::= AnyMapType
            | TypedMapType
 AnyMapType
@@ -419,14 +436,6 @@ PrimaryExpr
 Literal  ::= NumericLiteral
            | StringLiteral
            | QNameLiteral
-NumericLiteral
-         ::= IntegerLiteral
-           | HexIntegerLiteral
-           | BinaryIntegerLiteral
-           | DecimalLiteral
-           | DoubleLiteral
-QNameLiteral
-         ::= '#' EQName
 VarRef   ::= '$' EQName
 ParenthesizedExpr
          ::= '(' Expr? ')'
@@ -517,8 +526,8 @@ UnionNodeTest
 SimpleNodeTest
          ::= TypeTest
            | Selector
-TypeTest ::= RegularItemType
-           | 'type' '(' SequenceType ')'
+TypeTest ::= NodeKindTest
+           | JNodeType
 Selector ::= EQName
            | Wildcard
            | 'get' '(' ExprSingle ')'
@@ -648,6 +657,7 @@ ReservedName
            | 'eq'
            | 'every'
            | 'except'
+           | 'false'
            | 'fn'
            | 'following'
            | 'following-or-self'
@@ -704,6 +714,7 @@ ReservedName
            | 'then'
            | 'to'
            | 'treat'
+           | 'true'
            | 'type'
            | 'typeswitch'
            | 'union'
@@ -782,7 +793,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'type' 'typeswitch' 'union' 'value'
+          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value'
 Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
