@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Nov 11, 2025, 18:55 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Jan 7, 2026, 08:08 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -445,7 +445,20 @@ AnyNodeKindTest
 GNodeType
          ::= 'gnode' '(' ')'
 JNodeType
-         ::= 'jnode' '(' SequenceType? ')'
+         ::= 'jnode' '(' ( ( '*' | NCName | Constant ) ( ',' ( '*' | SequenceType ) )? )? ')'
+Constant ::= StringLiteral
+           | '-'? NumericLiteral
+           | QNameLiteral
+           | 'true' '(' ')'
+           | 'false' '(' ')'
+NumericLiteral
+         ::= IntegerLiteral
+           | HexIntegerLiteral
+           | BinaryIntegerLiteral
+           | DecimalLiteral
+           | DoubleLiteral
+QNameLiteral
+         ::= '#' EQName
 MapType  ::= AnyMapType
            | TypedMapType
 AnyMapType
@@ -479,19 +492,6 @@ FunctionType
          ::= Annotation* ( AnyFunctionType | TypedFunctionType )
 Annotation
          ::= '%' EQName ( '(' Constant ( ',' Constant )* ')' )?
-Constant ::= StringLiteral
-           | '-'? NumericLiteral
-           | QNameLiteral
-           | 'true' '(' ')'
-           | 'false' '(' ')'
-NumericLiteral
-         ::= IntegerLiteral
-           | HexIntegerLiteral
-           | BinaryIntegerLiteral
-           | DecimalLiteral
-           | DoubleLiteral
-QNameLiteral
-         ::= '#' EQName
 AnyFunctionType
          ::= ( 'function' | 'fn' ) '(' '*' ')'
 TypedFunctionType
@@ -906,8 +906,8 @@ UnionNodeTest
 SimpleNodeTest
          ::= TypeTest
            | Selector
-TypeTest ::= RegularItemType
-           | 'type' '(' SequenceType ')'
+TypeTest ::= NodeKindTest
+           | JNodeType
 Selector ::= EQName
            | Wildcard
            | 'get' '(' ExprSingle ')'
