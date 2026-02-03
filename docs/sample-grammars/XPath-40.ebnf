@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jan 7, 2026, 08:09 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 3, 2026, 20:37 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -299,19 +299,12 @@ AnyArrayType
 TypedArrayType
          ::= 'array' '(' SequenceType ')'
 RecordType
-         ::= AnyRecordType
-           | TypedRecordType
-AnyRecordType
-         ::= 'record' '(' '*' ')'
-TypedRecordType
-         ::= 'record' '(' ( FieldDeclaration ( ',' FieldDeclaration )* )? ExtensibleFlag? ')'
+         ::= 'record' '(' ( FieldDeclaration ( ',' FieldDeclaration )* )? ')'
 FieldDeclaration
          ::= FieldName '?'? ( 'as' SequenceType )?
 FieldName
          ::= NCName
            | StringLiteral
-ExtensibleFlag
-         ::= ',' '*'
 EnumerationType
          ::= 'enum' '(' StringLiteral ( ',' StringLiteral )* ')'
 FunctionType

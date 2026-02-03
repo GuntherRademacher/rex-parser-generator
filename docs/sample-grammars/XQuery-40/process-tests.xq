@@ -88,7 +88,18 @@ declare variable $xquery-known-failures as xs:string* :=
   "fo-test-fn-innermost-002",              (: missing adaptation to #2336             :)
   "fo-test-fn-outermost-002",              (: missing adaptation to #2336             :)
   "fo-test-fn-jnode-selector-001",         (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-content-001"           (: missing adaptation to #2336             :)  
+  "fo-test-fn-jnode-content-001",          (: missing adaptation to #2336             :)
+  
+  (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
+  
+  "RecordTest-007",                        (: missing adaptation to #2413             :)
+  "RecordTest-012",                        (: missing adaptation to #2413             :)
+  "RecordTest-013",                        (: missing adaptation to #2413             :)
+  "RecordTest-014",                        (: missing adaptation to #2413             :)
+  "RecordTest-103",                        (: missing adaptation to #2413             :)
+  "RecordTest-104",                        (: missing adaptation to #2413             :)
+  "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
+  "Keywords-fn-element-to-map-plan-1"      (: missing adaptation to #2413             :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -178,7 +189,16 @@ declare variable $xpath-known-failures as xs:string* :=
   "fo-test-fn-innermost-002",              (: missing adaptation to #2336             :)
   "fo-test-fn-outermost-002",              (: missing adaptation to #2336             :)
   "fo-test-fn-jnode-selector-001",         (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-content-001"           (: missing adaptation to #2336             :)  
+  "fo-test-fn-jnode-content-001",          (: missing adaptation to #2336             :)  
+  
+  (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
+  
+  "RecordTest-007",                        (: missing adaptation to #2413             :)
+  "RecordTest-012",                        (: missing adaptation to #2413             :)
+  "RecordTest-013",                        (: missing adaptation to #2413             :)
+  "RecordTest-014",                        (: missing adaptation to #2413             :)
+  "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
+  "Keywords-fn-element-to-map-plan-1"      (: missing adaptation to #2413             :)
 );
 
 declare variable $parse :=
