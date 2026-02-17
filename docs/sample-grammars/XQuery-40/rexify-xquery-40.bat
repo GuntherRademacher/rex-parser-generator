@@ -41,7 +41,7 @@ cd "%BUILD_DIR%" || exit /b
 call :rexify %XQUERY_SPEC% XQuery-40.ebnf                         -lalr 2 false false false || exit /b
 call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-40.ebnf        -lalr 2 true  true  false || exit /b
 call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 1 true  true  true  || exit /b
-call :rexify %XPATH_SPEC%  XPath-40.ebnf                          -lalr 1 false false false || exit /b
+call :rexify %XPATH_SPEC%  XPath-40.ebnf                          -lalr 2 false false false || exit /b
 call :rexify %XPATH_SPEC%  XPath-Full-Text-40.ebnf                -lalr 2 false true  false || exit /b
 echo ...done
 

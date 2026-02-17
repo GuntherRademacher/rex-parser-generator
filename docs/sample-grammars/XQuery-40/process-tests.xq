@@ -36,16 +36,9 @@ declare variable $xquery-known-failures as xs:string* :=
   (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
 
   "trans-closure-025",                     (: missing adaptation to #2336             :)
-  "JAxes-310",                             (: missing adaptation to #2336             :)
-  "JAxes-311",                             (: missing adaptation to #2336             :)
-  "JAxes-312",                             (: missing adaptation to #2336             :)
   "JAxes-313",                             (: missing adaptation to #2336             :)
   "JAxes-314",                             (: missing adaptation to #2336             :)
-  "JAxes-320",                             (: missing adaptation to #2336             :)
-  "JAxes-321",                             (: missing adaptation to #2336             :)
   "JAxes-324",                             (: missing adaptation to #2336             :)
-  "JAxes-327",                             (: missing adaptation to #2336             :)
-  "JAxes-328",                             (: missing adaptation to #2336             :)
   "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
   "PathExpr-J-402",                        (: missing adaptation to #2336             :)
   "PathExpr-J-403",                        (: missing adaptation to #2336             :)
@@ -57,10 +50,6 @@ declare variable $xquery-known-failures as xs:string* :=
   "PathExpr-J-412",                        (: missing adaptation to #2336             :)
   "PathExpr-J-413",                        (: missing adaptation to #2336             :)
   "Keywords-fn-jtree-1",                   (: missing adaptation to #2336             :)
-  "fo-test-fn-distinct-ordered-nodes-002", (: missing adaptation to #2336             :)
-  "fo-test-fn-innermost-002",              (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-selector-001",         (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-content-001",          (: missing adaptation to #2336             :)
   
   (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
   
@@ -71,7 +60,9 @@ declare variable $xquery-known-failures as xs:string* :=
   "RecordTest-103",                        (: missing adaptation to #2413             :)
   "RecordTest-104",                        (: missing adaptation to #2413             :)
   "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
-  "Keywords-fn-element-to-map-plan-1"      (: missing adaptation to #2413             :)
+  "Keywords-fn-element-to-map-plan-1",     (: missing adaptation to #2413             :)
+  
+  "fo-test-map-build-013"                  (: syntax error in generated test          :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -106,20 +97,15 @@ declare variable $xpath-known-failures as xs:string* :=
   "Catalog001",                            (: direct element constructor              :)
   "Catalog002",                            (: direct element constructor              :)
   "Catalog003",                            (: direct element constructor              :)
+  "fo-test-fn-resolve-QName-001",          (: direct element constructor              :)
+  "fo-test-fn-resolve-QName-002",          (: direct element constructor              :)
   
   (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
 
   "trans-closure-025",                     (: missing adaptation to #2336             :)
-  "JAxes-310",                             (: missing adaptation to #2336             :)
-  "JAxes-311",                             (: missing adaptation to #2336             :)
-  "JAxes-312",                             (: missing adaptation to #2336             :)
   "JAxes-313",                             (: missing adaptation to #2336             :)
   "JAxes-314",                             (: missing adaptation to #2336             :)
-  "JAxes-320",                             (: missing adaptation to #2336             :)
-  "JAxes-321",                             (: missing adaptation to #2336             :)
   "JAxes-324",                             (: missing adaptation to #2336             :)
-  "JAxes-327",                             (: missing adaptation to #2336             :)
-  "JAxes-328",                             (: missing adaptation to #2336             :)
   "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
   "PathExpr-J-402",                        (: missing adaptation to #2336             :)
   "PathExpr-J-403",                        (: missing adaptation to #2336             :)
@@ -131,10 +117,6 @@ declare variable $xpath-known-failures as xs:string* :=
   "PathExpr-J-412",                        (: missing adaptation to #2336             :)
   "PathExpr-J-413",                        (: missing adaptation to #2336             :)
   "Keywords-fn-jtree-1",                   (: missing adaptation to #2336             :)
-  "fo-test-fn-distinct-ordered-nodes-002", (: missing adaptation to #2336             :)
-  "fo-test-fn-innermost-002",              (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-selector-001",         (: missing adaptation to #2336             :)
-  "fo-test-fn-jnode-content-001",          (: missing adaptation to #2336             :)  
   
   (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
   
@@ -143,7 +125,9 @@ declare variable $xpath-known-failures as xs:string* :=
   "RecordTest-013",                        (: missing adaptation to #2413             :)
   "RecordTest-014",                        (: missing adaptation to #2413             :)
   "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
-  "Keywords-fn-element-to-map-plan-1"      (: missing adaptation to #2413             :)
+  "Keywords-fn-element-to-map-plan-1",     (: missing adaptation to #2413             :)
+  
+  "fo-test-map-build-013"                  (: syntax error in generated test          :)
 );
 
 declare variable $parse :=
