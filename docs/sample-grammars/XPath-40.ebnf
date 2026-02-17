@@ -1,6 +1,6 @@
 /* XML Path Language (XPath) 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 10, 2026, 20:16 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Feb 17, 2026, 21:32 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -31,6 +31,7 @@ NCName   ::= UnreservedNCName
            | 'descendant'
            | 'descendant-or-self'
            | 'div'
+           | 'document'
            | 'document-node'
            | 'element'
            | 'else'
@@ -161,6 +162,7 @@ UnreservedFunctionQName
            | 'descendant'
            | 'descendant-or-self'
            | 'div'
+           | 'document'
            | 'else'
            | 'empty-sequence'
            | 'eq'
@@ -423,6 +425,7 @@ PrimaryExpr
            | ParenthesizedExpr
            | ContextValueRef
            | FunctionCall
+           | NodeConstructor
            | FunctionItemExpr
            | MapConstructor
            | ArrayConstructor
@@ -454,6 +457,40 @@ KeywordArguments
          ::= KeywordArgument ( ',' KeywordArgument )*
 KeywordArgument
          ::= EQName ':=' Argument
+NodeConstructor
+         ::= ComputedConstructor
+ComputedConstructor
+         ::= CompDocConstructor
+           | CompElemConstructor
+           | CompAttrConstructor
+           | CompNamespaceConstructor
+           | CompTextConstructor
+           | CompCommentConstructor
+           | CompPIConstructor
+CompDocConstructor
+         ::= 'document' EnclosedExpr
+CompElemConstructor
+         ::= 'element' CompNodeName EnclosedContentExpr
+CompNodeName
+         ::= QNameLiteral
+           | '{' Expr '}'
+EnclosedContentExpr
+         ::= EnclosedExpr
+CompAttrConstructor
+         ::= 'attribute' CompNodeName EnclosedExpr
+CompNamespaceConstructor
+         ::= 'namespace' CompNodeNCName EnclosedExpr
+CompNodeNCName
+         ::= MarkedNCName
+           | '{' Expr '}'
+MarkedNCName
+         ::= '#' NCName
+CompTextConstructor
+         ::= 'text' EnclosedExpr
+CompCommentConstructor
+         ::= 'comment' EnclosedExpr
+CompPIConstructor
+         ::= 'processing-instruction' CompNodeNCName EnclosedExpr
 FunctionItemExpr
          ::= NamedFunctionRef
            | InlineFunctionExpr
@@ -645,6 +682,7 @@ ReservedName
            | 'descendant'
            | 'descendant-or-self'
            | 'div'
+           | 'document'
            | 'document-node'
            | 'element'
            | 'else'
@@ -789,7 +827,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value'
+          \\ UnreservedQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value'
 Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
