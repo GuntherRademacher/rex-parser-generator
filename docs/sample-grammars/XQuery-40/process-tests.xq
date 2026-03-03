@@ -49,7 +49,7 @@ declare variable $xquery-known-failures as xs:string* :=
   "PathExpr-J-408",                        (: missing adaptation to #2336             :)
   "PathExpr-J-412",                        (: missing adaptation to #2336             :)
   "PathExpr-J-413",                        (: missing adaptation to #2336             :)
-  "Keywords-fn-jtree-1",                   (: missing adaptation to #2336             :)
+  "Lookup-423",                            (: incorrect syntax introduced in 577dc81  :)
   
   (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
   
@@ -116,7 +116,7 @@ declare variable $xpath-known-failures as xs:string* :=
   "PathExpr-J-408",                        (: missing adaptation to #2336             :)
   "PathExpr-J-412",                        (: missing adaptation to #2336             :)
   "PathExpr-J-413",                        (: missing adaptation to #2336             :)
-  "Keywords-fn-jtree-1",                   (: missing adaptation to #2336             :)
+  "Lookup-423",                            (: incorrect syntax introduced in 577dc81  :)
   
   (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
   
