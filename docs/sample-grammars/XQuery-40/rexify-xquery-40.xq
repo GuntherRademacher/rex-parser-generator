@@ -30,7 +30,23 @@ declare variable $reserved-function-names :=
     if (exists($names)) then
       $names
     else
-      error(xs:QName('reserved-function-names'), 'failed to retrieve reserved function names');
+      error(xs:QName('reserved-function-names'), 'failed to retrieve reserved function names from ' || $specification-url);
+
+(:~ Reserved names not allowed for computed node constructors. :)
+declare variable $reserved-constructor-names :=
+  let $names := html-doc($specification-url)
+    //@id[. = 'parse-note-unreserved-name']
+    /ancestor-or-self::xhtml:div[1]
+    /xhtml:p[contains(., "not one of the following")]
+    /following::xhtml:p[1]
+    /xhtml:code
+    /text()
+    /string()
+  return
+    if (exists($names) or contains($specification-url, 'xpath')) then
+      $names
+    else
+      error(xs:QName('reserved-names'), 'failed to retrieve reserved constructor names from ' || $specification-url);
 
 (:~
  : This is the structure of a rewriting rule:
@@ -80,13 +96,13 @@ declare variable $rules as local:rule+ :=
     function($node) {<g:ref name='UnreservedFunctionEQName'/>}
   ),
 
-  (: Replace 'UnreservedName ::= EQName' by 'UnreservedName ::= UnreservedQName | URIQualifiedName'.
-   : UnreservedQName will be added as a new token that disallows reserved names.
+  (: Replace 'UnreservedName ::= EQName' by 'UnreservedName ::= NonKeywordQName | URIQualifiedName'.
+   : NonKeywordQName will be added as a new token that disallows keywords.
    :)
   local:rule
   (
     function($node) {$node/self::g:ref[@name eq 'EQName']/parent::g:production/@name = 'UnreservedName'},
-    function($node) {u:ast('_ ::= UnreservedQName | URIQualifiedName')/g:choice}
+    function($node) {u:ast('_ ::= NonKeywordQName | URIQualifiedName')/g:choice}
   ),
 
   (: Remove production UnreservedNCName. This is done because the NCName token will be renamed to
@@ -102,8 +118,6 @@ declare variable $rules as local:rule+ :=
   (: Replace RelativePathExpr? in production AbsolutePathExpr by an ordered choice between RelativePathExpr
    : and nothing. This implements extra-grammatical constraint /* xgc: leading-lone-slash */
    : (see https://qt4cg.org/specifications/xquery-40/xquery-40.html#extra-grammatical-constraints).
-   :
-   : The changes made in
    :)
   local:rule
   (
@@ -221,12 +235,12 @@ declare variable $rules as local:rule+ :=
          :)
         <g:production name='UnreservedFunctionQName'>
           <g:choice>
-            <g:ref name='UnreservedQName'/>
+            <g:ref name='NonKeywordQName'/>
             {$keywords[not(. = $reserved-function-names)]!element g:string {.}}
           </g:choice>
         </g:production>,
 
-        (: Add an NCQName production providing a choice of unreserved NCNames and keywords. :)
+        (: Add an NCName production providing a choice of unreserved NCNames and keywords. :)
         <g:production name='NCName'>
           <g:choice>
             <g:ref name='UnreservedNCName'/>
@@ -243,16 +257,16 @@ declare variable $rules as local:rule+ :=
         (: The <?TOKENS?> separator, the lexical section begins here. :)
         $node,
 
-        (: Introduce the UnreservedQName token, excluding keywords from the QName fragment. :)
-        u:ast('UnreservedQName ::= QName - ReservedName'),
+        (: Introduce the NonKeywordQName token, excluding keywords from the QName fragment. :)
+        u:ast('NonKeywordQName ::= QName - Keyword'),
 
         (: Introduce the UnreservedNCName token, excluding keywords from the NCName fragment. :)
-        u:ast('UnreservedNCName ::= NCName - ReservedName'),
+        u:ast('UnreservedNCName ::= NCName - Keyword'),
 
-        (: Add the ReservedName fragment, enumerating the keywords in a choice operator. :)
+        (: Add the Keyword fragment, enumerating the keywords in a choice operator. :)
         element g:production
         {
-          attribute name {'ReservedName'}, element g:choice {$keywords!element g:string {.}}
+          attribute name {'Keyword'}, element g:choice {$keywords!element g:string {.}}
         },
 
         (: Move Wildcard from the syntax section. :)
@@ -316,7 +330,7 @@ declare variable $rules as local:rule+ :=
         element g:preference {element g:string{'*'}, <g:ref name='Wildcard'/>},
 
         (: Add lexical lookahead for QNames. :)
-        ('UnreservedQName')                                       !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, <g:ref name='{.}'/>},
+        ('NonKeywordQName')                                       !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, <g:ref name='{.}'/>},
 
         (: Add lexical lookahead for operators starting with '<'. :)
         ('</', '<<', '<=')[contains($grammar, .)]                 !element g:delimiter {<g:ref name='Char'/>,                    element g:string {.}},
@@ -359,6 +373,26 @@ declare variable $rules as local:rule+ :=
   (
     function($node) {$node/self::g:production/@name = 'MarkedNCName'},
     function($node) {($node[@name = root(.)//g:ref/@name], text {''})[1]}
+  ),
+  
+  (: Allow unreserved keywords as computed node names :)
+  local:rule
+  (
+    function($node) {u:is-xquery($node) and $node/self::g:choice/parent::g:production/@name = ("CompNodeName", "CompNodeNCName")},
+    function($node)
+    {
+      let $reserved := 
+      (
+        $reserved-constructor-names,
+        ('after', 'as', 'before', 'into', 'modify', 'with')[$with-update]
+      )
+      return
+        element g:choice
+        {
+          $node/*,
+          local:keywords($node/ancestor::g:grammar)[not(. = $reserved)]!element g:string {.}
+        }
+    }
   )
 );
 
