@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Mar 25, 2026, 22:54 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Mar 25, 2026, 23:12 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -222,58 +222,60 @@ ItemType ::= RegularItemType
            | TypeName
            | ChoiceItemType
 RegularItemType
-         ::= AnyItemTest
-           | NodeKindTest
+         ::= AnyItemType
+           | XNodeType
            | GNodeType
            | JNodeType
            | MapType
            | ArrayType
            | RecordType
            | EnumerationType
-AnyItemTest
+AnyItemType
          ::= 'item' '(' ')'
-NodeKindTest
-         ::= DocumentTest
-           | ElementTest
-           | AttributeTest
-           | SchemaElementTest
-           | SchemaAttributeTest
-           | PITest
-           | CommentTest
-           | TextTest
-           | NamespaceNodeTest
-           | AnyNodeKindTest
-DocumentTest
-         ::= 'document-node' '(' ( ElementTest | SchemaElementTest | NameTestUnion )? ')'
-ElementTest
+XNodeType
+         ::= DocumentNodeType
+           | ElementNodeType
+           | AttributeNodeType
+           | SchemaElementNodeType
+           | SchemaAttributeNodeType
+           | ProcessingInstructionNodeType
+           | CommentNodeType
+           | TextNodeType
+           | NamespaceNodeType
+           | AnyXNodeType
+DocumentNodeType
+         ::= 'document-node' '(' ( ElementNodeType | SchemaElementNodeType | NameTestUnion )? ')'
+ElementNodeType
          ::= 'element' '(' ( NameTestUnion ( ',' TypeName '?'? )? )? ')'
 NameTestUnion
          ::= NameTest ( '|' NameTest )*
 NameTest ::= EQName
            | Wildcard
 TypeName ::= EQName
-SchemaElementTest
+SchemaElementNodeType
          ::= 'schema-element' '(' ElementName ')'
 ElementName
          ::= EQName
-AttributeTest
+AttributeNodeType
          ::= 'attribute' '(' ( NameTestUnion ( ',' TypeName )? )? ')'
-SchemaAttributeTest
+SchemaAttributeNodeType
          ::= 'schema-attribute' '(' AttributeName ')'
 AttributeName
          ::= EQName
-PITest   ::= 'processing-instruction' '(' ( NCName | StringLiteral )? ')'
-CommentTest
+ProcessingInstructionNodeType
+         ::= 'processing-instruction' '(' ( NCName | StringLiteral )? ')'
+CommentNodeType
          ::= 'comment' '(' ')'
-TextTest ::= 'text' '(' ')'
-NamespaceNodeTest
+TextNodeType
+         ::= 'text' '(' ')'
+NamespaceNodeType
          ::= 'namespace-node' '(' ')'
-AnyNodeKindTest
+AnyXNodeType
          ::= 'node' '(' ')'
 GNodeType
          ::= 'gnode' '(' ')'
 JNodeType
-         ::= 'jnode' '(' ( ( '*' | JRootSelector | NCName | Constant ) ( ',' ( '*' | SequenceType ) )? )? ')'
+         ::= 'jnode' '(' ( ( '*' | JRootSelector | NCName | Constant ) ( ',' SequenceType )? )? ')'
 JRootSelector
          ::= '(' ')'
 Constant ::= StringLiteral
@@ -559,7 +561,7 @@ SimpleNodeTest
          ::= TypeTest
            | Selector
 TypeTest ::= GNodeType
-           | NodeKindTest
+           | XNodeType
            | JNodeType
 Selector ::= EQName
            | Wildcard
