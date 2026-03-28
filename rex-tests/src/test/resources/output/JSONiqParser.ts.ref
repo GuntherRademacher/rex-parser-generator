@@ -1,7 +1,7 @@
-// This file was generated on Thu Dec 26, 2024 06:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sat Mar 28, 2026 20:48 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q JSONiqParser.ebnf -typescript -ll 2 -backtrack -main -tree
 
-module JSONiqParser
+namespace JSONiqParser
 {
   export interface ParsingEventHandler
   {
@@ -36951,12 +36951,12 @@ module JSONiqParser
       return this.lk;
     }
 
-    private lk: number; private b0: number; private e0: number;
-    private l1: number; private b1: number; private e1: number;
-    private l2: number; private b2: number; private e2: number;
-    private bx: number; private ex: number; private sx: number; private lx: number; private tx: number;
-    private eventHandler: ParsingEventHandler;
-    private memo: Memoizer;
+    private lk!: number; private b0!: number; private e0!: number;
+    private l1!: number; private b1!: number; private e1!: number;
+    private l2!: number; private b2!: number; private e2!: number;
+    private bx!: number; private ex!: number; private sx!: number; private lx!: number; private tx!: number;
+    private eventHandler!: ParsingEventHandler;
+    private memo!: Memoizer;
 
     private memoize(i: number, e: number, v: number)
     {
@@ -36969,10 +36969,10 @@ module JSONiqParser
       return typeof v != "undefined" ? v : 0;
     }
 
-    private input: string;
-    private size: number;
-    private begin: number;
-    private end: number;
+    private input!: string;
+    private size!: number;
+    private begin!: number;
+    private end!: number;
 
     private match(tokenSetId: number): number
     {
@@ -42374,8 +42374,8 @@ module JSONiqParser
 
   export class TopDownTreeBuilder implements ParsingEventHandler
   {
-    private input: string = null;
-    private stack: Nonterminal[] = null;
+    private input!: string;
+    private stack!: Nonterminal[];
 
     public reset(input: string): void
     {
@@ -42478,11 +42478,11 @@ module JSONiqParser
 
 class XmlSerializer implements JSONiqParser.ParsingEventHandler
 {
-  private input: string = null;
-  private delayedTag: string = null;
+  private input!: string;
+  private delayedTag: string | null = null;
   private indent: boolean;
-  private hasChildElement = false;
-  private depth = 0;
+  private hasChildElement!: boolean;
+  private depth!: number;
 
   constructor(indent: boolean)
   {
@@ -42491,7 +42491,7 @@ class XmlSerializer implements JSONiqParser.ParsingEventHandler
 
   reset(source: string)
   {
-    process.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    proc.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
     this.input = source;
     this.hasChildElement = false;
     this.depth = 0;
@@ -42501,17 +42501,17 @@ class XmlSerializer implements JSONiqParser.ParsingEventHandler
   {
     if (this.delayedTag != null)
     {
-      process.stdout.write("<");
-      process.stdout.write(this.delayedTag);
-      process.stdout.write(">");
+      proc.stdout.write("<");
+      proc.stdout.write(this.delayedTag);
+      proc.stdout.write(">");
     }
     this.delayedTag = tag;
     if (this.indent)
     {
-      process.stdout.write("\n");
+      proc.stdout.write("\n");
       for (var i = 0; i < this.depth; ++i)
       {
-        process.stdout.write("  ");
+        proc.stdout.write("  ");
       }
     }
     this.hasChildElement = false;
@@ -42524,9 +42524,9 @@ class XmlSerializer implements JSONiqParser.ParsingEventHandler
     if (this.delayedTag != null)
     {
       this.delayedTag = null;
-      process.stdout.write("<");
-      process.stdout.write(tag);
-      process.stdout.write("/>");
+      proc.stdout.write("<");
+      proc.stdout.write(tag);
+      proc.stdout.write("/>");
     }
     else
     {
@@ -42534,16 +42534,16 @@ class XmlSerializer implements JSONiqParser.ParsingEventHandler
       {
         if (this.hasChildElement)
         {
-          process.stdout.write("\n");
+          proc.stdout.write("\n");
           for (var i = 0; i < this.depth; ++i)
           {
-            process.stdout.write("  ");
+            proc.stdout.write("  ");
           }
         }
       }
-      process.stdout.write("</");
-      process.stdout.write(tag);
-      process.stdout.write(">");
+      proc.stdout.write("</");
+      proc.stdout.write(tag);
+      proc.stdout.write(">");
     }
     this.hasChildElement = true;
   }
@@ -42567,38 +42567,40 @@ class XmlSerializer implements JSONiqParser.ParsingEventHandler
     {
       if (this.delayedTag != null)
       {
-        process.stdout.write("<");
-        process.stdout.write(this.delayedTag);
-        process.stdout.write(">");
+        proc.stdout.write("<");
+        proc.stdout.write(this.delayedTag);
+        proc.stdout.write(">");
         this.delayedTag = null;
       }
-      process.stdout.write(this.input.substring(begin, end)
-                   .replace(/&/g, "&amp;")
-                   .replace(/</g, "&lt;")
-                   .replace(/>/g, "&gt;"));
+      proc.stdout.write(this.input.substring(begin, end)
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;"));
     }
   }
 }
 
 // main program for use with node.js
 
-var fs = require('fs');
+const proc: any = (globalThis as any).process;
+const requ: any = eval("require");
+const fs: any = requ("fs");
 
-if (process.argv.length < 3)
+if (proc.argv.length < 3)
 {
-  process.stderr.write("Usage: node JSONiqParser.js [-i] INPUT...\n");
-  process.stderr.write("\n");
-  process.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");
-  process.stderr.write("\n");
-  process.stderr.write("  Option:\n");
-  process.stderr.write("    -i     indented parse tree\n");
+  proc.stderr.write("Usage: node JSONiqParser.js [-i] INPUT...\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  Option:\n");
+  proc.stderr.write("    -i     indented parse tree\n");
 }
 else
 {
   var indent = false;
-  for (var i = 2; i < process.argv.length; ++i)
+  for (var i = 2; i < proc.argv.length; ++i)
   {
-    var arg = process.argv[i];
+    var arg = proc.argv[i];
     if (arg === "-i")
     {
       indent = true;

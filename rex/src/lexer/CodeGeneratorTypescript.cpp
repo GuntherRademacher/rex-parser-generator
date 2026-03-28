@@ -1,4 +1,4 @@
-// This file was generated on Sun Jan 26, 2025 19:55 (UTC+01) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sat Mar 28, 2026 21:33 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorTypescript.cpp.template
                                                             #line 1 "CodeGeneratorTypescript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -58,22 +58,22 @@
                                                               if (! variable("useGlr").boolean())
                                                               {
                                                             #line 61 "CodeGeneratorTypescript.cpp"
-  append(L"  private input: string;");
+  append(L"  private input!: string;");
                                                             #line 46 "CodeGeneratorTypescript.cpp.template"
                                                                 if (! variable("nolexer").boolean())
                                                                 {
                                                             #line 66 "CodeGeneratorTypescript.cpp"
   append(L"\n");
-  append(L"  private size: number;");
+  append(L"  private size!: number;");
                                                             #line 49 "CodeGeneratorTypescript.cpp.template"
-                                                                }
+                                                              }
                                                               }
                                                             #line 72 "CodeGeneratorTypescript.cpp"
   append(L"\n");
-  append(L"  private begin: number;\n");
-  append(L"  private end: number;");
+  append(L"  private begin!: number;\n");
+  append(L"  private end!: number;");
                                                             #line 53 "CodeGeneratorTypescript.cpp.template"
-                                                                  if (variable("nolexer").boolean())
+                                                              if (variable("nolexer").boolean())
                                                               {
                                                             #line 79 "CodeGeneratorTypescript.cpp"
   append(L"\n");
@@ -85,7 +85,7 @@
                                                               {
                                                             #line 87 "CodeGeneratorTypescript.cpp"
   append(L"\n");
-  append(L"  private state: number;");
+  append(L"  private state!: number;");
                                                             #line 61 "CodeGeneratorTypescript.cpp.template"
                                                               }
                                                             #line 92 "CodeGeneratorTypescript.cpp"
@@ -753,7 +753,7 @@
   append(L"\n");
   append(L"  public writeTrace(trace: string)\n");
   append(L"  {\n");
-  append(L"    process.stderr.write(trace);\n");
+  append(L"    proc.stderr.write(trace);\n");
   append(L"  }\n");
                                                             #line 425 "CodeGeneratorTypescript.cpp.template"
                                                                 if (variable("embedded").boolean())

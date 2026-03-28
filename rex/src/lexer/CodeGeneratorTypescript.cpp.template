@@ -43,14 +43,14 @@
                                                               }
                                                               if (! variable("useGlr").boolean())
                                                               {
-~  private input: string;~                                      if (! variable("nolexer").boolean())
+~  private input!: string;~                                     if (! variable("nolexer").boolean())
                                                                 {
 ~
-  private size: number;~                                        }
+  private size!: number;~                                     }
                                                               }
 ~
-  private begin: number;
-  private end: number;~                                           if (variable("nolexer").boolean())
+  private begin!: number;
+  private end!: number;~                                      if (variable("nolexer").boolean())
                                                               {
 ~
   private lexer;
@@ -58,7 +58,7 @@
                                                               if (! variable("embedded").boolean())
                                                               {
 ~
-  private state: number;~                                     }
+  private state!: number;~                                    }
 ~
 ~                                                             if (variable("tables").boolean())
                                                               {
@@ -420,7 +420,7 @@
 
   public writeTrace(trace: string)
   {
-    process.stderr.write(trace);
+    proc.stderr.write(trace);
   }
 ~                                                               if (variable("embedded").boolean())
                                                                 {

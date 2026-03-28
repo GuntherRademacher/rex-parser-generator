@@ -8,8 +8,8 @@
                                                               if (! hasProlog)
                                                               {
 ~
-module ~                                                        print(className.c_str());
-       ~
+namespace ~                                                     print(className.c_str());
+          ~
 {~                                                            }
 ~
   export interface ParsingEventHandler
@@ -44,7 +44,8 @@ module ~                                                        print(className.
     private ambiguousInput: boolean;~                           if (tree)
                                                                 {
 ~
-    private ambiguityDescriptor: ParseTreeBuilder;~             }
+    private ambiguityDescriptor: ParseTreeBuilder | null = null;~
+                                                                }
                                                               }
 ~
 
@@ -108,7 +109,7 @@ module ~                                                        print(className.
 
     serialize(eventHandler: ParsingEventHandler)
     {
-      this.ambiguityDescriptor.serialize(eventHandler);
+      this.ambiguityDescriptor!.serialize(eventHandler);
     }~                                                         }
 ~
   }
@@ -168,7 +169,7 @@ public static ERROR = 2;
 
 public parse(target: number, initialState: number, ~      if (tree)
                                                               {
-                                                   ~eventHandler: BottomUpEventHandler, ~
+                                                   ~eventHandler: BottomUpEventHandler | null, ~
                                                               }
                                                    ~thread: ParsingThread): ParsingThread
 {
@@ -195,9 +196,10 @@ public parse(target: number, initialState: number, ~      if (tree)
       }
       if (other != null)
       {
-        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~    if (tree)
                                                               {
-                ~, thread.deferredEvent, other.deferredEvent~ }
+                ~, thread.deferredEvent!, other.deferredEvent!~
+                                                              }
                 ~);
       }~
                                                               if (tree)
@@ -205,7 +207,7 @@ public parse(target: number, initialState: number, ~      if (tree)
 ~
       if (thread.deferredEvent != null)
       {
-        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent.release(eventHandler!);
         thread.deferredEvent = null;
       }~                                                      }
                                                               if (hasCustomCode)
@@ -222,7 +224,8 @@ public parse(target: number, initialState: number, ~      if (tree)
       {
         this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
                                                               {
-       ~, thread.deferredEvent, threads.peek().deferredEvent~ }
+       ~, thread.deferredEvent!, threads.peek().deferredEvent!~
+                                                              }
        ~);
       }
     }~                                                        if (tree || hasCustomCode)
@@ -234,7 +237,7 @@ public parse(target: number, initialState: number, ~      if (tree)
 ~
       if (thread.deferredEvent != null)
       {
-        thread.deferredEvent.release(eventHandler);
+        thread.deferredEvent.release(eventHandler!);
         thread.deferredEvent = null;
       }~                                                        }
                                                                 if (hasCustomCode)
@@ -294,14 +297,14 @@ private rejectAmbiguity(begin: number, end: number~           if (tree)
   throw exception;
 }
 
-private thread: ParsingThread;~                               if (tree)
+private thread!: ParsingThread;~                              if (tree)
                                                               {
 ~
-private eventHandler: BottomUpEventHandler;~                  }
+private eventHandler!: BottomUpEventHandler | null;~          }
 ~
-public input: string;
-public size: number;
-public maxId: number;~                                      }
+public input!: string;
+public size!: number;
+public maxId!: number;~                                     }
 
                                                             void PrintTypescript::openStackNode()
                                                             {
@@ -314,12 +317,12 @@ class StackNode
   private code: number;~                                      }
 ~
   public pos: number;
-  public link: StackNode;
+  public link: StackNode | null;
 
   constructor(state: number, ~                                if (grammar->states->hasLookback)
                                                               {
                              ~code: number, ~                 }
-                             ~pos: number, link: StackNode)
+                             ~pos: number, link: StackNode | null)
   {
     this.state = state;~                                      if (grammar->states->hasLookback)
                                                               {
@@ -332,8 +335,8 @@ class StackNode
 
   equals(obj: StackNode)
   {
-    var lhs: StackNode = this;
-    var rhs: StackNode = obj;
+    var lhs: StackNode | null = this;
+    var rhs: StackNode | null = obj;
     while (lhs != null && rhs != null)
     {
       if (lhs == rhs) return true;
@@ -361,12 +364,12 @@ class StackNode
 ~
 class DeferredCode
 {
-  public link: DeferredCode;
+  public link: DeferredCode | null;
   public codeId: number;
   public b0: number;
   public e0: number;
 
-  constructor(link, codeId, b0, e0)
+  constructor(link: DeferredCode | null, codeId: number, b0: number, e0: number)
   {
     this.link = link;
     this.codeId = codeId;
@@ -380,13 +383,13 @@ class DeferredCode
 ~
 class DeferredEvent
 {
-  private link: DeferredEvent;
+  private link: DeferredEvent | null;
   private name: string;
   private begin: number;
   private end: number;
   private count: number;
 
-  constructor(link: DeferredEvent, name: string, begin: number, end: number, count: number)
+  constructor(link: DeferredEvent | null, name: string, begin: number, end: number, count: number)
   {
     this.link = link;
     this.name = name;
@@ -398,7 +401,7 @@ class DeferredEvent
 
   execute(eventHandler: BottomUpEventHandler)
   {
-    if (this.count == null)
+    if (this.count < 0)
     {
       eventHandler.terminal(this.name, this.begin, this.end);
     }
@@ -410,7 +413,7 @@ class DeferredEvent
 
   release(eventHandler: BottomUpEventHandler)
   {
-    var current: DeferredEvent = this;
+    var current: DeferredEvent | null = this;
     var predecessor = current.link;
     current.link = null;
     while (predecessor != null)
@@ -431,13 +434,13 @@ class DeferredEvent
   show(eventHandler: BottomUpEventHandler)
   {
     var stack = [];
-    for (var current: DeferredEvent = this; current != null; current = current.link)
+    for (var current: DeferredEvent | null = this; current != null; current = current.link)
     {
       stack.push(current);
     }
     while (stack.length > 0)
     {
-      stack.pop().execute(eventHandler);
+      stack.pop()!.execute(eventHandler);
     }
   }
 }
@@ -466,8 +469,6 @@ class Heap
 
   poll()
   {
-    if (this.size == 0)
-      return null;
     var min = this.array[0];
     if (--this.size > 0)
     {
@@ -500,7 +501,7 @@ class Heap
 
   peek()
   {
-    return this.size == 0 ? null : this.array[0];
+    return this.array[0];
   }
 
   isEmpty(): boolean
@@ -515,29 +516,29 @@ class Heap
 ~
 class ParsingThread
 {
-  public parser: Parser;
-  private threads: Heap;
-  public accepted: boolean;
-  public stack: StackNode;
-  public state: number;
-  private action: number;
-  private target: number;~                                    if (tree)
+  public parser!: Parser;
+  private threads!: Heap;
+  public accepted!: boolean;
+  public stack!: StackNode;
+  public state!: number;
+  private action!: number;
+  private target!: number;~                                    if (tree)
                                                               {
 ~
-  public deferredEvent: DeferredEvent;
-  private es: number;~                                        }
+  public deferredEvent!: DeferredEvent | null;
+  private es!: number;~                                       }
 ~
-  private bw: number;
-  private bs: number;~                                        if (hasCustomCode)
+  private bw!: number;
+  private bs!: number;~                                       if (hasCustomCode)
                                                               {
 ~
-  public deferredCode: DeferredCode;~                         }
+  public deferredCode!: DeferredCode | null;~                 }
 ~
-  private id: number;
+  private id!: number;
 
   open(initialState: number~                                  if (tree)
                                                               {
-                           ~, eventHandler: BottomUpEventHandler, target: number~
+                           ~, eventHandler: BottomUpEventHandler | null, target: number~
                                                               }
                            ~): Heap
   {
@@ -630,7 +631,7 @@ class ParsingThread
   {
     if (this.deferredEvent != null)
     {
-      this.deferredEvent.release(this.eventHandler);
+      this.deferredEvent.release(this.eventHandler!);
       this.deferredEvent = null;
     }
   }
@@ -681,7 +682,8 @@ class ParsingThread
                                                                   else if (wcsncmp(typeBegin, L"int", typeEnd - typeBegin) == 0)
                                                                     print(L"number");
                                                                   else
-                                                                    print(typeBegin, typeEnd - typeBegin);
+                                                                    for (const wchar_t *t = typeBegin; t < typeEnd; ++t)
+                                                                      if (*t == L'|') print(L" | "); else print(*t);
                                                                 }
                                                               }
     ~)~                                                       if (*type)
@@ -746,29 +748,29 @@ class ParsingThread
 ~
   ~                                                           if (! isLrParser && (grammar->k > 1 || memoization || ! grammar->decisionPoints.empty()))
                                                               {
-  ~private lk: number; ~                                      }
+  ~private lk!: number; ~                                     }
                                                               else
                                                               {
                                                                 print(wcslen(visibility), L" ");
-         ~             ~                                      }
+         ~              ~                                     }
                                                               print(visibility);
-                       ~ b0: number; ~                        print(visibility);
-                                     ~ e0: number;~           for (size_t k = 1; k <= grammar->k; ++k)
+                        ~ b0!: number; ~                      print(visibility);
+                                       ~ e0!: number;~        for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
 ~
   ~                                                             print(visibility);
   ~ l~                                                          print(asString);
-     ~: number; ~                                               print(visibility);
-                ~ b~                                            print(asString);
-                   ~: number; ~                                 print(visibility);
-                              ~ e~                              print(asString);
-                                 ~: number;~                  }
+     ~!: number; ~                                              print(visibility);
+                 ~ b~                                           print(asString);
+                    ~!: number; ~                               print(visibility);
+                                ~ e~                            print(asString);
+                                  ~!: number;~                }
                                                               if (hasBacktracking)
                                                               {
 ~
-  private bx: number; private ex: number; private sx: number; private lx: number; private tx: number;~
+  private bx!: number; private ex!: number; private sx!: number; private lx!: number; private tx!: number;~
                                                               }
                                                               if (isLrParser && ! useGlr)
                                                               {
@@ -779,21 +781,21 @@ class ParsingThread
                                                               if (tree)
                                                               {
 ~
-  private eventHandler: ~                                       if (isLrParser)
+  private eventHandler!: ~                                       if (isLrParser)
                                                                 {
-                        ~BottomUp~                              }
+                         ~BottomUpEventHandler | null;~         }
                                                                 else
                                                                 {
-                        ~Parsing~                               }
-                        ~EventHandler;~                       }
+                         ~ParsingEventHandler;~                 }
+                                                              }
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
 ~
-  private memo: Memoizer;~                                      if (grammar->noThrow)
+  private memo!: Memoizer;~                                     if (grammar->noThrow)
                                                                 {
 ~
-  private viable: boolean;~                                     }
+  private viable!: boolean;~                                    }
 ~
 
   private memoize(i: number, e: number, v: number)
@@ -817,8 +819,8 @@ class ParsingThread
                                                             {
 ~
   var command = "node";
-  var log = function(string) {process.stdout.write(string);};
-  var fs = require('fs');
+  var log = function(string) {proc.stdout.write(string);};
+  var fs = requ('fs');
   var readTextFile = fs.readFileSync;~                        if (performanceTest)
                                                               {
 ~
@@ -862,7 +864,7 @@ class ParseJob
                                                               }
 ~
   parser: ~                                                   print(className.c_str());
-          ~.Parser;
+          ~.Parser | null;
 
   constructor(s: string, i: string)
   {
@@ -910,79 +912,81 @@ function findFiles(f: string, filter: string, parsers: ParseJob[], quiet: boolea
     var input = content.length > 0 && content.charCodeAt(0) == 0xFEFF
               ? content.substring(1)
               : content;
-    if (! quiet) process.stdout.write("loading " + f + "\n");
+    if (! quiet) proc.stdout.write("loading " + f + "\n");
     parsers[parsers.length] = new ParseJob(f, input);
   }
 }
 
 // performance test main program for use with node.js
 
-var fs = require('fs');
+const proc: any = (globalThis as any).process;
+const requ: any = eval("require");
+const fs: any = requ("fs");
 
 var quiet = false;
 var parsed = 0;
 var errorCount = 0;
 var parsers: ParseJob[] = [];
 
-if (process.argv.length < 3)
+if (proc.argv.length < 3)
 {
-  process.stderr.write("Usage: node ~                         print(className.c_str());
-                                    ~.js [-q] [-r N] [-t N] ENDING...\n");
-  process.stderr.write("\n");
-  process.stderr.write("  parse all files that have names ending with ENDING, in current dir and below,\n");
-  process.stderr.write("  and display performance summary.\n");
-  process.stderr.write("\n");
-  process.stderr.write("  -q     do not show file names\n");
-  process.stderr.write("  -r N   repeat N times\n");
-  process.stderr.write("  -t N   repeat until N seconds have elapsed\n");
+  proc.stderr.write("Usage: node ~                         print(className.c_str());
+                                 ~.js [-q] [-r N] [-t N] ENDING...\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  parse all files that have names ending with ENDING, in current dir and below,\n");
+  proc.stderr.write("  and display performance summary.\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  -q     do not show file names\n");
+  proc.stderr.write("  -r N   repeat N times\n");
+  proc.stderr.write("  -t N   repeat until N seconds have elapsed\n");
 }
 else
 {
   var repeat = 1;
   var timeout = 0;
   var i = 1;
-  while (++i < process.argv.length)
+  while (++i < proc.argv.length)
   {
-    if (process.argv[i] == "-q")
+    if (proc.argv[i] == "-q")
     {
       quiet = true;
     }
-    else if (process.argv[i] == "-r")
+    else if (proc.argv[i] == "-r")
     {
-      repeat = parseInt(process.argv[++i]);
+      repeat = parseInt(proc.argv[++i]);
       timeout = 0;
     }
-    else if (process.argv[i] == "-t")
+    else if (proc.argv[i] == "-t")
     {
       repeat = 0;
-      timeout = 1000 * parseInt(process.argv[++i]);
+      timeout = 1000 * parseInt(proc.argv[++i]);
     }
-    else if (process.argv[i].substring(0, 1) !== "-")
+    else if (proc.argv[i].substring(0, 1) !== "-")
     {
       break;
     }
     else
     {
-      throw "invalid option: " + process.argv[i];
+      throw "invalid option: " + proc.argv[i];
     }
   }
 
   var start = Date.now();
 
-  for (; i < process.argv.length; ++i)
+  for (; i < proc.argv.length; ++i)
   {
-    findFiles(".", process.argv[i], parsers, quiet);
+    findFiles(".", proc.argv[i], parsers, quiet);
   }
 
   if (parsers.length != 0)
   {
     var msec = Date.now() - start;
 
-    if (! quiet) process.stdout.write("\n");
-    process.stdout.write("loaded " + parsers.length + " file" +
+    if (! quiet) proc.stdout.write("\n");
+    proc.stdout.write("loaded " + parsers.length + " file" +
         (parsers.length == 1 ? "" : "s") + " in " +
         msec + " msec\n");
-    if (! quiet) process.stdout.write("\n");
+    if (! quiet) proc.stdout.write("\n");
 
     start = Date.now();
     for (i = 0; ; ++i)
@@ -997,12 +1001,12 @@ else
         {
           try
           {
-            if (! quiet) process.stdout.write("parsing " + job.name);
+            if (! quiet) proc.stdout.write("parsing " + job.name);
             job.parser.reset(0, 0, 0);
             job.parser.~                                      print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                        ~();
-            if (! quiet) process.stdout.write("\n");~         if (tree)
+            if (! quiet) proc.stdout.write("\n");~            if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
@@ -1024,7 +1028,7 @@ else
                               ~.ParseException)
             {
               ++errorCount;
-              process.stdout.write((quiet ? ("parsing " + job.name) : "") +
+              proc.stdout.write((quiet ? ("parsing " + job.name) : "") +
                   ": error: " + job.parser.getErrorMessage(pe) + "\n");
               job.parser = null;
             }
@@ -1045,10 +1049,10 @@ else
                  ? (" ("  + (parsed / 1024 / 1024 /sec).toFixed(2) + " MB/sec)")
                  : (" ("  + (parsed / 1024        /sec).toFixed(2) + " KB/sec)");
 
-    if (! quiet) process.stdout.write("\n");
-    process.stdout.write("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
+    if (! quiet) proc.stdout.write("\n");
+    proc.stdout.write("parsed " + parsed + " byte" + (parsed == 1 ? "" : "s") +
         " in " + msec + " msec" + perSec + "\n");
-    process.stdout.write(errorCount + " error" + (errorCount == 1 ? "" : "s") + "\n");
+    proc.stdout.write(errorCount + " error" + (errorCount == 1 ? "" : "s") + "\n");
   }
 }
 ~                                                           }
@@ -1105,8 +1109,8 @@ else
 ~
   export class TopDownTreeBuilder implements ParsingEventHandler
   {
-    private input: string = null;
-    private stack: Nonterminal[] = null;
+    private input!: string;
+    private stack!: Nonterminal[];
 
     public reset(input: string): void
     {
@@ -1210,9 +1214,9 @@ else
 ~
   export class ParseTreeBuilder implements BottomUpEventHandler
   {
-    private input: string = null;
+    private input!: string;
     private stack: Symbol[] = [];
-    private top: number = -1;
+    private top!: number;
 
     public reset(input: string): void
     {
@@ -1282,11 +1286,11 @@ else
 class XmlSerializer implements ~                                  print(className.c_str());
                                ~.ParsingEventHandler
 {
-  private input: string = null;
-  private delayedTag: string = null;
+  private input!: string;
+  private delayedTag: string | null = null;
   private indent: boolean;
-  private hasChildElement = false;
-  private depth = 0;
+  private hasChildElement!: boolean;
+  private depth!: number;
 
   constructor(indent: boolean)
   {
@@ -1295,7 +1299,7 @@ class XmlSerializer implements ~                                  print(classNam
 
   reset(source: string)
   {
-    process.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    proc.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
     this.input = source;
     this.hasChildElement = false;
     this.depth = 0;
@@ -1305,17 +1309,17 @@ class XmlSerializer implements ~                                  print(classNam
   {
     if (this.delayedTag != null)
     {
-      process.stdout.write("<");
-      process.stdout.write(this.delayedTag);
-      process.stdout.write(">");
+      proc.stdout.write("<");
+      proc.stdout.write(this.delayedTag);
+      proc.stdout.write(">");
     }
     this.delayedTag = tag;
     if (this.indent)
     {
-      process.stdout.write("\n");
+      proc.stdout.write("\n");
       for (var i = 0; i < this.depth; ++i)
       {
-        process.stdout.write("  ");
+        proc.stdout.write("  ");
       }
     }
     this.hasChildElement = false;
@@ -1328,9 +1332,9 @@ class XmlSerializer implements ~                                  print(classNam
     if (this.delayedTag != null)
     {
       this.delayedTag = null;
-      process.stdout.write("<");
-      process.stdout.write(tag);
-      process.stdout.write("/>");
+      proc.stdout.write("<");
+      proc.stdout.write(tag);
+      proc.stdout.write("/>");
     }
     else
     {
@@ -1338,16 +1342,16 @@ class XmlSerializer implements ~                                  print(classNam
       {
         if (this.hasChildElement)
         {
-          process.stdout.write("\n");
+          proc.stdout.write("\n");
           for (var i = 0; i < this.depth; ++i)
           {
-            process.stdout.write("  ");
+            proc.stdout.write("  ");
           }
         }
       }
-      process.stdout.write("</");
-      process.stdout.write(tag);
-      process.stdout.write(">");
+      proc.stdout.write("</");
+      proc.stdout.write(tag);
+      proc.stdout.write(">");
     }
     this.hasChildElement = true;
   }
@@ -1371,15 +1375,15 @@ class XmlSerializer implements ~                                  print(classNam
     {
       if (this.delayedTag != null)
       {
-        process.stdout.write("<");
-        process.stdout.write(this.delayedTag);
-        process.stdout.write(">");
+        proc.stdout.write("<");
+        proc.stdout.write(this.delayedTag);
+        proc.stdout.write(">");
         this.delayedTag = null;
       }
-      process.stdout.write(this.input.substring(begin, end)
-                   .replace(/&/g, "&amp;")
-                   .replace(/</g, "&lt;")
-                   .replace(/>/g, "&gt;"));
+      proc.stdout.write(this.input.substring(begin, end)
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;"));
     }
   }
 }
@@ -1387,32 +1391,33 @@ class XmlSerializer implements ~                                  print(classNam
 ~
 // main program for use with node.js
 
-var fs = require('fs');
+const proc: any = (globalThis as any).process;
+const requ: any = eval("require");
+const fs: any = requ("fs");
 
-if (process.argv.length < 3)
+if (proc.argv.length < 3)
 {
-  process.stderr.write("Usage: node ~                           print(className.c_str());
-                                    ~.js ~                      if (tree)
+  proc.stderr.write("Usage: node ~                              print(className.c_str());
+                                 ~.js ~                         if (tree)
                                                                 {
-                                         ~[-i] ~                }
-                                         ~INPUT...\n");
-  process.stderr.write("\n");
-  process.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");~
+                                      ~[-i] ~                   }
+                                      ~INPUT...\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");~
                                                                 if (tree)
                                                                 {
 ~
-  process.stderr.write("\n");
-  process.stderr.write("  Option:\n");
-  process.stderr.write("    -i     indented parse tree\n");~    }
+  proc.stderr.write("\n");
+  proc.stderr.write("  Option:\n");
+  proc.stderr.write("    -i     indented parse tree\n");~       }
 ~
 }
 else
 {
   var indent = false;
-  for (var i = 2; i < process.argv.length; ++i)
+  for (var i = 2; i < proc.argv.length; ++i)
   {
-    var arg = process.argv[i];~
-                                                                if (tree)
+    var arg = proc.argv[i];~                                    if (tree)
                                                                 {
 ~
     if (arg === "-i")
@@ -1487,7 +1492,7 @@ else
         if (pe.isAmbiguousInput())
         {
           pe.serialize(s);
-          process.stdout.write("\n");
+          proc.stdout.write("\n");
         }~                                                      }
 ~
         throw parser.getErrorMessage(pe);

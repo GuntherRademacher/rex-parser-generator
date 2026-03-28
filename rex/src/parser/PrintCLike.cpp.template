@@ -1739,10 +1739,11 @@ function init(source~                                           if (noLexer)
                                                                   args += L", ";
                                                                   if (isScala()) args += staticPrefix();
                                                                   args += isLrParser
-                                                                        ? L"BottomUpEventHandler "
+                                                                        ? L"BottomUpEventHandler"
                                                                         : isTypescript()
-                                                                        ? L"ParsingEventHandler "
-                                                                        : L"EventHandler ";
+                                                                        ? L"ParsingEventHandler"
+                                                                        : L"EventHandler";
+                                                                  args += L" ";
                                                                   if (isCpp()) args += L"*";
                                                                   args += L"parsingEventHandler";
                                                                 }
@@ -2868,7 +2869,9 @@ return ~                                                        if (isPython())
                                                                   {
                                                                     args += L", ";
                                                                     if (! isTypescript()) args += staticPrefix();
-                                                                    args += L"BottomUpEventHandler ";
+                                                                    args += L"BottomUpEventHandler";
+                                                                    if (isTypescript()) args += L"|null";
+                                                                    args += L" ";
                                                                     if (isCpp()) args += L"*";
                                                                     args += L"eventHandler";
                                                                   }
@@ -3234,7 +3237,8 @@ case ~                                                            }
   symbols = ~                                                     print(thiz());
                                                                   if (useGlr)
                                                                   {
-            ~stack~                                                 print(arrow());
+            ~stack~                                                 if (isTypescript()) print(L"!");
+                                                                    print(arrow());
                                                                   }
                                                                   if (isGo() && useGlr)
                                                                   {
@@ -3298,7 +3302,8 @@ case ~                                                            }
   symbols = ~                                                     print(thiz());
                                                                   if (useGlr)
                                                                   {
-            ~stack~                                                 print(arrow());
+            ~stack~                                                 if (isTypescript()) print(L"!");
+                                                                    print(arrow());
                                                                   }
                                                                   if (isGo() && useGlr)
                                                                   {
@@ -3628,8 +3633,7 @@ if ~                                                            print(ifLeftPare
                                                            ~e1~
                                                                     if (isTypescript())
                                                                     {
-                                                              ~, null~
-                                                                    }
+                                                              ~, -1~}
                                                                     if (isGo())
                                                                     {
                                                                      ~}}~
@@ -3990,7 +3994,8 @@ for ~                                                                   print(if
 ~
   ~                                                                   print(thiz());
   ~stack = ~                                                          print(thiz());
-           ~stack.link~                                               print(semicolon());
+           ~stack.link~                                               if (isTypescript()) print(L"!");
+                                                                      print(semicolon());
                                                                       print(rightBrace());
                                                                       decreaseIndent(2);
                                                                     }
@@ -3998,7 +4003,7 @@ for ~                                                                   print(if
     ~                                                               print(thiz());
     ~state = ~                                                      print(thiz());
              ~stack~                                                print(arrow());
-                 ~state~                                            print(semicolon());
+                   ~state~                                          print(semicolon());
 ~
     ~                                                               print(thiz());
     ~bs = ~                                                         print(thiz());
@@ -4013,7 +4018,8 @@ for ~                                                                   print(if
 ~
     ~                                                                 print(thiz());
     ~stack = ~                                                        print(thiz());
-             ~stack.link~                                             print(semicolon());
+             ~stack.link~                                             if (isTypescript()) print(L"!");
+                                                                      print(semicolon());
                                                                     }
                                                                   }
                                                                   else
@@ -4203,7 +4209,8 @@ for ~                                                                   print(if
 ~
   ~                                                                   print(thiz());
   ~stack = ~                                                          print(thiz());
-           ~stack.link~                                               print(semicolon());
+           ~stack.link~                                               if (isTypescript()) print(L"!");
+                                                                      print(semicolon());
                                                                       print(rightBrace());
                                                                       decreaseIndent(2);
                                                                     }
@@ -4230,7 +4237,8 @@ for ~                                                                   print(if
 ~
     ~                                                                 print(thiz());
     ~stack = ~                                                        print(thiz());
-             ~stack.link~                                             print(semicolon());
+             ~stack.link~                                             if (isTypescript()) print(L"!");
+                                                                      print(semicolon());
                                                                     }
                                                                   }
                                                                   else
@@ -5519,23 +5527,26 @@ for ~                                                                 print(ifLe
                                                                       if (isCpp()) print(L"*");
                ~node~                                                 if (isTypescript())
                                                                       {
-                      ~: StackNode~                                   }
+                      ~: StackNode | null~                            }
                                                                       print(assign());
                       ~this; ~                                      }
-                             ~node~                                 print(arrow());
+                             ~node~                                 if (isTypescript()) print(L"!");
+                                                                    print(arrow());
                                   ~state >= 0~                      if (isPython())
                                                                     {
                                              ~:~                    }
                                                                     else
                                                                     {
-                                             ~; node = node~          print(arrow());
+                                             ~; node = node~          if (isTypescript()) print(L"!");
+                                                                      print(arrow());
                                                            ~link~     print(ifRightParen());
                                                                     }
                                                                     print(leftBrace());
 ~
   code = ~                                                          print(thiz());
                                                                     print(isGo() ? L"L" : L"l");
-         ~ookback(node~                                             print(arrow());
+         ~ookback(node~                                             if (isTypescript()) print(L"!");
+                                                                    print(arrow());
                       ~code, code)~                                 print(semicolon());
                                                                   }
                                                                   else
@@ -5860,7 +5871,8 @@ public function reset(l, b, e)
                                                               {
 ~
   ~                                                             print(thiz());
-  ~eventHandler~                                                print(arrow());
+  ~eventHandler~                                                if (isTypescript() && isLrParser) print(L"!");
+                                                                print(arrow());
                                                                 if (isGo())
                                                                 {
                ~R~                                              }
