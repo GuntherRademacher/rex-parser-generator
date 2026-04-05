@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 09:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Apr 5, 2026 10:15 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q TabFree.ebnf -scala -performance -tree
 
 import java.io.File
@@ -314,10 +314,10 @@ object TabFree {
   def main(args: Array[String]): Unit = {
     if (args.length == 0) {
       println("Usage: scala TabFree [-q] [-r N] [-t N] ENDING...")
-      println
+      println()
       println("  parse all files that have names ending with ENDING, in current dir and below,")
       println("  and display performance summary.")
-      println
+      println()
       println("  -q     do not show file names")
       println("  -r N   repeat N times")
       println("  -t N   repeat until N seconds have elapsed")
@@ -356,12 +356,12 @@ object TabFree {
 
         var msec = System.currentTimeMillis - start
 
-        if (! quiet) println
+        if (! quiet) println()
         println("loaded " + parsers.size + " file" +
                 (if (parsers.size == 1) "" else "s") +
                 " in " + msec + " msec")
-        if (! quiet) println
-        Console.flush
+        if (! quiet) println()
+        Console.flush()
 
         start = System.currentTimeMillis
         i = 0
@@ -380,7 +380,7 @@ object TabFree {
                   if (! quiet) print("parsing " + job.name)
                   job.parser.reset(0, 0, 0)
                   job.parser.parse_TabFree
-                  if (! quiet) println
+                  if (! quiet) println()
                   if (job.contentCounter.length != job.input.length) {
                     throw new RuntimeException("content counter saw " + job.contentCounter.length + ", but input length is " + job.input.length);
                   }
@@ -402,13 +402,13 @@ object TabFree {
         msec = System.currentTimeMillis - start
         val mbPerSec = if (msec != 0) new java.text.DecimalFormat("0.##").format(parsed / 1024e0 / 1024e0 * 1000e0 / msec) else null
 
-        if (! quiet) println
+        if (! quiet) println()
         print("parsed " + parsed + " byte" + (if (parsed == 1) "" else "s") +
               " in " + msec + " msec")
         if (mbPerSec != null) {
           print(" (" + mbPerSec + " MB/sec)")
         }
-        println
+        println()
         println("" + errorCount + " error" + (if (errorCount == 1) "" else "s"))
       }
     }

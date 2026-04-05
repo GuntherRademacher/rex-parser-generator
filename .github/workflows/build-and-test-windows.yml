@@ -63,6 +63,16 @@ jobs:
       - name: Install TypeScript
         run: npm install -g typescript
 
+      - name: Show tool versions
+        run: |
+          java -version
+          scala -version
+          haxe --version
+          mono --version
+          node --version
+          npm --version
+          tsc --version
+
       - name: Run Gradle Tests
         working-directory: rex-tests
         run: .\gradlew.bat test
