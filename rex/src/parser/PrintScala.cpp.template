@@ -149,7 +149,7 @@ abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begi
       current = current.link
     }
     while (! stack.isEmpty) {
-      stack.pop.execute(eventHandler)
+      stack.pop().execute(eventHandler)
     }
   }
 }
@@ -192,13 +192,13 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                         ~, eventHandler~      }
                                         ~, target)
   while (true) {
-    thread = threads.dequeue
+    thread = threads.dequeue()
     if (thread.accepted) {
       var other: ~
                                                               print(className.c_str());
                  ~.ParsingThread = null
       while (! threads.isEmpty) {
-        other = threads.dequeue
+        other = threads.dequeue()
         if (thread.e0 < other.e0) {
           thread = other
           other = null
@@ -583,12 +583,12 @@ class ParsingThread extends Ordered[ParsingThread] {
                                                               {
                             ~ [-i]~                           }
                             ~ INPUT...")
-      println
+      println()
       println("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n")~
                                                               if (tree)
                                                               {
 ~
-      println
+      println()
       println("  Option:")
       println("    -i     indented parse tree")~              }
 ~
@@ -728,10 +728,10 @@ class ParsingThread extends Ordered[ParsingThread] {
     if (args.length == 0) {
       println("Usage: scala ~                                 print(className.c_str());
                             ~ [-q] [-r N] [-t N] ENDING...")
-      println
+      println()
       println("  parse all files that have names ending with ENDING, in current dir and below,")
       println("  and display performance summary.")
-      println
+      println()
       println("  -q     do not show file names")
       println("  -r N   repeat N times")
       println("  -t N   repeat until N seconds have elapsed")
@@ -770,12 +770,12 @@ class ParsingThread extends Ordered[ParsingThread] {
 
         var msec = System.currentTimeMillis - start
 
-        if (! quiet) println
+        if (! quiet) println()
         println("loaded " + parsers.size + " file" +
                 (if (parsers.size == 1) "" else "s") +
                 " in " + msec + " msec")
-        if (! quiet) println
-        Console.flush
+        if (! quiet) println()
+        Console.flush()
 
         start = System.currentTimeMillis
         i = 0
@@ -799,7 +799,7 @@ class ParsingThread extends Ordered[ParsingThread] {
                   job.parser.~                                print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                              ~
-                  if (! quiet) println~                       if (tree)
+                  if (! quiet) println()~                     if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
@@ -829,13 +829,13 @@ class ParsingThread extends Ordered[ParsingThread] {
         msec = System.currentTimeMillis - start
         val mbPerSec = if (msec != 0) new java.text.DecimalFormat("0.##").format(parsed / 1024e0 / 1024e0 * 1000e0 / msec) else null
 
-        if (! quiet) println
+        if (! quiet) println()
         print("parsed " + parsed + " byte" + (if (parsed == 1) "" else "s") +
               " in " + msec + " msec")
         if (mbPerSec != null) {
           print(" (" + mbPerSec + " MB/sec)")
         }
-        println
+        println()
         println("" + errorCount + " error" + (if (errorCount == 1) "" else "s"))
       }
     }

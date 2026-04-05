@@ -1,4 +1,4 @@
-// This file was generated on Sun Jan 26, 2025 19:55 (UTC+01) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Apr 5, 2026 09:32 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintScala.cpp.template
                                                             #line 1 "PrintScala.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -232,7 +232,7 @@
   append(L"      current = current.link\n");
   append(L"    }\n");
   append(L"    while (! stack.isEmpty) {\n");
-  append(L"      stack.pop.execute(eventHandler)\n");
+  append(L"      stack.pop().execute(eventHandler)\n");
   append(L"    }\n");
   append(L"  }\n");
   append(L"}\n");
@@ -296,7 +296,7 @@
                                                             #line 297 "PrintScala.cpp"
   append(L", target)\n");
   append(L"  while (true) {\n");
-  append(L"    thread = threads.dequeue\n");
+  append(L"    thread = threads.dequeue()\n");
   append(L"    if (thread.accepted) {\n");
   append(L"      var other: ");
                                                             #line 198 "PrintScala.cpp.template"
@@ -304,7 +304,7 @@
                                                             #line 305 "PrintScala.cpp"
   append(L".ParsingThread = null\n");
   append(L"      while (! threads.isEmpty) {\n");
-  append(L"        other = threads.dequeue\n");
+  append(L"        other = threads.dequeue()\n");
   append(L"        if (thread.e0 < other.e0) {\n");
   append(L"          thread = other\n");
   append(L"          other = null\n");
@@ -973,14 +973,14 @@
                                                               }
                                                             #line 975 "PrintScala.cpp"
   append(L" INPUT...\")\n");
-  append(L"      println\n");
+  append(L"      println()\n");
   append(L"      println(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\")");
                                                             #line 588 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
                                                             #line 982 "PrintScala.cpp"
   append(L"\n");
-  append(L"      println\n");
+  append(L"      println()\n");
   append(L"      println(\"  Option:\")\n");
   append(L"      println(\"    -i     indented parse tree\")");
                                                             #line 593 "PrintScala.cpp.template"
@@ -1208,10 +1208,10 @@
                                                               print(className.c_str());
                                                             #line 1210 "PrintScala.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\")\n");
-  append(L"      println\n");
+  append(L"      println()\n");
   append(L"      println(\"  parse all files that have names ending with ENDING, in current dir and below,\")\n");
   append(L"      println(\"  and display performance summary.\")\n");
-  append(L"      println\n");
+  append(L"      println()\n");
   append(L"      println(\"  -q     do not show file names\")\n");
   append(L"      println(\"  -r N   repeat N times\")\n");
   append(L"      println(\"  -t N   repeat until N seconds have elapsed\")\n");
@@ -1250,12 +1250,12 @@
   append(L"\n");
   append(L"        var msec = System.currentTimeMillis - start\n");
   append(L"\n");
-  append(L"        if (! quiet) println\n");
+  append(L"        if (! quiet) println()\n");
   append(L"        println(\"loaded \" + parsers.size + \" file\" +\n");
   append(L"                (if (parsers.size == 1) \"\" else \"s\") +\n");
   append(L"                \" in \" + msec + \" msec\")\n");
-  append(L"        if (! quiet) println\n");
-  append(L"        Console.flush\n");
+  append(L"        if (! quiet) println()\n");
+  append(L"        Console.flush()\n");
   append(L"\n");
   append(L"        start = System.currentTimeMillis\n");
   append(L"        i = 0\n");
@@ -1288,7 +1288,7 @@
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                                                             #line 1290 "PrintScala.cpp"
   append(L"\n");
-  append(L"                  if (! quiet) println");
+  append(L"                  if (! quiet) println()");
                                                             #line 802 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
@@ -1326,13 +1326,13 @@
   append(L"        msec = System.currentTimeMillis - start\n");
   append(L"        val mbPerSec = if (msec != 0) new java.text.DecimalFormat(\"0.##\").format(parsed / 1024e0 / 1024e0 * 1000e0 / msec) else null\n");
   append(L"\n");
-  append(L"        if (! quiet) println\n");
+  append(L"        if (! quiet) println()\n");
   append(L"        print(\"parsed \" + parsed + \" byte\" + (if (parsed == 1) \"\" else \"s\") +\n");
   append(L"              \" in \" + msec + \" msec\")\n");
   append(L"        if (mbPerSec != null) {\n");
   append(L"          print(\" (\" + mbPerSec + \" MB/sec)\")\n");
   append(L"        }\n");
-  append(L"        println\n");
+  append(L"        println()\n");
   append(L"        println(\"\" + errorCount + \" error\" + (if (errorCount == 1) \"\" else \"s\"))\n");
   append(L"      }\n");
   append(L"    }\n");

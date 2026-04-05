@@ -5836,7 +5836,7 @@ public function reset(l, b, e)
                                                                   else if (isScala())
                                                                   {
 ~
-  memo.clear~                                                     }
+  memo.clear()~                                                   }
                                                                   else if (isHaxe())
                                                                   {
 ~

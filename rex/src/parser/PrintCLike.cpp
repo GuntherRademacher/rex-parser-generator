@@ -1,4 +1,4 @@
-// This file was generated on Sat Mar 28, 2026 21:32 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Apr 5, 2026 09:16 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCLike.cpp.template
                                                             #line 1 "PrintCLike.cpp.template"
                                                             /*
@@ -10296,7 +10296,7 @@
                                                                   {
                                                             #line 10298 "PrintCLike.cpp"
   append(L"\n");
-  append(L"  memo.clear");
+  append(L"  memo.clear()");
                                                             #line 5839 "PrintCLike.cpp.template"
                                                                   }
                                                                   else if (isHaxe())
