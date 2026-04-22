@@ -31,37 +31,24 @@ declare variable $xquery-known-failures as xs:string* :=
 
   "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
   
-  (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
-  
-  "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
-  
   (: PR 2515 https://github.com/qt4cg/qtspecs/pull/2515 :)
   
   "sequence-type-43",                      (: missing adaptation to #2515             :)
   
-  "fo-test-map-build-013",                 (: syntax error in generated test          :)
-  "fo-test-fn-jvalue-003"                  (: syntax error in generated test          :)
+  "fo-test-map-build-013"                  (: syntax error in generated test          :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
 (
-  "fo-test-fn-resolve-QName-001",          (: direct element constructor              :)
-  "fo-test-fn-resolve-QName-002",          (: direct element constructor              :)
-  
   (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
 
   "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
   
-  (: PR 2413 https://github.com/qt4cg/qtspecs/pull/2413 :)
-  
-  "Keywords-fn-xsd-validator-1",           (: missing adaptation to #2413             :)
-
   (: PR 2515 https://github.com/qt4cg/qtspecs/pull/2515 :)
   
   "sequence-type-43",                      (: missing adaptation to #2515             :)
 
   "fo-test-map-build-013",                 (: syntax error in generated test          :)
-  "fo-test-fn-jvalue-003",                 (: syntax error in generated test          :)
 
   (: XPath Full Text test suite :)
 
