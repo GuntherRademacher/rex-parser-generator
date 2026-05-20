@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue May 5, 2026, 21:15 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed May 20, 2026, 08:27 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -305,9 +305,14 @@ AnyArrayType
 TypedArrayType
          ::= 'array' '(' SequenceType ')'
 RecordType
+         ::= AnyRecordType
+           | TypedRecordType
+AnyRecordType
+         ::= 'record' '(' '*' ')'
+TypedRecordType
          ::= 'record' '(' ( FieldDeclaration ( ',' FieldDeclaration )* )? ')'
 FieldDeclaration
-         ::= FieldName '?'? ( 'as' SequenceType )?
+         ::= FieldName ( 'as' SequenceType )?
 FieldName
          ::= NCName
            | StringLiteral
@@ -387,7 +392,9 @@ MultiplicativeExpr
 UnionExpr
          ::= IntersectExceptExpr ( ( 'union' | '|' ) IntersectExceptExpr )*
 IntersectExceptExpr
-         ::= InstanceofExpr ( ( 'intersect' | 'except' ) InstanceofExpr )*
+         ::= RecordPutExpr ( ( 'intersect' | 'except' ) RecordPutExpr )*
+RecordPutExpr
+         ::= InstanceofExpr ( '+:=' InstanceofExpr )*
 InstanceofExpr
          ::= TreatExpr ( 'instance' 'of' SequenceType )?
 TreatExpr
