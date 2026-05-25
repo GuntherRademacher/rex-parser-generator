@@ -1,5 +1,6 @@
 package de.bottlecaps.rex.test.base;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -211,7 +212,7 @@ public class RExRunner
     Pass.assume(SAXON_EE != null, runner, "\"SAXON-EE\" not found. Its CLASSPATH entry must be in environment variable SAXON_EE.");
   }
 
-  private void ensureGoAvailable(Runner runner) throws TestAbortedException {
+  public void ensureGoAvailable(Runner runner) throws TestAbortedException {
     Pass.assume(GO != null, runner, "\"go\" not found. It must be available on the PATH.");
   }
 
@@ -688,8 +689,8 @@ public class RExRunner
       try
       {
         URL resource = this.getClass().getResource("/" + resourceName);
-        path = new File(resource.toURI()).getAbsolutePath();
         assertNotNull(resource, "missing resource: " + resourceName);
+        path = new File(resource.toURI()).getAbsolutePath();
         Path path = Paths.get(resource.toURI());
         name = path.toFile().getName();
         content = read(path);
@@ -698,14 +699,6 @@ public class RExRunner
       {
         throw new RuntimeException(e.getMessage(), e);
       }
-    }
-
-    private static String read(Path path) throws IOException {
-      String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-      if (content.startsWith("\uFEFF"))
-        return content.substring(1);
-      else
-        return content;
     }
 
     public NamedFile(Path path)
@@ -720,6 +713,19 @@ public class RExRunner
       {
         throw new RuntimeException(e.getMessage(), e);
       }
+    }
+
+    private static String read(Path path) throws IOException
+    {
+      assertTrue(Files.exists(path), "missing file: " + path);
+      assertEquals(path.toAbsolutePath().normalize().toString(), path.toRealPath().toString(),
+          "real path does not match expected path");
+
+      String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+      if (content.startsWith("\uFEFF"))
+        return content.substring(1);
+      else
+        return content;
     }
 
     public String getBaseName()
@@ -756,6 +762,7 @@ public class RExRunner
       try
       {
         Path path = Paths.get(folder, name);
+        Files.createDirectories(path.getParent());
         Files.write(path, content.getBytes(StandardCharsets.UTF_8));
       }
       catch (IOException e)

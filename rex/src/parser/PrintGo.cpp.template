@@ -13,7 +13,7 @@
                                                               else
                                                               {
 ~
-package ~                                                       if (main || packageName.empty())
+package ~                                                       if (packageName.empty())
                                                                 {
         ~main~                                                  }
                                                                 else
@@ -28,12 +28,12 @@ import (
                                                                 if (main || performanceTest)
                                                                 {
 ~
-  "os"
   "io/ioutil"
   "fmt"~                                                        }
                                                                 if (main || performanceTest || trace)
                                                                 {
 ~
+  "os"
   "strings"~                                                    }
                                                                 if (performanceTest)
                                                                 {
@@ -50,7 +50,13 @@ import (
                                                               if (main)
                                                               {
 ~
-func main() {
+func ~                                                          if (packageName.empty() || packageName == L"main")
+                                                                {
+     ~m~                                                        }
+                                                                else
+                                                                {
+     ~M~                                                        }
+       ~ain() {
   if len(os.Args) < 2 {
     os.Stderr.WriteString("Usage: ~                             print(className.c_str());
                                                                 if (tree)
