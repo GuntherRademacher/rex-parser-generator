@@ -4,6 +4,7 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url 'https://files.basex.org/maven' }
 }
 
 dependencies {
@@ -11,7 +12,7 @@ dependencies {
     testImplementation 'net.sf.saxon:Saxon-HE:12.9', {
         exclude group: "xml-apis", module: "xml-apis"
     }
-    testImplementation 'org.basex:basex:12.0'
+    testImplementation 'org.basex:basex:12.3'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
@@ -24,22 +25,24 @@ test {
     if (project.hasProperty('USE_VALGRIND')) {
         systemProperty 'USE_VALGRIND', project.property('USE_VALGRIND')
     }
-    afterSuite { desc, result ->
-        if (!desc.parent) {
-            println "\n" +
-                "${result.testCount} tests completed: " +
-                "${result.successfulTestCount} succeeded, " +
-                "${result.skippedTestCount} skipped, " +
-                "${result.failedTestCount} failed."
-            def testSummary = """# Test Summary
+    addTestListener([
+        afterSuite: { desc, result ->
+            if (!desc.parent) {
+                println "\n" +
+                    "${result.testCount} tests completed: " +
+                    "${result.successfulTestCount} succeeded, " +
+                    "${result.skippedTestCount} skipped, " +
+                    "${result.failedTestCount} failed."
+                def testSummary = """# Test Summary
 |           | Count
 |-----------|-------
 |     Total | ${result.testCount}
 | Succeeded | ${result.successfulTestCount}
 |   Skipped | ${result.skippedTestCount}
 |    Failed | ${result.failedTestCount}"""
-            def testSummaryFile = file("${buildDir}/test-results/test-summary.md")
-            testSummaryFile.text = testSummary
+                def testSummaryFile = file("${buildDir}/test-results/test-summary.md")
+                testSummaryFile.text = testSummary
+            }
         }
-    }
+    ] as TestListener)
 }

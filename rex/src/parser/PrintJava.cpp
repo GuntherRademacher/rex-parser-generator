@@ -1,4 +1,4 @@
-// This file was generated on Sun Jan 26, 2025 19:55 (UTC+01) by REx v6.1 which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun May 24, 2026 23:30 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintJava.cpp.template
                                                             #line 1 "PrintJava.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -175,7 +175,7 @@
   append(L"import org.basex.core.MainOptions;\n");
   append(L"import org.basex.io.IOContent;\n");
   append(L"import org.basex.query.value.item.Str;\n");
-  append(L"import org.basex.query.value.node.ANode;\n");
+  append(L"import org.basex.query.value.node.XNode;\n");
   append(L"import org.basex.query.value.node.DBNode;\n");
   append(L"import org.basex.util.Atts;\n");
   append(L"import org.basex.util.Token;");
@@ -808,7 +808,7 @@
                                                                   {
                                                             #line 810 "PrintJava.cpp"
   append(L"\n");
-  append(L"  public static ANode parse");
+  append(L"  public static XNode parse");
                                                             #line 514 "PrintJava.cpp.template"
                                                                     WString acceptableName = Format::acceptableName<WString>(p->name).c_str();
                                                                     const wchar_t *name = acceptableName.c_str();
@@ -846,7 +846,7 @@
                                                             #line 847 "PrintJava.cpp"
   append(L" p);\n");
   append(L"\n");
-  append(L"    public ANode call(Str str) throws IOException\n");
+  append(L"    public XNode call(Str str) throws IOException\n");
   append(L"    {\n");
   append(L"      String input = str.toJava();\n");
   append(L"      SingleParser singleParser = new SingleParser(new IOContent(\"\"), new MainOptions())\n");

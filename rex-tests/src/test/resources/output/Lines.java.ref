@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 06:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun May 24, 2026 23:58 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Lines.ebnf -java -basex -tree
 
 import java.io.IOException;
@@ -8,7 +8,7 @@ import org.basex.build.SingleParser;
 import org.basex.core.MainOptions;
 import org.basex.io.IOContent;
 import org.basex.query.value.item.Str;
-import org.basex.query.value.node.ANode;
+import org.basex.query.value.node.XNode;
 import org.basex.query.value.node.DBNode;
 import org.basex.util.Atts;
 import org.basex.util.Token;
@@ -168,7 +168,7 @@ public class Lines
     }
   }
 
-  public static ANode parseFile(Str str) throws IOException
+  public static XNode parseFile(Str str) throws IOException
   {
     BaseXFunction baseXFunction = new BaseXFunction()
     {
@@ -182,7 +182,7 @@ public class Lines
   {
     protected abstract void execute(Lines p);
 
-    public ANode call(Str str) throws IOException
+    public XNode call(Str str) throws IOException
     {
       String input = str.toJava();
       SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())

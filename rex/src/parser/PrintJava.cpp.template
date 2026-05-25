@@ -121,7 +121,7 @@ import org.basex.build.SingleParser;
 import org.basex.core.MainOptions;
 import org.basex.io.IOContent;
 import org.basex.query.value.item.Str;
-import org.basex.query.value.node.ANode;
+import org.basex.query.value.node.XNode;
 import org.basex.query.value.node.DBNode;
 import org.basex.util.Atts;
 import org.basex.util.Token;~                                   }
@@ -511,7 +511,7 @@ public class ~                                                  print(className.
                                                                   if (p->isStartSymbol())
                                                                   {
 ~
-  public static ANode parse~                                        WString acceptableName = Format::acceptableName<WString>(p->name).c_str();
+  public static XNode parse~                                        WString acceptableName = Format::acceptableName<WString>(p->name).c_str();
                                                                     const wchar_t *name = acceptableName.c_str();
                                                                     wchar_t initial = towupper(*name);
                                                                     print(&initial, 1);
@@ -535,7 +535,7 @@ public class ~                                                  print(className.
     protected abstract void execute(~                           print(className.c_str());
                                     ~ p);
 
-    public ANode call(Str str) throws IOException
+    public XNode call(Str str) throws IOException
     {
       String input = str.toJava();
       SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())

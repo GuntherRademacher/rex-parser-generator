@@ -658,7 +658,7 @@ public class RExRunner
     Pass.passEarlyIfPossible(runner, className + ".java");
     runner.expectSuccess("Java compilation", JAVAC, "-d . " + className + ".java");
     String java = new NamedFile(Paths.get(runner.getFolder(), className + ".java")).getContent();
-    Pattern pattern = Pattern.compile(".*public static ANode parse([^(]+)\\(Str str\\).*", Pattern.DOTALL);
+    Pattern pattern = Pattern.compile(".*public static XNode parse([^(]+)\\(Str str\\).*", Pattern.DOTALL);
     Matcher matcher = pattern.matcher(java);
     String startSymbol = matcher.find() ? matcher.group(1) : "NOTFOUND";
     runner.run(JAVA, "org.basex.BaseX -sindent=no -binput=" + runtimeOptions + " \"" +
