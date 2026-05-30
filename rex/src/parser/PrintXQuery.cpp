@@ -1,4 +1,4 @@
-// This file was generated on Fri Oct 24, 2025 22:37 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintXQuery.cpp.template
                                                             #line 1 "PrintXQuery.cpp.template"
                                                             /*
