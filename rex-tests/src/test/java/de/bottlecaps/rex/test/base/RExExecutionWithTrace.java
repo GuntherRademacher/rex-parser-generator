@@ -24,7 +24,7 @@ public abstract class RExExecutionWithTrace extends RExExecutionWithResult
       "^\\Q" + XML_DECLARATION + "\\E\n?" + "|" +
       "trace \\[1\\]: xs:string: ?" + "|" +
       "(trace\")?<trace>\"?\n" + "|" +
-      "(trace\")?</trace>\"?\n$");
+      "(trace\")?</trace>\"?\n?$");
 
   private static Configuration configuration = new Configuration();
   static

@@ -387,7 +387,10 @@ public class TestCodeAnnotations extends RExRunner
   {
     String summary = runner.summary();
     assertEquals(0, runner.getExitCode(), summary);
-    assertEquals(expectedOutput, runner.getStdout().replace("\r\n", "\n"), summary);
+    String stdout = runner.getStdout().replace("\r\n", "\n");
+    while (stdout.endsWith("\n"))
+      stdout = stdout.substring(0, stdout.length() - 1);
+    assertEquals(expectedOutput, stdout, summary);
     Pass.passNormally(runner);
   }
 

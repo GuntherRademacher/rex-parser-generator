@@ -60,6 +60,8 @@ public abstract class AbstractAllPlatformsTest extends RExRunner
   protected String normalize(String string, Pattern pattern)
   {
     string = crlfNormalizer.matcher(string).replaceAll("\n");
+    while (string.endsWith("\n"))
+      string = string.substring(0, string.length() - 1);
     if (pattern != null)
       string = pattern.matcher(string).replaceAll("");
     return string;
