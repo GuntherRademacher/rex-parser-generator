@@ -41,7 +41,7 @@ jobs:
       # Download and install BaseX
       - name: Download and Install BaseX
         run: |
-          curl -s -O https://files.basex.org/releases/12.3/BaseX123.zip
+          curl -s -O https://files.basex.org/releases/12.4/BaseX124.zip
           unzip -q BaseX*.zip
           echo "$(pwd)/basex/bin" >> "$GITHUB_PATH"
 
