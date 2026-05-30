@@ -718,7 +718,7 @@ public class RExRunner
     private static String read(Path path) throws IOException
     {
       assertTrue(Files.exists(path), "missing file: " + path);
-      assertEquals(path.toAbsolutePath().normalize().toString(), path.toRealPath().toString(),
+      assertEquals(path.toAbsolutePath().normalize().toRealPath().toString(), path.toRealPath().toString(),
           "real path does not match expected path");
 
       String content = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
