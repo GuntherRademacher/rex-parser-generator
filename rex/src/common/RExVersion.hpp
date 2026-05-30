@@ -8,7 +8,7 @@
 #ifndef REXVERSION_HPP
 #define REXVERSION_HPP
 #define REX_VMAJOR   "6"
-#define REX_VMINOR   "2"
+#define REX_VMINOR   "3-SNAPSHOT"
 #define REX_DAY      30
 #define REX_MONTH    "May"
 #define REX_YEAR     2026
