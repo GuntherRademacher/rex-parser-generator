@@ -17,9 +17,12 @@ declare variable $with-full-text as xs:boolean external := false();
 (:~ Whether to include BaseX specialties :)
 declare variable $with-basex as xs:boolean external := false();
 
+(:~ Specification :)
+declare variable $spec := html-doc($specification-url);
+
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
-  let $names := html-doc($specification-url)
+  let $names := $spec
     //@id[. = 'id-reserved-fn-names']
     /ancestor-or-self::xhtml:div[1]
     //xhtml:blockquote
@@ -34,7 +37,7 @@ declare variable $reserved-function-names :=
 
 (:~ Reserved names not allowed for computed node constructors. :)
 declare variable $reserved-constructor-names :=
-  let $names := html-doc($specification-url)
+  let $names := $spec
     //@id[. = 'parse-note-unreserved-name']
     /ancestor-or-self::xhtml:div[1]
     /xhtml:p[contains(., "not one of the following")]
@@ -44,7 +47,15 @@ declare variable $reserved-constructor-names :=
     /string()
   return
     if (exists($names) or contains($specification-url, 'xpath')) then
-      $names
+    (
+      $names,
+      if("trace" = $names) then
+        message("temporary fix for #2694 can be removed")
+      else if ($spec//@href = "#doc-xquery40-FLWORExpr-TraceClause") then
+        "trace"
+      else
+        ()
+    )
     else
       error(xs:QName('reserved-names'), 'failed to retrieve reserved constructor names from ' || $specification-url);
 

@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jun 3, 2026, 09:47 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jun 17, 2026, 10:28 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -51,7 +51,6 @@ NCName   ::= UnreservedNCName
            | 'for'
            | 'function'
            | 'ge'
-           | 'get'
            | 'gnode'
            | 'gt'
            | 'idiv'
@@ -138,7 +137,6 @@ QName    ::= UnreservedFunctionQName
            | 'fn'
            | 'function'
            | 'gnode'
-           | 'get'
            | 'if'
            | 'item'
            | 'jnode'
@@ -559,6 +557,7 @@ AbbreviatedStep
            | SimpleNodeTest
 NodeTest ::= UnionNodeTest
            | SimpleNodeTest
+           | EnclosedExpr
 UnionNodeTest
          ::= '(' SimpleNodeTest ( '|' SimpleNodeTest )* ')'
 SimpleNodeTest
@@ -569,7 +568,6 @@ TypeTest ::= GNodeType
            | JNodeType
 Selector ::= EQName
            | Wildcard
-           | 'get' '(' ExprSingle ')'
 FullStep ::= Axis NodeTest
 Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'namespace' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
 SequenceArrowTarget
@@ -707,7 +705,6 @@ Keyword  ::= 'ancestor'
            | 'for'
            | 'function'
            | 'ge'
-           | 'get'
            | 'gnode'
            | 'gt'
            | 'idiv'
@@ -832,7 +829,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'get' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value'
+          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'gnode' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value'
 Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
