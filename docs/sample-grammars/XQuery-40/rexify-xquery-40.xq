@@ -47,15 +47,7 @@ declare variable $reserved-constructor-names :=
     /string()
   return
     if (exists($names) or contains($specification-url, 'xpath')) then
-    (
-      $names,
-      if("trace" = $names) then
-        message("temporary fix for #2694 can be removed")
-      else if ($spec//@href = "#doc-xquery40-FLWORExpr-TraceClause") then
-        "trace"
-      else
-        ()
-    )
+      $names
     else
       error(xs:QName('reserved-names'), 'failed to retrieve reserved constructor names from ' || $specification-url);
 
@@ -190,21 +182,6 @@ declare variable $rules as local:rule+ :=
   (
     function($node) {exists($node/self::g:production[@name = ('Wildcard', 'Comment') or .//g:subtract])},
     function($node) {text {''}}
-  ),
-
-  (: Rewrite StringInterpolation to use EnclosedExpr rather than Expr with tokens '`{' and '}`'. :)
-  local:rule
-  (
-    function($node)
-    {
-      $node/self::g:production/@name = 'StringInterpolation'
-      and empty($node/@whitespace-spec)
-      and count($node/*) eq 3
-      and $node/g:string = '`{'
-      and $node/g:string = '}`'
-      and $node/g:optional[count(*) eq 1]/g:ref/@name = 'Expr'
-    },
-    function($node) {u:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
   (: Replace choice by orderedChoice for BaseX' else-less if :)

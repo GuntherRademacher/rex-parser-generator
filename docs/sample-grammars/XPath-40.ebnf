@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jun 17, 2026, 10:28 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Jul 8, 2026, 09:55 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -550,7 +550,7 @@ LookupExpr
          ::= PostfixExpr Lookup
 MethodCall
          ::= PostfixExpr '=?>' NCName PositionalArgumentList
-AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*
+AxisStep ::= ( AbbreviatedStep | FullStep ) ( Predicate | Lookup )*
 AbbreviatedStep
          ::= '..'
            | '@' NodeTest
