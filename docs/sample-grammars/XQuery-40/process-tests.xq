@@ -29,13 +29,7 @@ declare variable $xquery-known-failures as xs:string* :=
 (
   (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
 
-  "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
-  
-  (: PR 2515 https://github.com/qt4cg/qtspecs/pull/2515 :)
-  
-  "sequence-type-43",                      (: missing adaptation to #2515             :)
-  
-  "fo-test-map-build-013"                  (: syntax error in generated test          :)
+  "function-call-reserved-function-names-026a"  (: missing adaptation to #2336        :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
@@ -43,12 +37,6 @@ declare variable $xpath-known-failures as xs:string* :=
   (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
 
   "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
-  
-  (: PR 2515 https://github.com/qt4cg/qtspecs/pull/2515 :)
-  
-  "sequence-type-43",                      (: missing adaptation to #2515             :)
-
-  "fo-test-map-build-013",                 (: syntax error in generated test          :)
 
   (: XPath Full Text test suite :)
 

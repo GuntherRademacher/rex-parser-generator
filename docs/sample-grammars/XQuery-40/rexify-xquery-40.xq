@@ -17,9 +17,12 @@ declare variable $with-full-text as xs:boolean external := false();
 (:~ Whether to include BaseX specialties :)
 declare variable $with-basex as xs:boolean external := false();
 
+(:~ Specification :)
+declare variable $spec := html-doc($specification-url);
+
 (:~ Reserved function names. :)
 declare variable $reserved-function-names :=
-  let $names := html-doc($specification-url)
+  let $names := $spec
     //@id[. = 'id-reserved-fn-names']
     /ancestor-or-self::xhtml:div[1]
     //xhtml:blockquote
@@ -34,7 +37,7 @@ declare variable $reserved-function-names :=
 
 (:~ Reserved names not allowed for computed node constructors. :)
 declare variable $reserved-constructor-names :=
-  let $names := html-doc($specification-url)
+  let $names := $spec
     //@id[. = 'parse-note-unreserved-name']
     /ancestor-or-self::xhtml:div[1]
     /xhtml:p[contains(., "not one of the following")]
@@ -179,21 +182,6 @@ declare variable $rules as local:rule+ :=
   (
     function($node) {exists($node/self::g:production[@name = ('Wildcard', 'Comment') or .//g:subtract])},
     function($node) {text {''}}
-  ),
-
-  (: Rewrite StringInterpolation to use EnclosedExpr rather than Expr with tokens '`{' and '}`'. :)
-  local:rule
-  (
-    function($node)
-    {
-      $node/self::g:production/@name = 'StringInterpolation'
-      and empty($node/@whitespace-spec)
-      and count($node/*) eq 3
-      and $node/g:string = '`{'
-      and $node/g:string = '}`'
-      and $node/g:optional[count(*) eq 1]/g:ref/@name = 'Expr'
-    },
-    function($node) {u:ast("StringInterpolation ::= '`' EnclosedExpr '`' /*ws: explicit*/")}
   ),
 
   (: Replace choice by orderedChoice for BaseX' else-less if :)
