@@ -39,7 +39,7 @@ jobs:
           clang --version
 
       - name: Checkout Repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Build C++ Project
         run: rex/scripts/build-clang.sh
