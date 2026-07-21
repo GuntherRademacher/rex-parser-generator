@@ -27,16 +27,12 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
-
-  "function-call-reserved-function-names-026a"  (: missing adaptation to #2336        :)
+  "Keywords-fn-xsd-validator-1"            (: see https://github.com/qt4cg/qtspecs/issues/2772#issuecomment-4989948302 :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
 (
-  (: PR 2336 https://github.com/qt4cg/qtspecs/pull/2336 :)
-
-  "function-call-reserved-function-names-026a", (: missing adaptation to #2336        :)
+  "Keywords-fn-xsd-validator-1",           (: see https://github.com/qt4cg/qtspecs/issues/2772#issuecomment-4989948302 :)
 
   (: XPath Full Text test suite :)
 
