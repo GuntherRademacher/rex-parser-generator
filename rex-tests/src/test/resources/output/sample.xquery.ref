@@ -1,12 +1,12 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Thu Dec 26, 2024 06:57 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
-(: REx command line: -q file-vs-name.ebnf -xquery -name http://namespace.org/sample :)
+(: This file was generated on Sat Jul 25, 2026 11:30 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net> :)
+(: REx command line: -q file-vs-name.ebnf -xquery -name http://www.bottlecaps.de/ns/sample :)
 
 (:~
- : The parser that was generated for the http://namespace.org/sample grammar.
+ : The parser that was generated for the http://www.bottlecaps.de/ns/sample grammar.
  :)
-module namespace p="http://namespace.org/sample";
+module namespace p="http://www.bottlecaps.de/ns/sample";
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
 
 (:~
