@@ -18,7 +18,7 @@ On the other hand, deterministic parsing methods like LL or LR construction have
 In addition to supporting lookaheads longer than a single token, REx provides mechanisms for resolving lexical ambiguities and parsing conflicts. These mechanisms include:
 
  - [Token preference rules](#token-preference-rules)
- - [Lexical lookahead]()
+ - [Lexical lookahead](#lexical-lookahead)
  - [Ordered alternation](#using-ordered-alternation) 
 
 ## Token Preference Rules
