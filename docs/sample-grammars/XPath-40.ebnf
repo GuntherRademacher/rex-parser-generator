@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Jul 21, 2026, 20:22 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Jul 28, 2026, 22:07 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -398,8 +398,8 @@ InstanceofExpr
 TreatExpr
          ::= CastableExpr ( 'treat' 'as' SequenceType )?
 CastableExpr
-         ::= CastExpr ( 'castable' 'as' CastTarget '?'? )?
-CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget '?'? )?
+         ::= CastExpr ( 'castable' 'as' CastTarget ( OccurrenceIndicator / ) )?
+CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget ( OccurrenceIndicator / ) )?
 PipelineExpr
          ::= ArrowExpr ( '->' ArrowExpr )*
 ArrowExpr
@@ -585,6 +585,9 @@ CastTarget
          ::= TypeName
            | ChoiceItemType
            | EnumerationType
+           | TypedArrayType
+           | TypedMapType
+           | TypedRecordType
 ValueComp
          ::= 'eq'
            | 'ne'
