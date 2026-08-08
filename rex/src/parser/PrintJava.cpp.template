@@ -117,9 +117,8 @@ import net.sf.saxon.str.StringView;~                              }
                                                                 {
 ~
 import org.basex.build.MemBuilder;
-import org.basex.build.SingleParser;
+import org.basex.build.Parser;
 import org.basex.core.MainOptions;
-import org.basex.io.IOContent;
 import org.basex.query.value.item.Str;
 import org.basex.query.value.node.XNode;
 import org.basex.query.value.node.DBNode;
@@ -532,19 +531,16 @@ public class ~                                                  print(className.
 ~
   public static abstract class BaseXFunction
   {
+    private static final MainOptions OPTIONS = new MainOptions();
     protected abstract void execute(~                           print(className.c_str());
                                     ~ p);
 
     public XNode call(Str str) throws IOException
     {
       String input = str.toJava();
-      SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())
-      {
-        @Override
-        protected void parse() throws IOException {}
-      };
-      MemBuilder memBuilder = new MemBuilder(input, singleParser);
-      memBuilder.init();~                                       if (tree)
+      Parser emptyParser = Parser.emptyParser(OPTIONS);
+      MemBuilder memBuilder = new MemBuilder(input, emptyParser).init();~
+                                                                if (tree)
                                                                 {
 ~
       BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder);~
@@ -589,8 +585,7 @@ public class ~                                                  print(className.
       }
       catch (ParseException pe)
       {
-        memBuilder = new MemBuilder(input, singleParser);
-        memBuilder.init();
+        memBuilder = new MemBuilder(input, emptyParser).init();
         Atts atts = new Atts();
         atts.add(Token.token("b"), Token.token(pe.getBegin() + 1));
         atts.add(Token.token("e"), Token.token(pe.getEnd() + 1));
@@ -607,6 +602,11 @@ public class ~                                                  print(className.
         memBuilder.text(Token.token(parser.getErrorMessage(pe)));
         memBuilder.closeElem();
       }
+      catch (RuntimeException e)
+      {
+        if (e.getCause() instanceof IOException) throw (IOException) e.getCause();
+        throw e;
+      }      
       return new DBNode(memBuilder.data());
     }
   }

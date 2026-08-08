@@ -1,12 +1,11 @@
-// This file was generated on Sun May 24, 2026 23:58 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Aug 7, 2026 23:24 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Lines.ebnf -java -basex -tree
 
 import java.io.IOException;
 import java.util.Arrays;
 import org.basex.build.MemBuilder;
-import org.basex.build.SingleParser;
+import org.basex.build.Parser;
 import org.basex.core.MainOptions;
-import org.basex.io.IOContent;
 import org.basex.query.value.item.Str;
 import org.basex.query.value.node.XNode;
 import org.basex.query.value.node.DBNode;
@@ -180,18 +179,14 @@ public class Lines
 
   public static abstract class BaseXFunction
   {
+    private static final MainOptions OPTIONS = new MainOptions();
     protected abstract void execute(Lines p);
 
     public XNode call(Str str) throws IOException
     {
       String input = str.toJava();
-      SingleParser singleParser = new SingleParser(new IOContent(""), new MainOptions())
-      {
-        @Override
-        protected void parse() throws IOException {}
-      };
-      MemBuilder memBuilder = new MemBuilder(input, singleParser);
-      memBuilder.init();
+      Parser emptyParser = Parser.emptyParser(OPTIONS);
+      MemBuilder memBuilder = new MemBuilder(input, emptyParser).init();
       BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder);
       Lines parser = new Lines();
       parser.initialize(input, treeBuilder);
@@ -201,8 +196,7 @@ public class Lines
       }
       catch (ParseException pe)
       {
-        memBuilder = new MemBuilder(input, singleParser);
-        memBuilder.init();
+        memBuilder = new MemBuilder(input, emptyParser).init();
         Atts atts = new Atts();
         atts.add(Token.token("b"), Token.token(pe.getBegin() + 1));
         atts.add(Token.token("e"), Token.token(pe.getEnd() + 1));
@@ -218,6 +212,11 @@ public class Lines
         memBuilder.openElem(Token.token("ERROR"), atts, new Atts());
         memBuilder.text(Token.token(parser.getErrorMessage(pe)));
         memBuilder.closeElem();
+      }
+      catch (RuntimeException e)
+      {
+        if (e.getCause() instanceof IOException) throw (IOException) e.getCause();
+        throw e;
       }
       return new DBNode(memBuilder.data());
     }
