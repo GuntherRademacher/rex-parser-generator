@@ -78,9 +78,9 @@ public:
     const wchar_t *delim = L" ,";
     const wchar_t *comma = L"";
     wcstokContext = 0;
-    for (wchar_t *type = wcstoken(str, delim, &wcstokContext); type; type = wcstoken(NULL, L" ", &wcstokContext))
+    for (wchar_t *type = wcstok(str, delim, &wcstokContext); type; type = wcstok(NULL, L" ", &wcstokContext))
     {
-      wchar_t *name = wcstoken(NULL, L",", &wcstokContext);
+      wchar_t *name = wcstok(NULL, L",", &wcstokContext);
       print(comma);
       print(name);
       print(L" ");

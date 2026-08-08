@@ -758,7 +758,7 @@ public class TestRegression extends AbstractSinglePlatformTest
         
         runner.setFolder(folder);
         if (0 != runner.run(GO, "mod init m")) throw new RuntimeException(runner.summary());
-        if (0 == runner.run(GO, "build", main))
+        if (0 == runner.run(GO, "build -buildvcs=false", main))
         {
           runner.run(folder + File.separator + "m", "{x}", main);
         }

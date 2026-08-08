@@ -522,7 +522,7 @@ public class RExRunner
     String baseName = className(runner.getArgs(), GO);
     Pass.passEarlyIfPossible(runner, baseName + ".go");
     if (0 != runner.run(GO, "mod init " + baseName)) throw new RuntimeException(runner.summary());
-    if (0 == runner.run(GO, "build"))
+    if (0 == runner.run(GO, "build -buildvcs=false"))
     {
       String folder = runner.getFolder();
       runner.run(folder + File.separator + baseName, runtimeOptions);

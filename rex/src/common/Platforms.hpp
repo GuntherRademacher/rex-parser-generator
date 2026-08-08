@@ -17,13 +17,8 @@
 
   #ifdef __GNUG__
     #define swprintf snwprintf
-    #define wcstoken(strToken, strDelimit, context) wcstok(strToken, strDelimit)
-  #else
-    #define wcstoken(strToken, strDelimit, context) wcstok(strToken, strDelimit, context)
   #endif
 
-#else
-  #define wcstoken(strToken, strDelimit, context) wcstok(strToken, strDelimit, context)
 #endif
 
 #endif
