@@ -27,13 +27,10 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  "Keywords-fn-xsd-validator-1"            (: see https://github.com/qt4cg/qtspecs/issues/2772#issuecomment-4989948302 :)
 );
 
 declare variable $xpath-known-failures as xs:string* :=
 (
-  "Keywords-fn-xsd-validator-1",           (: see https://github.com/qt4cg/qtspecs/issues/2772#issuecomment-4989948302 :)
-
   (: XPath Full Text test suite :)
 
   "examples-364-5",                        (: direct element constructor              :)

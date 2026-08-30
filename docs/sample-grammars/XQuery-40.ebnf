@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Aug 5, 2026, 10:16 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Sun Aug 30, 2026, 18:56 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -1175,9 +1175,9 @@ CastTarget
          ::= TypeName
            | ChoiceItemType
            | EnumerationType
-           | TypedArrayType
-           | TypedMapType
-           | TypedRecordType
+           | ArrayType
+           | MapType
+           | RecordType
 ValueComp
          ::= 'eq'
            | 'ne'
@@ -1212,7 +1212,7 @@ FunctionDecl
 ParamListWithDefaults
          ::= ParamWithDefault ( ',' ParamWithDefault )*
 ParamWithDefault
-         ::= VarNameAndType ( ':=' ExprSingle )?
+         ::= VarNameAndType ( ':=' ( ExprSingle | 'context' 'value' ) )?
 ItemTypeDecl
          ::= 'declare' Annotation* 'type' EQName 'as' ItemType
 NamedRecordTypeDecl

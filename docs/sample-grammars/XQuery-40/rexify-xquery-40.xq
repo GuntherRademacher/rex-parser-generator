@@ -35,6 +35,9 @@ declare variable $reserved-function-names :=
     else
       error(xs:QName('reserved-function-names'), 'failed to retrieve reserved function names from ' || $specification-url);
 
+(:~  :)
+declare variable $unified-grammar := u:unify($specification-url, $with-update, $with-full-text, $with-basex);
+
 (:~ Reserved names not allowed for computed node constructors. :)
 declare variable $reserved-constructor-names :=
   let $names := $spec
@@ -49,7 +52,7 @@ declare variable $reserved-constructor-names :=
     if (exists($names) or contains($specification-url, 'xpath')) then
       $names
     else
-      error(xs:QName('reserved-names'), 'failed to retrieve reserved constructor names from ' || $specification-url);
+      trace(local:keywords($unified-grammar/g:grammar), "reserved-constructor-names");
 
 (:~
  : This is the structure of a rewriting rule:
@@ -471,9 +474,9 @@ declare function local:keywords($grammar as element(g:grammar)) as xs:string*
 
 concat
 (
-  let $grammar := u:unify($specification-url, $with-update, $with-full-text, $with-basex)
-    => local:rewrite()
-    => u:depth-first()
+  let $grammar := $unified-grammar
+      => local:rewrite()
+      => u:depth-first()
   return
   (
     replace($grammar/comment(), '\*/', '* adapted for REx by ' || replace(static-base-uri(), '.*/', '') || '&#xA; */'),

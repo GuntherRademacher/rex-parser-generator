@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Aug 5, 2026, 10:21 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Sun Aug 30, 2026, 18:58 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -585,9 +585,9 @@ CastTarget
          ::= TypeName
            | ChoiceItemType
            | EnumerationType
-           | TypedArrayType
-           | TypedMapType
-           | TypedRecordType
+           | ArrayType
+           | MapType
+           | RecordType
 ValueComp
          ::= 'eq'
            | 'ne'
