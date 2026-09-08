@@ -171,9 +171,7 @@ declare variable $rules as local:rule+ :=
     function($node)
     {
       $node/self::g:optional[count(*) eq 1 and g:ref/@name eq 'OccurrenceIndicator']
-      /ancestor::g:production/@name = ('SequenceType', 
-                                       'CastableExpr', 'CastExpr'   (: see https://github.com/qt4cg/qtspecs/issues/2820 :)
-                                      )
+      /ancestor::g:production/@name = 'SequenceType'
     },
     function($node) {u:ast('_ ::= OccurrenceIndicator /')/g:orderedChoice}
   ),
