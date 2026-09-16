@@ -1,6 +1,6 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Tue Sep 8, 2026, 22:39 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Sep 16, 2026, 10:52 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -22,6 +22,7 @@ NCName   ::= UnreservedNCName
            | 'as'
            | 'at'
            | 'attribute'
+           | 'but'
            | 'cast'
            | 'castable'
            | 'child'
@@ -100,6 +101,7 @@ NCName   ::= UnreservedNCName
            | 'typeswitch'
            | 'union'
            | 'value'
+           | 'with'
            | 'xnode'
 Expr     ::= ExprSingle ( ',' ExprSingle )*
 ExprSingle
@@ -152,6 +154,7 @@ UnreservedFunctionQName
            | 'and'
            | 'as'
            | 'at'
+           | 'but'
            | 'cast'
            | 'castable'
            | 'child'
@@ -210,6 +213,7 @@ UnreservedFunctionQName
            | 'true'
            | 'union'
            | 'value'
+           | 'with'
 TypeDeclaration
          ::= 'as' SequenceType
 SequenceType
@@ -390,9 +394,9 @@ MultiplicativeExpr
 UnionExpr
          ::= IntersectExceptExpr ( ( 'union' | '|' ) IntersectExceptExpr )*
 IntersectExceptExpr
-         ::= RecordPutExpr ( ( 'intersect' | 'except' ) RecordPutExpr )*
-RecordPutExpr
-         ::= InstanceofExpr ( '+:=' InstanceofExpr )*
+         ::= ButWithExpr ( ( 'intersect' | 'except' ) ButWithExpr )*
+ButWithExpr
+         ::= InstanceofExpr ( 'but' 'with' InstanceofExpr )*
 InstanceofExpr
          ::= TreatExpr ( 'instance' 'of' SequenceType )?
 TreatExpr
@@ -676,6 +680,7 @@ Keyword  ::= 'ancestor'
            | 'as'
            | 'at'
            | 'attribute'
+           | 'but'
            | 'cast'
            | 'castable'
            | 'child'
@@ -754,6 +759,7 @@ Keyword  ::= 'ancestor'
            | 'typeswitch'
            | 'union'
            | 'value'
+           | 'with'
            | 'xnode'
 URIQualifiedName
          ::= BracedURILiteral ( NCName ':' )? NCName
@@ -829,7 +835,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value' 'xnode'
+          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'but' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value' 'with' 'xnode'
 Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName
