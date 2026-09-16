@@ -276,8 +276,8 @@ public:
     {
       printf("using whitespace production %ls\n", ws->name);
 #if SELFTEST
-      printf("   first (%ls): %ls\n", ws->name, wf1.toString(L"", L" |", 120, 0, false));
-      printf("   first2(%ls): %ls\n", ws->name, wf2.toString(L"", L" |", 120, 0, false));
+      printf("   first (%ls): %ls\n", ws->name, wf1.toString(node, L"", L" |", 120, 0, false).c_str());
+      printf("   first2(%ls): %ls\n", ws->name, wf2.toString(node, L"", L" |", 120, 0, false).c_str());
 #endif
     }
 
@@ -315,7 +315,7 @@ public:
           if (node->verbose)
           {
             printf("t2.first: %ls\n", node->naming.getName(node, t2.first()));
-            printf("t2.size: %d\n", t2.size());
+            printf("t2.size: %d\n", (int) t2.size());
             printf("t2.last: %ls\n", node->naming.getName(node, t2.last()));
           }
 #endif

@@ -29,7 +29,7 @@ public:
       if (e == 0)
       {
         printf("e == 0\n");
-        printf("wcslen(test) %d\n", wcslen(test));
+        printf("wcslen(test) %d\n", (int) wcslen(test));
         printf("i = %d, test = %x %x %x\n", i, test[0], test[1], test[2]);
         exit(1);
       }
@@ -37,18 +37,18 @@ public:
       if (d == 0)
       {
         printf("d == 0\n");
-        printf("wcslen(test) %d\n", wcslen(test));
+        printf("wcslen(test) %d\n", (int) wcslen(test));
         printf("i = %d, test = %x %x %x\n", i, test[0], test[1], test[2]);
-        printf("strlen(e) %d\n", strlen(e));
+        printf("strlen(e) %d\n", (int) strlen(e));
         printf("i = %d, test = %x %x %x %x\n", i, e[0] & 255, e[1] & 255, e[2] & 255, e[3] & 255);
         exit(1);
       }
       if (wcscmp(d, test))
       {
         printf("strcmp != 0\n");
-        printf("wcslen(test) %d\n", wcslen(test));
-        printf("strlen(e) %d\n", strlen(e));
-        printf("wcslen(d) %d\n", wcslen(d));
+        printf("wcslen(test) %d\n", (int) wcslen(test));
+        printf("strlen(e) %d\n", (int) strlen(e));
+        printf("wcslen(d) %d\n", (int) wcslen(d));
         printf("i = %d, u = %x, d = %x, test = %x\n", i, unencoded[i], d[0], test[0]);
         for (int j = 0; e[j]; ++j)
           printf("   e[%d] = %x\n", j, e[j] & 0xff);
