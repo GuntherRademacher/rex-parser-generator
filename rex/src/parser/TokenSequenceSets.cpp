@@ -35,6 +35,12 @@ const TokenSequenceSet *LazyFollowAccessor::get(size_t k) const
 
 const TokenSequenceSet *TokenSequenceSets::eraseIfEndsWith(const TokenSequenceSetAccessor *accessor, Token::Code code)
 {
+#if ASSERTIONS
+  if (! accessor->get()->isCollected())
+  {
+    internalerr();
+  }
+#endif
   const TokenSequenceSet *&memoized = eraseIfEndsWithMemoizer[SetCodeMemoizer::key_type(accessor, code)];
   if (! memoized)
   {

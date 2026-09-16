@@ -113,6 +113,12 @@ public:
 
   const TokenSequenceSet *setUnion(const TokenSequenceSetAccessor *first, const TokenSequenceSetAccessor *second)
   {
+#if ASSERTIONS
+    if (! first->get()->isCollected() || ! second->get()->isCollected())
+    {
+      internalerr();
+    }
+#endif
     const TokenSequenceSet *&memoized = setUnionMemoizer[SetSetMemoizer::key_type(first, second)];
     if (! memoized)
     {
@@ -125,6 +131,12 @@ public:
 
   const TokenSequenceSet *setIntersection(const TokenSequenceSetAccessor *first, const TokenSequenceSetAccessor *second)
   {
+#if ASSERTIONS
+    if (! first->get()->isCollected() || ! second->get()->isCollected())
+    {
+      internalerr();
+    }
+#endif
     const TokenSequenceSet *&memoized = setIntersectionMemoizer[SetSetMemoizer::key_type(first, second)];
     if (! memoized)
     {
@@ -137,6 +149,12 @@ public:
 
   const TokenSequenceSet *setDifference(const TokenSequenceSetAccessor *first, const TokenSequenceSetAccessor *second)
   {
+#if ASSERTIONS
+    if (! first->get()->isCollected() || ! second->get()->isCollected())
+    {
+      internalerr();
+    }
+#endif
     const TokenSequenceSet *&memoized = setDifferenceMemoizer[SetSetMemoizer::key_type(first, second)];
     if (! memoized)
     {
@@ -149,6 +167,12 @@ public:
 
   const TokenSequenceSet *firstK(const TokenSequenceSetAccessor *tss, const size_t k)
   {
+#if ASSERTIONS
+    if (! tss->get()->isCollected())
+    {
+      internalerr();
+    }
+#endif
     const TokenSequenceSet *&memoized = firstKMemoizer[SetSizeMemoizer::key_type(tss, (int) k)];
     if (! memoized)
     {

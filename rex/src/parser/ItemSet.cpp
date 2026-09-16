@@ -372,7 +372,7 @@ const TokenSequenceSet *LrState::resolve(Grammar *grammar,
       resolved.insert(lookahead);
     }
   }
-  conflicts = tokenSequenceSets->setDifference(conflicts, &resolved);
+  conflicts = tokenSequenceSets->setDifference(conflicts, tokenSequenceSets->resolve(&resolved));
   return conflicts;
 }
 
@@ -555,6 +555,11 @@ void LrState::buildAppendixes(Grammar *grammar)
           offset = grammar->states->appendixOffset(AppendixEntry(entry, *j));
           entry = forkEntry(grammar, offset);
         }
+      }
+
+      if (offset < 0)
+      {
+        internalerr();
       }
       appendixOffsetByTokenSequence->insert(IntByTokenSequence::value_type(ts, offset));
     }

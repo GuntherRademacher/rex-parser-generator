@@ -9,6 +9,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -771,6 +777,102 @@ public class TestRegression extends AbstractSinglePlatformTest
           summary);
       Pass.passNormally(runner);
     });
+  }
+
+  @Test
+  public void testGlalrOrderedChoiceConflictResolution()
+  {
+    // ordered choice ( C / ) resolves the 'x' conflict - regression for a bogus FORK
+    NamedFile orderedChoice = new NamedFile
+    (
+      "S.ebnf",
+      "S ::= A 'x' EOF",
+      "A ::= B",
+      "    | C",
+      "D ::= 'x'",
+      "    | 'y'",
+      "B ::= 'w' ( C / )",
+      "C ::= 'y'? D",
+      "<?TOKENS?>",
+      "EOF ::= $"
+    );
+
+    // wraps A's tree into the S parse tree
+    Function<String, String> tree =
+        a -> "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S>" + a + "<TOKEN>x</TOKEN><EOF/></S>";
+
+    // exact language, with expected trees
+    Map<String, String> orderedValid = new LinkedHashMap<>();
+    orderedValid.put("xx",   tree.apply("<A><C><D><TOKEN>x</TOKEN></D></C></A>"));
+    orderedValid.put("yx",   tree.apply("<A><C><D><TOKEN>y</TOKEN></D></C></A>"));
+    orderedValid.put("yxx",  tree.apply("<A><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></A>"));
+    orderedValid.put("yyx",  tree.apply("<A><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></A>"));
+    orderedValid.put("wxx",  tree.apply("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>x</TOKEN></D></C></B></A>"));
+    orderedValid.put("wyx",  tree.apply("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>y</TOKEN></D></C></B></A>"));
+    orderedValid.put("wyxx", tree.apply("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></B></A>"));
+    orderedValid.put("wyyx", tree.apply("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></B></A>"));
+
+    // 'wx' rejected: C wins over the empty alternative, leaving no 'x' for S
+    List<String> orderedInvalid = Arrays.asList("wx");
+
+    checkGlalrLanguage(orderedChoice,
+        "1 LALR(1)-conflict handled by GLALR processing",
+        orderedValid, orderedInvalid);
+
+    // unordered choice ( C | ): larger language, 'wx' now valid - conflict not resolved away
+    NamedFile unorderedChoice = new NamedFile
+    (
+      "S.ebnf",
+      "S ::= A 'x' EOF",
+      "A ::= B",
+      "    | C",
+      "D ::= 'x'",
+      "    | 'y'",
+      "B ::= 'w' ( C | )",
+      "C ::= 'y'? D",
+      "<?TOKENS?>",
+      "EOF ::= $"
+    );
+
+    Map<String, String> unorderedValid = new LinkedHashMap<>(orderedValid);
+    unorderedValid.put("wx", tree.apply("<A><B><TOKEN>w</TOKEN></B></A>"));
+
+    checkGlalrLanguage(unorderedChoice,
+        "2 LALR(1)-conflicts handled by GLALR processing",
+        unorderedValid, Collections.emptyList());
+  }
+
+  /** Generates a GLALR(1) parser, checks the conflict count, then parses every valid input,
+   *  compares its tree, and verifies that every invalid one is rejected.
+   */
+  private void checkGlalrLanguage(NamedFile grammar, String expectedConflictMessage,
+      Map<String, String> valid, List<String> invalid)
+  {
+    String commandLine = commandLine("-java -main", "-glalr 1 -tree", grammar);
+    Runner runner = new Runner();
+    if (0 != runner.run(REX, commandLine, grammar))
+      throw new RuntimeException(runner.summary("rex generation failed"));
+    assertTrue(runner.getStdout().contains(expectedConflictMessage),
+        runner.summary("expected conflict message: " + expectedConflictMessage));
+
+    String className = className(runner.getArgs(), JAVAC);
+    runner.expectSuccess("Java compilation", JAVAC, "-encoding UTF-8 " + className + ".java");
+
+    for (Map.Entry<String, String> e : valid.entrySet())
+    {
+      int exitCode = runner.run(JAVA, className + " {" + e.getKey() + "}");
+      String summary = runner.summary("valid input {" + e.getKey() + "}");
+      assertEquals(0, exitCode, summary);
+      assertEquals(e.getValue(), runner.getStdout().trim(), summary);
+    }
+
+    for (String input : invalid)
+    {
+      int exitCode = runner.run(JAVA, className + " {" + input + "}");
+      assertNotEquals(0, exitCode, runner.summary("input {" + input + "} should be rejected"));
+    }
+
+    runner.cleanup();
   }
 
 }
