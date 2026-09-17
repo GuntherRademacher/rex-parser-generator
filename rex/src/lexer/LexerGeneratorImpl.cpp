@@ -2186,7 +2186,7 @@ void LexerGeneratorImpl::dfaConstruction(const GrammarCharClasses &gcc, DfaState
 
   if (nolexer)
   {
-    BitSet tokenSet(hightoken);
+    BitSet tokenSet(hightoken + 1);
     size_t expectedSetSize = tokenSet.getBaseSize();
     expectedTokenTableSize = expectedSetSize * entrycount;
 
