@@ -52,6 +52,55 @@ declare variable $xpath-known-failures as xs:string* :=
   "Catalog003"                             (: direct element constructor              :)
 );
 
+declare variable $basex-known-failures as xs:string* :=
+(
+  (: BaseX accepts braced if-then-else, XQuery 4.0 only has braced if-then. :)
+
+  "CondExpr-Braced-002",
+  "CondExpr-Braced-003",
+  "CondExpr-Braced-004",
+  "CondExpr-Braced-005",
+  "CondExpr-Braced-006",
+  "CondExpr-Braced-007",
+  "CondExpr-Braced-008",
+  "CondExpr-Braced-009",
+  "CondExpr-Braced-010",
+  "CondExpr-Braced-011",
+  "CondExpr-Braced-012",
+  "CondExpr-Braced-013",
+  "CondExpr-Braced-014",
+  "CondExpr-Braced-015",
+  "CondExpr-Braced-016",
+  "CondExpr-Braced-017",
+  "CondExpr-Braced-018",
+  "CondExpr-Braced-020",
+  "CondExpr-Braced-021",
+  "CondExpr-Braced-022",
+  "K-CondExpr-Braced-7",
+  "braced-if-001",
+  "braced-if-004",
+  "braced-if-005",
+  "braced-if-007",
+  "braced-if-008",
+
+  (: BaseX allows any NCName as a computed constructor name :)
+
+  "K2-ComputeConAttr-65",
+  "K2-ComputeConAttr-72",
+  "K2-ComputeConElem-20",
+  "K2-ComputeConElem-25",
+  "K2-ComputeConElem-26",
+  "stf-insert-002",
+  "stf-insert-after-003",
+  "stf-replace-node-005",
+  "K2-ForExprWithout-42a",
+  "K2-ForExprWithout-43a",
+  
+  (: BaseX treatment of xgc:leading-lone-slash :)
+  
+  "PathExpr-10"
+);
+
 declare variable $parse :=
   switch ()
   case $implementation eq "java" return
@@ -74,7 +123,11 @@ declare variable $parse :=
   default return error(xs:QName("process-tests"), "unsupported parser implementation: " || $implementation);
 
 declare variable $filter := upper-case(substring($language, 1, 2)) || '(\d\d\+|40)';
-declare variable $known-failures := if (contains($language, "xpath")) then $xpath-known-failures else $xquery-known-failures;
+declare variable $known-failures :=
+(
+  if (contains($language, "xpath")) then $xpath-known-failures else $xquery-known-failures,
+  if (contains($language, "basex")) then $basex-known-failures else ()
+);
 
 declare variable $expected-pass := 0;
 declare variable $expected-fail := 1;
