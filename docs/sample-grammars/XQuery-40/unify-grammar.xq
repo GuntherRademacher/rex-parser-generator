@@ -283,6 +283,8 @@ declare function u:include-basex($nodes as node()*) as node()*
         <g:ref name="BracedActions"/>
       else if ($node/@name eq "UnreservedName") then
         <g:ref name="EQName"/>
+      else if ($node/@name eq "UnreservedNCName") then
+        <g:ref name="NCName"/>
       else if ($node/@name eq "UpdatingFunctionCall" and $node/parent::g:choice/parent::g:production/@name eq "ExprSingle") then
         ()
       else if ($node/@name eq "CastableExpr" and $node/ancestor::g:production/@name eq "TreatExpr") then

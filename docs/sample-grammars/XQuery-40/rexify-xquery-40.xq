@@ -369,7 +369,15 @@ declare variable $rules as local:rule+ :=
   (: Allow unreserved keywords as computed node names :)
   local:rule
   (
-    function($node) {u:is-xquery($node) and $node/self::g:choice/parent::g:production/@name = ("CompNodeName", "CompNodeNCName")},
+    function($node)
+    {
+      u:is-xquery($node)
+      and
+      (
+           $node/self::g:choice[g:ref/@name = "UnreservedName"]/parent::g:production/@name = "CompNodeName"
+        or $node/self::g:choice[g:ref/@name = "UnreservedNCName"]/parent::g:production/@name = "CompNodeNCName"
+      )
+    },
     function($node)
     {
       let $reserved := 

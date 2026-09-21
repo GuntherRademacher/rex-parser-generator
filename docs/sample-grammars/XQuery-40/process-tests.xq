@@ -88,13 +88,12 @@ declare variable $basex-known-failures as xs:string* :=
   "K2-ComputeConAttr-65",
   "K2-ComputeConAttr-72",
   "K2-ComputeConElem-20",
-  "K2-ComputeConElem-25",
   "K2-ComputeConElem-26",
-  "stf-insert-002",
-  "stf-insert-after-003",
-  "stf-replace-node-005",
+  "nscons-047",
+  "K2-ComputeConPI-16",
   "K2-ForExprWithout-42a",
   "K2-ForExprWithout-43a",
+  "K2-ForExprWithout-44a",
   
   (: BaseX treatment of xgc:leading-lone-slash :)
   
