@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Sep 21, 2026 21:04 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintXSLT.cpp.template
                                                             #line 1 "PrintXSLT.cpp.template"
                                                             /*
@@ -2626,31 +2626,43 @@
                                                                   }
                                                             #line 2628 "PrintXSLT.cpp"
   append(L"\n");
-  append(L"  <xsl:sequence select=\"p:matchW($input, $state[$p:e0], $token-set");
-                                                            #line 1925 "PrintXSLT.cpp.template"
+  append(L"  <xsl:choose>\n");
+  append(L"    <xsl:when test=\"$state[$p:error]\">\n");
+  append(L"      <xsl:variable name=\"error\" as=\"element(error)\" select=\"$state[$p:error]\"/>\n");
+  append(L"      <xsl:sequence select=\"\n");
+  append(L"        - xs:integer($error/@s),\n");
+  append(L"        xs:integer($error/@b),\n");
+  append(L"        xs:integer($error/@e)\n");
+  append(L"      \"/>\n");
+  append(L"    </xsl:when>\n");
+  append(L"    <xsl:otherwise>\n");
+  append(L"      <xsl:sequence select=\"p:matchW($input, $state[$p:e0], $token-set");
+                                                            #line 1935 "PrintXSLT.cpp.template"
                                                                   if (grammar->useGlr)
                                                                   {
-                                                            #line 2634 "PrintXSLT.cpp"
+                                                            #line 2644 "PrintXSLT.cpp"
   append(L", $id");
-                                                            #line 1927 "PrintXSLT.cpp.template"
+                                                            #line 1937 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 2638 "PrintXSLT.cpp"
+                                                            #line 2648 "PrintXSLT.cpp"
   append(L")\"/>\n");
+  append(L"    </xsl:otherwise>\n");
+  append(L"  </xsl:choose>\n");
   append(L"</xsl:when>");
-                                                            #line 1929 "PrintXSLT.cpp.template"
+                                                            #line 1941 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2643 "PrintXSLT.cpp"
+                                                            #line 2655 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:otherwise>\n");
   append(L"  <xsl:sequence select=\"$match\"/>");
-                                                            #line 1932 "PrintXSLT.cpp.template"
+                                                            #line 1944 "PrintXSLT.cpp.template"
                                                                 decreaseIndent(2);
-                                                            #line 2649 "PrintXSLT.cpp"
+                                                            #line 2661 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 1937 "PrintXSLT.cpp.template"
+                                                            #line 1949 "PrintXSLT.cpp.template"
                                                                 size_t lwc = grammar->tables && grammar->k >= grammar->tables && anyWhitespace
                                                                            ? grammar->k
                                                                            : grammar->lookaheadSets.lookaheadWCount;
@@ -2662,7 +2674,7 @@
                                                               printLookaheadMethods(lc, false);
                                                               if (tree && ! isLrParser)
                                                               {
-                                                            #line 2666 "PrintXSLT.cpp"
+                                                            #line 2678 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -2674,16 +2686,16 @@
   append(L" ! @param $state lexer state, error indicator, and result.\n");
   append(L" ! @param $name the name of the result node.\n");
   append(L" ! @param $count the number of child nodes.");
-                                                            #line 1956 "PrintXSLT.cpp.template"
+                                                            #line 1968 "PrintXSLT.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 2681 "PrintXSLT.cpp"
+                                                            #line 2693 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @param $begin the input index where the nonterminal begins.\n");
   append(L" ! @param $end the input index where the nonterminal ends.");
-                                                            #line 1960 "PrintXSLT.cpp.template"
+                                                            #line 1972 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2687 "PrintXSLT.cpp"
+                                                            #line 2699 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @return the updated state.\n");
   append(L"-->\n");
@@ -2701,12 +2713,12 @@
   append(L"  </xsl:variable>\n");
   append(L"  <xsl:sequence select=\"subsequence($state, 1, $count), $node/node()\"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 1978 "PrintXSLT.cpp.template"
+                                                            #line 1990 "PrintXSLT.cpp.template"
                                                               }
                                                               if (memoization)
                                                               {
                                                                 const wchar_t *factor = format.toString<wchar_t>(Math::powerof(2, Math::bits(grammar->conflictCount)));
-                                                            #line 2710 "PrintXSLT.cpp"
+                                                            #line 2722 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -2722,10 +2734,10 @@
   append(L"\n");
   append(L"  <xsl:sequence select=\"subsequence($state, 1, $p:memo)\"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 1995 "PrintXSLT.cpp.template"
+                                                            #line 2007 "PrintXSLT.cpp.template"
                                                                 if (restoreCalled)
                                                                 {
-                                                            #line 2729 "PrintXSLT.cpp"
+                                                            #line 2741 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -2749,9 +2761,9 @@
   append(L"  </xsl:variable>\n");
   append(L"  <xsl:sequence select=\"subsequence($backtrack, 1, $p:memo - 1), $memo/node()\"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2018 "PrintXSLT.cpp.template"
+                                                            #line 2030 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2755 "PrintXSLT.cpp"
+                                                            #line 2767 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -2782,9 +2794,9 @@
   append(L"      <xsl:sequence select=\"$errors[@e = max($errors/xs:integer(@e))][last()]/@*, $memo/value\"/>\n");
   append(L"      <xsl:element name=\"value\">\n");
   append(L"        <xsl:attribute name=\"key\" select=\"$e0 * ");
-                                                            #line 2046 "PrintXSLT.cpp.template"
+                                                            #line 2058 "PrintXSLT.cpp.template"
                                                                 print(factor);
-                                                            #line 2788 "PrintXSLT.cpp"
+                                                            #line 2800 "PrintXSLT.cpp"
   append(L" + $dpi\"/>\n");
   append(L"        <xsl:sequence select=\"$v\"/>\n");
   append(L"      </xsl:element>\n");
@@ -2813,16 +2825,16 @@
   append(L"  <xsl:param name=\"dpi\" as=\"xs:integer\"/>\n");
   append(L"\n");
   append(L"  <xsl:variable name=\"value\" select=\"data($state[$p:memo]/value[@key = $state[$p:e0] * ");
-                                                            #line 2073 "PrintXSLT.cpp.template"
+                                                            #line 2085 "PrintXSLT.cpp.template"
                                                                 print(factor);
-                                                            #line 2819 "PrintXSLT.cpp"
+                                                            #line 2831 "PrintXSLT.cpp"
   append(L" + $dpi])\"/>\n");
   append(L"  <xsl:sequence select=\"\n");
   append(L"    if ($value) then $value else 0,\n");
   append(L"    subsequence($state, $p:lk + 1)\n");
   append(L"  \"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2080 "PrintXSLT.cpp.template"
+                                                            #line 2092 "PrintXSLT.cpp.template"
                                                               }
                                                             }
 
@@ -2830,86 +2842,86 @@
                                                             {
                                                               for (size_t k = 1; k <= lookaheadMethods; ++k)
                                                               {
-                                                            #line 2834 "PrintXSLT.cpp"
+                                                            #line 2846 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
   append(L"\n");
   append(L" ! Lookahead one token on level ");
-                                                            #line 2089 "PrintXSLT.cpp.template"
+                                                            #line 2101 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
                                                                 if (withWhitespace)
                                                                 {
-                                                            #line 2844 "PrintXSLT.cpp"
+                                                            #line 2856 "PrintXSLT.cpp"
   append(L" with whitespace skipping");
-                                                            #line 2092 "PrintXSLT.cpp.template"
+                                                            #line 2104 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2848 "PrintXSLT.cpp"
+                                                            #line 2860 "PrintXSLT.cpp"
   append(L".\n");
   append(L" !");
-                                                            #line 2094 "PrintXSLT.cpp.template"
+                                                            #line 2106 "PrintXSLT.cpp.template"
                                                                 if (k != 1 && unlimitedLookahead)
                                                                 {
-                                                            #line 2854 "PrintXSLT.cpp"
+                                                            #line 2866 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @param $prefix the prefix code representing lower level lookahead.");
-                                                            #line 2098 "PrintXSLT.cpp.template"
+                                                            #line 2110 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2859 "PrintXSLT.cpp"
+                                                            #line 2871 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @param $set the code of the DFA entry state for the set of valid tokens.\n");
   append(L" ! @param $input the input string.\n");
   append(L" ! @param $state lexer state, error indicator, and result stack.");
-                                                            #line 2103 "PrintXSLT.cpp.template"
+                                                            #line 2115 "PrintXSLT.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 2867 "PrintXSLT.cpp"
+                                                            #line 2879 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @param $id the parsing thread id.");
-                                                            #line 2106 "PrintXSLT.cpp.template"
+                                                            #line 2118 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2872 "PrintXSLT.cpp"
+                                                            #line 2884 "PrintXSLT.cpp"
   append(L"\n");
   append(L" ! @return the updated state.\n");
   append(L"-->\n");
   append(L"<xsl:function name=\"p:lookahead");
-                                                            #line 2110 "PrintXSLT.cpp.template"
+                                                            #line 2122 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
                                                                 if (withWhitespace)
                                                                 {
-                                                            #line 2881 "PrintXSLT.cpp"
+                                                            #line 2893 "PrintXSLT.cpp"
   append(L"W");
-                                                            #line 2114 "PrintXSLT.cpp.template"
+                                                            #line 2126 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2885 "PrintXSLT.cpp"
+                                                            #line 2897 "PrintXSLT.cpp"
   append(L"\" as=\"item()+\">");
-                                                            #line 2115 "PrintXSLT.cpp.template"
+                                                            #line 2127 "PrintXSLT.cpp.template"
                                                                 if (k != 1 && unlimitedLookahead)
                                                                 {
-                                                            #line 2890 "PrintXSLT.cpp"
+                                                            #line 2902 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:param name=\"prefix\" as=\"xs:integer\"/>");
-                                                            #line 2118 "PrintXSLT.cpp.template"
+                                                            #line 2130 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2895 "PrintXSLT.cpp"
+                                                            #line 2907 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:param name=\"set\" as=\"xs:integer\"/>\n");
   append(L"  <xsl:param name=\"input\" as=\"xs:string\"/>\n");
   append(L"  <xsl:param name=\"state\" as=\"item()+\"/>");
-                                                            #line 2122 "PrintXSLT.cpp.template"
+                                                            #line 2134 "PrintXSLT.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 2903 "PrintXSLT.cpp"
+                                                            #line 2915 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:param name=\"id\" as=\"xs:integer\"/>");
-                                                            #line 2125 "PrintXSLT.cpp.template"
+                                                            #line 2137 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2908 "PrintXSLT.cpp"
+                                                            #line 2920 "PrintXSLT.cpp"
   append(L"\n");
-                                                            #line 2127 "PrintXSLT.cpp.template"
+                                                            #line 2139 "PrintXSLT.cpp.template"
                                                                 if (k == 1)
                                                                 {
-                                                            #line 2913 "PrintXSLT.cpp"
+                                                            #line 2925 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:choose>\n");
   append(L"    <xsl:when test=\"$state[$p:l1] ne 0\">\n");
@@ -2917,166 +2929,166 @@
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>\n");
   append(L"      <xsl:variable name=\"match\" select=\"");
-                                                            #line 2135 "PrintXSLT.cpp.template"
+                                                            #line 2147 "PrintXSLT.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 2926 "PrintXSLT.cpp"
+                                                            #line 2938 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"match\" select=\"\n");
   append(L"    if ($state[$p:l");
-                                                            #line 2141 "PrintXSLT.cpp.template"
+                                                            #line 2153 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k));
-                                                            #line 2932 "PrintXSLT.cpp"
+                                                            #line 2944 "PrintXSLT.cpp"
   append(L"] ne 0) then\n");
   append(L"      subsequence($state, $p:l");
-                                                            #line 2143 "PrintXSLT.cpp.template"
+                                                            #line 2155 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k));
-                                                            #line 2937 "PrintXSLT.cpp"
+                                                            #line 2949 "PrintXSLT.cpp"
   append(L", ");
-                                                            #line 2144 "PrintXSLT.cpp.template"
+                                                            #line 2156 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k < grammar->k ? 6 : 3));
-                                                            #line 2941 "PrintXSLT.cpp"
+                                                            #line 2953 "PrintXSLT.cpp"
   append(L")\n");
   append(L"    else");
-                                                            #line 2146 "PrintXSLT.cpp.template"
+                                                            #line 2158 "PrintXSLT.cpp.template"
                                                                 }
                                                                 if (k > 1 && k < grammar->k)
                                                                 {
-                                                            #line 2948 "PrintXSLT.cpp"
+                                                            #line 2960 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    (");
-                                                            #line 2150 "PrintXSLT.cpp.template"
+                                                            #line 2162 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2953 "PrintXSLT.cpp"
+                                                            #line 2965 "PrintXSLT.cpp"
   append(L"\n");
   append(L"      p:match");
-                                                            #line 2152 "PrintXSLT.cpp.template"
+                                                            #line 2164 "PrintXSLT.cpp.template"
                                                                 if (withWhitespace)
                                                                 {
-                                                            #line 2959 "PrintXSLT.cpp"
+                                                            #line 2971 "PrintXSLT.cpp"
   append(L"W");
-                                                            #line 2155 "PrintXSLT.cpp.template"
+                                                            #line 2167 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2963 "PrintXSLT.cpp"
+                                                            #line 2975 "PrintXSLT.cpp"
   append(L"($input, $state[$p:e");
-                                                            #line 2156 "PrintXSLT.cpp.template"
+                                                            #line 2168 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k - 1));
-                                                            #line 2967 "PrintXSLT.cpp"
+                                                            #line 2979 "PrintXSLT.cpp"
   append(L"], $set");
-                                                            #line 2157 "PrintXSLT.cpp.template"
+                                                            #line 2169 "PrintXSLT.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 2972 "PrintXSLT.cpp"
+                                                            #line 2984 "PrintXSLT.cpp"
   append(L", $id");
-                                                            #line 2159 "PrintXSLT.cpp.template"
+                                                            #line 2171 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 2976 "PrintXSLT.cpp"
+                                                            #line 2988 "PrintXSLT.cpp"
   append(L")");
-                                                            #line 2160 "PrintXSLT.cpp.template"
+                                                            #line 2172 "PrintXSLT.cpp.template"
                                                                 if (k < grammar->k)
                                                                 {
-                                                            #line 2981 "PrintXSLT.cpp"
+                                                            #line 2993 "PrintXSLT.cpp"
   append(L",\n");
   append(L"      0, 0, 0");
-                                                            #line 2163 "PrintXSLT.cpp.template"
+                                                            #line 2175 "PrintXSLT.cpp.template"
                                                                   if (k > 1)
                                                                   {
-                                                            #line 2987 "PrintXSLT.cpp"
+                                                            #line 2999 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    )");
-                                                            #line 2166 "PrintXSLT.cpp.template"
+                                                            #line 2178 "PrintXSLT.cpp.template"
                                                                   }
                                                                 }
                                                                 if (k == 1)
                                                                 {
                                                                   increaseIndent();
                                                                 }
-                                                            #line 2997 "PrintXSLT.cpp"
+                                                            #line 3009 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  \"/>\n");
   append(L"  <xsl:sequence select=\"\n");
   append(L"    ");
-                                                            #line 2175 "PrintXSLT.cpp.template"
+                                                            #line 2187 "PrintXSLT.cpp.template"
                                                                 if (grammar->tables && k >= grammar->tables)
                                                                 {
-                                                            #line 3005 "PrintXSLT.cpp"
+                                                            #line 3017 "PrintXSLT.cpp"
   append(L"subsequence($state, 1, ");
-                                                            #line 2178 "PrintXSLT.cpp.template"
+                                                            #line 2190 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k * 3));
-                                                            #line 3009 "PrintXSLT.cpp"
+                                                            #line 3021 "PrintXSLT.cpp"
   append(L"),");
-                                                            #line 2179 "PrintXSLT.cpp.template"
+                                                            #line 2191 "PrintXSLT.cpp.template"
                                                                 }
                                                                 else
                                                                 {
                                                                   if (k != 1 && unlimitedLookahead)
                                                                   {
-                                                            #line 3017 "PrintXSLT.cpp"
+                                                            #line 3029 "PrintXSLT.cpp"
   append(L"$match[1] + $prefix");
-                                                            #line 2184 "PrintXSLT.cpp.template"
+                                                            #line 2196 "PrintXSLT.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 3023 "PrintXSLT.cpp"
+                                                            #line 3035 "PrintXSLT.cpp"
   append(L"$match[1]");
-                                                            #line 2187 "PrintXSLT.cpp.template"
+                                                            #line 2199 "PrintXSLT.cpp.template"
                                                                     switch (k)
                                                                     {
                                                                     case 1: break;
                                                                     case 2:
-                                                            #line 3030 "PrintXSLT.cpp"
+                                                            #line 3042 "PrintXSLT.cpp"
   append(L" * ");
-                                                            #line 2191 "PrintXSLT.cpp.template"
+                                                            #line 2203 "PrintXSLT.cpp.template"
                                                                       print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
-                                                            #line 3034 "PrintXSLT.cpp"
+                                                            #line 3046 "PrintXSLT.cpp"
   append(L" + $state[$p:l1]");
-                                                            #line 2192 "PrintXSLT.cpp.template"
+                                                            #line 2204 "PrintXSLT.cpp.template"
                                                                       break;
                                                                     default:
-                                                            #line 3039 "PrintXSLT.cpp"
+                                                            #line 3051 "PrintXSLT.cpp"
   append(L" * ");
-                                                            #line 2194 "PrintXSLT.cpp.template"
+                                                            #line 2206 "PrintXSLT.cpp.template"
                                                                       print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
-                                                            #line 3043 "PrintXSLT.cpp"
+                                                            #line 3055 "PrintXSLT.cpp"
   append(L" + $state[$p:lk]");
-                                                            #line 2195 "PrintXSLT.cpp.template"
+                                                            #line 2207 "PrintXSLT.cpp.template"
                                                                       break;
                                                                     }
                                                                   }
-                                                            #line 3049 "PrintXSLT.cpp"
+                                                            #line 3061 "PrintXSLT.cpp"
   append(L",\n");
   append(L"    subsequence($state, $p:b0, ");
-                                                            #line 2199 "PrintXSLT.cpp.template"
+                                                            #line 2211 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k * 3 - 1));
-                                                            #line 3054 "PrintXSLT.cpp"
+                                                            #line 3066 "PrintXSLT.cpp"
   append(L"),");
-                                                            #line 2200 "PrintXSLT.cpp.template"
+                                                            #line 2212 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3058 "PrintXSLT.cpp"
+                                                            #line 3070 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    $match,\n");
   append(L"    subsequence($state, ");
-                                                            #line 2203 "PrintXSLT.cpp.template"
+                                                            #line 2215 "PrintXSLT.cpp.template"
                                                                   print(format.toString<wchar_t>(k * 3 + (grammar->k > k ? 7 : 4)));
-                                                            #line 3064 "PrintXSLT.cpp"
+                                                            #line 3076 "PrintXSLT.cpp"
   append(L")\n");
   append(L"  \"/>");
-                                                            #line 2205 "PrintXSLT.cpp.template"
+                                                            #line 2217 "PrintXSLT.cpp.template"
                                                                 if (k == 1)
                                                                 {
                                                                   decreaseIndent(2);
-                                                            #line 3071 "PrintXSLT.cpp"
+                                                            #line 3083 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>");
-                                                            #line 2210 "PrintXSLT.cpp.template"
+                                                            #line 2222 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3077 "PrintXSLT.cpp"
+                                                            #line 3089 "PrintXSLT.cpp"
   append(L"\n");
   append(L"</xsl:function>\n");
-                                                            #line 2214 "PrintXSLT.cpp.template"
+                                                            #line 2226 "PrintXSLT.cpp.template"
                                                               }
                                                             }
 
@@ -3085,7 +3097,7 @@
                                                               setIndent(1);
                                                               if (node->automaticSemicolonInsertion)
                                                               {
-                                                            #line 3089 "PrintXSLT.cpp"
+                                                            #line 3101 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3104,135 +3116,135 @@
   append(L"  <xsl:variable name=\"preceding-whitespace\" select=\"substring($input, $begin, $state[$p:b1] - $begin)\"/>\n");
   append(L"  <xsl:sequence select=\"string-to-codepoints($preceding-whitespace) = (10, 13, 8232, 8233)\"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2238 "PrintXSLT.cpp.template"
+                                                            #line 2250 "PrintXSLT.cpp.template"
                                                               }
                                                               for (Node *n = node->nonTerminals; n; n = n->followingSibling)
                                                               {
                                                                 Production *p = static_cast <Production *> (n);
                                                                 if (p->isStartSymbol())
                                                                 {
-                                                            #line 3115 "PrintXSLT.cpp"
+                                                            #line 3127 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
   append(L"\n");
   append(L" ! Parse start symbol ");
-                                                            #line 2246 "PrintXSLT.cpp.template"
+                                                            #line 2258 "PrintXSLT.cpp.template"
                                                                   print(p->name);
-                                                            #line 3123 "PrintXSLT.cpp"
+                                                            #line 3135 "PrintXSLT.cpp"
   append(L" from given string.\n");
   append(L" !\n");
   append(L" ! @param $s the string to be parsed.\n");
   append(L" ! @return the result as generated by parser actions.\n");
   append(L"-->\n");
   append(L"<xsl:function name=\"p:");
-                                                            #line 2252 "PrintXSLT.cpp.template"
+                                                            #line 2264 "PrintXSLT.cpp.template"
                                                                   print(methodPrefix);
-                                                            #line 3132 "PrintXSLT.cpp"
+                                                            #line 3144 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2253 "PrintXSLT.cpp.template"
+                                                            #line 2265 "PrintXSLT.cpp.template"
                                                                   print(p->name);
-                                                            #line 3136 "PrintXSLT.cpp"
+                                                            #line 3148 "PrintXSLT.cpp"
   append(L"\" as=\"item()*\">\n");
   append(L"  <xsl:param name=\"s\" as=\"xs:string\"/>\n");
-                                                            #line 2256 "PrintXSLT.cpp.template"
+                                                            #line 2268 "PrintXSLT.cpp.template"
                                                                   if (memoization)
                                                                   {
-                                                            #line 3142 "PrintXSLT.cpp"
+                                                            #line 3154 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"memo\">\n");
   append(L"    <xsl:element name=\"memo\"/>\n");
   append(L"  </xsl:variable>");
-                                                            #line 2261 "PrintXSLT.cpp.template"
+                                                            #line 2273 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 3149 "PrintXSLT.cpp"
+                                                            #line 3161 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"state\" select=\"0, 1, 1");
-                                                            #line 2263 "PrintXSLT.cpp.template"
+                                                            #line 2275 "PrintXSLT.cpp.template"
                                                                   for (size_t k = 1; k <= grammar->k; ++k)
                                                                   {
-                                                            #line 3155 "PrintXSLT.cpp"
+                                                            #line 3167 "PrintXSLT.cpp"
   append(L", 0, 0, 0");
-                                                            #line 2265 "PrintXSLT.cpp.template"
+                                                            #line 2277 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 3159 "PrintXSLT.cpp"
+                                                            #line 3171 "PrintXSLT.cpp"
   append(L", false()");
-                                                            #line 2266 "PrintXSLT.cpp.template"
+                                                            #line 2278 "PrintXSLT.cpp.template"
                                                                   if (memoization)
                                                                   {
-                                                            #line 3164 "PrintXSLT.cpp"
+                                                            #line 3176 "PrintXSLT.cpp"
   append(L", $memo/node()");
-                                                            #line 2268 "PrintXSLT.cpp.template"
+                                                            #line 2280 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 3168 "PrintXSLT.cpp"
+                                                            #line 3180 "PrintXSLT.cpp"
   append(L"\"/>");
-                                                            #line 2269 "PrintXSLT.cpp.template"
+                                                            #line 2281 "PrintXSLT.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 3173 "PrintXSLT.cpp"
+                                                            #line 3185 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"state\" select=\"p:predict($s, $state, ");
-                                                            #line 2272 "PrintXSLT.cpp.template"
+                                                            #line 2284 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 3180 "PrintXSLT.cpp"
+                                                            #line 3192 "PrintXSLT.cpp"
   append(L", 0");
-                                                            #line 2275 "PrintXSLT.cpp.template"
+                                                            #line 2287 "PrintXSLT.cpp.template"
                                                                     }
-                                                            #line 3184 "PrintXSLT.cpp"
+                                                            #line 3196 "PrintXSLT.cpp"
   append(L")\"/>\n");
   append(L"  <xsl:variable name=\"state\" select=\"p:parse");
-                                                            #line 2277 "PrintXSLT.cpp.template"
+                                                            #line 2289 "PrintXSLT.cpp.template"
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 3190 "PrintXSLT.cpp"
+                                                            #line 3202 "PrintXSLT.cpp"
   append(L"-glr");
-                                                            #line 2279 "PrintXSLT.cpp.template"
+                                                            #line 2291 "PrintXSLT.cpp.template"
                                                                     }
-                                                            #line 3194 "PrintXSLT.cpp"
+                                                            #line 3206 "PrintXSLT.cpp"
   append(L"($s, ");
-                                                            #line 2280 "PrintXSLT.cpp.template"
+                                                            #line 2292 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>(p->nonterminalCode));
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 3200 "PrintXSLT.cpp"
+                                                            #line 3212 "PrintXSLT.cpp"
   append(L", 0, p:thread(0, false()");
-                                                            #line 2283 "PrintXSLT.cpp.template"
+                                                            #line 2295 "PrintXSLT.cpp.template"
                                                                     }
-                                                            #line 3204 "PrintXSLT.cpp"
+                                                            #line 3216 "PrintXSLT.cpp"
   append(L", ");
-                                                            #line 2284 "PrintXSLT.cpp.template"
+                                                            #line 2296 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
-                                                            #line 3208 "PrintXSLT.cpp"
+                                                            #line 3220 "PrintXSLT.cpp"
   append(L", $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state");
-                                                            #line 2286 "PrintXSLT.cpp.template"
+                                                            #line 2298 "PrintXSLT.cpp.template"
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 3213 "PrintXSLT.cpp"
+                                                            #line 3225 "PrintXSLT.cpp"
   append(L")");
-                                                            #line 2288 "PrintXSLT.cpp.template"
+                                                            #line 2300 "PrintXSLT.cpp.template"
                                                                     }
-                                                            #line 3217 "PrintXSLT.cpp"
+                                                            #line 3229 "PrintXSLT.cpp"
   append(L")\"/>");
-                                                            #line 2290 "PrintXSLT.cpp.template"
+                                                            #line 2302 "PrintXSLT.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 3223 "PrintXSLT.cpp"
+                                                            #line 3235 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"state\" select=\"p:");
-                                                            #line 2294 "PrintXSLT.cpp.template"
+                                                            #line 2306 "PrintXSLT.cpp.template"
                                                                     print(methodPrefix);
-                                                            #line 3228 "PrintXSLT.cpp"
+                                                            #line 3240 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2295 "PrintXSLT.cpp.template"
+                                                            #line 2307 "PrintXSLT.cpp.template"
                                                                     print(p->name);
-                                                            #line 3232 "PrintXSLT.cpp"
+                                                            #line 3244 "PrintXSLT.cpp"
   append(L"($s, $state)\"/>");
-                                                            #line 2296 "PrintXSLT.cpp.template"
+                                                            #line 2308 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 3236 "PrintXSLT.cpp"
+                                                            #line 3248 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"error\" select=\"$state[$p:error]\"/>\n");
   append(L"  <xsl:choose>\n");
@@ -3243,14 +3255,14 @@
   append(L"        </xsl:element>\n");
   append(L"      </xsl:variable>\n");
   append(L"      <xsl:sequence select=\"");
-                                                            #line 2306 "PrintXSLT.cpp.template"
+                                                            #line 2318 "PrintXSLT.cpp.template"
                                                                   if (tree && grammar->useGlr)
                                                                   {
-                                                            #line 3250 "PrintXSLT.cpp"
+                                                            #line 3262 "PrintXSLT.cpp"
   append(L"$error/AMBIGUOUS, ");
-                                                            #line 2308 "PrintXSLT.cpp.template"
+                                                            #line 2320 "PrintXSLT.cpp.template"
                                                                   }
-                                                            #line 3254 "PrintXSLT.cpp"
+                                                            #line 3266 "PrintXSLT.cpp"
   append(L"$ERROR/node()\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>\n");
@@ -3258,12 +3270,12 @@
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2316 "PrintXSLT.cpp.template"
+                                                            #line 2328 "PrintXSLT.cpp.template"
                                                                 }
                                                               }
                                                               if (trace && ! isLrParser)
                                                               {
-                                                            #line 3267 "PrintXSLT.cpp"
+                                                            #line 3279 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3303,11 +3315,11 @@
   append(L"    )\n");
   append(L"  \"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2357 "PrintXSLT.cpp.template"
+                                                            #line 2369 "PrintXSLT.cpp.template"
                                                               }
                                                               if (main)
                                                               {
-                                                            #line 3311 "PrintXSLT.cpp"
+                                                            #line 3323 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3327,54 +3339,54 @@
   append(L"  <xsl:choose>\n");
   append(L"    <xsl:when test=\"empty($input)\">\n");
   append(L"      <xsl:sequence select=\"error(xs:QName('main'), '&#xA;    Usage: java net.sf.saxon.Transform -xsl:");
-                                                            #line 2375 "PrintXSLT.cpp.template"
+                                                            #line 2387 "PrintXSLT.cpp.template"
                                                                 print(wFileName);
-                                                            #line 3333 "PrintXSLT.cpp"
+                                                            #line 3345 "PrintXSLT.cpp"
   append(L" -it:main input=INPUT&#xA;&#xA;      parse INPUT, which is either a filename or literal text enclosed in curly braces')\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>\n");
   append(L"      <xsl:variable name=\"result\" select=\"");
-                                                            #line 2380 "PrintXSLT.cpp.template"
+                                                            #line 2392 "PrintXSLT.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 3341 "PrintXSLT.cpp"
+                                                            #line 3353 "PrintXSLT.cpp"
   append(L"\n");
   append(L"        p:trace('&lt;trace&gt;'),");
-                                                            #line 2383 "PrintXSLT.cpp.template"
+                                                            #line 2395 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3346 "PrintXSLT.cpp"
+                                                            #line 3358 "PrintXSLT.cpp"
   append(L"\n");
   append(L"        if (matches($input, '");
   append(L"^");
   append(L"\\{.*\\}$')) then\n");
   append(L"          p:");
-                                                            #line 2386 "PrintXSLT.cpp.template"
+                                                            #line 2398 "PrintXSLT.cpp.template"
                                                                 print(methodPrefix);
-                                                            #line 3354 "PrintXSLT.cpp"
+                                                            #line 3366 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2387 "PrintXSLT.cpp.template"
+                                                            #line 2399 "PrintXSLT.cpp.template"
                                                                 print(grammar->startSymbol()->name);
-                                                            #line 3358 "PrintXSLT.cpp"
+                                                            #line 3370 "PrintXSLT.cpp"
   append(L"(substring($input, 2, string-length($input) - 2))\n");
   append(L"        else\n");
   append(L"          p:");
-                                                            #line 2390 "PrintXSLT.cpp.template"
+                                                            #line 2402 "PrintXSLT.cpp.template"
                                                                 print(methodPrefix);
-                                                            #line 3364 "PrintXSLT.cpp"
+                                                            #line 3376 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2391 "PrintXSLT.cpp.template"
+                                                            #line 2403 "PrintXSLT.cpp.template"
                                                                 print(grammar->startSymbol()->name);
-                                                            #line 3368 "PrintXSLT.cpp"
+                                                            #line 3380 "PrintXSLT.cpp"
   append(L"(unparsed-text($input, 'utf-8'))");
-                                                            #line 2392 "PrintXSLT.cpp.template"
+                                                            #line 2404 "PrintXSLT.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 3373 "PrintXSLT.cpp"
+                                                            #line 3385 "PrintXSLT.cpp"
   append(L",\n");
   append(L"        p:trace('&lt;/trace&gt;')");
-                                                            #line 2395 "PrintXSLT.cpp.template"
+                                                            #line 2407 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3378 "PrintXSLT.cpp"
+                                                            #line 3390 "PrintXSLT.cpp"
   append(L"\n");
   append(L"      \"/>\n");
   append(L"      <xsl:choose>\n");
@@ -3382,57 +3394,57 @@
   append(L"          <xsl:sequence select=\"$result\"/>\n");
   append(L"        </xsl:when>\n");
   append(L"        <xsl:otherwise>");
-                                                            #line 2402 "PrintXSLT.cpp.template"
+                                                            #line 2414 "PrintXSLT.cpp.template"
                                                                 if (tree && grammar->useGlr)
                                                                 {
-                                                            #line 3389 "PrintXSLT.cpp"
+                                                            #line 3401 "PrintXSLT.cpp"
   append(L"\n");
   append(L"          <xsl:result-document>\n");
   append(L"            <xsl:sequence select=\"$result[not(self::ERROR)], '&#10;'\"/>\n");
   append(L"          </xsl:result-document>");
-                                                            #line 2407 "PrintXSLT.cpp.template"
+                                                            #line 2419 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3396 "PrintXSLT.cpp"
+                                                            #line 3408 "PrintXSLT.cpp"
   append(L"\n");
   append(L"          <xsl:sequence select=\"error(xs:QName('p:");
-                                                            #line 2409 "PrintXSLT.cpp.template"
+                                                            #line 2421 "PrintXSLT.cpp.template"
                                                                 print(methodPrefix);
-                                                            #line 3401 "PrintXSLT.cpp"
+                                                            #line 3413 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2410 "PrintXSLT.cpp.template"
+                                                            #line 2422 "PrintXSLT.cpp.template"
                                                                 print(grammar->startSymbol()->name);
-                                                            #line 3405 "PrintXSLT.cpp"
+                                                            #line 3417 "PrintXSLT.cpp"
   append(L"'), concat('&#10;    ', replace($result");
-                                                            #line 2412 "PrintXSLT.cpp.template"
+                                                            #line 2424 "PrintXSLT.cpp.template"
                                                                 if (tree && grammar->useGlr)
                                                                 {
-                                                            #line 3410 "PrintXSLT.cpp"
+                                                            #line 3422 "PrintXSLT.cpp"
   append(L"[self::ERROR]");
-                                                            #line 2415 "PrintXSLT.cpp.template"
+                                                            #line 2427 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3414 "PrintXSLT.cpp"
+                                                            #line 3426 "PrintXSLT.cpp"
   append(L", '&#10;', '&#10;    ')))\"/>\n");
   append(L"        </xsl:otherwise>\n");
   append(L"      </xsl:choose>\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:template>\n");
-                                                            #line 2422 "PrintXSLT.cpp.template"
+                                                            #line 2434 "PrintXSLT.cpp.template"
                                                               }
                                                               setIndent(0);
                                                               if (! visitEpilog())
                                                               {
-                                                            #line 3426 "PrintXSLT.cpp"
+                                                            #line 3438 "PrintXSLT.cpp"
   append(L"\n");
   append(L"</xsl:stylesheet>");
-                                                            #line 2427 "PrintXSLT.cpp.template"
+                                                            #line 2439 "PrintXSLT.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintXSLT::printVariables()
                                                             {
                                                               setIndent(1);
-                                                            #line 3436 "PrintXSLT.cpp"
+                                                            #line 3448 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3457,11 +3469,11 @@
   append(L" ! input string of the end of the token that has been consumed.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:e0\" as=\"xs:integer\" select=\"3\"/>");
-                                                            #line 2450 "PrintXSLT.cpp.template"
+                                                            #line 2462 "PrintXSLT.cpp.template"
                                                               int stateIndex = 3;
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
-                                                            #line 3465 "PrintXSLT.cpp"
+                                                            #line 3477 "PrintXSLT.cpp"
   append(L"\n");
   append(L"\n");
   append(L"<!--");
@@ -3469,19 +3481,19 @@
   append(L"\n");
   append(L" ! The index of the lexer state for accessing the code of the\n");
   append(L" ! level-");
-                                                            #line 2457 "PrintXSLT.cpp.template"
+                                                            #line 2469 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3475 "PrintXSLT.cpp"
+                                                            #line 3487 "PrintXSLT.cpp"
   append(L"-lookahead token.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:l");
-                                                            #line 2460 "PrintXSLT.cpp.template"
+                                                            #line 2472 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3481 "PrintXSLT.cpp"
+                                                            #line 3493 "PrintXSLT.cpp"
   append(L"\" as=\"xs:integer\" select=\"");
-                                                            #line 2461 "PrintXSLT.cpp.template"
+                                                            #line 2473 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3485 "PrintXSLT.cpp"
+                                                            #line 3497 "PrintXSLT.cpp"
   append(L"\"/>\n");
   append(L"\n");
   append(L"<!--");
@@ -3489,19 +3501,19 @@
   append(L"\n");
   append(L" ! The index of the lexer state for accessing the position in the\n");
   append(L" ! input string of the begin of the level-");
-                                                            #line 2466 "PrintXSLT.cpp.template"
+                                                            #line 2478 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3495 "PrintXSLT.cpp"
+                                                            #line 3507 "PrintXSLT.cpp"
   append(L"-lookahead token.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:b");
-                                                            #line 2469 "PrintXSLT.cpp.template"
+                                                            #line 2481 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3501 "PrintXSLT.cpp"
+                                                            #line 3513 "PrintXSLT.cpp"
   append(L"\" as=\"xs:integer\" select=\"");
-                                                            #line 2470 "PrintXSLT.cpp.template"
+                                                            #line 2482 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3505 "PrintXSLT.cpp"
+                                                            #line 3517 "PrintXSLT.cpp"
   append(L"\"/>\n");
   append(L"\n");
   append(L"<!--");
@@ -3509,23 +3521,23 @@
   append(L"\n");
   append(L" ! The index of the lexer state for accessing the position in the\n");
   append(L" ! input string of the end of the level-");
-                                                            #line 2475 "PrintXSLT.cpp.template"
+                                                            #line 2487 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3515 "PrintXSLT.cpp"
+                                                            #line 3527 "PrintXSLT.cpp"
   append(L"-lookahead token.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:e");
-                                                            #line 2478 "PrintXSLT.cpp.template"
+                                                            #line 2490 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3521 "PrintXSLT.cpp"
+                                                            #line 3533 "PrintXSLT.cpp"
   append(L"\" as=\"xs:integer\" select=\"");
-                                                            #line 2479 "PrintXSLT.cpp.template"
+                                                            #line 2491 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3525 "PrintXSLT.cpp"
+                                                            #line 3537 "PrintXSLT.cpp"
   append(L"\"/>");
-                                                            #line 2480 "PrintXSLT.cpp.template"
+                                                            #line 2492 "PrintXSLT.cpp.template"
                                                               }
-                                                            #line 3529 "PrintXSLT.cpp"
+                                                            #line 3541 "PrintXSLT.cpp"
   append(L"\n");
   append(L"\n");
   append(L"<!--");
@@ -3535,14 +3547,14 @@
   append(L" ! was expected when an error was found.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:error\" as=\"xs:integer\" select=\"");
-                                                            #line 2487 "PrintXSLT.cpp.template"
+                                                            #line 2499 "PrintXSLT.cpp.template"
                                                               print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3541 "PrintXSLT.cpp"
+                                                            #line 3553 "PrintXSLT.cpp"
   append(L"\"/>\n");
-                                                            #line 2489 "PrintXSLT.cpp.template"
+                                                            #line 2501 "PrintXSLT.cpp.template"
                                                               if (memoization)
                                                               {
-                                                            #line 3546 "PrintXSLT.cpp"
+                                                            #line 3558 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3551,13 +3563,13 @@
   append(L" ! of backtracking results.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:memo\" as=\"xs:integer\" select=\"");
-                                                            #line 2496 "PrintXSLT.cpp.template"
+                                                            #line 2508 "PrintXSLT.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3557 "PrintXSLT.cpp"
+                                                            #line 3569 "PrintXSLT.cpp"
   append(L"\"/>\n");
-                                                            #line 2498 "PrintXSLT.cpp.template"
+                                                            #line 2510 "PrintXSLT.cpp.template"
                                                               }
-                                                            #line 3561 "PrintXSLT.cpp"
+                                                            #line 3573 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -3566,11 +3578,11 @@
   append(L" ! used for collecting action results.\n");
   append(L"-->\n");
   append(L"<xsl:variable name=\"p:result\" as=\"xs:integer\" select=\"");
-                                                            #line 2504 "PrintXSLT.cpp.template"
+                                                            #line 2516 "PrintXSLT.cpp.template"
                                                               print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3572 "PrintXSLT.cpp"
+                                                            #line 3584 "PrintXSLT.cpp"
   append(L"\"/>");
-                                                            #line 2505 "PrintXSLT.cpp.template"
+                                                            #line 2517 "PrintXSLT.cpp.template"
                                                               setIndent(0);
                                                             }
 
@@ -3578,32 +3590,32 @@
                                                             {
                                                               if (! hasProlog)
                                                               {
-                                                            #line 3582 "PrintXSLT.cpp"
+                                                            #line 3594 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:stylesheet version=\"");
-                                                            #line 2513 "PrintXSLT.cpp.template"
+                                                            #line 2525 "PrintXSLT.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 3588 "PrintXSLT.cpp"
+                                                            #line 3600 "PrintXSLT.cpp"
   append(L"3.0");
-                                                            #line 2515 "PrintXSLT.cpp.template"
+                                                            #line 2527 "PrintXSLT.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3594 "PrintXSLT.cpp"
+                                                            #line 3606 "PrintXSLT.cpp"
   append(L"2.0");
-                                                            #line 2518 "PrintXSLT.cpp.template"
+                                                            #line 2530 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3598 "PrintXSLT.cpp"
+                                                            #line 3610 "PrintXSLT.cpp"
   append(L"\"\n");
   append(L"                xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\n");
   append(L"                xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"\n");
   append(L"                xmlns:p=\"");
-                                                            #line 2522 "PrintXSLT.cpp.template"
+                                                            #line 2534 "PrintXSLT.cpp.template"
                                                                 print(className);
-                                                            #line 3605 "PrintXSLT.cpp"
+                                                            #line 3617 "PrintXSLT.cpp"
   append(L"\">");
-                                                            #line 2523 "PrintXSLT.cpp.template"
+                                                            #line 2535 "PrintXSLT.cpp.template"
                                                               }
                                                             }
 
@@ -3617,28 +3629,28 @@
                                                               }
                                                               if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
                                                               {
-                                                            #line 3621 "PrintXSLT.cpp"
+                                                            #line 3633 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
   append(L"\n");
   append(L" ! ");
-                                                            #line 2538 "PrintXSLT.cpp.template"
+                                                            #line 2550 "PrintXSLT.cpp.template"
                                                               if (px->methodPrefix != px->methodPrefixTry)
                                                               {
-                                                            #line 3630 "PrintXSLT.cpp"
+                                                            #line 3642 "PrintXSLT.cpp"
   append(L"Parse");
-                                                            #line 2540 "PrintXSLT.cpp.template"
+                                                            #line 2552 "PrintXSLT.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 3636 "PrintXSLT.cpp"
+                                                            #line 3648 "PrintXSLT.cpp"
   append(L"Try parsing");
-                                                            #line 2543 "PrintXSLT.cpp.template"
+                                                            #line 2555 "PrintXSLT.cpp.template"
                                                               }
-                                                            #line 3640 "PrintXSLT.cpp"
+                                                            #line 3652 "PrintXSLT.cpp"
   append(L" the ");
-                                                            #line 2544 "PrintXSLT.cpp.template"
+                                                            #line 2556 "PrintXSLT.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
                                                               switch (node->loopId)
                                                               {
@@ -3647,11 +3659,11 @@
                                                               case 3:  append(L"rd"); break;
                                                               default: append(L"th"); break;
                                                               }
-                                                            #line 3651 "PrintXSLT.cpp"
+                                                            #line 3663 "PrintXSLT.cpp"
   append(L" loop of production ");
-                                                            #line 2552 "PrintXSLT.cpp.template"
+                                                            #line 2564 "PrintXSLT.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3655 "PrintXSLT.cpp"
+                                                            #line 3667 "PrintXSLT.cpp"
   append(L" (zero or more). Use\n");
   append(L" ! tail recursion for iteratively updating the lexer state.\n");
   append(L" !\n");
@@ -3660,17 +3672,17 @@
   append(L" ! @return the updated state.\n");
   append(L"-->\n");
   append(L"<xsl:function name=\"p:");
-                                                            #line 2560 "PrintXSLT.cpp.template"
+                                                            #line 2572 "PrintXSLT.cpp.template"
                                                               px->print(px->methodPrefix);
-                                                            #line 3666 "PrintXSLT.cpp"
+                                                            #line 3678 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2561 "PrintXSLT.cpp.template"
+                                                            #line 2573 "PrintXSLT.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3670 "PrintXSLT.cpp"
+                                                            #line 3682 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2562 "PrintXSLT.cpp.template"
+                                                            #line 2574 "PrintXSLT.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3674 "PrintXSLT.cpp"
+                                                            #line 3686 "PrintXSLT.cpp"
   append(L"\">\n");
   append(L"  <xsl:param name=\"input\" as=\"xs:string\"/>\n");
   append(L"  <xsl:param name=\"state\" as=\"item()+\"/>\n");
@@ -3680,7 +3692,7 @@
   append(L"      <xsl:sequence select=\"$state\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>");
-                                                            #line 2571 "PrintXSLT.cpp.template"
+                                                            #line 2583 "PrintXSLT.cpp.template"
                                                               px->increaseIndent(3);
                                                               px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
                                                               px->automaticSemicolonInsertion(node);
@@ -3693,31 +3705,31 @@
                                                                                       node->firstElementChild);
                                                               MatchType matchType;
                                                               const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
-                                                            #line 3697 "PrintXSLT.cpp"
+                                                            #line 3709 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:choose>");
-                                                            #line 2584 "PrintXSLT.cpp.template"
+                                                            #line 2596 "PrintXSLT.cpp.template"
                                                               px->increaseIndent();
                                                               if (hasBacktracking && nestedTry)
                                                               {
-                                                            #line 3704 "PrintXSLT.cpp"
+                                                            #line 3716 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:when test=\"$state[$p:lk] = -3\">\n");
   append(L"  <xsl:sequence select=\"p:");
-                                                            #line 2589 "PrintXSLT.cpp.template"
+                                                            #line 2601 "PrintXSLT.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3710 "PrintXSLT.cpp"
+                                                            #line 3722 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2590 "PrintXSLT.cpp.template"
+                                                            #line 2602 "PrintXSLT.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3714 "PrintXSLT.cpp"
+                                                            #line 3726 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2591 "PrintXSLT.cpp.template"
+                                                            #line 2603 "PrintXSLT.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3718 "PrintXSLT.cpp"
+                                                            #line 3730 "PrintXSLT.cpp"
   append(L"($input, $state)\"/>\n");
   append(L"</xsl:when>");
-                                                            #line 2593 "PrintXSLT.cpp.template"
+                                                            #line 2605 "PrintXSLT.cpp.template"
                                                               }
                                                               px->printMatch(node->getLookahead(),
                                                                              node->k,
@@ -3727,43 +3739,43 @@
                                                                              1,
                                                                              L"<xsl:when test=\"",
                                                                              L"\">");
-                                                            #line 3731 "PrintXSLT.cpp"
+                                                            #line 3743 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:sequence select=\"$state\"/>\n");
   append(L"</xsl:when>\n");
   append(L"<xsl:otherwise>");
-                                                            #line 2605 "PrintXSLT.cpp.template"
+                                                            #line 2617 "PrintXSLT.cpp.template"
                                                               px->Visitor::visitNodeWithChildren(node);
-                                                            #line 3738 "PrintXSLT.cpp"
+                                                            #line 3750 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:sequence select=\"p:");
-                                                            #line 2607 "PrintXSLT.cpp.template"
+                                                            #line 2619 "PrintXSLT.cpp.template"
                                                               px->print(px->methodPrefix);
-                                                            #line 3743 "PrintXSLT.cpp"
+                                                            #line 3755 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2608 "PrintXSLT.cpp.template"
+                                                            #line 2620 "PrintXSLT.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3747 "PrintXSLT.cpp"
+                                                            #line 3759 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2609 "PrintXSLT.cpp.template"
+                                                            #line 2621 "PrintXSLT.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3751 "PrintXSLT.cpp"
+                                                            #line 3763 "PrintXSLT.cpp"
   append(L"($input, $state)\"/>");
-                                                            #line 2610 "PrintXSLT.cpp.template"
+                                                            #line 2622 "PrintXSLT.cpp.template"
                                                               px->decreaseIndent();
 //                                                              if (hasLookahead || hasBacktracking)
 //                                                              {
 //                                                                px->decreaseIndent();
 //                                                              }
                                                               px->decreaseIndent(3);
-                                                            #line 3760 "PrintXSLT.cpp"
+                                                            #line 3772 "PrintXSLT.cpp"
   append(L"\n");
   append(L"        </xsl:otherwise>\n");
   append(L"      </xsl:choose>\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2623 "PrintXSLT.cpp.template"
+                                                            #line 2635 "PrintXSLT.cpp.template"
                                                               }
                                                               px->setIndent(0);
 
@@ -3785,28 +3797,28 @@
                                                               }
                                                               if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
                                                               {
-                                                            #line 3789 "PrintXSLT.cpp"
+                                                            #line 3801 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
   append(L"\n");
   append(L" ! ");
-                                                            #line 2646 "PrintXSLT.cpp.template"
+                                                            #line 2658 "PrintXSLT.cpp.template"
                                                                 if (px->methodPrefix != px->methodPrefixTry)
                                                                 {
-                                                            #line 3798 "PrintXSLT.cpp"
+                                                            #line 3810 "PrintXSLT.cpp"
   append(L"Parse");
-                                                            #line 2648 "PrintXSLT.cpp.template"
+                                                            #line 2660 "PrintXSLT.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3804 "PrintXSLT.cpp"
+                                                            #line 3816 "PrintXSLT.cpp"
   append(L"Try parsing");
-                                                            #line 2651 "PrintXSLT.cpp.template"
+                                                            #line 2663 "PrintXSLT.cpp.template"
                                                                 }
-                                                            #line 3808 "PrintXSLT.cpp"
+                                                            #line 3820 "PrintXSLT.cpp"
   append(L" the ");
-                                                            #line 2652 "PrintXSLT.cpp.template"
+                                                            #line 2664 "PrintXSLT.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
                                                                 switch (node->loopId)
                                                                 {
@@ -3815,11 +3827,11 @@
                                                                 case 3:  append(L"rd"); break;
                                                                 default: append(L"th"); break;
                                                                 }
-                                                            #line 3819 "PrintXSLT.cpp"
+                                                            #line 3831 "PrintXSLT.cpp"
   append(L" loop of production ");
-                                                            #line 2660 "PrintXSLT.cpp.template"
+                                                            #line 2672 "PrintXSLT.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3823 "PrintXSLT.cpp"
+                                                            #line 3835 "PrintXSLT.cpp"
   append(L" (one or more). Use\n");
   append(L" ! tail recursion for iteratively updating the lexer state.\n");
   append(L" !\n");
@@ -3828,17 +3840,17 @@
   append(L" ! @return the updated state.\n");
   append(L"-->\n");
   append(L"<xsl:function name=\"p:");
-                                                            #line 2668 "PrintXSLT.cpp.template"
+                                                            #line 2680 "PrintXSLT.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3834 "PrintXSLT.cpp"
+                                                            #line 3846 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2669 "PrintXSLT.cpp.template"
+                                                            #line 2681 "PrintXSLT.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3838 "PrintXSLT.cpp"
+                                                            #line 3850 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2670 "PrintXSLT.cpp.template"
+                                                            #line 2682 "PrintXSLT.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3842 "PrintXSLT.cpp"
+                                                            #line 3854 "PrintXSLT.cpp"
   append(L"\">\n");
   append(L"  <xsl:param name=\"input\" as=\"xs:string\"/>\n");
   append(L"  <xsl:param name=\"state\" as=\"item()+\"/>\n");
@@ -3848,7 +3860,7 @@
   append(L"      <xsl:sequence select=\"$state\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>");
-                                                            #line 2679 "PrintXSLT.cpp.template"
+                                                            #line 2691 "PrintXSLT.cpp.template"
                                                                 px->increaseIndent(2);
                                                                 px->visitNodeList(node->firstChild);
                                                                 px->increaseIndent();
@@ -3861,31 +3873,31 @@
                                                                                         node->conflictCaseId,
                                                                                         node->conflictId,
                                                                                         node->firstElementChild);
-                                                            #line 3865 "PrintXSLT.cpp"
+                                                            #line 3877 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:choose>");
-                                                            #line 2692 "PrintXSLT.cpp.template"
+                                                            #line 2704 "PrintXSLT.cpp.template"
                                                                 px->increaseIndent();
                                                                 if (hasBacktracking && nestedTry)
                                                                 {
-                                                            #line 3872 "PrintXSLT.cpp"
+                                                            #line 3884 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:when test=\"$state[$p:lk] = -3\">\n");
   append(L"  <xsl:sequence select=\"p:");
-                                                            #line 2697 "PrintXSLT.cpp.template"
+                                                            #line 2709 "PrintXSLT.cpp.template"
                                                                   px->print(px->methodPrefix);
-                                                            #line 3878 "PrintXSLT.cpp"
+                                                            #line 3890 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2698 "PrintXSLT.cpp.template"
+                                                            #line 2710 "PrintXSLT.cpp.template"
                                                                   px->print(node->production->name);
-                                                            #line 3882 "PrintXSLT.cpp"
+                                                            #line 3894 "PrintXSLT.cpp"
   append(L"-");
-                                                            #line 2699 "PrintXSLT.cpp.template"
+                                                            #line 2711 "PrintXSLT.cpp.template"
                                                                   px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3886 "PrintXSLT.cpp"
+                                                            #line 3898 "PrintXSLT.cpp"
   append(L"($input, $state)\"/>\n");
   append(L"</xsl:when>");
-                                                            #line 2701 "PrintXSLT.cpp.template"
+                                                            #line 2713 "PrintXSLT.cpp.template"
                                                                 }
                                                                 MatchType matchType;
                                                                 const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
@@ -3897,34 +3909,34 @@
                                                                                1,
                                                                                L"<xsl:when test=\"",
                                                                                L"\">");
-                                                            #line 3901 "PrintXSLT.cpp"
+                                                            #line 3913 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:sequence select=\"$state\"/>\n");
   append(L"</xsl:when>\n");
   append(L"<xsl:otherwise>\n");
   append(L"  <xsl:sequence select=\"p:");
-                                                            #line 2716 "PrintXSLT.cpp.template"
+                                                            #line 2728 "PrintXSLT.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3909 "PrintXSLT.cpp"
-  append(L"-");
-                                                            #line 2717 "PrintXSLT.cpp.template"
-                                                                px->print(node->production->name);
-                                                            #line 3913 "PrintXSLT.cpp"
-  append(L"-");
-                                                            #line 2718 "PrintXSLT.cpp.template"
-                                                                px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3917 "PrintXSLT.cpp"
-  append(L"($input, $state)\"/>");
-                                                            #line 2719 "PrintXSLT.cpp.template"
-                                                                px->decreaseIndent(4);
                                                             #line 3921 "PrintXSLT.cpp"
+  append(L"-");
+                                                            #line 2729 "PrintXSLT.cpp.template"
+                                                                px->print(node->production->name);
+                                                            #line 3925 "PrintXSLT.cpp"
+  append(L"-");
+                                                            #line 2730 "PrintXSLT.cpp.template"
+                                                                px->print(px->format.toString<wchar_t>(node->loopId));
+                                                            #line 3929 "PrintXSLT.cpp"
+  append(L"($input, $state)\"/>");
+                                                            #line 2731 "PrintXSLT.cpp.template"
+                                                                px->decreaseIndent(4);
+                                                            #line 3933 "PrintXSLT.cpp"
   append(L"\n");
   append(L"        </xsl:otherwise>\n");
   append(L"      </xsl:choose>\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 2726 "PrintXSLT.cpp.template"
+                                                            #line 2738 "PrintXSLT.cpp.template"
                                                               }
                                                               px->setIndent(0);
                                                               if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
@@ -3945,10 +3957,10 @@
                                                                 Token::Code semicolon = p == 0 ? -1 : p->tokenCode;
                                                                 lineBuffer.clear();
                                                                 TokenSequenceSet tss;
-                                                            #line 3949 "PrintXSLT.cpp"
+                                                            #line 3961 "PrintXSLT.cpp"
   append(L"\n");
   append(L"<xsl:variable name=\"state\" select=\"");
-                                                            #line 2747 "PrintXSLT.cpp.template"
+                                                            #line 2759 "PrintXSLT.cpp.template"
                                                                 switch (node->automaticSemicolonInsertion)
                                                                 {
                                                                 case PLUSPLUS:
@@ -3958,18 +3970,18 @@
                                                                     Token::Code plusplus = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"--");
                                                                     Token::Code minusminus = p == 0 ? -1 : p->tokenCode;
-                                                            #line 3962 "PrintXSLT.cpp"
+                                                            #line 3974 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] = (");
-                                                            #line 2757 "PrintXSLT.cpp.template"
+                                                            #line 2769 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
-                                                            #line 3967 "PrintXSLT.cpp"
+                                                            #line 3979 "PrintXSLT.cpp"
   append(L", ");
-                                                            #line 2758 "PrintXSLT.cpp.template"
+                                                            #line 2770 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
-                                                            #line 3971 "PrintXSLT.cpp"
+                                                            #line 3983 "PrintXSLT.cpp"
   append(L") and p:follows-line-terminator($input, $state)) then");
-                                                            #line 2759 "PrintXSLT.cpp.template"
+                                                            #line 2771 "PrintXSLT.cpp.template"
                                                                                   tss.insert(grammar->tokenSequence(plusplus));
                                                                     tss.insert(grammar->tokenSequence(minusminus));
                                                                     printCodeSequenceAnnotation(tss);
@@ -3980,14 +3992,14 @@
                                                                 case RETURN:
                                                                 case THROW:
                                                                   {
-                                                            #line 3984 "PrintXSLT.cpp"
+                                                            #line 3996 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] ne ");
-                                                            #line 2770 "PrintXSLT.cpp.template"
+                                                            #line 2782 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 3989 "PrintXSLT.cpp"
+                                                            #line 4001 "PrintXSLT.cpp"
   append(L" and $state[$p:l1] ge 0 and p:follows-line-terminator($input, $state)) then");
-                                                            #line 2772 "PrintXSLT.cpp.template"
+                                                            #line 2784 "PrintXSLT.cpp.template"
                                                                     tss.insert(grammar->tokenSequence(semicolon));
                                                                     printCodeSequenceAnnotation(tss);
                                                                   }
@@ -3998,44 +4010,44 @@
                                                                     Token::Code eof = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"}");
                                                                     Token::Code rbrace = p == 0 ? -1 : p->tokenCode;
-                                                            #line 4002 "PrintXSLT.cpp"
-  append(L"\n");
-  append(L"  if ($state[$p:l1] eq ");
-                                                            #line 2783 "PrintXSLT.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
-                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
-                                                            #line 4008 "PrintXSLT.cpp"
-  append(L"\n");
-  append(L"   or $state[$p:l1] eq ");
-                                                            #line 2786 "PrintXSLT.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
-                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(eof));
                                                             #line 4014 "PrintXSLT.cpp"
   append(L"\n");
-  append(L"   or $state[$p:l1] ne ");
-                                                            #line 2789 "PrintXSLT.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 4019 "PrintXSLT.cpp"
-  append(L" and $state[$p:l1] ge 0 and ");
-                                                            #line 2790 "PrintXSLT.cpp.template"
-                                                                    if (afterRbrace)
-                                                                    {
-                                                            #line 4024 "PrintXSLT.cpp"
-  append(L"(");
-                                                            #line 2792 "PrintXSLT.cpp.template"
-                                                                    }
-                                                            #line 4028 "PrintXSLT.cpp"
-  append(L"p:follows-line-terminator($input, $state)");
-                                                            #line 2794 "PrintXSLT.cpp.template"
-                                                                    if (afterRbrace)
-                                                                    {
-                                                            #line 4033 "PrintXSLT.cpp"
-  append(L" or substring($input, $state[$p:b0], 1) eq '}')");
-                                                            #line 2797 "PrintXSLT.cpp.template"
-                                                                    }
-                                                            #line 4037 "PrintXSLT.cpp"
-  append(L") then");
+  append(L"  if ($state[$p:l1] eq ");
+                                                            #line 2795 "PrintXSLT.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
+                                                            #line 4020 "PrintXSLT.cpp"
+  append(L"\n");
+  append(L"   or $state[$p:l1] eq ");
                                                             #line 2798 "PrintXSLT.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
+                                                                    printCodeSequenceAnnotation(grammar->tokenSequence(eof));
+                                                            #line 4026 "PrintXSLT.cpp"
+  append(L"\n");
+  append(L"   or $state[$p:l1] ne ");
+                                                            #line 2801 "PrintXSLT.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                                                            #line 4031 "PrintXSLT.cpp"
+  append(L" and $state[$p:l1] ge 0 and ");
+                                                            #line 2802 "PrintXSLT.cpp.template"
+                                                                    if (afterRbrace)
+                                                                    {
+                                                            #line 4036 "PrintXSLT.cpp"
+  append(L"(");
+                                                            #line 2804 "PrintXSLT.cpp.template"
+                                                                    }
+                                                            #line 4040 "PrintXSLT.cpp"
+  append(L"p:follows-line-terminator($input, $state)");
+                                                            #line 2806 "PrintXSLT.cpp.template"
+                                                                    if (afterRbrace)
+                                                                    {
+                                                            #line 4045 "PrintXSLT.cpp"
+  append(L" or substring($input, $state[$p:b0], 1) eq '}')");
+                                                            #line 2809 "PrintXSLT.cpp.template"
+                                                                    }
+                                                            #line 4049 "PrintXSLT.cpp"
+  append(L") then");
+                                                            #line 2810 "PrintXSLT.cpp.template"
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
                                                                   }
                                                                   break;
@@ -4044,18 +4056,18 @@
                                                                     internalerr();
                                                                   }
                                                                 }
-                                                            #line 4048 "PrintXSLT.cpp"
+                                                            #line 4060 "PrintXSLT.cpp"
   append(L"\n");
   append(L"  (\n");
   append(L"    subsequence($state, 1, $p:l1 - 1),\n");
   append(L"    ");
-                                                            #line 2809 "PrintXSLT.cpp.template"
+                                                            #line 2821 "PrintXSLT.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 4055 "PrintXSLT.cpp"
+                                                            #line 4067 "PrintXSLT.cpp"
   append(L",");
-                                                            #line 2810 "PrintXSLT.cpp.template"
+                                                            #line 2822 "PrintXSLT.cpp.template"
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
-                                                            #line 4059 "PrintXSLT.cpp"
+                                                            #line 4071 "PrintXSLT.cpp"
   append(L"\n");
   append(L"    $state[$p:b1],\n");
   append(L"    $state[$p:b1],\n");
@@ -4063,7 +4075,7 @@
   append(L"  )\n");
   append(L"  else\n");
   append(L"    $state\"/>");
-                                                            #line 2817 "PrintXSLT.cpp.template"
+                                                            #line 2829 "PrintXSLT.cpp.template"
                                                               }
                                                             }
 

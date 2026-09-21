@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Sep 21, 2026 20:17 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintXQuery.cpp.template
                                                             #line 1 "PrintXQuery.cpp.template"
                                                             /*
@@ -2505,28 +2505,38 @@
                                                                   }
                                                             #line 2507 "PrintXQuery.cpp"
   append(L"\n");
-  append(L"  return p:matchW($input, $state[$p:e0], $token-set");
-                                                            #line 1774 "PrintXQuery.cpp.template"
+  append(L"  return\n");
+  append(L"    if ($state[$p:error]) then\n");
+  append(L"      let $error := $state[$p:error]\n");
+  append(L"      return\n");
+  append(L"        (\n");
+  append(L"          - xs:integer($error/@s),\n");
+  append(L"          xs:integer($error/@b),\n");
+  append(L"          xs:integer($error/@e)\n");
+  append(L"        )\n");
+  append(L"    else\n");
+  append(L"      p:matchW($input, $state[$p:e0], $token-set");
+                                                            #line 1783 "PrintXQuery.cpp.template"
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 2513 "PrintXQuery.cpp"
+                                                            #line 2523 "PrintXQuery.cpp"
   append(L", $id");
-                                                            #line 1776 "PrintXQuery.cpp.template"
+                                                            #line 1785 "PrintXQuery.cpp.template"
                                                                     }
-                                                            #line 2517 "PrintXQuery.cpp"
+                                                            #line 2527 "PrintXQuery.cpp"
   append(L")");
-                                                            #line 1777 "PrintXQuery.cpp.template"
+                                                            #line 1786 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2521 "PrintXQuery.cpp"
+                                                            #line 2531 "PrintXQuery.cpp"
   append(L"\n");
   append(L"else\n");
   append(L"  $match");
-                                                            #line 1780 "PrintXQuery.cpp.template"
+                                                            #line 1789 "PrintXQuery.cpp.template"
                                                                 setIndent(0);
-                                                            #line 2527 "PrintXQuery.cpp"
+                                                            #line 2537 "PrintXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 1783 "PrintXQuery.cpp.template"
+                                                            #line 1792 "PrintXQuery.cpp.template"
                                                                 size_t lwc = grammar->tables && grammar->k >= grammar->tables && anyWhitespace
                                                                            ? grammar->k
                                                                            : grammar->lookaheadSets.lookaheadWCount;
@@ -2540,7 +2550,7 @@
                                                               printLookaheadMethods(lc, false);
                                                               if (tree && ! isLrParser)
                                                               {
-                                                            #line 2544 "PrintXQuery.cpp"
+                                                            #line 2554 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -2552,28 +2562,28 @@
   append(L" : @param $state lexer state, error indicator, and result stack.\n");
   append(L" : @param $name the name of the result node.\n");
   append(L" : @param $count the number of child nodes.");
-                                                            #line 1804 "PrintXQuery.cpp.template"
+                                                            #line 1813 "PrintXQuery.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 2559 "PrintXQuery.cpp"
+                                                            #line 2569 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @param $begin the input index where the nonterminal begins.\n");
   append(L" : @param $end the input index where the nonterminal ends.");
-                                                            #line 1808 "PrintXQuery.cpp.template"
+                                                            #line 1817 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2565 "PrintXQuery.cpp"
+                                                            #line 2575 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @return the updated state.\n");
   append(L" :)\n");
   append(L"declare function p:reduce($state as item()+, $name as xs:string, $count as xs:integer");
-                                                            #line 1813 "PrintXQuery.cpp.template"
+                                                            #line 1822 "PrintXQuery.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 2573 "PrintXQuery.cpp"
+                                                            #line 2583 "PrintXQuery.cpp"
   append(L", $begin as xs:integer, $end as xs:integer");
-                                                            #line 1816 "PrintXQuery.cpp.template"
+                                                            #line 1825 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2577 "PrintXQuery.cpp"
+                                                            #line 2587 "PrintXQuery.cpp"
   append(L") as item()+\n");
   append(L"{\n");
   append(L"  subsequence($state, 1, $count),\n");
@@ -2582,12 +2592,12 @@
   append(L"    subsequence($state, $count + 1)\n");
   append(L"  }\n");
   append(L"};\n");
-                                                            #line 1825 "PrintXQuery.cpp.template"
+                                                            #line 1834 "PrintXQuery.cpp.template"
                                                               }
                                                               if (memoization)
                                                               {
                                                                 const wchar_t *factor = format.toString<wchar_t>(Math::powerof(2, Math::bits(grammar->conflictCount)));
-                                                            #line 2591 "PrintXQuery.cpp"
+                                                            #line 2601 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -2602,10 +2612,10 @@
   append(L"{\n");
   append(L"  subsequence($state, 1, $p:memo)\n");
   append(L"};\n");
-                                                            #line 1841 "PrintXQuery.cpp.template"
+                                                            #line 1850 "PrintXQuery.cpp.template"
                                                                 if (restoreCalled)
                                                                 {
-                                                            #line 2609 "PrintXQuery.cpp"
+                                                            #line 2619 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -2628,9 +2638,9 @@
   append(L"    $state[$p:memo]/value\n");
   append(L"  }\n");
   append(L"};\n");
-                                                            #line 1863 "PrintXQuery.cpp.template"
+                                                            #line 1872 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2634 "PrintXQuery.cpp"
+                                                            #line 2644 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -2663,9 +2673,9 @@
   append(L"      $errors[@e = max($errors/xs:integer(@e))][last()]/@*,\n");
   append(L"      $memo/value,\n");
   append(L"      <value key='{$e0 * ");
-                                                            #line 1893 "PrintXQuery.cpp.template"
+                                                            #line 1902 "PrintXQuery.cpp.template"
                                                                 print(factor);
-                                                            #line 2669 "PrintXQuery.cpp"
+                                                            #line 2679 "PrintXQuery.cpp"
   append(L" + $dpi}'>{$v}</value>\n");
   append(L"    },\n");
   append(L"  subsequence($state, $p:memo + 1)\n");
@@ -2684,9 +2694,9 @@
   append(L"declare function p:memoized($state as item()+, $dpi as xs:integer) as item()+\n");
   append(L"{\n");
   append(L"  let $value := data($state[$p:memo]/value[@key = $state[$p:e0] * ");
-                                                            #line 1910 "PrintXQuery.cpp.template"
+                                                            #line 1919 "PrintXQuery.cpp.template"
                                                                 print(factor);
-                                                            #line 2690 "PrintXQuery.cpp"
+                                                            #line 2700 "PrintXQuery.cpp"
   append(L" + $dpi])\n");
   append(L"  return\n");
   append(L"  (\n");
@@ -2694,7 +2704,7 @@
   append(L"    subsequence($state, $p:lk + 1)\n");
   append(L"  )\n");
   append(L"};\n");
-                                                            #line 1918 "PrintXQuery.cpp.template"
+                                                            #line 1927 "PrintXQuery.cpp.template"
                                                               }
                                                             }
 
@@ -2702,229 +2712,229 @@
                                                             {
                                                               for (size_t k = 1; k <= lookaheadMethods; ++k)
                                                               {
-                                                            #line 2706 "PrintXQuery.cpp"
+                                                            #line 2716 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
   append(L"\n");
   append(L" : Lookahead one token on level ");
-                                                            #line 1927 "PrintXQuery.cpp.template"
+                                                            #line 1936 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
                                                                 if (withWhitespace)
                                                                 {
-                                                            #line 2716 "PrintXQuery.cpp"
+                                                            #line 2726 "PrintXQuery.cpp"
   append(L" with whitespace skipping");
-                                                            #line 1930 "PrintXQuery.cpp.template"
+                                                            #line 1939 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2720 "PrintXQuery.cpp"
+                                                            #line 2730 "PrintXQuery.cpp"
   append(L".\n");
   append(L" :");
-                                                            #line 1932 "PrintXQuery.cpp.template"
+                                                            #line 1941 "PrintXQuery.cpp.template"
                                                                 if (k != 1 && unlimitedLookahead)
                                                                 {
-                                                            #line 2726 "PrintXQuery.cpp"
+                                                            #line 2736 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @param $prefix the prefix code representing lower level lookahead.");
-                                                            #line 1936 "PrintXQuery.cpp.template"
+                                                            #line 1945 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2731 "PrintXQuery.cpp"
+                                                            #line 2741 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @param $set the code of the DFA entry state for the set of valid tokens.\n");
   append(L" : @param $input the input string.\n");
   append(L" : @param $state lexer state, error indicator, and result stack.");
-                                                            #line 1941 "PrintXQuery.cpp.template"
+                                                            #line 1950 "PrintXQuery.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 2739 "PrintXQuery.cpp"
+                                                            #line 2749 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @param $id the parsing thread id.");
-                                                            #line 1944 "PrintXQuery.cpp.template"
+                                                            #line 1953 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2744 "PrintXQuery.cpp"
+                                                            #line 2754 "PrintXQuery.cpp"
   append(L"\n");
   append(L" : @return the updated state.\n");
   append(L" :)\n");
   append(L"declare function p:lookahead");
-                                                            #line 1948 "PrintXQuery.cpp.template"
+                                                            #line 1957 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
                                                                 if (withWhitespace)
                                                                 {
-                                                            #line 2753 "PrintXQuery.cpp"
+                                                            #line 2763 "PrintXQuery.cpp"
   append(L"W");
-                                                            #line 1952 "PrintXQuery.cpp.template"
+                                                            #line 1961 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2757 "PrintXQuery.cpp"
+                                                            #line 2767 "PrintXQuery.cpp"
   append(L"(");
-                                                            #line 1953 "PrintXQuery.cpp.template"
+                                                            #line 1962 "PrintXQuery.cpp.template"
                                                                 if (k != 1 && unlimitedLookahead)
                                                                 {
-                                                            #line 2762 "PrintXQuery.cpp"
+                                                            #line 2772 "PrintXQuery.cpp"
   append(L"$prefix as xs:integer, ");
-                                                            #line 1955 "PrintXQuery.cpp.template"
+                                                            #line 1964 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2766 "PrintXQuery.cpp"
+                                                            #line 2776 "PrintXQuery.cpp"
   append(L"$set as xs:integer, $input as xs:string, $state as item()+");
-                                                            #line 1957 "PrintXQuery.cpp.template"
+                                                            #line 1966 "PrintXQuery.cpp.template"
                                                                 if (grammar->useGlr)
                                                                 {
-                                                            #line 2771 "PrintXQuery.cpp"
+                                                            #line 2781 "PrintXQuery.cpp"
   append(L", $id as xs:integer");
-                                                            #line 1960 "PrintXQuery.cpp.template"
+                                                            #line 1969 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2775 "PrintXQuery.cpp"
+                                                            #line 2785 "PrintXQuery.cpp"
   append(L") as item()+\n");
   append(L"{");
-                                                            #line 1962 "PrintXQuery.cpp.template"
+                                                            #line 1971 "PrintXQuery.cpp.template"
                                                                 if (k == 1)
                                                                 {
-                                                            #line 2781 "PrintXQuery.cpp"
+                                                            #line 2791 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] ne 0) then\n");
   append(L"    $state\n");
   append(L"  else\n");
   append(L"    let $match :=");
-                                                            #line 1968 "PrintXQuery.cpp.template"
+                                                            #line 1977 "PrintXQuery.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 2792 "PrintXQuery.cpp"
+                                                            #line 2802 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  let $match :=\n");
   append(L"    if ($state[$p:l");
-                                                            #line 1974 "PrintXQuery.cpp.template"
+                                                            #line 1983 "PrintXQuery.cpp.template"
                                                                   print(format.toString<wchar_t>(k));
-                                                            #line 2798 "PrintXQuery.cpp"
+                                                            #line 2808 "PrintXQuery.cpp"
   append(L"] ne 0) then\n");
   append(L"      subsequence($state, $p:l");
-                                                            #line 1976 "PrintXQuery.cpp.template"
+                                                            #line 1985 "PrintXQuery.cpp.template"
                                                                   print(format.toString<wchar_t>(k));
-                                                            #line 2803 "PrintXQuery.cpp"
+                                                            #line 2813 "PrintXQuery.cpp"
   append(L", ");
-                                                            #line 1977 "PrintXQuery.cpp.template"
+                                                            #line 1986 "PrintXQuery.cpp.template"
                                                                   print(format.toString<wchar_t>(k < grammar->k ? 6 : 3));
-                                                            #line 2807 "PrintXQuery.cpp"
+                                                            #line 2817 "PrintXQuery.cpp"
   append(L")\n");
   append(L"    else");
-                                                            #line 1979 "PrintXQuery.cpp.template"
-                                                                }
-                                                                if (k < grammar->k)
-                                                                {
-                                                            #line 2814 "PrintXQuery.cpp"
-  append(L"\n");
-  append(L"    (");
-                                                            #line 1983 "PrintXQuery.cpp.template"
-                                                                }
-                                                            #line 2819 "PrintXQuery.cpp"
-  append(L"\n");
-  append(L"      p:match");
-                                                            #line 1985 "PrintXQuery.cpp.template"
-                                                                if (withWhitespace)
-                                                                {
-                                                            #line 2825 "PrintXQuery.cpp"
-  append(L"W");
                                                             #line 1988 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2829 "PrintXQuery.cpp"
-  append(L"($input, $state[$p:e");
-                                                            #line 1989 "PrintXQuery.cpp.template"
-                                                                print(format.toString<wchar_t>(k - 1));
-                                                            #line 2833 "PrintXQuery.cpp"
-  append(L"], $set");
-                                                            #line 1990 "PrintXQuery.cpp.template"
-                                                                if (grammar->useGlr)
-                                                                {
-                                                            #line 2838 "PrintXQuery.cpp"
-  append(L", $id");
-                                                            #line 1992 "PrintXQuery.cpp.template"
-                                                                }
-                                                            #line 2842 "PrintXQuery.cpp"
-  append(L")");
-                                                            #line 1993 "PrintXQuery.cpp.template"
                                                                 if (k < grammar->k)
                                                                 {
-                                                            #line 2847 "PrintXQuery.cpp"
+                                                            #line 2824 "PrintXQuery.cpp"
+  append(L"\n");
+  append(L"    (");
+                                                            #line 1992 "PrintXQuery.cpp.template"
+                                                                }
+                                                            #line 2829 "PrintXQuery.cpp"
+  append(L"\n");
+  append(L"      p:match");
+                                                            #line 1994 "PrintXQuery.cpp.template"
+                                                                if (withWhitespace)
+                                                                {
+                                                            #line 2835 "PrintXQuery.cpp"
+  append(L"W");
+                                                            #line 1997 "PrintXQuery.cpp.template"
+                                                                }
+                                                            #line 2839 "PrintXQuery.cpp"
+  append(L"($input, $state[$p:e");
+                                                            #line 1998 "PrintXQuery.cpp.template"
+                                                                print(format.toString<wchar_t>(k - 1));
+                                                            #line 2843 "PrintXQuery.cpp"
+  append(L"], $set");
+                                                            #line 1999 "PrintXQuery.cpp.template"
+                                                                if (grammar->useGlr)
+                                                                {
+                                                            #line 2848 "PrintXQuery.cpp"
+  append(L", $id");
+                                                            #line 2001 "PrintXQuery.cpp.template"
+                                                                }
+                                                            #line 2852 "PrintXQuery.cpp"
+  append(L")");
+                                                            #line 2002 "PrintXQuery.cpp.template"
+                                                                if (k < grammar->k)
+                                                                {
+                                                            #line 2857 "PrintXQuery.cpp"
   append(L",\n");
   append(L"      0, 0, 0\n");
   append(L"    )");
-                                                            #line 1997 "PrintXQuery.cpp.template"
+                                                            #line 2006 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2853 "PrintXQuery.cpp"
+                                                            #line 2863 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  return\n");
   append(L"  (\n");
   append(L"    ");
-                                                            #line 2001 "PrintXQuery.cpp.template"
+                                                            #line 2010 "PrintXQuery.cpp.template"
                                                                 if (grammar->tables && k >= grammar->tables)
                                                                 {
-                                                            #line 2861 "PrintXQuery.cpp"
+                                                            #line 2871 "PrintXQuery.cpp"
   append(L"subsequence($state, 1, ");
-                                                            #line 2004 "PrintXQuery.cpp.template"
+                                                            #line 2013 "PrintXQuery.cpp.template"
                                                                   print(format.toString<wchar_t>(k * 3));
-                                                            #line 2865 "PrintXQuery.cpp"
+                                                            #line 2875 "PrintXQuery.cpp"
   append(L"),");
-                                                            #line 2005 "PrintXQuery.cpp.template"
+                                                            #line 2014 "PrintXQuery.cpp.template"
                                                                 }
                                                                 else
                                                                 {
                                                                   if (k != 1 && unlimitedLookahead)
                                                                   {
-                                                            #line 2873 "PrintXQuery.cpp"
+                                                            #line 2883 "PrintXQuery.cpp"
   append(L"$match[1] + $prefix");
-                                                            #line 2010 "PrintXQuery.cpp.template"
+                                                            #line 2019 "PrintXQuery.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 2879 "PrintXQuery.cpp"
+                                                            #line 2889 "PrintXQuery.cpp"
   append(L"$match[1]");
-                                                            #line 2013 "PrintXQuery.cpp.template"
+                                                            #line 2022 "PrintXQuery.cpp.template"
                                                                     switch (k)
                                                                     {
                                                                     case 1: break;
                                                                     case 2:
-                                                            #line 2886 "PrintXQuery.cpp"
+                                                            #line 2896 "PrintXQuery.cpp"
   append(L" * ");
-                                                            #line 2017 "PrintXQuery.cpp.template"
+                                                            #line 2026 "PrintXQuery.cpp.template"
                                                                       print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
-                                                            #line 2890 "PrintXQuery.cpp"
+                                                            #line 2900 "PrintXQuery.cpp"
   append(L" + $state[$p:l1]");
-                                                            #line 2018 "PrintXQuery.cpp.template"
+                                                            #line 2027 "PrintXQuery.cpp.template"
                                                                       break;
                                                                     default:
-                                                            #line 2895 "PrintXQuery.cpp"
+                                                            #line 2905 "PrintXQuery.cpp"
   append(L" * ");
-                                                            #line 2020 "PrintXQuery.cpp.template"
+                                                            #line 2029 "PrintXQuery.cpp.template"
                                                                       print(format.toString<wchar_t>(Math::powerof(2, ((int) k - 1) * grammar->tokenSequenceFactory->tokenBits())));
-                                                            #line 2899 "PrintXQuery.cpp"
+                                                            #line 2909 "PrintXQuery.cpp"
   append(L" + $state[$p:lk]");
-                                                            #line 2021 "PrintXQuery.cpp.template"
+                                                            #line 2030 "PrintXQuery.cpp.template"
                                                                       break;
                                                                     }
                                                                   }
-                                                            #line 2905 "PrintXQuery.cpp"
+                                                            #line 2915 "PrintXQuery.cpp"
   append(L",\n");
   append(L"    subsequence($state, $p:b0, ");
-                                                            #line 2025 "PrintXQuery.cpp.template"
+                                                            #line 2034 "PrintXQuery.cpp.template"
                                                                   print(format.toString<wchar_t>(k * 3 - 1));
-                                                            #line 2910 "PrintXQuery.cpp"
+                                                            #line 2920 "PrintXQuery.cpp"
   append(L"),");
-                                                            #line 2026 "PrintXQuery.cpp.template"
+                                                            #line 2035 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 2914 "PrintXQuery.cpp"
+                                                            #line 2924 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    $match,\n");
   append(L"    subsequence($state, ");
-                                                            #line 2029 "PrintXQuery.cpp.template"
+                                                            #line 2038 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k * 3 + (grammar->k > k ? 7 : 4)));
-                                                            #line 2920 "PrintXQuery.cpp"
+                                                            #line 2930 "PrintXQuery.cpp"
   append(L")\n");
   append(L"  )");
-                                                            #line 2031 "PrintXQuery.cpp.template"
+                                                            #line 2040 "PrintXQuery.cpp.template"
                                                                 if (k == 1) decreaseIndent();
-                                                            #line 2925 "PrintXQuery.cpp"
+                                                            #line 2935 "PrintXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 2035 "PrintXQuery.cpp.template"
+                                                            #line 2044 "PrintXQuery.cpp.template"
                                                               }
                                                               setIndent(0);
                                                             }
@@ -2933,7 +2943,7 @@
                                                             {
                                                               if (node->automaticSemicolonInsertion)
                                                               {
-                                                            #line 2937 "PrintXQuery.cpp"
+                                                            #line 2947 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -2952,154 +2962,154 @@
   append(L"  let $preceding-whitespace := substring($input, $begin, $state[$p:b1] - $begin)\n");
   append(L"  return string-to-codepoints($preceding-whitespace) = (10, 13, 8232, 8233)\n");
   append(L"};\n");
-                                                            #line 2059 "PrintXQuery.cpp.template"
+                                                            #line 2068 "PrintXQuery.cpp.template"
                                                               }
                                                               for (Node *n = node->nonTerminals; n; n = n->followingSibling)
                                                               {
                                                                 Production *p = static_cast <Production *> (n);
                                                                 if (p->isStartSymbol())
                                                                 {
-                                                            #line 2963 "PrintXQuery.cpp"
+                                                            #line 2973 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
   append(L"\n");
   append(L" : Parse start symbol ");
-                                                            #line 2067 "PrintXQuery.cpp.template"
+                                                            #line 2076 "PrintXQuery.cpp.template"
                                                                   print(p->name);
-                                                            #line 2971 "PrintXQuery.cpp"
+                                                            #line 2981 "PrintXQuery.cpp"
   append(L" from given string.\n");
   append(L" :\n");
   append(L" : @param $s the string to be parsed.\n");
   append(L" : @return the result as generated by parser actions.\n");
   append(L" :)\n");
   append(L"declare function p:");
-                                                            #line 2073 "PrintXQuery.cpp.template"
+                                                            #line 2082 "PrintXQuery.cpp.template"
                                                                   print(methodPrefix);
-                                                            #line 2980 "PrintXQuery.cpp"
+                                                            #line 2990 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2074 "PrintXQuery.cpp.template"
+                                                            #line 2083 "PrintXQuery.cpp.template"
                                                                   print(p->name);
-                                                            #line 2984 "PrintXQuery.cpp"
+                                                            #line 2994 "PrintXQuery.cpp"
   append(L"($s as xs:string) as item()*\n");
   append(L"{\n");
   append(L"  let $state := (0, 1, 1");
-                                                            #line 2077 "PrintXQuery.cpp.template"
+                                                            #line 2086 "PrintXQuery.cpp.template"
                                                                   for (size_t k = 1; k <= grammar->k; ++k)
                                                                   {
-                                                            #line 2991 "PrintXQuery.cpp"
+                                                            #line 3001 "PrintXQuery.cpp"
   append(L", 0, 0, 0");
-                                                            #line 2079 "PrintXQuery.cpp.template"
+                                                            #line 2088 "PrintXQuery.cpp.template"
                                                                   }
-                                                            #line 2995 "PrintXQuery.cpp"
+                                                            #line 3005 "PrintXQuery.cpp"
   append(L", false()");
-                                                            #line 2080 "PrintXQuery.cpp.template"
+                                                            #line 2089 "PrintXQuery.cpp.template"
                                                                   if (memoization)
                                                                   {
-                                                            #line 3000 "PrintXQuery.cpp"
+                                                            #line 3010 "PrintXQuery.cpp"
   append(L", <memo/>");
-                                                            #line 2082 "PrintXQuery.cpp.template"
+                                                            #line 2091 "PrintXQuery.cpp.template"
                                                                   }
-                                                            #line 3004 "PrintXQuery.cpp"
+                                                            #line 3014 "PrintXQuery.cpp"
   append(L")");
-                                                            #line 2083 "PrintXQuery.cpp.template"
+                                                            #line 2092 "PrintXQuery.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 3009 "PrintXQuery.cpp"
+                                                            #line 3019 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  let $state := p:predict($s, $state, ");
-                                                            #line 2086 "PrintXQuery.cpp.template"
+                                                            #line 2095 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
-                                                                    if (grammar->useGlr)
-                                                                    {
-                                                            #line 3016 "PrintXQuery.cpp"
-  append(L", 0");
-                                                            #line 2089 "PrintXQuery.cpp.template"
-                                                                    }
-                                                            #line 3020 "PrintXQuery.cpp"
-  append(L")\n");
-  append(L"  let $state := p:parse");
-                                                            #line 2091 "PrintXQuery.cpp.template"
                                                                     if (grammar->useGlr)
                                                                     {
                                                             #line 3026 "PrintXQuery.cpp"
-  append(L"-glr");
-                                                            #line 2093 "PrintXQuery.cpp.template"
+  append(L", 0");
+                                                            #line 2098 "PrintXQuery.cpp.template"
                                                                     }
                                                             #line 3030 "PrintXQuery.cpp"
-  append(L"($s, ");
-                                                            #line 2094 "PrintXQuery.cpp.template"
-                                                                    print(format.toString<wchar_t>(p->nonterminalCode));
-                                                                    if (grammar->useGlr)
-                                                                    {
-                                                            #line 3036 "PrintXQuery.cpp"
-  append(L", 0, p:thread(0, false()");
-                                                            #line 2097 "PrintXQuery.cpp.template"
-                                                                    }
-                                                            #line 3040 "PrintXQuery.cpp"
-  append(L", ");
-                                                            #line 2098 "PrintXQuery.cpp.template"
-                                                                    print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
-                                                            #line 3044 "PrintXQuery.cpp"
-  append(L", $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state");
+  append(L")\n");
+  append(L"  let $state := p:parse");
                                                             #line 2100 "PrintXQuery.cpp.template"
                                                                     if (grammar->useGlr)
                                                                     {
-                                                            #line 3049 "PrintXQuery.cpp"
-  append(L")");
+                                                            #line 3036 "PrintXQuery.cpp"
+  append(L"-glr");
                                                             #line 2102 "PrintXQuery.cpp.template"
                                                                     }
-                                                            #line 3053 "PrintXQuery.cpp"
+                                                            #line 3040 "PrintXQuery.cpp"
+  append(L"($s, ");
+                                                            #line 2103 "PrintXQuery.cpp.template"
+                                                                    print(format.toString<wchar_t>(p->nonterminalCode));
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                                            #line 3046 "PrintXQuery.cpp"
+  append(L", 0, p:thread(0, false()");
+                                                            #line 2106 "PrintXQuery.cpp.template"
+                                                                    }
+                                                            #line 3050 "PrintXQuery.cpp"
+  append(L", ");
+                                                            #line 2107 "PrintXQuery.cpp.template"
+                                                                    print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
+                                                            #line 3054 "PrintXQuery.cpp"
+  append(L", $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state");
+                                                            #line 2109 "PrintXQuery.cpp.template"
+                                                                    if (grammar->useGlr)
+                                                                    {
+                                                            #line 3059 "PrintXQuery.cpp"
   append(L")");
-                                                            #line 2104 "PrintXQuery.cpp.template"
+                                                            #line 2111 "PrintXQuery.cpp.template"
+                                                                    }
+                                                            #line 3063 "PrintXQuery.cpp"
+  append(L")");
+                                                            #line 2113 "PrintXQuery.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 3059 "PrintXQuery.cpp"
+                                                            #line 3069 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  let $state := p:parse-");
-                                                            #line 2108 "PrintXQuery.cpp.template"
+                                                            #line 2117 "PrintXQuery.cpp.template"
                                                                     print(p->name);
-                                                            #line 3064 "PrintXQuery.cpp"
+                                                            #line 3074 "PrintXQuery.cpp"
   append(L"($s, $state)");
-                                                            #line 2109 "PrintXQuery.cpp.template"
+                                                            #line 2118 "PrintXQuery.cpp.template"
                                                                   }
-                                                            #line 3068 "PrintXQuery.cpp"
+                                                            #line 3078 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  let $error := $state[$p:error]\n");
   append(L"  return\n");
   append(L"    if ($error) then");
-                                                            #line 2113 "PrintXQuery.cpp.template"
+                                                            #line 2122 "PrintXQuery.cpp.template"
                                                                   if (tree && grammar->useGlr)
                                                                   {
-                                                            #line 3076 "PrintXQuery.cpp"
+                                                            #line 3086 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    (\n");
   append(L"      $error/AMBIGUOUS,");
-                                                            #line 2117 "PrintXQuery.cpp.template"
+                                                            #line 2126 "PrintXQuery.cpp.template"
                                                                   }
-                                                            #line 3082 "PrintXQuery.cpp"
+                                                            #line 3092 "PrintXQuery.cpp"
   append(L"\n");
   append(L"      element ERROR {$error/@*, p:error-message($s, $error)}");
-                                                            #line 2119 "PrintXQuery.cpp.template"
+                                                            #line 2128 "PrintXQuery.cpp.template"
                                                                   if (tree && grammar->useGlr)
                                                                   {
-                                                            #line 3088 "PrintXQuery.cpp"
+                                                            #line 3098 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    )");
-                                                            #line 2123 "PrintXQuery.cpp.template"
+                                                            #line 2132 "PrintXQuery.cpp.template"
                                                                   }
-                                                            #line 3093 "PrintXQuery.cpp"
+                                                            #line 3103 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    else\n");
   append(L"      subsequence($state, $p:result)\n");
   append(L"};\n");
-                                                            #line 2128 "PrintXQuery.cpp.template"
+                                                            #line 2137 "PrintXQuery.cpp.template"
                                                                 }
                                                               }
                                                               if (debug)
                                                               {
-                                                            #line 3103 "PrintXQuery.cpp"
+                                                            #line 3113 "PrintXQuery.cpp"
   append(L"\n");
   append(L"declare function debug:enter($name, $state)\n");
   append(L"{\n");
@@ -3110,11 +3120,11 @@
   append(L"{\n");
   append(L"  p:trace(concat(\"leave \", $name, \" l1=\", $state[$p:l1], \" e1=\", $state[$p:e1], \" memo/e=\", $state[$p:memo]/@e, \" error/e=\", if ($state[$p:error] instance of xs:boolean) then $state[$p:error] else $state[$p:error]/@e))\n");
   append(L"};\n");
-                                                            #line 2142 "PrintXQuery.cpp.template"
+                                                            #line 2151 "PrintXQuery.cpp.template"
                                                               }
                                                               if (trace && ! isLrParser)
                                                               {
-                                                            #line 3118 "PrintXQuery.cpp"
+                                                            #line 3128 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -3151,11 +3161,11 @@
   append(L"    )\n");
   append(L"  )\n");
   append(L"};\n");
-                                                            #line 2179 "PrintXQuery.cpp.template"
+                                                            #line 2188 "PrintXQuery.cpp.template"
                                                               }
                                                               if (main)
                                                               {
-                                                            #line 3159 "PrintXQuery.cpp"
+                                                            #line 3169 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -3165,101 +3175,101 @@
   append(L"declare variable $input as xs:string external;\n");
   append(L"\n");
   append(L"let $result :=");
-                                                            #line 2189 "PrintXQuery.cpp.template"
+                                                            #line 2198 "PrintXQuery.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 3172 "PrintXQuery.cpp"
+                                                            #line 3182 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(\n");
   append(L"  p:trace(\"<trace>\"),");
-                                                            #line 2193 "PrintXQuery.cpp.template"
+                                                            #line 2202 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 3178 "PrintXQuery.cpp"
+                                                            #line 3188 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if (matches($input, \"");
   append(L"^");
   append(L"\\{.*\\}$\")) then\n");
   append(L"    p:");
-                                                            #line 2196 "PrintXQuery.cpp.template"
-                                                                print(methodPrefix);
-                                                            #line 3186 "PrintXQuery.cpp"
-  append(L"-");
-                                                            #line 2197 "PrintXQuery.cpp.template"
-                                                                print(grammar->startSymbol()->name);
-                                                            #line 3190 "PrintXQuery.cpp"
-  append(L"(substring($input, 2, string-length($input) - 2))\n");
-  append(L"  else\n");
-  append(L"    p:");
-                                                            #line 2200 "PrintXQuery.cpp.template"
+                                                            #line 2205 "PrintXQuery.cpp.template"
                                                                 print(methodPrefix);
                                                             #line 3196 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2201 "PrintXQuery.cpp.template"
+                                                            #line 2206 "PrintXQuery.cpp.template"
                                                                 print(grammar->startSymbol()->name);
                                                             #line 3200 "PrintXQuery.cpp"
+  append(L"(substring($input, 2, string-length($input) - 2))\n");
+  append(L"  else\n");
+  append(L"    p:");
+                                                            #line 2209 "PrintXQuery.cpp.template"
+                                                                print(methodPrefix);
+                                                            #line 3206 "PrintXQuery.cpp"
+  append(L"-");
+                                                            #line 2210 "PrintXQuery.cpp.template"
+                                                                print(grammar->startSymbol()->name);
+                                                            #line 3210 "PrintXQuery.cpp"
   append(L"(unparsed-text($input, \"utf-8\"))");
-                                                            #line 2202 "PrintXQuery.cpp.template"
+                                                            #line 2211 "PrintXQuery.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 3205 "PrintXQuery.cpp"
+                                                            #line 3215 "PrintXQuery.cpp"
   append(L",\n");
   append(L"  p:trace(\"</trace>\")\n");
   append(L")");
-                                                            #line 2206 "PrintXQuery.cpp.template"
+                                                            #line 2215 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 3211 "PrintXQuery.cpp"
+                                                            #line 3221 "PrintXQuery.cpp"
   append(L"\n");
   append(L"return\n");
   append(L"  if (empty($result/self::ERROR)) then\n");
   append(L"    $result\n");
   append(L"  else");
-                                                            #line 2211 "PrintXQuery.cpp.template"
+                                                            #line 2220 "PrintXQuery.cpp.template"
                                                                 if (tree && grammar->useGlr)
                                                                 {
-                                                            #line 3220 "PrintXQuery.cpp"
+                                                            #line 3230 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  (\n");
   append(L"    $result[not(self::ERROR)],\n");
   append(L"    \"&#xA;\",");
-                                                            #line 2216 "PrintXQuery.cpp.template"
+                                                            #line 2225 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 3227 "PrintXQuery.cpp"
+                                                            #line 3237 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    error(xs:QName(\"p:");
-                                                            #line 2218 "PrintXQuery.cpp.template"
+                                                            #line 2227 "PrintXQuery.cpp.template"
                                                                 print(methodPrefix);
-                                                            #line 3232 "PrintXQuery.cpp"
+                                                            #line 3242 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2219 "PrintXQuery.cpp.template"
+                                                            #line 2228 "PrintXQuery.cpp.template"
                                                                 print(grammar->startSymbol()->name);
-                                                            #line 3236 "PrintXQuery.cpp"
+                                                            #line 3246 "PrintXQuery.cpp"
   append(L"\"), concat(\"&#10;    \", replace($result");
-                                                            #line 2221 "PrintXQuery.cpp.template"
+                                                            #line 2230 "PrintXQuery.cpp.template"
                                                                 if (tree && grammar->useGlr)
                                                                 {
-                                                            #line 3241 "PrintXQuery.cpp"
+                                                            #line 3251 "PrintXQuery.cpp"
   append(L"[self::ERROR]");
-                                                            #line 2224 "PrintXQuery.cpp.template"
-                                                                }
-                                                            #line 3245 "PrintXQuery.cpp"
-  append(L", \"&#10;\", \"&#10;    \")))");
-                                                            #line 2226 "PrintXQuery.cpp.template"
-                                                                if (tree && grammar->useGlr)
-                                                                {
-                                                            #line 3250 "PrintXQuery.cpp"
-  append(L"\n");
-  append(L"  )");
-                                                            #line 2229 "PrintXQuery.cpp.template"
+                                                            #line 2233 "PrintXQuery.cpp.template"
                                                                 }
                                                             #line 3255 "PrintXQuery.cpp"
+  append(L", \"&#10;\", \"&#10;    \")))");
+                                                            #line 2235 "PrintXQuery.cpp.template"
+                                                                if (tree && grammar->useGlr)
+                                                                {
+                                                            #line 3260 "PrintXQuery.cpp"
   append(L"\n");
-                                                            #line 2231 "PrintXQuery.cpp.template"
+  append(L"  )");
+                                                            #line 2238 "PrintXQuery.cpp.template"
+                                                                }
+                                                            #line 3265 "PrintXQuery.cpp"
+  append(L"\n");
+                                                            #line 2240 "PrintXQuery.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintXQuery::printVariables()
                                                             {
-                                                            #line 3263 "PrintXQuery.cpp"
+                                                            #line 3273 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -3284,11 +3294,11 @@
   append(L" : input string of the end of the token that has been consumed.\n");
   append(L" :)\n");
   append(L"declare variable $p:e0 as xs:integer := 3;");
-                                                            #line 2253 "PrintXQuery.cpp.template"
+                                                            #line 2262 "PrintXQuery.cpp.template"
                                                               int stateIndex = 3;
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
-                                                            #line 3292 "PrintXQuery.cpp"
+                                                            #line 3302 "PrintXQuery.cpp"
   append(L"\n");
   append(L"\n");
   append(L"(:");
@@ -3296,19 +3306,19 @@
   append(L"\n");
   append(L" : The index of the lexer state for accessing the code of the\n");
   append(L" : level-");
-                                                            #line 2260 "PrintXQuery.cpp.template"
+                                                            #line 2269 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3302 "PrintXQuery.cpp"
+                                                            #line 3312 "PrintXQuery.cpp"
   append(L"-lookahead token.\n");
   append(L" :)\n");
   append(L"declare variable $p:l");
-                                                            #line 2263 "PrintXQuery.cpp.template"
+                                                            #line 2272 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3308 "PrintXQuery.cpp"
+                                                            #line 3318 "PrintXQuery.cpp"
   append(L" as xs:integer := ");
-                                                            #line 2264 "PrintXQuery.cpp.template"
+                                                            #line 2273 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3312 "PrintXQuery.cpp"
+                                                            #line 3322 "PrintXQuery.cpp"
   append(L";\n");
   append(L"\n");
   append(L"(:");
@@ -3316,19 +3326,19 @@
   append(L"\n");
   append(L" : The index of the lexer state for accessing the position in the\n");
   append(L" : input string of the begin of the level-");
-                                                            #line 2269 "PrintXQuery.cpp.template"
+                                                            #line 2278 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3322 "PrintXQuery.cpp"
+                                                            #line 3332 "PrintXQuery.cpp"
   append(L"-lookahead token.\n");
   append(L" :)\n");
   append(L"declare variable $p:b");
-                                                            #line 2272 "PrintXQuery.cpp.template"
+                                                            #line 2281 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3328 "PrintXQuery.cpp"
+                                                            #line 3338 "PrintXQuery.cpp"
   append(L" as xs:integer := ");
-                                                            #line 2273 "PrintXQuery.cpp.template"
+                                                            #line 2282 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3332 "PrintXQuery.cpp"
+                                                            #line 3342 "PrintXQuery.cpp"
   append(L";\n");
   append(L"\n");
   append(L"(:");
@@ -3336,23 +3346,23 @@
   append(L"\n");
   append(L" : The index of the lexer state for accessing the position in the\n");
   append(L" : input string of the end of the level-");
-                                                            #line 2278 "PrintXQuery.cpp.template"
+                                                            #line 2287 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3342 "PrintXQuery.cpp"
+                                                            #line 3352 "PrintXQuery.cpp"
   append(L"-lookahead token.\n");
   append(L" :)\n");
   append(L"declare variable $p:e");
-                                                            #line 2281 "PrintXQuery.cpp.template"
+                                                            #line 2290 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(k));
-                                                            #line 3348 "PrintXQuery.cpp"
+                                                            #line 3358 "PrintXQuery.cpp"
   append(L" as xs:integer := ");
-                                                            #line 2282 "PrintXQuery.cpp.template"
+                                                            #line 2291 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3352 "PrintXQuery.cpp"
+                                                            #line 3362 "PrintXQuery.cpp"
   append(L";");
-                                                            #line 2283 "PrintXQuery.cpp.template"
+                                                            #line 2292 "PrintXQuery.cpp.template"
                                                               }
-                                                            #line 3356 "PrintXQuery.cpp"
+                                                            #line 3366 "PrintXQuery.cpp"
   append(L"\n");
   append(L"\n");
   append(L"(:");
@@ -3362,14 +3372,14 @@
   append(L" : was expected when an error was found.\n");
   append(L" :)\n");
   append(L"declare variable $p:error as xs:integer := ");
-                                                            #line 2290 "PrintXQuery.cpp.template"
+                                                            #line 2299 "PrintXQuery.cpp.template"
                                                               print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3368 "PrintXQuery.cpp"
+                                                            #line 3378 "PrintXQuery.cpp"
   append(L";\n");
-                                                            #line 2292 "PrintXQuery.cpp.template"
+                                                            #line 2301 "PrintXQuery.cpp.template"
                                                               if (memoization)
                                                               {
-                                                            #line 3373 "PrintXQuery.cpp"
+                                                            #line 3383 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -3378,13 +3388,13 @@
   append(L" : of backtracking results.\n");
   append(L" :)\n");
   append(L"declare variable $p:memo as xs:integer := ");
-                                                            #line 2299 "PrintXQuery.cpp.template"
+                                                            #line 2308 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3384 "PrintXQuery.cpp"
+                                                            #line 3394 "PrintXQuery.cpp"
   append(L";\n");
-                                                            #line 2301 "PrintXQuery.cpp.template"
+                                                            #line 2310 "PrintXQuery.cpp.template"
                                                               }
-                                                            #line 3388 "PrintXQuery.cpp"
+                                                            #line 3398 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
@@ -3393,11 +3403,11 @@
   append(L" : used for collecting action results.\n");
   append(L" :)\n");
   append(L"declare variable $p:result as xs:integer := ");
-                                                            #line 2307 "PrintXQuery.cpp.template"
+                                                            #line 2316 "PrintXQuery.cpp.template"
                                                               print(format.toString<wchar_t>(++stateIndex));
-                                                            #line 3399 "PrintXQuery.cpp"
+                                                            #line 3409 "PrintXQuery.cpp"
   append(L";");
-                                                            #line 2309 "PrintXQuery.cpp.template"
+                                                            #line 2318 "PrintXQuery.cpp.template"
                                                             }
 
                                                             void PrintXQuery::printProlog(Grammar *aNode)
@@ -3406,44 +3416,44 @@
                                                               {
                                                                 if (main)
                                                                 {
-                                                            #line 3410 "PrintXQuery.cpp"
+                                                            #line 3420 "PrintXQuery.cpp"
   append(L"\n");
   append(L"declare namespace p=\"");
-                                                            #line 2318 "PrintXQuery.cpp.template"
+                                                            #line 2327 "PrintXQuery.cpp.template"
                                                                   print(className);
-                                                            #line 3415 "PrintXQuery.cpp"
+                                                            #line 3425 "PrintXQuery.cpp"
   append(L"\";");
-                                                            #line 2319 "PrintXQuery.cpp.template"
+                                                            #line 2328 "PrintXQuery.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3421 "PrintXQuery.cpp"
+                                                            #line 3431 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
   append(L"\n");
   append(L" : The parser that was generated for the ");
-                                                            #line 2324 "PrintXQuery.cpp.template"
+                                                            #line 2333 "PrintXQuery.cpp.template"
                                                                   print(className);
-                                                            #line 3429 "PrintXQuery.cpp"
+                                                            #line 3439 "PrintXQuery.cpp"
   append(L" grammar.\n");
   append(L" :)\n");
   append(L"module namespace p=\"");
-                                                            #line 2327 "PrintXQuery.cpp.template"
+                                                            #line 2336 "PrintXQuery.cpp.template"
                                                                   print(className);
-                                                            #line 3435 "PrintXQuery.cpp"
+                                                            #line 3445 "PrintXQuery.cpp"
   append(L"\";");
-                                                            #line 2328 "PrintXQuery.cpp.template"
+                                                            #line 2337 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 3439 "PrintXQuery.cpp"
+                                                            #line 3449 "PrintXQuery.cpp"
   append(L"\n");
   append(L"declare default function namespace \"http://www.w3.org/2005/xpath-functions\";\n");
-                                                            #line 2332 "PrintXQuery.cpp.template"
+                                                            #line 2341 "PrintXQuery.cpp.template"
                                                                 if (debug)
                                                                 {
-                                                            #line 3445 "PrintXQuery.cpp"
+                                                            #line 3455 "PrintXQuery.cpp"
   append(L"declare namespace debug=\"DEBUG\";\n");
-                                                            #line 2335 "PrintXQuery.cpp.template"
+                                                            #line 2344 "PrintXQuery.cpp.template"
                                                                 }
                                                               }
                                                             }
@@ -3457,28 +3467,28 @@
                                                               }
                                                               if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
                                                               {
-                                                            #line 3461 "PrintXQuery.cpp"
+                                                            #line 3471 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
   append(L"\n");
   append(L" : ");
-                                                            #line 2350 "PrintXQuery.cpp.template"
+                                                            #line 2359 "PrintXQuery.cpp.template"
                                                               if (px->methodPrefix != px->methodPrefixTry)
                                                               {
-                                                            #line 3470 "PrintXQuery.cpp"
+                                                            #line 3480 "PrintXQuery.cpp"
   append(L"Parse");
-                                                            #line 2352 "PrintXQuery.cpp.template"
+                                                            #line 2361 "PrintXQuery.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 3476 "PrintXQuery.cpp"
+                                                            #line 3486 "PrintXQuery.cpp"
   append(L"Try parsing");
-                                                            #line 2355 "PrintXQuery.cpp.template"
+                                                            #line 2364 "PrintXQuery.cpp.template"
                                                               }
-                                                            #line 3480 "PrintXQuery.cpp"
+                                                            #line 3490 "PrintXQuery.cpp"
   append(L" the ");
-                                                            #line 2356 "PrintXQuery.cpp.template"
+                                                            #line 2365 "PrintXQuery.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
                                                               switch (node->loopId)
                                                               {
@@ -3487,11 +3497,11 @@
                                                               case 3:  append(L"rd"); break;
                                                               default: append(L"th"); break;
                                                               }
-                                                            #line 3491 "PrintXQuery.cpp"
+                                                            #line 3501 "PrintXQuery.cpp"
   append(L" loop of production ");
-                                                            #line 2364 "PrintXQuery.cpp.template"
+                                                            #line 2373 "PrintXQuery.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3495 "PrintXQuery.cpp"
+                                                            #line 3505 "PrintXQuery.cpp"
   append(L" (zero or more). Use\n");
   append(L" : tail recursion for iteratively updating the lexer state.\n");
   append(L" :\n");
@@ -3500,23 +3510,23 @@
   append(L" : @return the updated state.\n");
   append(L" :)\n");
   append(L"declare function p:");
-                                                            #line 2372 "PrintXQuery.cpp.template"
+                                                            #line 2381 "PrintXQuery.cpp.template"
                                                               px->print(px->methodPrefix);
-                                                            #line 3506 "PrintXQuery.cpp"
+                                                            #line 3516 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2373 "PrintXQuery.cpp.template"
+                                                            #line 2382 "PrintXQuery.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3510 "PrintXQuery.cpp"
+                                                            #line 3520 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2374 "PrintXQuery.cpp.template"
+                                                            #line 2383 "PrintXQuery.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3514 "PrintXQuery.cpp"
+                                                            #line 3524 "PrintXQuery.cpp"
   append(L"($input as xs:string, $state as item()+)\n");
   append(L"{\n");
   append(L"  if ($state[$p:error]) then\n");
   append(L"    $state\n");
   append(L"  else");
-                                                            #line 2379 "PrintXQuery.cpp.template"
+                                                            #line 2388 "PrintXQuery.cpp.template"
                                                               px->increaseIndent(2);
                                                               bool hasLookahead =
                                                                 px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
@@ -3530,32 +3540,32 @@
                                                                                       node->firstElementChild);
                                                               if (hasLookahead || hasBacktracking)
                                                               {
-                                                            #line 3534 "PrintXQuery.cpp"
+                                                            #line 3544 "PrintXQuery.cpp"
   append(L"\n");
   append(L"return");
-                                                            #line 2393 "PrintXQuery.cpp.template"
+                                                            #line 2402 "PrintXQuery.cpp.template"
                                                                 px->increaseIndent();
                                                               }
                                                               const wchar_t *prefix = L"if (";
                                                               if (hasBacktracking && nestedTry)
                                                               {
-                                                            #line 3543 "PrintXQuery.cpp"
+                                                            #line 3553 "PrintXQuery.cpp"
   append(L"\n");
   append(L"if ($state[$p:lk] = -3) then\n");
   append(L"  p:");
-                                                            #line 2400 "PrintXQuery.cpp.template"
+                                                            #line 2409 "PrintXQuery.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3549 "PrintXQuery.cpp"
+                                                            #line 3559 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2401 "PrintXQuery.cpp.template"
+                                                            #line 2410 "PrintXQuery.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3553 "PrintXQuery.cpp"
+                                                            #line 3563 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2402 "PrintXQuery.cpp.template"
+                                                            #line 2411 "PrintXQuery.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3557 "PrintXQuery.cpp"
+                                                            #line 3567 "PrintXQuery.cpp"
   append(L"($input, $state)");
-                                                            #line 2403 "PrintXQuery.cpp.template"
+                                                            #line 2412 "PrintXQuery.cpp.template"
                                                                 prefix = L"else if (";
                                                               }
                                                               MatchType matchType;
@@ -3568,37 +3578,37 @@
                                                                              1,
                                                                              prefix,
                                                                              L") then");
-                                                            #line 3572 "PrintXQuery.cpp"
+                                                            #line 3582 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  $state\n");
   append(L"else");
-                                                            #line 2417 "PrintXQuery.cpp.template"
+                                                            #line 2426 "PrintXQuery.cpp.template"
                                                               px->Visitor::visitNodeWithChildren(node);
-                                                            #line 3578 "PrintXQuery.cpp"
+                                                            #line 3588 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  return p:");
-                                                            #line 2419 "PrintXQuery.cpp.template"
+                                                            #line 2428 "PrintXQuery.cpp.template"
                                                               px->print(px->methodPrefix);
-                                                            #line 3583 "PrintXQuery.cpp"
+                                                            #line 3593 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2420 "PrintXQuery.cpp.template"
+                                                            #line 2429 "PrintXQuery.cpp.template"
                                                               px->print(node->production->name);
-                                                            #line 3587 "PrintXQuery.cpp"
+                                                            #line 3597 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2421 "PrintXQuery.cpp.template"
+                                                            #line 2430 "PrintXQuery.cpp.template"
                                                               px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3591 "PrintXQuery.cpp"
+                                                            #line 3601 "PrintXQuery.cpp"
   append(L"($input, $state)");
-                                                            #line 2422 "PrintXQuery.cpp.template"
+                                                            #line 2431 "PrintXQuery.cpp.template"
                                                               px->decreaseIndent(2);
                                                               if (hasLookahead || hasBacktracking)
                                                               {
                                                                 px->decreaseIndent();
                                                               }
-                                                            #line 3599 "PrintXQuery.cpp"
+                                                            #line 3609 "PrintXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 2430 "PrintXQuery.cpp.template"
+                                                            #line 2439 "PrintXQuery.cpp.template"
                                                               }
                                                               if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
                                                               {
@@ -3617,28 +3627,28 @@
                                                               }
                                                               if (px->methodPrefix == px->methodPrefixTry || node->production->runPayload)
                                                               {
-                                                            #line 3621 "PrintXQuery.cpp"
+                                                            #line 3631 "PrintXQuery.cpp"
   append(L"\n");
   append(L"(:");
   append(L"~");
   append(L"\n");
   append(L" : ");
-                                                            #line 2450 "PrintXQuery.cpp.template"
+                                                            #line 2459 "PrintXQuery.cpp.template"
                                                                 if (px->methodPrefix != px->methodPrefixTry)
                                                                 {
-                                                            #line 3630 "PrintXQuery.cpp"
+                                                            #line 3640 "PrintXQuery.cpp"
   append(L"Parse");
-                                                            #line 2452 "PrintXQuery.cpp.template"
+                                                            #line 2461 "PrintXQuery.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3636 "PrintXQuery.cpp"
+                                                            #line 3646 "PrintXQuery.cpp"
   append(L"Try parsing");
-                                                            #line 2455 "PrintXQuery.cpp.template"
+                                                            #line 2464 "PrintXQuery.cpp.template"
                                                                 }
-                                                            #line 3640 "PrintXQuery.cpp"
+                                                            #line 3650 "PrintXQuery.cpp"
   append(L" the ");
-                                                            #line 2456 "PrintXQuery.cpp.template"
+                                                            #line 2465 "PrintXQuery.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
                                                                 switch (node->loopId)
                                                                 {
@@ -3647,11 +3657,11 @@
                                                                 case 3:  append(L"rd"); break;
                                                                 default: append(L"th"); break;
                                                                 }
-                                                            #line 3651 "PrintXQuery.cpp"
+                                                            #line 3661 "PrintXQuery.cpp"
   append(L" loop of production ");
-                                                            #line 2464 "PrintXQuery.cpp.template"
+                                                            #line 2473 "PrintXQuery.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3655 "PrintXQuery.cpp"
+                                                            #line 3665 "PrintXQuery.cpp"
   append(L" (one or more). Use\n");
   append(L" : tail recursion for iteratively updating the lexer state.\n");
   append(L" :\n");
@@ -3660,23 +3670,23 @@
   append(L" : @return the updated state.\n");
   append(L" :)\n");
   append(L"declare function p:");
-                                                            #line 2472 "PrintXQuery.cpp.template"
+                                                            #line 2481 "PrintXQuery.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3666 "PrintXQuery.cpp"
+                                                            #line 3676 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2473 "PrintXQuery.cpp.template"
+                                                            #line 2482 "PrintXQuery.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3670 "PrintXQuery.cpp"
+                                                            #line 3680 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2474 "PrintXQuery.cpp.template"
+                                                            #line 2483 "PrintXQuery.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3674 "PrintXQuery.cpp"
+                                                            #line 3684 "PrintXQuery.cpp"
   append(L"($input as xs:string, $state as item()+)\n");
   append(L"{\n");
   append(L"  if ($state[$p:error]) then\n");
   append(L"    $state\n");
   append(L"  else");
-                                                            #line 2479 "PrintXQuery.cpp.template"
+                                                            #line 2488 "PrintXQuery.cpp.template"
                                                                 px->increaseIndent();
                                                                 px->visitNodeList(node->firstChild);
                                                                 px->increaseIndent();
@@ -3689,30 +3699,30 @@
                                                                                         node->conflictCaseId,
                                                                                         node->conflictId,
                                                                                         node->firstElementChild);
-                                                            #line 3693 "PrintXQuery.cpp"
+                                                            #line 3703 "PrintXQuery.cpp"
   append(L"\n");
   append(L"return");
-                                                            #line 2492 "PrintXQuery.cpp.template"
+                                                            #line 2501 "PrintXQuery.cpp.template"
                                                                 const wchar_t *prefix = L"if (";
                                                                 if (hasBacktracking && nestedTry)
                                                                 {
-                                                            #line 3700 "PrintXQuery.cpp"
+                                                            #line 3710 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if ($state[$p:lk] = -3) then\n");
   append(L"    p:");
-                                                            #line 2497 "PrintXQuery.cpp.template"
+                                                            #line 2506 "PrintXQuery.cpp.template"
                                                                   px->print(px->methodPrefix);
-                                                            #line 3706 "PrintXQuery.cpp"
+                                                            #line 3716 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2498 "PrintXQuery.cpp.template"
+                                                            #line 2507 "PrintXQuery.cpp.template"
                                                                   px->print(node->production->name);
-                                                            #line 3710 "PrintXQuery.cpp"
+                                                            #line 3720 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2499 "PrintXQuery.cpp.template"
+                                                            #line 2508 "PrintXQuery.cpp.template"
                                                                   px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3714 "PrintXQuery.cpp"
+                                                            #line 3724 "PrintXQuery.cpp"
   append(L"($input, $state)");
-                                                            #line 2500 "PrintXQuery.cpp.template"
+                                                            #line 2509 "PrintXQuery.cpp.template"
                                                                   prefix = L"else if (";
                                                                 }
                                                                 px->increaseIndent();
@@ -3726,29 +3736,29 @@
                                                                                1,
                                                                                prefix,
                                                                                L") then");
-                                                            #line 3730 "PrintXQuery.cpp"
+                                                            #line 3740 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  $state\n");
   append(L"else\n");
   append(L"  p:");
-                                                            #line 2516 "PrintXQuery.cpp.template"
+                                                            #line 2525 "PrintXQuery.cpp.template"
                                                                 px->print(px->methodPrefix);
-                                                            #line 3737 "PrintXQuery.cpp"
+                                                            #line 3747 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2517 "PrintXQuery.cpp.template"
+                                                            #line 2526 "PrintXQuery.cpp.template"
                                                                 px->print(node->production->name);
-                                                            #line 3741 "PrintXQuery.cpp"
+                                                            #line 3751 "PrintXQuery.cpp"
   append(L"-");
-                                                            #line 2518 "PrintXQuery.cpp.template"
+                                                            #line 2527 "PrintXQuery.cpp.template"
                                                                 px->print(px->format.toString<wchar_t>(node->loopId));
-                                                            #line 3745 "PrintXQuery.cpp"
+                                                            #line 3755 "PrintXQuery.cpp"
   append(L"($input, $state)");
-                                                            #line 2519 "PrintXQuery.cpp.template"
+                                                            #line 2528 "PrintXQuery.cpp.template"
                                                                 px->decreaseIndent(3);
-                                                            #line 3749 "PrintXQuery.cpp"
+                                                            #line 3759 "PrintXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 2522 "PrintXQuery.cpp.template"
+                                                            #line 2531 "PrintXQuery.cpp.template"
                                                               }
                                                               if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
                                                               {
@@ -3768,10 +3778,10 @@
                                                                 Token::Code semicolon = p == 0 ? -1 : p->tokenCode;
                                                                 lineBuffer.clear();
                                                                 TokenSequenceSet tss;
-                                                            #line 3772 "PrintXQuery.cpp"
+                                                            #line 3782 "PrintXQuery.cpp"
   append(L"\n");
   append(L"let $state :=");
-                                                            #line 2542 "PrintXQuery.cpp.template"
+                                                            #line 2551 "PrintXQuery.cpp.template"
                                                                 switch (node->automaticSemicolonInsertion)
                                                                 {
                                                                 case PLUSPLUS:
@@ -3781,18 +3791,18 @@
                                                                     Token::Code plusplus = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"--");
                                                                     Token::Code minusminus = p == 0 ? -1 : p->tokenCode;
-                                                            #line 3785 "PrintXQuery.cpp"
+                                                            #line 3795 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] = (");
-                                                            #line 2552 "PrintXQuery.cpp.template"
+                                                            #line 2561 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
-                                                            #line 3790 "PrintXQuery.cpp"
+                                                            #line 3800 "PrintXQuery.cpp"
   append(L", ");
-                                                            #line 2553 "PrintXQuery.cpp.template"
+                                                            #line 2562 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
-                                                            #line 3794 "PrintXQuery.cpp"
+                                                            #line 3804 "PrintXQuery.cpp"
   append(L") and p:follows-line-terminator($input, $state)) then");
-                                                            #line 2554 "PrintXQuery.cpp.template"
+                                                            #line 2563 "PrintXQuery.cpp.template"
                                                                                   tss.insert(grammar->tokenSequence(plusplus));
                                                                     tss.insert(grammar->tokenSequence(minusminus));
                                                                     printCodeSequenceAnnotation(tss);
@@ -3803,14 +3813,14 @@
                                                                 case RETURN:
                                                                 case THROW:
                                                                   {
-                                                            #line 3807 "PrintXQuery.cpp"
+                                                            #line 3817 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] ne ");
-                                                            #line 2565 "PrintXQuery.cpp.template"
+                                                            #line 2574 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 3812 "PrintXQuery.cpp"
+                                                            #line 3822 "PrintXQuery.cpp"
   append(L" and $state[$p:l1] ge 0 and p:follows-line-terminator($input, $state)) then");
-                                                            #line 2567 "PrintXQuery.cpp.template"
+                                                            #line 2576 "PrintXQuery.cpp.template"
                                                                     tss.insert(grammar->tokenSequence(semicolon));
                                                                     printCodeSequenceAnnotation(tss);
                                                                   }
@@ -3821,44 +3831,44 @@
                                                                     Token::Code eof = p == 0 ? -1 : p->tokenCode;
                                                                     p = grammar->stringByName.byStringValue(L"}");
                                                                     Token::Code rbrace = p == 0 ? -1 : p->tokenCode;
-                                                            #line 3825 "PrintXQuery.cpp"
+                                                            #line 3835 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  if ($state[$p:l1] eq ");
-                                                            #line 2578 "PrintXQuery.cpp.template"
+                                                            #line 2587 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[rbrace]));
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(rbrace));
-                                                            #line 3831 "PrintXQuery.cpp"
+                                                            #line 3841 "PrintXQuery.cpp"
   append(L"\n");
   append(L"   or $state[$p:l1] eq ");
-                                                            #line 2581 "PrintXQuery.cpp.template"
+                                                            #line 2590 "PrintXQuery.cpp.template"
                                                                     print(format.toString<wchar_t>(grammar->externalTokenCode[eof]));
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(eof));
-                                                            #line 3837 "PrintXQuery.cpp"
+                                                            #line 3847 "PrintXQuery.cpp"
   append(L"\n");
   append(L"   or $state[$p:l1] ne ");
-                                                            #line 2584 "PrintXQuery.cpp.template"
-                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 3842 "PrintXQuery.cpp"
-  append(L" and $state[$p:l1] ge 0 and ");
-                                                            #line 2585 "PrintXQuery.cpp.template"
-                                                                    if (afterRbrace)
-                                                                    {
-                                                            #line 3847 "PrintXQuery.cpp"
-  append(L"(");
-                                                            #line 2587 "PrintXQuery.cpp.template"
-                                                                    }
-                                                            #line 3851 "PrintXQuery.cpp"
-  append(L"p:follows-line-terminator($input, $state)");
-                                                            #line 2589 "PrintXQuery.cpp.template"
-                                                                    if (afterRbrace)
-                                                                    {
-                                                            #line 3856 "PrintXQuery.cpp"
-  append(L" or substring($input, $state[$p:b0], 1) eq \"}\")");
-                                                            #line 2592 "PrintXQuery.cpp.template"
-                                                                    }
-                                                            #line 3860 "PrintXQuery.cpp"
-  append(L") then");
                                                             #line 2593 "PrintXQuery.cpp.template"
+                                                                    print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
+                                                            #line 3852 "PrintXQuery.cpp"
+  append(L" and $state[$p:l1] ge 0 and ");
+                                                            #line 2594 "PrintXQuery.cpp.template"
+                                                                    if (afterRbrace)
+                                                                    {
+                                                            #line 3857 "PrintXQuery.cpp"
+  append(L"(");
+                                                            #line 2596 "PrintXQuery.cpp.template"
+                                                                    }
+                                                            #line 3861 "PrintXQuery.cpp"
+  append(L"p:follows-line-terminator($input, $state)");
+                                                            #line 2598 "PrintXQuery.cpp.template"
+                                                                    if (afterRbrace)
+                                                                    {
+                                                            #line 3866 "PrintXQuery.cpp"
+  append(L" or substring($input, $state[$p:b0], 1) eq \"}\")");
+                                                            #line 2601 "PrintXQuery.cpp.template"
+                                                                    }
+                                                            #line 3870 "PrintXQuery.cpp"
+  append(L") then");
+                                                            #line 2602 "PrintXQuery.cpp.template"
                                                                     printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
                                                                   }
                                                                   break;
@@ -3867,18 +3877,18 @@
                                                                     internalerr();
                                                                   }
                                                                 }
-                                                            #line 3871 "PrintXQuery.cpp"
+                                                            #line 3881 "PrintXQuery.cpp"
   append(L"\n");
   append(L"  (\n");
   append(L"    subsequence($state, 1, $p:l1 - 1),\n");
   append(L"    ");
-                                                            #line 2604 "PrintXQuery.cpp.template"
+                                                            #line 2613 "PrintXQuery.cpp.template"
                                                                 print(format.toString<wchar_t>(grammar->externalTokenCode[semicolon]));
-                                                            #line 3878 "PrintXQuery.cpp"
+                                                            #line 3888 "PrintXQuery.cpp"
   append(L",");
-                                                            #line 2605 "PrintXQuery.cpp.template"
+                                                            #line 2614 "PrintXQuery.cpp.template"
                                                                 printCodeSequenceAnnotation(grammar->tokenSequence(semicolon));
-                                                            #line 3882 "PrintXQuery.cpp"
+                                                            #line 3892 "PrintXQuery.cpp"
   append(L"\n");
   append(L"    $state[$p:b1],\n");
   append(L"    $state[$p:b1],\n");
@@ -3886,7 +3896,7 @@
   append(L"  )\n");
   append(L"  else\n");
   append(L"    $state");
-                                                            #line 2612 "PrintXQuery.cpp.template"
+                                                            #line 2621 "PrintXQuery.cpp.template"
                                                               }
                                                             }
 

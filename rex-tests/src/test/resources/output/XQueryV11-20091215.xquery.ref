@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Mon Sep 21, 2026 21:13 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q XQueryV11-20091215.ebnf -xquery -u -tree -main :)
 
 declare namespace p="XQueryV11-20091215";
@@ -17369,7 +17369,17 @@ declare function p:matchW($input as xs:string,
       p:matchW($input, $match[3], $token-set)
     else if ($match[1] = 33) then                           (: ('(' ':') :)
       let $state := p:try-Whitespace($input, (0, $begin, $begin, $match, 0, 0, 0, 0, 0, 0, false()))
-      return p:matchW($input, $state[$p:e0], $token-set)
+      return
+        if ($state[$p:error]) then
+          let $error := $state[$p:error]
+          return
+            (
+              - xs:integer($error/@s),
+              xs:integer($error/@b),
+              xs:integer($error/@e)
+            )
+        else
+          p:matchW($input, $state[$p:e0], $token-set)
     else
       $match
 };

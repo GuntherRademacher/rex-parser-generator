@@ -1770,8 +1770,17 @@ declare function p:matchW($input as xs:string,
                                                           ~))~
                                                                   }
 ~
-  return p:matchW($input, $state[$p:e0], $token-set~
-                                                                    if (grammar->useGlr)
+  return
+    if ($state[$p:error]) then
+      let $error := $state[$p:error]
+      return
+        (
+          - xs:integer($error/@s),
+          xs:integer($error/@b),
+          xs:integer($error/@e)
+        )
+    else
+      p:matchW($input, $state[$p:e0], $token-set~                   if (grammar->useGlr)
                                                                     {
                                                    ~, $id~          }
                                                    ~)~          }

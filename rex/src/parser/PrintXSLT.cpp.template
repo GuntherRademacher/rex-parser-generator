@@ -1921,11 +1921,23 @@
                                            ~))"/>~
                                                                   }
 ~
-  <xsl:sequence select="p:matchW($input, $state[$p:e0], $token-set~
+  <xsl:choose>
+    <xsl:when test="$state[$p:error]">
+      <xsl:variable name="error" as="element(error)" select="$state[$p:error]"/>
+      <xsl:sequence select="
+        - xs:integer($error/@s),
+        xs:integer($error/@b),
+        xs:integer($error/@e)
+      "/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:sequence select="p:matchW($input, $state[$p:e0], $token-set~
                                                                   if (grammar->useGlr)
                                                                   {
                                            ~, $id~                }
                                            ~)"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:when>~                                                    }
 ~
 <xsl:otherwise>
