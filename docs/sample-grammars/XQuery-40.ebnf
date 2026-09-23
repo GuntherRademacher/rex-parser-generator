@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Sep 16, 2026, 10:51 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Sep 23, 2026, 16:06 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -1167,7 +1167,7 @@ Selector ::= EQName
 DynamicNodeTest
          ::= EnclosedExpr
 FullStep ::= Axis NodeTest
-Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
+Axis     ::= ( 'ancestor' | 'ancestor-or-self' | 'attribute' | 'child' | 'descendant' | 'descendant-or-self' | 'following' | 'following-or-self' | 'following-sibling' | 'following-sibling-or-self' | 'item' | 'parent' | 'preceding' | 'preceding-or-self' | 'preceding-sibling' | 'preceding-sibling-or-self' | 'self' ) '::'
 SequenceArrowTarget
          ::= '=>' ArrowTarget
 ArrowTarget
