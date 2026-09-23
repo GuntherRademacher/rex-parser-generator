@@ -114,7 +114,7 @@ declare variable $parse :=
     switch ($language)
     case "xquery" return xquery-xquery:parse-Module#1
     case "xquery-full-text-update" return xquery-full-text-update-xquery:parse-Module#1
-    case "xquery-full-text-update-basex" return xquery-full-text-update-xquery:parse-Module#1
+    case "xquery-full-text-update-basex" return xquery-full-text-update-basex-xquery:parse-Module#1
     case "xpath" return xpath-xquery:parse-XPath#1
     case "xpath-full-text" return xpath-full-text-xquery:parse-XPath#1
     default return error(xs:QName("process-tests"), "unsupported parser target language: " || $language)
