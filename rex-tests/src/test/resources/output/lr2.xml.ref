@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This file was generated on Thu Jan 16, 2025 11:06 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> -->
+<!-- This file was generated on Sat Sep 26, 2026 23:16 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net> -->
 <!-- REx command line: lr2.ebnf -xml -ff -rex -lr 2 -->
 <g:grammar id="1" xmlns:g="http://www.w3.org/2001/03/XPath/grammar">
-  <g:production id="2" follow="%OTHER" name="S">
-    <g:choice id="3" follow="%OTHER">
-      <g:sequence id="4" follow="%OTHER">
+  <g:production id="2" name="S">
+    <g:choice id="3">
+      <g:sequence id="4">
         <g:ref id="5" name="A"/>
         <g:ref id="6" reduce-id="7" reduce-count="2" first="a" first2="a" name="a"/>
       </g:sequence>
-      <g:sequence id="8" follow="%OTHER">
+      <g:sequence id="8">
         <g:ref id="9" name="B"/>
         <g:ref id="10" reduce-id="7" reduce-count="2" first="b" first2="b" name="b"/>
       </g:sequence>

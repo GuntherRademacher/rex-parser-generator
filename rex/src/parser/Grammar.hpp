@@ -268,10 +268,9 @@ public:
   virtual Node *element() {return this;}
 
   virtual void fastFollow(size_t k, TokenSequenceSet &result, NodePointerSet &transitive);
-  void fastFollowers(size_t k, const TokenSequenceSet *firstSet, Node *origin, TokenSequenceSet &result, NodePointerSet &transitive);
+  void fastFollowers(size_t k, const TokenSequenceSet *firstSet, Node *origin, TokenSequenceSet &result, NodePointerSet &transitive, bool item);
 
   virtual void fastFollowItem(size_t k, TokenSequenceSet &result, NodePointerSet &transitive);
-  void fastFollowersItem(size_t k, const TokenSequenceSet &firstSet, Node *origin, TokenSequenceSet &result, NodePointerSet &transitive);
 
   virtual bool isNodeWithChildren() const {return false;}
   virtual bool isNodeWithContext() const {return false;}
