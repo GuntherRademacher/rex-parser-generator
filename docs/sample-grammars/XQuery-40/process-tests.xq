@@ -206,7 +206,8 @@ declare function local:supported($node)
     @type = 'spec' and not(matches(@value, $filter)) or
     @type = ('xml-version', 'xsd-version') and @value = ('1.1', '1.0:4-') or
     not(contains($language, "update")) and @type = "feature" and @value = "XQUpdate" and string(@satisfied) = ("", "true") or
-    not(contains($language, "update")) and @type = "feature" and not(@value = "XQUpdate") and string(@satisfied) = 'false'
+    not(contains($language, "update")) and @type = "feature" and not(@value = "XQUpdate") and string(@satisfied) = 'false' or
+    not(contains($language, "full-text")) and @type = "feature" and @value = "fullText"
   ])
 };
 
