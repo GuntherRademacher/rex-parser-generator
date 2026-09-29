@@ -586,6 +586,29 @@ public class TestRegression extends AbstractSinglePlatformTest
     });
   }
 
+  // https://github.com/GuntherRademacher/rex-parser-generator/issues/65
+  @Test
+  public void testLr2WithItemLocalFollow()
+  {
+    Pass.expectPass(() ->
+    {
+      NamedFile ebnf = new NamedFile
+      (
+          "issue65.ebnf",
+          "S     ::= '(' 'x' ')' E? 'a'",
+          "        | E",
+          "E     ::= 'x'",
+          "        | '(' E ')'"
+      );
+      Runner runner = new Runner();
+      runner.run(REX, commandLine("", "-lr 4", ebnf), ebnf);
+      String summary = runner.summary();
+      assertEquals(0, runner.getExitCode(), summary);
+      assertEquals("grammar is LR(2)", runner.getStdout().trim(), summary);
+      Pass.passNormally(runner);
+    });
+  }
+
   @Test
   public void TestLalr4Conflicts()
   {

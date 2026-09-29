@@ -438,7 +438,8 @@ void Node::fastFollowers(size_t k,
                          const TokenSequenceSet *firstSet,
                          Node *origin,
                          TokenSequenceSet &result,
-                         NodePointerSet &transitive)
+                         NodePointerSet &transitive,
+                         bool item)
 {
   firstSet = grammar->tokenSequenceSets->resolve(firstSet);
 
@@ -451,24 +452,28 @@ void Node::fastFollowers(size_t k,
   {
     if (origin->parent && (origin->parent->isOneOrMore() || origin->parent->isZeroOrMore()))
     {
-      fastFollowers(k, &origin->parent->first(k), origin->parent, result, transitive);
+      fastFollowers(k, &origin->parent->first(k), origin->parent, result, transitive, item);
     }
     transitive.insert(origin->parent);
     firstSet = grammar->tokenSequenceSets->eraseIfEndsWith(firstSet, Token::eEPSILON);
   }
 
-  result.insertUpsized(*firstSet, origin->parent->followAccessor, k, grammar->tokenSequenceFactory);
+  // item-local follow must not be extended by global FOLLOW, only by the item's own lookahead
+  const TokenSequenceSetAccessor &parentFollow = item
+    ? static_cast<const TokenSequenceSetAccessor &>(origin->parent->followItemAccessor)
+    : static_cast<const TokenSequenceSetAccessor &>(origin->parent->followAccessor);
+  result.insertUpsized(*firstSet, parentFollow, k, grammar->tokenSequenceFactory);
 }
 
 void Node::fastFollow(size_t k, TokenSequenceSet &result, NodePointerSet &transitive)
 {
   if (followingElementSibling)
   {
-    fastFollowers(k, &followingElementSibling->first(k), this, result, transitive);
+    fastFollowers(k, &followingElementSibling->first(k), this, result, transitive, false);
   }
   else
   {
-    fastFollowers(k, grammar->epsilon, this, result, transitive);
+    fastFollowers(k, grammar->epsilon, this, result, transitive, false);
   }
 }
 
@@ -476,11 +481,11 @@ void Node::fastFollowItem(size_t k, TokenSequenceSet &result, NodePointerSet &tr
 {
   if (followingElementSibling)
   {
-    fastFollowers(k, &followingElementSibling->first(k), this, result, transitive);
+    fastFollowers(k, &followingElementSibling->first(k), this, result, transitive, true);
   }
   else
   {
-    fastFollowers(k, grammar->epsilon, this, result, transitive);
+    fastFollowers(k, grammar->epsilon, this, result, transitive, true);
   }
 }
 
