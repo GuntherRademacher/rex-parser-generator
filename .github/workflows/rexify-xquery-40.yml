@@ -93,6 +93,7 @@ jobs:
         run: |
           diff --strip-trailing-cr --ignore-matching-lines="^ *\\*" ../XQuery-40.ebnf build/XQuery-40.ebnf
           diff --strip-trailing-cr --ignore-matching-lines="^ *\\*" ../XPath-40.ebnf  build/XPath-40.ebnf
+          diff --strip-trailing-cr --ignore-matching-lines="^ *\\*" ../XQuery-Full-Text-Update-BaseX-40.ebnf  build/XQuery-Full-Text-Update-BaseX-40.ebnf
         working-directory: rex-parser-generator/docs/sample-grammars/XQuery-40
 
       # Write success message to $GITHUB_STEP_SUMMARY
@@ -117,6 +118,7 @@ jobs:
           echo "| Specification | Grammar |" >> "$GITHUB_STEP_SUMMARY"
           echo "|---------------|---------|" >> "$GITHUB_STEP_SUMMARY"
           echo "| [XQuery 4.0](https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xquery-40.html) | [XQuery-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-40.ebnf)" >> "$GITHUB_STEP_SUMMARY"
+          echo "| XQuery 4.0 with BaseX extensions | [XQuery-Full-Text-Update-BaseX-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XQuery-Full-Text-Update-BaseX-40.ebnf)" >> "$GITHUB_STEP_SUMMARY"
           echo "| [XPath 4.0](https://qt4cg.org/$SPEC_PATH_SEGMENT/xquery-40/xpath-40.html) | [XPath-40.ebnf](../../blob/${{ github.ref_name }}/docs/sample-grammars/XPath-40.ebnf)" >> "$GITHUB_STEP_SUMMARY"
 
       # Upload generated files as artifacts if the diff fails

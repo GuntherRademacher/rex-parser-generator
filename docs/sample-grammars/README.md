@@ -27,6 +27,7 @@ These sample grammars demonstrate how to create working REx parsers. The links b
  - [XQuery-30.ebnf](#sample-grammar-xquery-30ebnf)
  - [XQuery-31.ebnf](#sample-grammar-xquery-31ebnf)
  - [XQuery-40.ebnf](#sample-grammar-xquery-40ebnf)
+ - [XQuery-Full-Text-Update-BaseX-40.ebnf](#sample-grammar-xquery-full-text-update-basex-40ebnf)
 
 ## Sample Grammar: [JSON.ebnf](JSON.ebnf)
 
@@ -119,7 +120,11 @@ This grammar is a transcription of the Java 7 grammar found in [The Java® Langu
 
 ## Sample Grammar: [XQuery-40.ebnf](XQuery-40.ebnf)
 
-This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). Adapting the grammar for REx is still a work in progress. The grammar is LALR(2).
+This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html) by applying the transformation scripts in folder [XQuery-40](XQuery-40/). As the XQuery 4.0 specification is still evolving, this grammar is regularly updated to track specification changes. The grammar is LALR(2).
+
+## Sample Grammar: [XQuery-Full-Text-Update-BaseX-40.ebnf](XQuery-Full-Text-Update-BaseX-40.ebnf)
+
+This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html), also integrating [XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/), [XQuery and XPath Full Text 3.0](https://www.w3.org/TR/xpath-full-text-30/), and extensions made by [BaseX](https://basex.org/). It was produced by the transformation scripts in folder [XQuery-40](XQuery-40/). As the XQuery 4.0 specification is still evolving, this grammar is regularly updated to track specification changes. The grammar currently has at least one unresolved ambiguity. Use option `-glalr 1` when generating a parser from it.
 
 &nbsp;
 ---
