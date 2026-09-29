@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Mon Sep 28, 2026, 21:20 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Sep 29, 2026, 22:20 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * with productions from https://www.w3.org/TR/xquery-update-30/ added
@@ -240,7 +240,7 @@ NCName   ::= UnreservedNCName
            | 'zero-digit'
 URILiteral
          ::= StringLiteral
-Prolog   ::= ( ( DefaultNamespaceDecl | Setter | NamespaceDecl | Import | FTOptionDecl ) Separator )* ( ( ContextValueDecl | VarDecl | FunctionDecl | ItemTypeDecl | NamedRecordTypeDecl | OptionDecl ) Separator )*
+Prolog   ::= ( ( DefaultNamespaceDecl | Setter | NamespaceDecl | Import | FTOptionDecl ) Separator )* ( ( ContextValueDecl | VarDecl | FunctionDecl | ItemTypeDecl | NominativeRecordTypeDecl | OptionDecl ) Separator )*
 DefaultNamespaceDecl
          ::= 'declare' 'fixed'? 'default' ( 'element' | 'function' ) 'namespace' URILiteral
 Setter   ::= BoundarySpaceDecl
@@ -1250,7 +1250,7 @@ ParamWithDefault
          ::= VarNameAndType ( ':=' ExprSingle )?
 ItemTypeDecl
          ::= 'declare' Annotation* 'type' EQName 'as' ItemType
-NamedRecordTypeDecl
+NominativeRecordTypeDecl
          ::= 'declare' Annotation* 'record' EQName '(' ( ExtendedFieldDeclaration ( ',' ExtendedFieldDeclaration )* )? ')'
 ExtendedFieldDeclaration
          ::= FieldDeclaration ( ':=' ExprSingle )?
