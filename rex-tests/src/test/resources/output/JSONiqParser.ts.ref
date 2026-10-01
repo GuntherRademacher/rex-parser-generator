@@ -1,7 +1,7 @@
-// This file was generated on Sat Mar 28, 2026 20:48 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 1, 2026 22:48 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q JSONiqParser.ebnf -typescript -ll 2 -backtrack -main -tree
 
-namespace JSONiqParser
+export namespace JSONiqParser
 {
   export interface ParsingEventHandler
   {
