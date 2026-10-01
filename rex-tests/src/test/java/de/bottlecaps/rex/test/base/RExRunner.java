@@ -345,8 +345,8 @@ public class RExRunner
     if (SCALAC_VERSION[0] > 3 || SCALAC_VERSION[0] == 3 && SCALAC_VERSION[1] >= 5)
     {
       Pass.assume(JAVAC_VERSION[0] >= 17, runner, "Running on Java "+ JAVAC_VERSION[0] + ", but Scala 3.5+ requires Java 17 or higher");
-      runner.expectSuccess("Scala compilation", SCALA, "compile " + className + ".scala");
-      runner.run(SCALA, "run " + className + ".scala -- " + runtimeOptions);
+      runner.expectSuccess("Scala compilation", SCALA, "compile --server=false " + className + ".scala");
+      runner.run(SCALA, "run --server=false " + className + ".scala -- " + runtimeOptions);
     }
     else
     {
@@ -437,7 +437,7 @@ public class RExRunner
     Pass.passEarlyIfPossible(runner, baseName + ".ts");
     if (0 != runner.run(NPM, "init -y")) throw new RuntimeException(runner.summary());
     if (0 != runner.run(NPM, "install --save-dev @types/node")) throw new RuntimeException(runner.summary());
-    if (0 == runner.run(TSC, baseName + ".ts "))
+    if (0 == runner.run(TSC, "--module commonjs " + baseName + ".ts "))
     {
       runner.run(NODE, baseName + ".js " + runtimeOptions);
     }

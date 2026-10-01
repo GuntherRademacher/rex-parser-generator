@@ -8,8 +8,8 @@
                                                               if (! hasProlog)
                                                               {
 ~
-namespace ~                                                     print(className.c_str());
-          ~
+export namespace ~                                              print(className.c_str());
+                 ~
 {~                                                            }
 ~
   export interface ParsingEventHandler

@@ -1889,7 +1889,7 @@ this.reset = function(l, b, e)
 ~                                                             }
                                                               else if (isTypescript())
                                                               {
-                                                                if (performanceTest && useGlr)
+                                                                if (useGlr)
                                                                 {
 ~
 public reset(l: number, b: number, e: number)

@@ -66,7 +66,7 @@ The command line is used to specify the generator's options. With the above comm
 The generated file is self-contained, i.e. it has in it everything that is needed and does not need anything to be added. So just compile it with the TypeScript compiler:
 
 ```sh
-tsc Arithmetic
+tsc --module commonjs Arithmetic
 ```
 
 ## Step 4: Run the Generated Code
@@ -195,7 +195,7 @@ For debugging grammars, it is often useful to see the actions that the lexer and
 
 ```sh
 rex -typescript -main -trace Arithmetic.ebnf
-tsc Arithmetic
+tsc --module commonjs Arithmetic
 node Arithmetic "{1 + 2 * 3}"
 ```
 
@@ -415,7 +415,7 @@ Generate a parser including the actions, and compile it, using these commands:
 
 ```sh
 rex -typescript -a aee Arithmetic.ebnf
-tsc Arithmetic
+tsc --module commonjs Arithmetic
 ```
 
 Now it can be run to actually evaluate arithmetic expressions specified in the first command line argument, e.g.

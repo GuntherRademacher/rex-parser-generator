@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 1, 2026 21:07 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCLike.cpp.template
                                                             #line 1 "PrintCLike.cpp.template"
                                                             /*
@@ -2733,7 +2733,7 @@
                                                               }
                                                               else if (isTypescript())
                                                               {
-                                                                if (performanceTest && useGlr)
+                                                                if (useGlr)
                                                                 {
                                                             #line 2739 "PrintCLike.cpp"
   append(L"\n");
