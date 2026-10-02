@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 2, 2026 21:49 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: RExParser.ebnf -lalr 1 -cpp -char -a rex
 
 #ifndef REXPARSER_HPP
@@ -1213,7 +1213,6 @@ private:
   static const int GOTO[];
   static const int REDUCTION[];
   static const char *TOKEN[];
-  static const char *NONTERMINAL[];
 };
 
 const int RExParser::MAP0[] =
@@ -1738,57 +1737,6 @@ const char *RExParser::TOKEN[] =
   "']'",
   "'{'",
   "'}'"
-};
-
-const char *RExParser::NONTERMINAL[] =
-{
-  "regular_grammar",
-  "rule_list",
-  "rule",
-  "nonterminal",
-  "semantic_part",
-  "nongreedy",
-  "token_code",
-  "action_string",
-  "top_level_expression",
-  "context_expression",
-  "expression",
-  "sequence",
-  "item_sequence",
-  "closed_item",
-  "quantity",
-  "min",
-  "max",
-  "item",
-  "character_set",
-  "character_range_list",
-  "character_range",
-  "low_character",
-  "high_character",
-  "range_character",
-  "option_stmt_list",
-  "option_stmt",
-  "option_introducer",
-  "option_list",
-  "option_specifier",
-  "entry_stmt",
-  "entry_list",
-  "entry",
-  "used_token_ref",
-  "preference_stmt",
-  "preferred",
-  "unused_token_ref",
-  "delimiter_stmt",
-  "delimiter",
-  "equivalence_stmt",
-  "IMPLICIT-39",
-  "IMPLICIT-40",
-  "IMPLICIT-41",
-  "IMPLICIT-42",
-  "IMPLICIT-43",
-  "IMPLICIT-44",
-  "IMPLICIT-45",
-  "IMPLICIT-46"
 };
 
 #endif

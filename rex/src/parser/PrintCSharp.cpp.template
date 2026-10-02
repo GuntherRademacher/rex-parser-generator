@@ -600,11 +600,11 @@ private class ParsingThread : IComparable<ParsingThread>
                               ~0, ~                           }
                               ~e0, null);
     state = initialState;
-    action = predict(initialState);
-    bw = e0;
-    bs = e0;~                                                 if (tree)
+    action = predict(initialState);~                          if (tree)
                                                               {
 ~
+    bw = e0;
+    bs = e0;
     es = e0;~                                                 }
 ~
     threads = new Heap<ParsingThread>();
@@ -617,11 +617,11 @@ private class ParsingThread : IComparable<ParsingThread>
     this.action = action;
     accepted = other.accepted;
     target = other.target;
-    parser = other.parser;
-    bs = other.bs;
-    bw = other.bw;~                                           if (tree)
+    parser = other.parser;~                                   if (tree)
                                                               {
 ~
+    bs = other.bs;
+    bw = other.bw;
     es = other.es;
     eventHandler = other.eventHandler;
     deferredEvent = other.deferredEvent;~                     }
@@ -778,18 +778,14 @@ private class ParsingThread : IComparable<ParsingThread>
                                  ~128~                          }
                                      ~];
   private int top = -1;~                                      }
-                                                              if (useGlr)
-                                                              {
-~
-  public int bw, bs;~                                         }
                                                               if (tree)
                                                               {
+                                                                if (useGlr)
+                                                                {
+~
+  public int bw, bs, es;~                                       }
                                                                 if (isLrParser)
                                                                 {
-                                                                  if (useGlr)
-                                                                  {
-~
-  public int es;~                                                 }
 ~
   ~                                                               print(useGlr ? L"public" : L"private");
   ~ BottomUpEventHandler eventHandler = null;~                  }

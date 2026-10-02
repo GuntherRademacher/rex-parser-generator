@@ -4252,51 +4252,36 @@ for ~                                                                   print(if
                    ~top + 1~                                        print(rightbracket());
                                                                     print(semicolon());
                                                                   }
-                                                                  if (! useGlr)
-                                                                  {
-                                                                    increaseIndent();
-                                                                    print(rightBrace());
-                                                                    decreaseIndent();
-                                                                  }
-                                                                  else
+                                                                  increaseIndent();
+                                                                  print(rightBrace());
+                                                                  decreaseIndent();
+                                                                  if (useGlr && tree)
                                                                   {
 ~
-  ~                                                                 printIndented(1, elseWithBraces());
+  if ~                                                              print(ifLeftParen());
+     ~nonterminalId == ~                                            print(thiz());
+                       ~target ~                                    if (isPython())
+                                                                    {
+                               ~and~                                }
+                                                                    else
+                                                                    {
+                               ~&&~                                 }
+                                  ~ ~                               print(thiz());
+                                    ~stack~                         print(arrow());
+                                          ~link == ~                print(nullPtr());
+                                                                    print(ifRightParen());
+                                                                    printIndented(1, leftBrace());
 ~
     ~                                                               print(thiz());
     ~bs = ~                                                         print(thiz());
+          ~bw~                                                      print(semicolon());
+~
+    ~                                                               print(thiz());
+    ~bw = ~                                                         print(thiz());
           ~b1~                                                      print(semicolon());
                                                                     increaseIndent();
                                                                     print(rightBrace());
                                                                     decreaseIndent();
-                                                                    if (tree)
-                                                                    {
-~
-  if ~                                                                print(ifLeftParen());
-     ~nonterminalId == ~                                              print(thiz());
-                       ~target ~                                      if (isPython())
-                                                                      {
-                               ~and~                                  }
-                                                                      else
-                                                                      {
-                               ~&&~                                   }
-                                  ~ ~                                 print(thiz());
-                                    ~stack~                           print(arrow());
-                                          ~link == ~                  print(nullPtr());
-                                                                      print(ifRightParen());
-                                                                      printIndented(1, leftBrace());
-~
-    ~                                                                 print(thiz());
-    ~bs = ~                                                           print(thiz());
-          ~bw~                                                        print(semicolon());
-~
-    ~                                                                 print(thiz());
-    ~bw = ~                                                           print(thiz());
-          ~b1~                                                        print(semicolon());
-                                                                      increaseIndent();
-                                                                      print(rightBrace());
-                                                                      decreaseIndent();
-                                                                    }
                                                                   }
                                                                 }
 ~

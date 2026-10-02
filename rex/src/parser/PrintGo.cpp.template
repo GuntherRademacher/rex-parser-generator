@@ -1418,8 +1418,4 @@ func (this *ParseTreeBuilder) pop(count int) []Symbol {
 ~
   eventHandler EventHandler~                                    }
                                                               }
-                                                              else if (useGlr)
-                                                              {
-~
-  bw, bs int~                                                 }
                                                             }

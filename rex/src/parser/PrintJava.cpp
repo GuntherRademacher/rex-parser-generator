@@ -1,4 +1,4 @@
-// This file was generated on Sat Aug 8, 2026 17:10 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 2, 2026 21:37 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintJava.cpp.template
                                                             #line 1 "PrintJava.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -50,7 +50,7 @@
   append(L"import java.io.OutputStreamWriter;");
                                                             #line 33 "PrintJava.cpp.template"
                                                                 }
-                                                                if (trace || (tree && (main || useGlr)))
+                                                                if (trace || (tree && main) || (tree && useGlr && interfaceName.empty()))
                                                                 {
                                                             #line 56 "PrintJava.cpp"
   append(L"\n");
@@ -1959,25 +1959,18 @@
                                                             #line 1320 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                              else if (useGlr)
+                                                              if (memoization)
                                                               {
                                                             #line 1965 "PrintJava.cpp"
   append(L"\n");
-  append(L"  private int bw, bs;");
-                                                            #line 1325 "PrintJava.cpp.template"
-                                                              }
-                                                              if (memoization)
-                                                              {
-                                                            #line 1972 "PrintJava.cpp"
-  append(L"\n");
   append(L"  private java.util.Map<Integer, Integer> memo = new java.util.HashMap<Integer, Integer>();");
-                                                            #line 1330 "PrintJava.cpp.template"
+                                                            #line 1326 "PrintJava.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1978 "PrintJava.cpp"
+                                                            #line 1971 "PrintJava.cpp"
   append(L"\n");
   append(L"  private boolean viable;");
-                                                            #line 1333 "PrintJava.cpp.template"
+                                                            #line 1329 "PrintJava.cpp.template"
                                                                 }
                                                               }
                                                               if (useGlr)
@@ -1988,7 +1981,7 @@
 
                                                             void PrintJava::printFileProcessor()
                                                             {
-                                                            #line 1992 "PrintJava.cpp"
+                                                            #line 1985 "PrintJava.cpp"
   append(L"\n");
   append(L"  private static boolean quiet = false;\n");
   append(L"  private static long parsed = 0;\n");
@@ -2000,81 +1993,81 @@
   append(L"    public String name;\n");
   append(L"    public String input;\n");
   append(L"    public ");
-                                                            #line 1353 "PrintJava.cpp.template"
+                                                            #line 1349 "PrintJava.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2006 "PrintJava.cpp"
+                                                            #line 1999 "PrintJava.cpp"
   append(L" parser;");
-                                                            #line 1354 "PrintJava.cpp.template"
+                                                            #line 1350 "PrintJava.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2011 "PrintJava.cpp"
+                                                            #line 2004 "PrintJava.cpp"
   append(L"\n");
   append(L"    public ContentCounter contentCounter;");
-                                                            #line 1357 "PrintJava.cpp.template"
+                                                            #line 1353 "PrintJava.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2017 "PrintJava.cpp"
+                                                            #line 2010 "PrintJava.cpp"
   append(L"\n");
   append(L"    public ParseTreeBuilder parseTreeBuilder;");
-                                                            #line 1360 "PrintJava.cpp.template"
+                                                            #line 1356 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2023 "PrintJava.cpp"
+                                                            #line 2016 "PrintJava.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public ParseJob(String s, String i)\n");
   append(L"    {\n");
   append(L"      name = s;\n");
   append(L"      input = i;");
-                                                            #line 1367 "PrintJava.cpp.template"
+                                                            #line 1363 "PrintJava.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2033 "PrintJava.cpp"
+                                                            #line 2026 "PrintJava.cpp"
   append(L"\n");
   append(L"      contentCounter = new ContentCounter();");
-                                                            #line 1370 "PrintJava.cpp.template"
+                                                            #line 1366 "PrintJava.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2039 "PrintJava.cpp"
+                                                            #line 2032 "PrintJava.cpp"
   append(L"\n");
   append(L"      parseTreeBuilder = new ParseTreeBuilder();");
-                                                            #line 1373 "PrintJava.cpp.template"
+                                                            #line 1369 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2045 "PrintJava.cpp"
+                                                            #line 2038 "PrintJava.cpp"
   append(L"\n");
   append(L"      parser = new ");
-                                                            #line 1376 "PrintJava.cpp.template"
+                                                            #line 1372 "PrintJava.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2050 "PrintJava.cpp"
+                                                            #line 2043 "PrintJava.cpp"
   append(L"(input");
-                                                            #line 1377 "PrintJava.cpp.template"
+                                                            #line 1373 "PrintJava.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 2055 "PrintJava.cpp"
+                                                            #line 2048 "PrintJava.cpp"
   append(L", new ");
-                                                            #line 1379 "PrintJava.cpp.template"
+                                                            #line 1375 "PrintJava.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2059 "PrintJava.cpp"
+                                                            #line 2052 "PrintJava.cpp"
   append(L"Lexer()");
-                                                            #line 1380 "PrintJava.cpp.template"
+                                                            #line 1376 "PrintJava.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2067 "PrintJava.cpp"
+                                                            #line 2060 "PrintJava.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 1385 "PrintJava.cpp.template"
+                                                            #line 1381 "PrintJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 2073 "PrintJava.cpp"
+                                                            #line 2066 "PrintJava.cpp"
   append(L", contentCounter");
-                                                            #line 1388 "PrintJava.cpp.template"
+                                                            #line 1384 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2078 "PrintJava.cpp"
+                                                            #line 2071 "PrintJava.cpp"
   append(L");\n");
   append(L"    }\n");
   append(L"  }\n");
@@ -2084,9 +2077,9 @@
   append(L"    if (args.length == 0)\n");
   append(L"    {\n");
   append(L"      System.out.println(\"Usage: java ");
-                                                            #line 1398 "PrintJava.cpp.template"
+                                                            #line 1394 "PrintJava.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2090 "PrintJava.cpp"
+                                                            #line 2083 "PrintJava.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\");\n");
   append(L"      System.out.println();\n");
   append(L"      System.out.println(\"  parse all files that have names ending with ENDING, in current dir and below,\");\n");
@@ -2153,41 +2146,41 @@
   append(L"              {\n");
   append(L"                if (! quiet) System.out.print(\"parsing \" + job.name);\n");
   append(L"                job.parser");
-                                                            #line 1464 "PrintJava.cpp.template"
+                                                            #line 1460 "PrintJava.cpp.template"
                                                                   if (useGlr)
                                                                   {
-                                                            #line 2160 "PrintJava.cpp"
+                                                            #line 2153 "PrintJava.cpp"
   append(L".thread");
-                                                            #line 1466 "PrintJava.cpp.template"
+                                                            #line 1462 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2164 "PrintJava.cpp"
+                                                            #line 2157 "PrintJava.cpp"
   append(L".reset(0, 0, 0);\n");
   append(L"                job.parser.");
-                                                            #line 1468 "PrintJava.cpp.template"
+                                                            #line 1464 "PrintJava.cpp.template"
                                                                   print(methodPrefixParse);
                                                                   print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 2170 "PrintJava.cpp"
+                                                            #line 2163 "PrintJava.cpp"
   append(L"();\n");
   append(L"                if (! quiet) System.out.println();");
-                                                            #line 1471 "PrintJava.cpp.template"
+                                                            #line 1467 "PrintJava.cpp.template"
                                                                   if (tree)
                                                                   {
                                                                     if (isLrParser)
                                                                     {
-                                                            #line 2178 "PrintJava.cpp"
+                                                            #line 2171 "PrintJava.cpp"
   append(L"\n");
   append(L"                job.parseTreeBuilder.serialize(job.contentCounter);");
-                                                            #line 1477 "PrintJava.cpp.template"
+                                                            #line 1473 "PrintJava.cpp.template"
                                                                     }
-                                                            #line 2183 "PrintJava.cpp"
+                                                            #line 2176 "PrintJava.cpp"
   append(L"\n");
   append(L"                if (job.contentCounter.getLength() != job.input.length())\n");
   append(L"                {\n");
   append(L"                  throw new RuntimeException(\"content counter saw \" + job.contentCounter.getLength() + \", but input length is \" + job.input.length());\n");
   append(L"                }");
-                                                            #line 1482 "PrintJava.cpp.template"
+                                                            #line 1478 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2191 "PrintJava.cpp"
+                                                            #line 2184 "PrintJava.cpp"
   append(L"\n");
   append(L"                parsed += job.input.length();\n");
   append(L"              }\n");
@@ -2243,12 +2236,12 @@
   append(L"      collectInput(f.getPath(), read(f.getPath()));\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1539 "PrintJava.cpp.template"
+                                                            #line 1535 "PrintJava.cpp.template"
                                                             }
 
                                                             void PrintJava::printReadMethod()
                                                             {
-                                                            #line 2252 "PrintJava.cpp"
+                                                            #line 2245 "PrintJava.cpp"
   append(L"\n");
   append(L"  private static String read(String input) throws Exception\n");
   append(L"  {\n");
@@ -2268,7 +2261,7 @@
   append(L"           : content;\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1563 "PrintJava.cpp.template"
+                                                            #line 1559 "PrintJava.cpp.template"
 //      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
 //      {
 //        content = content.substring(1);
@@ -2280,140 +2273,140 @@
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 2284 "PrintJava.cpp"
+                                                            #line 2277 "PrintJava.cpp"
   append(L"\n");
   append(L"package ");
-                                                            #line 1575 "PrintJava.cpp.template"
+                                                            #line 1571 "PrintJava.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 2289 "PrintJava.cpp"
+                                                            #line 2282 "PrintJava.cpp"
   append(L";\n");
-                                                            #line 1577 "PrintJava.cpp.template"
+                                                            #line 1573 "PrintJava.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 2297 "PrintJava.cpp"
+                                                            #line 2290 "PrintJava.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
-                                                            #line 1585 "PrintJava.cpp.template"
+                                                            #line 1581 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2303 "PrintJava.cpp"
+                                                            #line 2296 "PrintJava.cpp"
   append(L"\n");
   append(L"import java.util.Arrays;");
-                                                            #line 1588 "PrintJava.cpp.template"
+                                                            #line 1584 "PrintJava.cpp.template"
                                                                 if (saxon)
                                                                 {
-                                                            #line 2309 "PrintJava.cpp"
+                                                            #line 2302 "PrintJava.cpp"
   append(L"\n");
   append(L"import net.sf.saxon.event.Builder;");
-                                                            #line 1591 "PrintJava.cpp.template"
+                                                            #line 1587 "PrintJava.cpp.template"
                                                                   if (saxon == 99)
                                                                   {
-                                                            #line 2315 "PrintJava.cpp"
+                                                            #line 2308 "PrintJava.cpp"
   append(L"\n");
   append(L"import net.sf.saxon.expr.parser.ExplicitLocation;\n");
   append(L"import net.sf.saxon.expr.parser.Location;");
-                                                            #line 1595 "PrintJava.cpp.template"
+                                                            #line 1591 "PrintJava.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 2323 "PrintJava.cpp"
+                                                            #line 2316 "PrintJava.cpp"
   append(L"\n");
   append(L"import net.sf.saxon.expr.parser.Loc;\n");
   append(L"import net.sf.saxon.om.AttributeMap;\n");
   append(L"import net.sf.saxon.om.EmptyAttributeMap;\n");
   append(L"import net.sf.saxon.om.NamespaceMap;\n");
   append(L"import net.sf.saxon.s9api.Location;");
-                                                            #line 1603 "PrintJava.cpp.template"
+                                                            #line 1599 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2332 "PrintJava.cpp"
+                                                            #line 2325 "PrintJava.cpp"
   append(L"\n");
   append(L"import net.sf.saxon.om.NoNamespaceName;\n");
   append(L"import net.sf.saxon.trans.XPathException;\n");
   append(L"import net.sf.saxon.type.AnyType;");
-                                                            #line 1607 "PrintJava.cpp.template"
+                                                            #line 1603 "PrintJava.cpp.template"
                                                                   if (saxon == 110)
                                                                   {
-                                                            #line 2340 "PrintJava.cpp"
+                                                            #line 2333 "PrintJava.cpp"
   append(L"\n");
   append(L"import net.sf.saxon.str.StringView;");
-                                                            #line 1610 "PrintJava.cpp.template"
+                                                            #line 1606 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2345 "PrintJava.cpp"
+                                                            #line 2338 "PrintJava.cpp"
   append(L"\n");
-                                                            #line 1612 "PrintJava.cpp.template"
+                                                            #line 1608 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2350 "PrintJava.cpp"
+                                                            #line 2343 "PrintJava.cpp"
   append(L"\n");
   append(L"public interface ");
-                                                            #line 1615 "PrintJava.cpp.template"
+                                                            #line 1611 "PrintJava.cpp.template"
                                                               print(className.c_str());
-                                                            #line 2355 "PrintJava.cpp"
+                                                            #line 2348 "PrintJava.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  public void initialize(CharSequence input");
-                                                            #line 1618 "PrintJava.cpp.template"
+                                                            #line 1614 "PrintJava.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 2362 "PrintJava.cpp"
+                                                            #line 2355 "PrintJava.cpp"
   append(L", Lexer l");
-                                                            #line 1620 "PrintJava.cpp.template"
+                                                            #line 1616 "PrintJava.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 2368 "PrintJava.cpp"
+                                                            #line 2361 "PrintJava.cpp"
   append(L", ");
-                                                            #line 1623 "PrintJava.cpp.template"
+                                                            #line 1619 "PrintJava.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2373 "PrintJava.cpp"
+                                                            #line 2366 "PrintJava.cpp"
   append(L"BottomUp");
-                                                            #line 1626 "PrintJava.cpp.template"
+                                                            #line 1622 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2377 "PrintJava.cpp"
+                                                            #line 2370 "PrintJava.cpp"
   append(L"EventHandler eh");
-                                                            #line 1628 "PrintJava.cpp.template"
+                                                            #line 1624 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2381 "PrintJava.cpp"
+                                                            #line 2374 "PrintJava.cpp"
   append(L");\n");
   append(L"  public void parse();\n");
   append(L"  public void reset();\n");
   append(L"  public String getErrorMessage(ParseException e);\n");
-                                                            #line 1633 "PrintJava.cpp.template"
+                                                            #line 1629 "PrintJava.cpp.template"
                                                               printParseException();
                                                               printEventHandlerImplementation();
-                                                            #line 2389 "PrintJava.cpp"
+                                                            #line 2382 "PrintJava.cpp"
   append(L"}\n");
-                                                            #line 1636 "PrintJava.cpp.template"
+                                                            #line 1632 "PrintJava.cpp.template"
                                                             }
 
                                                             void PrintJava::printParseException()
                                                             {
-                                                            #line 2396 "PrintJava.cpp"
+                                                            #line 2389 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class ParseException extends RuntimeException\n");
   append(L"  {\n");
   append(L"    private static final long serialVersionUID = 1L;\n");
   append(L"    private int begin, end, offending, expected, state;");
-                                                            #line 1644 "PrintJava.cpp.template"
+                                                            #line 1640 "PrintJava.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2405 "PrintJava.cpp"
+                                                            #line 2398 "PrintJava.cpp"
   append(L"\n");
   append(L"    private boolean ambiguousInput;");
-                                                            #line 1647 "PrintJava.cpp.template"
+                                                            #line 1643 "PrintJava.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2411 "PrintJava.cpp"
+                                                            #line 2404 "PrintJava.cpp"
   append(L"\n");
   append(L"    private ParseTreeBuilder ambiguityDescriptor;");
-                                                            #line 1650 "PrintJava.cpp.template"
+                                                            #line 1646 "PrintJava.cpp.template"
                                                                 }
                                                               }
-                                                            #line 2417 "PrintJava.cpp"
+                                                            #line 2410 "PrintJava.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public ParseException(int b, int e, int s, int o, int x)\n");
@@ -2423,89 +2416,89 @@
   append(L"      state = s;\n");
   append(L"      offending = o;\n");
   append(L"      expected = x;");
-                                                            #line 1660 "PrintJava.cpp.template"
+                                                            #line 1656 "PrintJava.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2430 "PrintJava.cpp"
+                                                            #line 2423 "PrintJava.cpp"
   append(L"\n");
   append(L"      ambiguousInput = false;");
-                                                            #line 1663 "PrintJava.cpp.template"
+                                                            #line 1659 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2435 "PrintJava.cpp"
+                                                            #line 2428 "PrintJava.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1666 "PrintJava.cpp.template"
+                                                            #line 1662 "PrintJava.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2441 "PrintJava.cpp"
+                                                            #line 2434 "PrintJava.cpp"
   append(L"\n");
   append(L"    public ParseException(int b, int e");
-                                                            #line 1669 "PrintJava.cpp.template"
+                                                            #line 1665 "PrintJava.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2447 "PrintJava.cpp"
+                                                            #line 2440 "PrintJava.cpp"
   append(L", ParseTreeBuilder ambiguityDescriptor");
-                                                            #line 1672 "PrintJava.cpp.template"
+                                                            #line 1668 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2451 "PrintJava.cpp"
+                                                            #line 2444 "PrintJava.cpp"
   append(L")\n");
   append(L"    {\n");
   append(L"      this(b, e, 1, -1, -1);\n");
   append(L"      ambiguousInput = true;");
-                                                            #line 1676 "PrintJava.cpp.template"
+                                                            #line 1672 "PrintJava.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2459 "PrintJava.cpp"
+                                                            #line 2452 "PrintJava.cpp"
   append(L"\n");
   append(L"      this.ambiguityDescriptor = ambiguityDescriptor;");
-                                                            #line 1679 "PrintJava.cpp.template"
+                                                            #line 1675 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2464 "PrintJava.cpp"
+                                                            #line 2457 "PrintJava.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1682 "PrintJava.cpp.template"
+                                                            #line 1678 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2469 "PrintJava.cpp"
+                                                            #line 2462 "PrintJava.cpp"
   append(L"\n");
   append(L"    @Override\n");
   append(L"    public String getMessage()\n");
   append(L"    {\n");
   append(L"      return ");
-                                                            #line 1687 "PrintJava.cpp.template"
+                                                            #line 1683 "PrintJava.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2478 "PrintJava.cpp"
+                                                            #line 2471 "PrintJava.cpp"
   append(L"ambiguousInput\n");
   append(L"           ? \"ambiguous input\"\n");
   append(L"           : ");
-                                                            #line 1691 "PrintJava.cpp.template"
+                                                            #line 1687 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2484 "PrintJava.cpp"
+                                                            #line 2477 "PrintJava.cpp"
   append(L"offending < 0\n");
   append(L"           ? \"lexical analysis failed\"\n");
   append(L"           : \"syntax error\";\n");
   append(L"    }\n");
-                                                            #line 1696 "PrintJava.cpp.template"
+                                                            #line 1692 "PrintJava.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 2492 "PrintJava.cpp"
+                                                            #line 2485 "PrintJava.cpp"
   append(L"\n");
   append(L"    public void serialize(EventHandler eventHandler)\n");
   append(L"    {");
-                                                            #line 1700 "PrintJava.cpp.template"
+                                                            #line 1696 "PrintJava.cpp.template"
                                                                 if (useGlr)
                                                                 {
-                                                            #line 2499 "PrintJava.cpp"
+                                                            #line 2492 "PrintJava.cpp"
   append(L"\n");
   append(L"      ambiguityDescriptor.serialize(eventHandler);");
-                                                            #line 1703 "PrintJava.cpp.template"
+                                                            #line 1699 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2504 "PrintJava.cpp"
+                                                            #line 2497 "PrintJava.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1706 "PrintJava.cpp.template"
+                                                            #line 1702 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2509 "PrintJava.cpp"
+                                                            #line 2502 "PrintJava.cpp"
   append(L"\n");
   append(L"    public int getBegin() {return begin;}\n");
   append(L"    public int getEnd() {return end;}\n");
@@ -2513,26 +2506,26 @@
   append(L"    public int getOffending() {return offending;}\n");
   append(L"    public int getExpected() {return expected;}\n");
   append(L"    public boolean isAmbiguousInput() {return ");
-                                                            #line 1713 "PrintJava.cpp.template"
+                                                            #line 1709 "PrintJava.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 2520 "PrintJava.cpp"
+                                                            #line 2513 "PrintJava.cpp"
   append(L"ambiguousInput");
-                                                            #line 1716 "PrintJava.cpp.template"
+                                                            #line 1712 "PrintJava.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 2526 "PrintJava.cpp"
+                                                            #line 2519 "PrintJava.cpp"
   append(L"false");
-                                                            #line 1719 "PrintJava.cpp.template"
+                                                            #line 1715 "PrintJava.cpp.template"
                                                               }
-                                                            #line 2530 "PrintJava.cpp"
+                                                            #line 2523 "PrintJava.cpp"
   append(L";}\n");
   append(L"  }\n");
-                                                            #line 1722 "PrintJava.cpp.template"
+                                                            #line 1718 "PrintJava.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 2536 "PrintJava.cpp"
+                                                            #line 2529 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class Token\n");
   append(L"  {\n");
@@ -2546,11 +2539,11 @@
   append(L"    void reset(CharSequence input);\n");
   append(L"    void match(int tokenset, Token token);\n");
   append(L"  }\n");
-                                                            #line 1737 "PrintJava.cpp.template"
+                                                            #line 1733 "PrintJava.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 2554 "PrintJava.cpp"
+                                                            #line 2547 "PrintJava.cpp"
   append(L"\n");
   append(L"  public interface EventHandler\n");
   append(L"  {\n");
@@ -2670,10 +2663,10 @@
   append(L"      e.endNonterminal(name, end);\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1859 "PrintJava.cpp.template"
+                                                            #line 1855 "PrintJava.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2677 "PrintJava.cpp"
+                                                            #line 2670 "PrintJava.cpp"
   append(L"\n");
   append(L"  public interface BottomUpEventHandler\n");
   append(L"  {\n");
@@ -2681,7 +2674,7 @@
   append(L"    public void nonterminal(String name, int begin, int end, int count);\n");
   append(L"    public void terminal(String name, int begin, int end);\n");
   append(L"  }\n");
-                                                            #line 1868 "PrintJava.cpp.template"
+                                                            #line 1864 "PrintJava.cpp.template"
                                                                 }
                                                               }
                                                             }
@@ -2692,7 +2685,7 @@
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 2696 "PrintJava.cpp"
+                                                            #line 2689 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class XmlSerializer implements EventHandler\n");
   append(L"  {\n");
@@ -2823,11 +2816,11 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 2008 "PrintJava.cpp.template"
+                                                            #line 2004 "PrintJava.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2831 "PrintJava.cpp"
+                                                            #line 2824 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class ContentCounter implements EventHandler\n");
   append(L"  {\n");
@@ -2844,11 +2837,11 @@
   append(L"    @Override\n");
   append(L"    public void whitespace(int begin, int end) {length += end - begin;}\n");
   append(L"  }\n");
-                                                            #line 2028 "PrintJava.cpp.template"
+                                                            #line 2024 "PrintJava.cpp.template"
                                                                 }
                                                                 if (saxon)
                                                                 {
-                                                            #line 2852 "PrintJava.cpp"
+                                                            #line 2845 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class SaxonTreeBuilder implements EventHandler\n");
   append(L"  {\n");
@@ -2875,14 +2868,14 @@
   append(L"      try\n");
   append(L"      {\n");
   append(L"        builder.startElement(new NoNamespaceName(name), anyType, ");
-                                                            #line 2057 "PrintJava.cpp.template"
+                                                            #line 2053 "PrintJava.cpp.template"
                                                                   if (saxon != 99)
                                                                   {
-                                                            #line 2882 "PrintJava.cpp"
+                                                            #line 2875 "PrintJava.cpp"
   append(L"NO_ATTRIBUTES, NO_NAMESPACES, ");
-                                                            #line 2059 "PrintJava.cpp.template"
+                                                            #line 2055 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2886 "PrintJava.cpp"
+                                                            #line 2879 "PrintJava.cpp"
   append(L"LOCATION, 0);\n");
   append(L"      }\n");
   append(L"      catch (XPathException e)\n");
@@ -2929,23 +2922,23 @@
   append(L"        try\n");
   append(L"        {\n");
   append(L"          builder.characters(");
-                                                            #line 2105 "PrintJava.cpp.template"
+                                                            #line 2101 "PrintJava.cpp.template"
                                                                   if (saxon == 110)
                                                                   {
-                                                            #line 2936 "PrintJava.cpp"
+                                                            #line 2929 "PrintJava.cpp"
   append(L"StringView.of(");
+                                                            #line 2103 "PrintJava.cpp.template"
+                                                                  }
+                                                            #line 2933 "PrintJava.cpp"
+  append(L"input.subSequence(begin, end)");
+                                                            #line 2104 "PrintJava.cpp.template"
+                                                                  if (saxon == 110)
+                                                                  {
+                                                            #line 2938 "PrintJava.cpp"
+  append(L".toString())");
                                                             #line 2107 "PrintJava.cpp.template"
                                                                   }
-                                                            #line 2940 "PrintJava.cpp"
-  append(L"input.subSequence(begin, end)");
-                                                            #line 2108 "PrintJava.cpp.template"
-                                                                  if (saxon == 110)
-                                                                  {
-                                                            #line 2945 "PrintJava.cpp"
-  append(L".toString())");
-                                                            #line 2111 "PrintJava.cpp.template"
-                                                                  }
-                                                            #line 2949 "PrintJava.cpp"
+                                                            #line 2942 "PrintJava.cpp"
   append(L", LOCATION, 0);\n");
   append(L"        }\n");
   append(L"        catch (XPathException e)\n");
@@ -2955,11 +2948,11 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 2121 "PrintJava.cpp.template"
+                                                            #line 2117 "PrintJava.cpp.template"
                                                                 }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2963 "PrintJava.cpp"
+                                                            #line 2956 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class ParseTreeBuilder implements BottomUpEventHandler\n");
   append(L"  {\n");
@@ -2977,10 +2970,10 @@
   append(L"    @Override\n");
   append(L"    public void nonterminal(String name, int begin, int end, int count)\n");
   append(L"    {");
-                                                            #line 2140 "PrintJava.cpp.template"
+                                                            #line 2136 "PrintJava.cpp.template"
                                                                 if (useGlr)
                                                                 {
-                                                            #line 2984 "PrintJava.cpp"
+                                                            #line 2977 "PrintJava.cpp"
   append(L"\n");
   append(L"      if (count > top + 1)\n");
   append(L"      {\n");
@@ -2992,9 +2985,9 @@
   append(L"        }\n");
   append(L"        count = top + 1;\n");
   append(L"      }");
-                                                            #line 2152 "PrintJava.cpp.template"
+                                                            #line 2148 "PrintJava.cpp.template"
                                                                 }
-                                                            #line 2998 "PrintJava.cpp"
+                                                            #line 2991 "PrintJava.cpp"
   append(L"\n");
   append(L"      push(new Nonterminal(name, begin, end, pop(count)));\n");
   append(L"    }\n");
@@ -3029,7 +3022,7 @@
   append(L"      return Arrays.copyOfRange(stack, top + 1, top + count + 1);\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 2188 "PrintJava.cpp.template"
+                                                            #line 2184 "PrintJava.cpp.template"
                                                                 }
                                                               }
                                                               if (saxon)
@@ -3037,42 +3030,42 @@
                                                                 const wchar_t *visibility = interfaceName.empty() ? L"private" : L"public";
                                                                 if (saxon == 99)
                                                                 {
-                                                            #line 3041 "PrintJava.cpp"
+                                                            #line 3034 "PrintJava.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 2196 "PrintJava.cpp.template"
+                                                            #line 2192 "PrintJava.cpp.template"
                                                                   print(visibility);
-                                                            #line 3046 "PrintJava.cpp"
+                                                            #line 3039 "PrintJava.cpp"
   append(L" static final Location LOCATION = ExplicitLocation.UNKNOWN_LOCATION;\n");
-                                                            #line 2198 "PrintJava.cpp.template"
+                                                            #line 2194 "PrintJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 3052 "PrintJava.cpp"
+                                                            #line 3045 "PrintJava.cpp"
   append(L"\n");
+  append(L"  ");
+                                                            #line 2198 "PrintJava.cpp.template"
+                                                                  print(visibility);
+                                                            #line 3050 "PrintJava.cpp"
+  append(L" static final AttributeMap NO_ATTRIBUTES = EmptyAttributeMap.getInstance();\n");
+  append(L"  ");
+                                                            #line 2200 "PrintJava.cpp.template"
+                                                                  print(visibility);
+                                                            #line 3055 "PrintJava.cpp"
+  append(L" static final NamespaceMap NO_NAMESPACES = NamespaceMap.emptyMap();\n");
   append(L"  ");
                                                             #line 2202 "PrintJava.cpp.template"
                                                                   print(visibility);
-                                                            #line 3057 "PrintJava.cpp"
-  append(L" static final AttributeMap NO_ATTRIBUTES = EmptyAttributeMap.getInstance();\n");
-  append(L"  ");
-                                                            #line 2204 "PrintJava.cpp.template"
-                                                                  print(visibility);
-                                                            #line 3062 "PrintJava.cpp"
-  append(L" static final NamespaceMap NO_NAMESPACES = NamespaceMap.emptyMap();\n");
-  append(L"  ");
-                                                            #line 2206 "PrintJava.cpp.template"
-                                                                  print(visibility);
-                                                            #line 3067 "PrintJava.cpp"
+                                                            #line 3060 "PrintJava.cpp"
   append(L" static final Location LOCATION = Loc.NONE;\n");
-                                                            #line 2208 "PrintJava.cpp.template"
+                                                            #line 2204 "PrintJava.cpp.template"
                                                                 }
                                                               }
                                                             }
 
                                                             /* Saxon extension function definition for match()
                                                              * did not show a performance difference. Strange...
-                                                            #line 3076 "PrintJava.cpp"
+                                                            #line 3069 "PrintJava.cpp"
   append(L"\n");
   append(L"  public static class MatchDefinition extends ExtensionFunctionDefinition implements Initializer\n");
   append(L"  {\n");
@@ -3080,19 +3073,19 @@
   append(L"\n");
   append(L"    public void initialize(Configuration conf) {conf.registerExtensionFunction(this);}\n");
   append(L"    public StructuredQName getFunctionQName() {return new StructuredQName(\"p\", \"");
-                                                            #line 2221 "PrintJava.cpp.template"
+                                                            #line 2217 "PrintJava.cpp.template"
                                                             if (! packageName.empty())
                                                             {
                                                               for (size_t i = 0; i < packageName.size(); ++i)
                                                               {
                                                                 print(packageName[i] == L'.' ? L'/' : packageName[i]);
                                                               }
-                                                            #line 3091 "PrintJava.cpp"
+                                                            #line 3084 "PrintJava.cpp"
   append(L"/");
-                                                            #line 2228 "PrintJava.cpp.template"
+                                                            #line 2224 "PrintJava.cpp.template"
                                                             }
                                                             print(className.c_str());
-                                                            #line 3096 "PrintJava.cpp"
+                                                            #line 3089 "PrintJava.cpp"
   append(L"\", \"match\");}\n");
   append(L"    public SequenceType[] getArgumentTypes() {return new SequenceType[] {SequenceType.SINGLE_STRING, SequenceType.SINGLE_INTEGER, SequenceType.SINGLE_INTEGER};}\n");
   append(L"    public SequenceType getResultType(SequenceType[] suppliedArgumentTypes) {return SequenceType.NUMERIC_SEQUENCE;}\n");
@@ -3102,13 +3095,13 @@
   append(L"      return new ExtensionFunctionCall()\n");
   append(L"      {\n");
   append(L"        private ");
-                                                            #line 2238 "PrintJava.cpp.template"
+                                                            #line 2234 "PrintJava.cpp.template"
                                                             print(className.c_str());
-                                                            #line 3108 "PrintJava.cpp"
+                                                            #line 3101 "PrintJava.cpp"
   append(L" parser = new ");
-                                                            #line 2239 "PrintJava.cpp.template"
+                                                            #line 2235 "PrintJava.cpp.template"
                                                             print(className.c_str());
-                                                            #line 3112 "PrintJava.cpp"
+                                                            #line 3105 "PrintJava.cpp"
   append(L"();\n");
   append(L"        Item[] result = new Item[3];\n");
   append(L"\n");
@@ -3132,7 +3125,7 @@
   append(L"      };\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 2264 "PrintJava.cpp.template"
+                                                            #line 2260 "PrintJava.cpp.template"
                                                             */
 
 // End

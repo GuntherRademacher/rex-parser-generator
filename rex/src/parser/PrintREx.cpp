@@ -401,9 +401,12 @@ void PrintREx::visitGrammar(Grammar *node)
         nonterminals[i] = Encoder::encode(implicitName.c_str());
       }
     }
-    rex->bind(CGVariable("nt", nonterminals, maxNonterminal + 1,
-                         "NONTERMINAL",
-                         "The nonterminal name table."));
+    if (trace || tree)
+    {
+      rex->bind(CGVariable("nt", nonterminals, maxNonterminal + 1,
+                           "NONTERMINAL",
+                           "The nonterminal name table."));
+    }
     if (node->states && ! node->distinctCodeAnnotations.empty())
     {
       int reduceEnd = -1;

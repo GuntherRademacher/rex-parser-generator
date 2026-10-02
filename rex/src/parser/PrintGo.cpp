@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 2, 2026 20:53 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintGo.cpp.template
                                                             #line 1 "PrintGo.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -1970,13 +1970,6 @@
   append(L"  eventHandler EventHandler");
                                                             #line 1419 "PrintGo.cpp.template"
                                                                 }
-                                                              }
-                                                              else if (useGlr)
-                                                              {
-                                                            #line 1977 "PrintGo.cpp"
-  append(L"\n");
-  append(L"  bw, bs int");
-                                                            #line 1424 "PrintGo.cpp.template"
                                                               }
                                                             }
 

@@ -1082,10 +1082,6 @@ def pop(self, count):
 ~
   eventHandler EventHandler~                                    }
                                                               }
-                                                              else if (useGlr)
-                                                              {
-~
-  bw, bs int~                                                 }
                                                             }
 
                                                             void PrintPython::printSimpleMain()

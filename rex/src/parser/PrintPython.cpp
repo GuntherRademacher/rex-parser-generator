@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 2, 2026 20:54 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintPython.cpp.template
                                                             #line 1 "PrintPython.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -1586,192 +1586,185 @@
                                                             #line 1083 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                              else if (useGlr)
-                                                              {
-                                                            #line 1592 "PrintPython.cpp"
-  append(L"\n");
-  append(L"  bw, bs int");
-                                                            #line 1088 "PrintPython.cpp.template"
-                                                              }
                                                             }
 
                                                             void PrintPython::printSimpleMain()
                                                             {
-                                                            #line 1601 "PrintPython.cpp"
+                                                            #line 1594 "PrintPython.cpp"
   append(L"\n");
   append(L"def main(args):\n");
   append(L"  if len(args) < 2:\n");
   append(L"    sys.stderr.write(\"Usage: python ");
-                                                            #line 1096 "PrintPython.cpp.template"
+                                                            #line 1092 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1608 "PrintPython.cpp"
+                                                            #line 1601 "PrintPython.cpp"
   append(L".py ");
-                                                            #line 1097 "PrintPython.cpp.template"
+                                                            #line 1093 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1613 "PrintPython.cpp"
+                                                            #line 1606 "PrintPython.cpp"
   append(L"[-i] ");
-                                                            #line 1099 "PrintPython.cpp.template"
+                                                            #line 1095 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1617 "PrintPython.cpp"
+                                                            #line 1610 "PrintPython.cpp"
   append(L"INPUT...\\n\")\n");
   append(L"    sys.stderr.write(\"\\n\")\n");
   append(L"    sys.stderr.write(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\")");
-                                                            #line 1103 "PrintPython.cpp.template"
+                                                            #line 1099 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1624 "PrintPython.cpp"
+                                                            #line 1617 "PrintPython.cpp"
   append(L"\n");
   append(L"    sys.stderr.write(\"\\n\")\n");
   append(L"    sys.stderr.write(\"  Option:\\n\")\n");
   append(L"    sys.stderr.write(\"    -i     indented parse tree\\n\")");
-                                                            #line 1109 "PrintPython.cpp.template"
+                                                            #line 1105 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1631 "PrintPython.cpp"
+                                                            #line 1624 "PrintPython.cpp"
   append(L"\n");
   append(L"  else:");
-                                                            #line 1111 "PrintPython.cpp.template"
+                                                            #line 1107 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1637 "PrintPython.cpp"
+                                                            #line 1630 "PrintPython.cpp"
   append(L"\n");
   append(L"    indent = False");
-                                                            #line 1114 "PrintPython.cpp.template"
+                                                            #line 1110 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1642 "PrintPython.cpp"
+                                                            #line 1635 "PrintPython.cpp"
   append(L"\n");
   append(L"    for arg in args[1:]:");
-                                                            #line 1116 "PrintPython.cpp.template"
+                                                            #line 1112 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1648 "PrintPython.cpp"
+                                                            #line 1641 "PrintPython.cpp"
   append(L"\n");
   append(L"      if arg == \"-i\":\n");
   append(L"        indent = True\n");
   append(L"        continue\n");
   append(L"      s = ");
-                                                            #line 1122 "PrintPython.cpp.template"
+                                                            #line 1118 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1656 "PrintPython.cpp"
+                                                            #line 1649 "PrintPython.cpp"
   append(L".XmlSerializer()\n");
   append(L"      s.indent = indent");
-                                                            #line 1124 "PrintPython.cpp.template"
+                                                            #line 1120 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1662 "PrintPython.cpp"
+                                                            #line 1655 "PrintPython.cpp"
   append(L"\n");
   append(L"      b = ");
-                                                            #line 1127 "PrintPython.cpp.template"
+                                                            #line 1123 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1667 "PrintPython.cpp"
+                                                            #line 1660 "PrintPython.cpp"
   append(L".ParseTreeBuilder()");
-                                                            #line 1128 "PrintPython.cpp.template"
+                                                            #line 1124 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1672 "PrintPython.cpp"
+                                                            #line 1665 "PrintPython.cpp"
   append(L"\n");
   append(L"      inputString = read(arg)\n");
   append(L"      parser = ");
-                                                            #line 1132 "PrintPython.cpp.template"
+                                                            #line 1128 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1678 "PrintPython.cpp"
+                                                            #line 1671 "PrintPython.cpp"
   append(L"(inputString");
-                                                            #line 1133 "PrintPython.cpp.template"
+                                                            #line 1129 "PrintPython.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1683 "PrintPython.cpp"
+                                                            #line 1676 "PrintPython.cpp"
   append(L", ");
-                                                            #line 1135 "PrintPython.cpp.template"
+                                                            #line 1131 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1687 "PrintPython.cpp"
+                                                            #line 1680 "PrintPython.cpp"
   append(L"Lexer()");
-                                                            #line 1136 "PrintPython.cpp.template"
+                                                            #line 1132 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1693 "PrintPython.cpp"
+                                                            #line 1686 "PrintPython.cpp"
   append(L", ");
-                                                            #line 1139 "PrintPython.cpp.template"
+                                                            #line 1135 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1698 "PrintPython.cpp"
+                                                            #line 1691 "PrintPython.cpp"
   append(L"b");
-                                                            #line 1141 "PrintPython.cpp.template"
+                                                            #line 1137 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1704 "PrintPython.cpp"
+                                                            #line 1697 "PrintPython.cpp"
   append(L"s");
-                                                            #line 1144 "PrintPython.cpp.template"
+                                                            #line 1140 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1709 "PrintPython.cpp"
+                                                            #line 1702 "PrintPython.cpp"
   append(L")");
-                                                            #line 1146 "PrintPython.cpp.template"
+                                                            #line 1142 "PrintPython.cpp.template"
                                                               if (trace)
                                                               {
-                                                            #line 1714 "PrintPython.cpp"
+                                                            #line 1707 "PrintPython.cpp"
   append(L"\n");
   append(L"      sys.stderr.reconfigure(encoding=\"utf-8\")\n");
   append(L"      ");
-                                                            #line 1150 "PrintPython.cpp.template"
+                                                            #line 1146 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1720 "PrintPython.cpp"
+                                                            #line 1713 "PrintPython.cpp"
   append(L".writeTrace(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?\" + \">\\n<trace>\\n\")");
-                                                            #line 1152 "PrintPython.cpp.template"
+                                                            #line 1148 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1724 "PrintPython.cpp"
+                                                            #line 1717 "PrintPython.cpp"
   append(L"\n");
   append(L"      try:\n");
   append(L"        parser.");
-                                                            #line 1155 "PrintPython.cpp.template"
+                                                            #line 1151 "PrintPython.cpp.template"
                                                               print(visibilityMethodPrefix());
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1731 "PrintPython.cpp"
+                                                            #line 1724 "PrintPython.cpp"
   append(L"()");
-                                                            #line 1157 "PrintPython.cpp.template"
+                                                            #line 1153 "PrintPython.cpp.template"
                                                               if (trace)
                                                               {
-                                                            #line 1736 "PrintPython.cpp"
+                                                            #line 1729 "PrintPython.cpp"
   append(L"\n");
   append(L"        ");
-                                                            #line 1160 "PrintPython.cpp.template"
+                                                            #line 1156 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1741 "PrintPython.cpp"
+                                                            #line 1734 "PrintPython.cpp"
   append(L".writeTrace(\"</trace>\\n\")");
-                                                            #line 1161 "PrintPython.cpp.template"
+                                                            #line 1157 "PrintPython.cpp.template"
                                                               }
                                                               if (tree && isLrParser)
                                                               {
-                                                            #line 1747 "PrintPython.cpp"
+                                                            #line 1740 "PrintPython.cpp"
   append(L"\n");
   append(L"        b.serialize(s)");
-                                                            #line 1165 "PrintPython.cpp.template"
+                                                            #line 1161 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1752 "PrintPython.cpp"
+                                                            #line 1745 "PrintPython.cpp"
   append(L"\n");
   append(L"      except ");
-                                                            #line 1167 "PrintPython.cpp.template"
+                                                            #line 1163 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1757 "PrintPython.cpp"
+                                                            #line 1750 "PrintPython.cpp"
   append(L".ParseException as pe:");
-                                                            #line 1168 "PrintPython.cpp.template"
+                                                            #line 1164 "PrintPython.cpp.template"
                                                               if (useGlr && tree)
                                                               {
-                                                            #line 1762 "PrintPython.cpp"
+                                                            #line 1755 "PrintPython.cpp"
   append(L"\n");
   append(L"        if pe.isAmbiguousInput():\n");
   append(L"          pe.serialize(s)\n");
   append(L"          print()");
-                                                            #line 1173 "PrintPython.cpp.template"
+                                                            #line 1169 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1769 "PrintPython.cpp"
+                                                            #line 1762 "PrintPython.cpp"
   append(L"\n");
   append(L"        raise Exception (\"ParseException while processing \" + arg + \":\\n\" + parser.getErrorMessage(pe)) from pe\n");
   append(L"\n");
   append(L"if __name__ == '__main__':\n");
   append(L"  sys.exit(main(sys.argv))\n");
-                                                            #line 1179 "PrintPython.cpp.template"
+                                                            #line 1175 "PrintPython.cpp.template"
                                                             }
 
 // End

@@ -357,11 +357,11 @@ class ParsingThread extends Ordered[ParsingThread] {
                               ~0, ~                           }
                               ~e0, null)
     state = initialState
-    action = predict(initialState)
-    bw = e0
-    bs = e0~                                                  if (tree)
+    action = predict(initialState)~                           if (tree)
                                                               {
 ~
+    bw = e0
+    bs = e0
     es = e0~                                                  }
 ~
     threads = PriorityQueue()
@@ -372,11 +372,11 @@ class ParsingThread extends Ordered[ParsingThread] {
   def copy(other: ParsingThread, action: Int): ParsingThread = {
     this.action = action
     accepted = other.accepted
-    parser = other.parser
-    bs = other.bs
-    bw = other.bw~                                            if (tree)
+    parser = other.parser~                                    if (tree)
                                                               {
 ~
+    bs = other.bs
+    bw = other.bw
     es = other.es
     eventHandler = other.eventHandler
     deferredEvent = other.deferredEvent~                      }
@@ -522,14 +522,11 @@ class ParsingThread extends Ordered[ParsingThread] {
        ~ = 0
   var e~                                                        print(asString);
        ~ = 0~                                                 }
-                                                              if (useGlr)
-                                                              {
-~
-  var bw = 0
-  var bs = 0~                                                 }
                                                               if (tree && useGlr)
                                                               {
 ~
+  var bw = 0
+  var bs = 0
   var es = 0~                                                 }
                                                               if (hasBacktracking)
                                                               {

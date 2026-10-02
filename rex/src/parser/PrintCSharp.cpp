@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 2, 2026 21:37 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCSharp.cpp.template
                                                             #line 1 "PrintCSharp.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -868,14 +868,14 @@
                                                             #line 869 "PrintCSharp.cpp"
   append(L"e0, null);\n");
   append(L"    state = initialState;\n");
-  append(L"    action = predict(initialState);\n");
-  append(L"    bw = e0;\n");
-  append(L"    bs = e0;");
-                                                            #line 605 "PrintCSharp.cpp.template"
+  append(L"    action = predict(initialState);");
+                                                            #line 603 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 878 "PrintCSharp.cpp"
+                                                            #line 876 "PrintCSharp.cpp"
   append(L"\n");
+  append(L"    bw = e0;\n");
+  append(L"    bs = e0;\n");
   append(L"    es = e0;");
                                                             #line 608 "PrintCSharp.cpp.template"
                                                               }
@@ -891,14 +891,14 @@
   append(L"    this.action = action;\n");
   append(L"    accepted = other.accepted;\n");
   append(L"    target = other.target;\n");
-  append(L"    parser = other.parser;\n");
-  append(L"    bs = other.bs;\n");
-  append(L"    bw = other.bw;");
-                                                            #line 622 "PrintCSharp.cpp.template"
+  append(L"    parser = other.parser;");
+                                                            #line 620 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 901 "PrintCSharp.cpp"
+                                                            #line 899 "PrintCSharp.cpp"
   append(L"\n");
+  append(L"    bs = other.bs;\n");
+  append(L"    bw = other.bw;\n");
   append(L"    es = other.es;\n");
   append(L"    eventHandler = other.eventHandler;\n");
   append(L"    deferredEvent = other.deferredEvent;");
@@ -1170,64 +1170,57 @@
   append(L"  private int top = -1;");
                                                             #line 780 "PrintCSharp.cpp.template"
                                                               }
-                                                              if (useGlr)
-                                                              {
-                                                            #line 1176 "PrintCSharp.cpp"
-  append(L"\n");
-  append(L"  public int bw, bs;");
-                                                            #line 784 "PrintCSharp.cpp.template"
-                                                              }
                                                               if (tree)
                                                               {
+                                                                if (useGlr)
+                                                                {
+                                                            #line 1178 "PrintCSharp.cpp"
+  append(L"\n");
+  append(L"  public int bw, bs, es;");
+                                                            #line 786 "PrintCSharp.cpp.template"
+                                                                }
                                                                 if (isLrParser)
                                                                 {
-                                                                  if (useGlr)
-                                                                  {
-                                                            #line 1187 "PrintCSharp.cpp"
-  append(L"\n");
-  append(L"  public int es;");
-                                                            #line 792 "PrintCSharp.cpp.template"
-                                                                  }
-                                                            #line 1192 "PrintCSharp.cpp"
+                                                            #line 1185 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 794 "PrintCSharp.cpp.template"
+                                                            #line 790 "PrintCSharp.cpp.template"
                                                                   print(useGlr ? L"public" : L"private");
-                                                            #line 1197 "PrintCSharp.cpp"
+                                                            #line 1190 "PrintCSharp.cpp"
   append(L" BottomUpEventHandler eventHandler = null;");
-                                                            #line 795 "PrintCSharp.cpp.template"
+                                                            #line 791 "PrintCSharp.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1203 "PrintCSharp.cpp"
+                                                            #line 1196 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  private EventHandler eventHandler = null;");
-                                                            #line 799 "PrintCSharp.cpp.template"
+                                                            #line 795 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 1212 "PrintCSharp.cpp"
+                                                            #line 1205 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  private IDictionary<int, int> memo = new Dictionary<int, int>();");
-                                                            #line 806 "PrintCSharp.cpp.template"
+                                                            #line 802 "PrintCSharp.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1218 "PrintCSharp.cpp"
+                                                            #line 1211 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  private bool viable;");
-                                                            #line 809 "PrintCSharp.cpp.template"
+                                                            #line 805 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1223 "PrintCSharp.cpp"
+                                                            #line 1216 "PrintCSharp.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private void memoize(int i, int e, int v)\n");
   append(L"  {\n");
   append(L"    memo.Add((e << ");
-                                                            #line 814 "PrintCSharp.cpp.template"
+                                                            #line 810 "PrintCSharp.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1231 "PrintCSharp.cpp"
+                                                            #line 1224 "PrintCSharp.cpp"
   append(L") + i, v);\n");
   append(L"  }\n");
   append(L"\n");
@@ -1235,19 +1228,19 @@
   append(L"  {\n");
   append(L"    int value = 0;\n");
   append(L"    memo.TryGetValue((e << ");
-                                                            #line 821 "PrintCSharp.cpp.template"
+                                                            #line 817 "PrintCSharp.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1241 "PrintCSharp.cpp"
+                                                            #line 1234 "PrintCSharp.cpp"
   append(L") + i, out value);\n");
   append(L"    return value;\n");
   append(L"  }");
-                                                            #line 824 "PrintCSharp.cpp.template"
+                                                            #line 820 "PrintCSharp.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintCSharp::printFileProcessor()
                                                             {
-                                                            #line 1251 "PrintCSharp.cpp"
+                                                            #line 1244 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  private static bool quiet = false;\n");
   append(L"  private static long parsed = 0;\n");
@@ -1259,81 +1252,81 @@
   append(L"    public String name;\n");
   append(L"    public String input;\n");
   append(L"    public ");
-                                                            #line 839 "PrintCSharp.cpp.template"
+                                                            #line 835 "PrintCSharp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1265 "PrintCSharp.cpp"
+                                                            #line 1258 "PrintCSharp.cpp"
   append(L" parser;");
-                                                            #line 840 "PrintCSharp.cpp.template"
+                                                            #line 836 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1270 "PrintCSharp.cpp"
+                                                            #line 1263 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public ContentCounter contentCounter;");
-                                                            #line 843 "PrintCSharp.cpp.template"
+                                                            #line 839 "PrintCSharp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1276 "PrintCSharp.cpp"
+                                                            #line 1269 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public ParseTreeBuilder parseTreeBuilder;");
-                                                            #line 846 "PrintCSharp.cpp.template"
+                                                            #line 842 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1282 "PrintCSharp.cpp"
+                                                            #line 1275 "PrintCSharp.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public ParseJob(String s, String i)\n");
   append(L"    {\n");
   append(L"      name = s;\n");
   append(L"      input = i;");
-                                                            #line 853 "PrintCSharp.cpp.template"
+                                                            #line 849 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1292 "PrintCSharp.cpp"
+                                                            #line 1285 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      contentCounter = new ContentCounter();");
-                                                            #line 856 "PrintCSharp.cpp.template"
+                                                            #line 852 "PrintCSharp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1298 "PrintCSharp.cpp"
+                                                            #line 1291 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      parseTreeBuilder = new ParseTreeBuilder();");
-                                                            #line 859 "PrintCSharp.cpp.template"
+                                                            #line 855 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1304 "PrintCSharp.cpp"
+                                                            #line 1297 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      parser = new ");
-                                                            #line 862 "PrintCSharp.cpp.template"
+                                                            #line 858 "PrintCSharp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1309 "PrintCSharp.cpp"
+                                                            #line 1302 "PrintCSharp.cpp"
   append(L"(input");
-                                                            #line 863 "PrintCSharp.cpp.template"
+                                                            #line 859 "PrintCSharp.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1314 "PrintCSharp.cpp"
+                                                            #line 1307 "PrintCSharp.cpp"
   append(L", new ");
-                                                            #line 865 "PrintCSharp.cpp.template"
+                                                            #line 861 "PrintCSharp.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1318 "PrintCSharp.cpp"
+                                                            #line 1311 "PrintCSharp.cpp"
   append(L"Lexer()");
-                                                            #line 866 "PrintCSharp.cpp.template"
+                                                            #line 862 "PrintCSharp.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1326 "PrintCSharp.cpp"
+                                                            #line 1319 "PrintCSharp.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 871 "PrintCSharp.cpp.template"
+                                                            #line 867 "PrintCSharp.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1332 "PrintCSharp.cpp"
+                                                            #line 1325 "PrintCSharp.cpp"
   append(L", contentCounter");
-                                                            #line 874 "PrintCSharp.cpp.template"
+                                                            #line 870 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1337 "PrintCSharp.cpp"
+                                                            #line 1330 "PrintCSharp.cpp"
   append(L");\n");
   append(L"    }\n");
   append(L"  }\n");
@@ -1343,9 +1336,9 @@
   append(L"    if (args.Length == 0)\n");
   append(L"    {\n");
   append(L"      Console.Out.WriteLine(\"Usage: ");
-                                                            #line 884 "PrintCSharp.cpp.template"
+                                                            #line 880 "PrintCSharp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1349 "PrintCSharp.cpp"
+                                                            #line 1342 "PrintCSharp.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\");\n");
   append(L"      Console.Out.WriteLine();\n");
   append(L"      Console.Out.WriteLine(\"  parse all files that have names ending with ENDING, in current dir and below,\");\n");
@@ -1414,42 +1407,42 @@
   append(L"              {\n");
   append(L"                if (! quiet) Console.Out.Write(\"parsing \" + job.name);\n");
   append(L"                job.parser");
-                                                            #line 952 "PrintCSharp.cpp.template"
+                                                            #line 948 "PrintCSharp.cpp.template"
                                                                   if (useGlr)
                                                                   {
-                                                            #line 1421 "PrintCSharp.cpp"
+                                                            #line 1414 "PrintCSharp.cpp"
   append(L".thread");
-                                                            #line 954 "PrintCSharp.cpp.template"
+                                                            #line 950 "PrintCSharp.cpp.template"
                                                                   }
-                                                            #line 1425 "PrintCSharp.cpp"
+                                                            #line 1418 "PrintCSharp.cpp"
   append(L".reset(0, 0, 0);\n");
   append(L"                job.parser.");
-                                                            #line 956 "PrintCSharp.cpp.template"
+                                                            #line 952 "PrintCSharp.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1431 "PrintCSharp.cpp"
+                                                            #line 1424 "PrintCSharp.cpp"
   append(L"();\n");
   append(L"                if (! quiet) Console.Out.WriteLine();");
-                                                            #line 959 "PrintCSharp.cpp.template"
+                                                            #line 955 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1439 "PrintCSharp.cpp"
+                                                            #line 1432 "PrintCSharp.cpp"
   append(L"\n");
   append(L"                job.parseTreeBuilder.serialize(job.contentCounter);");
-                                                            #line 965 "PrintCSharp.cpp.template"
+                                                            #line 961 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1444 "PrintCSharp.cpp"
+                                                            #line 1437 "PrintCSharp.cpp"
   append(L"\n");
   append(L"                if (job.contentCounter.getLength() != job.input.Length)\n");
   append(L"                {\n");
   append(L"                  Console.Error.WriteLine(\"content counter saw \" + job.contentCounter.getLength() + \", but input length is \" + job.input.Length);\n");
   append(L"                  Environment.Exit(1);\n");
   append(L"                }");
-                                                            #line 971 "PrintCSharp.cpp.template"
+                                                            #line 967 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1453 "PrintCSharp.cpp"
+                                                            #line 1446 "PrintCSharp.cpp"
   append(L"\n");
   append(L"                parsed += job.input.Length;\n");
   append(L"              }\n");
@@ -1508,12 +1501,12 @@
   append(L"      collectInput(f, read(f));\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1031 "PrintCSharp.cpp.template"
+                                                            #line 1027 "PrintCSharp.cpp.template"
                                                             }
 
                                                             void PrintCSharp::printReadMethod()
                                                             {
-                                                            #line 1517 "PrintCSharp.cpp"
+                                                            #line 1510 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  private static String read(String input)\n");
   append(L"  {\n");
@@ -1526,84 +1519,84 @@
   append(L"      return File.ReadAllText(input, Encoding.UTF8);\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1047 "PrintCSharp.cpp.template"
+                                                            #line 1043 "PrintCSharp.cpp.template"
                                                             }
 
                                                             void PrintCSharp::printInterface()
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 1537 "PrintCSharp.cpp"
+                                                            #line 1530 "PrintCSharp.cpp"
   append(L"\n");
   append(L"package ");
-                                                            #line 1054 "PrintCSharp.cpp.template"
+                                                            #line 1050 "PrintCSharp.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 1542 "PrintCSharp.cpp"
+                                                            #line 1535 "PrintCSharp.cpp"
   append(L";\n");
-                                                            #line 1056 "PrintCSharp.cpp.template"
+                                                            #line 1052 "PrintCSharp.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (main)
                                                                 {
-                                                            #line 1550 "PrintCSharp.cpp"
+                                                            #line 1543 "PrintCSharp.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
-                                                            #line 1064 "PrintCSharp.cpp.template"
+                                                            #line 1060 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1557 "PrintCSharp.cpp"
+                                                            #line 1550 "PrintCSharp.cpp"
   append(L"\n");
   append(L"public interface ");
-                                                            #line 1067 "PrintCSharp.cpp.template"
+                                                            #line 1063 "PrintCSharp.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1562 "PrintCSharp.cpp"
+                                                            #line 1555 "PrintCSharp.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  void initialize(String input");
-                                                            #line 1070 "PrintCSharp.cpp.template"
+                                                            #line 1066 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1569 "PrintCSharp.cpp"
+                                                            #line 1562 "PrintCSharp.cpp"
   append(L", EventHandler eh");
-                                                            #line 1072 "PrintCSharp.cpp.template"
+                                                            #line 1068 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1573 "PrintCSharp.cpp"
+                                                            #line 1566 "PrintCSharp.cpp"
   append(L");\n");
   append(L"  void parse();\n");
   append(L"  void reset();\n");
   append(L"  String getErrorMessage(ParseException e);\n");
-                                                            #line 1077 "PrintCSharp.cpp.template"
+                                                            #line 1073 "PrintCSharp.cpp.template"
                                                               printParseException();
-                                                            #line 1580 "PrintCSharp.cpp"
+                                                            #line 1573 "PrintCSharp.cpp"
   append(L"}\n");
-                                                            #line 1079 "PrintCSharp.cpp.template"
+                                                            #line 1075 "PrintCSharp.cpp.template"
                                                             }
 
                                                             void PrintCSharp::printParseException()
                                                             {
-                                                            #line 1587 "PrintCSharp.cpp"
+                                                            #line 1580 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public class ParseException : Exception\n");
   append(L"  {\n");
   append(L"    private int begin, end, offending, expected, state;");
-                                                            #line 1086 "PrintCSharp.cpp.template"
+                                                            #line 1082 "PrintCSharp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1595 "PrintCSharp.cpp"
+                                                            #line 1588 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    private bool ambiguousInput;");
-                                                            #line 1089 "PrintCSharp.cpp.template"
+                                                            #line 1085 "PrintCSharp.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1601 "PrintCSharp.cpp"
+                                                            #line 1594 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    private ParseTreeBuilder ambiguityDescriptor;");
-                                                            #line 1092 "PrintCSharp.cpp.template"
+                                                            #line 1088 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1607 "PrintCSharp.cpp"
+                                                            #line 1600 "PrintCSharp.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public ParseException(int b, int e, int s, int o, int x)\n");
@@ -1613,94 +1606,94 @@
   append(L"      state = s;\n");
   append(L"      offending = o;\n");
   append(L"      expected = x;");
-                                                            #line 1102 "PrintCSharp.cpp.template"
+                                                            #line 1098 "PrintCSharp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1620 "PrintCSharp.cpp"
+                                                            #line 1613 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      ambiguousInput = false;");
-                                                            #line 1105 "PrintCSharp.cpp.template"
+                                                            #line 1101 "PrintCSharp.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1626 "PrintCSharp.cpp"
+                                                            #line 1619 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      ambiguityDescriptor = null;");
-                                                            #line 1108 "PrintCSharp.cpp.template"
+                                                            #line 1104 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1632 "PrintCSharp.cpp"
+                                                            #line 1625 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1112 "PrintCSharp.cpp.template"
+                                                            #line 1108 "PrintCSharp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1638 "PrintCSharp.cpp"
+                                                            #line 1631 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public ParseException(int b, int e");
-                                                            #line 1115 "PrintCSharp.cpp.template"
+                                                            #line 1111 "PrintCSharp.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1644 "PrintCSharp.cpp"
+                                                            #line 1637 "PrintCSharp.cpp"
   append(L", ParseTreeBuilder a");
-                                                            #line 1117 "PrintCSharp.cpp.template"
+                                                            #line 1113 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1648 "PrintCSharp.cpp"
+                                                            #line 1641 "PrintCSharp.cpp"
   append(L") : this(b, e, -1, -1, -1)\n");
   append(L"    {\n");
   append(L"      ambiguousInput = true;");
-                                                            #line 1120 "PrintCSharp.cpp.template"
+                                                            #line 1116 "PrintCSharp.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1655 "PrintCSharp.cpp"
+                                                            #line 1648 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      ambiguityDescriptor = a;");
-                                                            #line 1123 "PrintCSharp.cpp.template"
+                                                            #line 1119 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1660 "PrintCSharp.cpp"
+                                                            #line 1653 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1126 "PrintCSharp.cpp.template"
+                                                            #line 1122 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1665 "PrintCSharp.cpp"
+                                                            #line 1658 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public String getMessage()\n");
   append(L"    {\n");
   append(L"      return ");
-                                                            #line 1130 "PrintCSharp.cpp.template"
+                                                            #line 1126 "PrintCSharp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1673 "PrintCSharp.cpp"
+                                                            #line 1666 "PrintCSharp.cpp"
   append(L"ambiguousInput\n");
   append(L"           ? \"ambiguous input\"\n");
   append(L"           : ");
-                                                            #line 1134 "PrintCSharp.cpp.template"
+                                                            #line 1130 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1679 "PrintCSharp.cpp"
+                                                            #line 1672 "PrintCSharp.cpp"
   append(L"offending < 0\n");
   append(L"           ? \"lexical analysis failed\"\n");
   append(L"           : \"syntax error\";\n");
   append(L"    }\n");
-                                                            #line 1139 "PrintCSharp.cpp.template"
+                                                            #line 1135 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1687 "PrintCSharp.cpp"
+                                                            #line 1680 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public void serialize(EventHandler eventHandler)\n");
   append(L"    {");
-                                                            #line 1143 "PrintCSharp.cpp.template"
+                                                            #line 1139 "PrintCSharp.cpp.template"
                                                                 if (useGlr)
                                                                 {
-                                                            #line 1694 "PrintCSharp.cpp"
+                                                            #line 1687 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      ambiguityDescriptor.serialize(eventHandler);");
-                                                            #line 1146 "PrintCSharp.cpp.template"
+                                                            #line 1142 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1699 "PrintCSharp.cpp"
+                                                            #line 1692 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1149 "PrintCSharp.cpp.template"
+                                                            #line 1145 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1704 "PrintCSharp.cpp"
+                                                            #line 1697 "PrintCSharp.cpp"
   append(L"\n");
   append(L"    public int getBegin() {return begin;}\n");
   append(L"    public int getEnd() {return end;}\n");
@@ -1708,49 +1701,49 @@
   append(L"    public int getOffending() {return offending;}\n");
   append(L"    public int getExpected() {return expected;}\n");
   append(L"    public bool isAmbiguousInput() {return ");
-                                                            #line 1156 "PrintCSharp.cpp.template"
+                                                            #line 1152 "PrintCSharp.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1715 "PrintCSharp.cpp"
+                                                            #line 1708 "PrintCSharp.cpp"
   append(L"ambiguousInput");
-                                                            #line 1158 "PrintCSharp.cpp.template"
+                                                            #line 1154 "PrintCSharp.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1721 "PrintCSharp.cpp"
+                                                            #line 1714 "PrintCSharp.cpp"
   append(L"false");
-                                                            #line 1161 "PrintCSharp.cpp.template"
+                                                            #line 1157 "PrintCSharp.cpp.template"
                                                               }
-                                                            #line 1725 "PrintCSharp.cpp"
+                                                            #line 1718 "PrintCSharp.cpp"
   append(L";}\n");
   append(L"  }\n");
-                                                            #line 1164 "PrintCSharp.cpp.template"
+                                                            #line 1160 "PrintCSharp.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1731 "PrintCSharp.cpp"
+                                                            #line 1724 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public interface EventHandler\n");
   append(L"  {\n");
   append(L"    void reset(String s);\n");
   append(L"    void startNonterminal(String name");
+                                                            #line 1166 "PrintCSharp.cpp.template"
+                                                                if (! noPosition)
+                                                                {
+                                                            #line 1733 "PrintCSharp.cpp"
+  append(L", int begin");
+                                                            #line 1168 "PrintCSharp.cpp.template"
+                                                                }
+                                                            #line 1737 "PrintCSharp.cpp"
+  append(L");\n");
+  append(L"    void endNonterminal(String name");
                                                             #line 1170 "PrintCSharp.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 1740 "PrintCSharp.cpp"
-  append(L", int begin");
+                                                            #line 1743 "PrintCSharp.cpp"
+  append(L", int end");
                                                             #line 1172 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1744 "PrintCSharp.cpp"
-  append(L");\n");
-  append(L"    void endNonterminal(String name");
-                                                            #line 1174 "PrintCSharp.cpp.template"
-                                                                if (! noPosition)
-                                                                {
-                                                            #line 1750 "PrintCSharp.cpp"
-  append(L", int end");
-                                                            #line 1176 "PrintCSharp.cpp.template"
-                                                                }
-                                                            #line 1754 "PrintCSharp.cpp"
+                                                            #line 1747 "PrintCSharp.cpp"
   append(L");\n");
   append(L"    void terminal(String name, int begin, int end);\n");
   append(L"    void whitespace(int begin, int end);\n");
@@ -1858,10 +1851,10 @@
   append(L"      e.endNonterminal(name, end);\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1284 "PrintCSharp.cpp.template"
+                                                            #line 1280 "PrintCSharp.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1865 "PrintCSharp.cpp"
+                                                            #line 1858 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public interface BottomUpEventHandler\n");
   append(L"  {\n");
@@ -1869,11 +1862,11 @@
   append(L"    void nonterminal(String name, int begin, int end, int count);\n");
   append(L"    void terminal(String name, int begin, int end);\n");
   append(L"  }\n");
-                                                            #line 1293 "PrintCSharp.cpp.template"
+                                                            #line 1289 "PrintCSharp.cpp.template"
                                                                 }
                                                                 if (main)
                                                                 {
-                                                            #line 1877 "PrintCSharp.cpp"
+                                                            #line 1870 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public class XmlSerializer : EventHandler\n");
   append(L"  {\n");
@@ -1901,14 +1894,14 @@
   append(L"    }\n");
   append(L"\n");
   append(L"    public void startNonterminal(String name");
-                                                            #line 1322 "PrintCSharp.cpp.template"
+                                                            #line 1318 "PrintCSharp.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 1908 "PrintCSharp.cpp"
+                                                            #line 1901 "PrintCSharp.cpp"
   append(L", int begin");
-                                                            #line 1324 "PrintCSharp.cpp.template"
+                                                            #line 1320 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1912 "PrintCSharp.cpp"
+                                                            #line 1905 "PrintCSharp.cpp"
   append(L")\n");
   append(L"    {\n");
   append(L"      if (delayedTag != null)\n");
@@ -1931,14 +1924,14 @@
   append(L"    }\n");
   append(L"\n");
   append(L"    public void endNonterminal(String name");
-                                                            #line 1346 "PrintCSharp.cpp.template"
+                                                            #line 1342 "PrintCSharp.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 1938 "PrintCSharp.cpp"
+                                                            #line 1931 "PrintCSharp.cpp"
   append(L", int end");
-                                                            #line 1348 "PrintCSharp.cpp.template"
+                                                            #line 1344 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1942 "PrintCSharp.cpp"
+                                                            #line 1935 "PrintCSharp.cpp"
   append(L")\n");
   append(L"    {\n");
   append(L"      --depth;\n");
@@ -1976,25 +1969,25 @@
   append(L"        name = \"TOKEN\";\n");
   append(L"      }\n");
   append(L"      startNonterminal(name");
-                                                            #line 1385 "PrintCSharp.cpp.template"
+                                                            #line 1381 "PrintCSharp.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 1983 "PrintCSharp.cpp"
+                                                            #line 1976 "PrintCSharp.cpp"
   append(L", begin");
-                                                            #line 1387 "PrintCSharp.cpp.template"
+                                                            #line 1383 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1987 "PrintCSharp.cpp"
+                                                            #line 1980 "PrintCSharp.cpp"
   append(L");\n");
   append(L"      characters(begin, end);\n");
   append(L"      endNonterminal(name");
-                                                            #line 1390 "PrintCSharp.cpp.template"
+                                                            #line 1386 "PrintCSharp.cpp.template"
                                                                 if (! noPosition)
                                                                 {
-                                                            #line 1994 "PrintCSharp.cpp"
+                                                            #line 1987 "PrintCSharp.cpp"
   append(L", end");
-                                                            #line 1392 "PrintCSharp.cpp.template"
+                                                            #line 1388 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 1998 "PrintCSharp.cpp"
+                                                            #line 1991 "PrintCSharp.cpp"
   append(L");\n");
   append(L"    }\n");
   append(L"\n");
@@ -2026,11 +2019,11 @@
   append(L"      output.Write(content);\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1424 "PrintCSharp.cpp.template"
+                                                            #line 1420 "PrintCSharp.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2034 "PrintCSharp.cpp"
+                                                            #line 2027 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public class ContentCounter : EventHandler\n");
   append(L"  {\n");
@@ -2038,33 +2031,33 @@
   append(L"    public int getLength() {return length;}\n");
   append(L"    public void reset(String s) {length = 0;}\n");
   append(L"    public void startNonterminal(String name");
+                                                            #line 1429 "PrintCSharp.cpp.template"
+                                                                  if (! noPosition)
+                                                                  {
+                                                            #line 2038 "PrintCSharp.cpp"
+  append(L", int begin");
+                                                            #line 1431 "PrintCSharp.cpp.template"
+                                                                  }
+                                                            #line 2042 "PrintCSharp.cpp"
+  append(L") {}\n");
+  append(L"    public void endNonterminal(String name");
                                                             #line 1433 "PrintCSharp.cpp.template"
                                                                   if (! noPosition)
                                                                   {
-                                                            #line 2045 "PrintCSharp.cpp"
-  append(L", int begin");
+                                                            #line 2048 "PrintCSharp.cpp"
+  append(L", int end");
                                                             #line 1435 "PrintCSharp.cpp.template"
                                                                   }
-                                                            #line 2049 "PrintCSharp.cpp"
-  append(L") {}\n");
-  append(L"    public void endNonterminal(String name");
-                                                            #line 1437 "PrintCSharp.cpp.template"
-                                                                  if (! noPosition)
-                                                                  {
-                                                            #line 2055 "PrintCSharp.cpp"
-  append(L", int end");
-                                                            #line 1439 "PrintCSharp.cpp.template"
-                                                                  }
-                                                            #line 2059 "PrintCSharp.cpp"
+                                                            #line 2052 "PrintCSharp.cpp"
   append(L") {}\n");
   append(L"    public void terminal(String name, int begin, int end) {length += end - begin;}\n");
   append(L"    public void whitespace(int begin, int end) {length += end - begin;}\n");
   append(L"  }\n");
-                                                            #line 1445 "PrintCSharp.cpp.template"
+                                                            #line 1441 "PrintCSharp.cpp.template"
                                                                 }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2068 "PrintCSharp.cpp"
+                                                            #line 2061 "PrintCSharp.cpp"
   append(L"\n");
   append(L"  public class ParseTreeBuilder : BottomUpEventHandler\n");
   append(L"  {\n");
@@ -2083,10 +2076,10 @@
   append(L"\n");
   append(L"    public void nonterminal(String name, int begin, int end, int count)\n");
   append(L"    {");
-                                                            #line 1465 "PrintCSharp.cpp.template"
+                                                            #line 1461 "PrintCSharp.cpp.template"
                                                                 if (useGlr)
                                                                 {
-                                                            #line 2090 "PrintCSharp.cpp"
+                                                            #line 2083 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      if (count > top + 1)\n");
   append(L"      {\n");
@@ -2098,9 +2091,9 @@
   append(L"        }\n");
   append(L"        count = top + 1;\n");
   append(L"      }");
-                                                            #line 1477 "PrintCSharp.cpp.template"
+                                                            #line 1473 "PrintCSharp.cpp.template"
                                                                 }
-                                                            #line 2104 "PrintCSharp.cpp"
+                                                            #line 2097 "PrintCSharp.cpp"
   append(L"\n");
   append(L"      push(new Nonterminal(name, begin, end, pop(count)));\n");
   append(L"    }\n");
@@ -2133,7 +2126,7 @@
   append(L"      return result;\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1511 "PrintCSharp.cpp.template"
+                                                            #line 1507 "PrintCSharp.cpp.template"
                                                                 }
                                                               }
                                                             }

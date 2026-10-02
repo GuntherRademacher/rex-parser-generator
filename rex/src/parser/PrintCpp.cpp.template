@@ -1145,11 +1145,11 @@ public:
                                                     ~, int target)
   {
     this->threads = &threads;
-    this->target = target;
-    bw = e0;
-    bs = e0;~                                                 if (tree)
+    this->target = target;~                                   if (tree)
                                                               {
 ~
+    bw = e0;
+    bs = e0;
     es = e0;
     this->eventHandler = eventHandler;
     if (eventHandler != 0)
@@ -1202,11 +1202,11 @@ public:
     this->action = action;
     accepted = other->accepted;
     target = other->target;
-    parser = other->parser;
-    bs = other->bs;
-    bw = other->bw;~                                          if (tree)
+    parser = other->parser;~                                  if (tree)
                                                               {
 ~
+    bs = other->bs;
+    bw = other->bw;
     es = other->es;
     eventHandler = other->eventHandler;
     deferredEvent = other->deferredEvent == 0 ? 0 : other->deferredEvent->share();~
@@ -1317,10 +1317,6 @@ public:
 ~
   std::vector<int> iStack;
   int top;~                                                   }
-                                                              if (useGlr)
-                                                              {
-~
-  int bw, bs;~                                                }
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
@@ -1328,7 +1324,7 @@ public:
                                                                   if (useGlr)
                                                                   {
 ~
-  int es;~                                                        }
+  int bw, bs, es;~                                                }
 ~
   BottomUpEventHandler *eventHandler;~                          }
                                                                 else
