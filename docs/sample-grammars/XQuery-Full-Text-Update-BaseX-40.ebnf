@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Sep 29, 2026, 22:20 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Oct 6, 2026, 21:06 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * with productions from https://www.w3.org/TR/xquery-update-30/ added
@@ -1253,7 +1253,7 @@ ItemTypeDecl
 NominativeRecordTypeDecl
          ::= 'declare' Annotation* 'record' EQName '(' ( ExtendedFieldDeclaration ( ',' ExtendedFieldDeclaration )* )? ')'
 ExtendedFieldDeclaration
-         ::= FieldDeclaration ( ':=' ExprSingle )?
+         ::= '%static'? FieldDeclaration ( ':=' ExprSingle )?
 OptionDecl
          ::= 'declare' 'option' EQName StringLiteral
 MainModule
