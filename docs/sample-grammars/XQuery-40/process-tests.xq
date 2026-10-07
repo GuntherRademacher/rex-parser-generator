@@ -16,10 +16,8 @@ import module namespace xpath-full-text-java
                                       = "java:de.bottlecaps.rex.XPath_Full_Text_40";
 
 declare namespace qtfc = "http://www.w3.org/2010/09/qt-fots-catalog";
-declare namespace ftts = "http://www.w3.org/2005/02/query-test-full-text";
 
-declare variable $root1 as xs:string external := ();
-declare variable $root2 as xs:string external := ();
+declare variable $root as xs:string external := ();
 declare variable $language as xs:string external := "xquery";
 declare variable $implementation as xs:string external := "java";
 declare variable $skip as xs:string* external := ();
@@ -31,25 +29,6 @@ declare variable $xquery-known-failures as xs:string* :=
 
 declare variable $xpath-known-failures as xs:string* :=
 (
-  (: XPath Full Text test suite :)
-
-  "examples-364-5",                        (: direct element constructor              :)
-  "examples-364-5a",                       (: direct element constructor              :)
-  "ForScoreExpr-Var3",                     (: variable declaration                    :)
-  "FTScope-q1",                            (: direct element constructor              :)
-  "FTScope-q2",                            (: direct element constructor              :)
-  "FTScope-q3",                            (: direct element constructor              :)
-  "FTScope-q4",                            (: direct element constructor              :)
-  "unconstrained-examples-364-5",          (: direct element constructor              :)
-  "unconstrained-examples-364-5a",         (: direct element constructor              :)
-  "FTScope-unconstrained-q1",              (: direct element constructor              :)
-  "FTScope-unconstrained-q2",              (: direct element constructor              :)
-  "FTScope-unconstrained-q3",              (: direct element constructor              :)
-  "FTScope-unconstrained-q4",              (: direct element constructor              :)
-  "ForScoreExpr-unconstrained-Var3",       (: variable declaration                    :)
-  "Catalog001",                            (: direct element constructor              :)
-  "Catalog002",                            (: direct element constructor              :)
-  "Catalog003"                             (: direct element constructor              :)
 );
 
 declare variable $basex-known-failures as xs:string* :=
@@ -240,28 +219,6 @@ declare function local:test-case($path, $test-case)
     return local:parse($path, $test-case/@name, $query, $expect-error)
 };
 
-declare function local:ftts-test($path, $test-case)
-{
-  if (contains($language, "xpath") and not(xs:boolean($test-case/@is-XPath2))) then
-    $skipped
-  else
-    let $name := $test-case/@name
-    let $test-suite := $test-case/ancestor::ftts:test-suite
-    let $offset-path := $test-suite/@XQueryQueryOffsetPath
-    let $extension := $test-suite/@XQueryFileExtension
-    let $file := resolve-uri(concat($offset-path, $test-case/@FilePath, $test-case/ftts:query/@name, $extension), base-uri($test-case))
-    let $query := fn() {
-      let $query := unparsed-text($file)
-      return
-        if (contains($language, "xpath")) then
-          replace($query, "^.*\(: insert-end :\)", "", "s")
-        else
-          $query
-    }
-    return
-      local:parse($file, $name, $query, $test-case/@scenario eq "parse-error" or $test-case/ftts:expected-error = "XPST0003")  
-};
-
 declare function local:process($path)
 {
   if (matches($path, "\.xml$", "i")) then
@@ -281,13 +238,6 @@ declare function local:process($path)
       case $catalog as element(qtfc:catalog) return
         for $test-set in $catalog/qtfc:test-set
         return local:test-set($path, $test-set)
-      case $catalog as element(ftts:test-suite) return
-        for $test-case in $catalog//ftts:test-case
-        return
-          if (contains($language, "full-text")) then
-            local:ftts-test($path, $test-case)
-          else
-            $skipped
       case $test-set as element(qtfc:test-set) return
         local:test-set($path, $test-set)
       default return
@@ -316,7 +266,7 @@ declare function local:traverse($paths as xs:string*)
         return local:traverse($entry)
 };
 
-let $result := local:traverse(($root1, $root2))
+let $result := local:traverse($root)
 return
   "Test results for " || $language || " parser in " || $implementation || ":&#xA;" ||
   "&#xA;" ||

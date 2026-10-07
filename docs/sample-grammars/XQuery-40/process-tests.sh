@@ -7,8 +7,7 @@ BUILD_DIR="$SCRIPT_DIR/build"
 BASEX=$(dirname $(dirname "$(command -v basex)"))
 export CLASSPATH=".:$BASEX/BaseX.jar:$BASEX/lib/*"
 BASEX_JVM="-Dorg.basex.catalog=file:///C:/Users/Gunther/git/rex-parser-generator/docs/sample-grammars/XQuery-40/catalog.xml"
-ROOT1=$(realpath $SCRIPT_DIR/../../../../qt4tests/catalog.xml)
-ROOT2=$(realpath $SCRIPT_DIR/../../../../XQFTTS/XQFTTSCatalog.xml)
+ROOT=$(realpath $SCRIPT_DIR/../../../../qt4tests/catalog.xml)
 
 cd "$BUILD_DIR"
 
@@ -20,6 +19,5 @@ java org.basex.BaseX \
     "-blanguage=$LANGUAGE" \
     "-bimplementation=$IMPLEMENTATION" \
     "-bverbose=$VERBOSE" \
-    "-broot1=$ROOT1" \
-    "-broot2=$ROOT2" \
+    "-broot=$ROOT" \
     ../process-tests.xq
