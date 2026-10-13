@@ -1,4 +1,4 @@
-// This file was generated on Fri Oct 2, 2026 20:53 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Oct 13, 2026 08:24 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintGo.cpp.template
                                                             #line 1 "PrintGo.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -715,7 +715,7 @@
   append(L"\n");
   append(L"func (this *PriorityQueue) peek() *ParsingThread {\n");
   append(L"  pq := *this\n");
-  append(L"  return pq[len(pq) - 1]\n");
+  append(L"  return pq[0]\n");
   append(L"}\n");
   append(L"\n");
   append(L"type ParsingThread struct {\n");

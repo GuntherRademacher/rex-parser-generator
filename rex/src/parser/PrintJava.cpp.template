@@ -498,7 +498,15 @@ public class ~                                                  print(className.
                        ~parser.getErrorMessage(pe)~             if (saxon == 110)
                                                                 {
                                                   ~)~           }
-                                                  ~, LOCATION, 0);
+                                                  ~, LOCATION, 0);~
+                                                                if (tree && useGlr)
+                                                                {
+~
+    if (pe.isAmbiguousInput())
+    {
+      pe.serialize(new SaxonTreeBuilder(builder));
+    }~                                                          }
+~
     builder.endElement();
   }
 ~                                                             }
@@ -599,7 +607,15 @@ public class ~                                                  print(className.
           atts.add(Token.token("x"), Token.token(pe.getExpected()));
         }
         memBuilder.openElem(Token.token("ERROR"), atts, new Atts());
-        memBuilder.text(Token.token(parser.getErrorMessage(pe)));
+        memBuilder.text(Token.token(parser.getErrorMessage(pe)));~
+                                                                if (tree && useGlr)
+                                                                {
+~
+        if (pe.isAmbiguousInput())
+        {
+          pe.serialize(new BaseXTreeBuilder(memBuilder));
+        }~                                                      }
+~
         memBuilder.closeElem();
       }
       catch (RuntimeException e)

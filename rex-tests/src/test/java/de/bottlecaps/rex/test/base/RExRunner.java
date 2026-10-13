@@ -609,7 +609,7 @@ public class RExRunner
       "declare variable $input external; " +
       "let $tree := p:parse-" + startSymbol + "(" +
       (isLiteral(runtimeOptions) ? "substring($input, 2, string-length($input) - 2)" : "unparsed-text($input)") +
-      ") return if ($tree/self::ERROR) then error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree)) else $tree " +
+      ") return if ($tree/self::ERROR) then ($tree/AMBIGUOUS, '&#xA;'[exists($tree/AMBIGUOUS)], error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree/text()))) else $tree " +
       "\" input=" + runtimeOptions);
     return runner;
   }
@@ -637,7 +637,7 @@ public class RExRunner
       "declare variable $input external; " +
       "let $tree := p:parse-" + startSymbol + "(" +
       (isLiteral(runtimeOptions) ? "substring($input, 2, string-length($input) - 2)" : "unparsed-text($input)") +
-      ") return if ($tree/self::ERROR) then error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree)) else $tree " +
+      ") return if ($tree/self::ERROR) then ($tree/AMBIGUOUS, '&#xA;'[exists($tree/AMBIGUOUS)], error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree/text()))) else $tree " +
       "\" input=" + runtimeOptions);
     return runner;
   }
@@ -666,7 +666,7 @@ public class RExRunner
       "declare variable $input external; " +
       "let $tree := p:parse-" + startSymbol + "(" +
       (isLiteral(runtimeOptions) ? "substring($input, 2, string-length($input) - 2)" : "unparsed-text($input)") +
-      ") return if ($tree/self::ERROR) then error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree)) else $tree" +
+      ") return if ($tree/self::ERROR) then ($tree/AMBIGUOUS, '&#xA;'[exists($tree/AMBIGUOUS)], error(xs:QName('" + this.getClass().getSimpleName() + "'), concat('&#xA;', $tree/text()))) else $tree" +
       "\"");
     return runner;
   }

@@ -3,7 +3,6 @@ package de.bottlecaps.rex.test.allplatforms;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import de.bottlecaps.rex.test.base.RExExecutionWithMessage;
 
@@ -35,29 +34,5 @@ public class TestGLRAmbiguity extends RExExecutionWithMessage
     );
     expectedStdout =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><AMBIGUOUS><ALTERNATIVE><X><B3><UNAMBIGUOUS>b</UNAMBIGUOUS></B3><TOKEN>c</TOKEN><TOKEN>d</TOKEN><TOKEN>e</TOKEN></X></ALTERNATIVE><ALTERNATIVE><X><B2><UNAMBIGUOUS>b</UNAMBIGUOUS></B2><TOKEN>c</TOKEN><TOKEN>d</TOKEN><TOKEN>e</TOKEN></X></ALTERNATIVE></AMBIGUOUS>\n";
-  }
-
-  @Test
-  @Override
-  public void testBaseX()
-  {
-    expectedStdout = null;
-    super.testBaseX();
-  }
-
-  @Test
-  @Override
-  public void testSaxonHE()
-  {
-    expectedStdout = null;
-    super.testSaxonHE();
-  }
-
-//@Test - requires license
-  @Override
-  public void testSaxonEE()
-  {
-    expectedStdout = null;
-    super.testSaxonEE();
   }
 }

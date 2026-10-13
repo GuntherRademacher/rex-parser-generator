@@ -492,7 +492,7 @@ func (this *PriorityQueue) isEmpty() bool {
 
 func (this *PriorityQueue) peek() *ParsingThread {
   pq := *this
-  return pq[len(pq) - 1]
+  return pq[0]
 }
 
 type ParsingThread struct {
