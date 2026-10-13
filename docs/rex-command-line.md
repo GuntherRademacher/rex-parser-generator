@@ -86,6 +86,7 @@ Create XML representation of the grammar:
 | Option            | Description                                                 |
 |-------------------|-------------------------------------------------------------|
 | `-xml`            | Create XML representation of grammar.                       |
+| `-xmlonly`        | Create XML representation without generating a parser.      |
 | `-ff`             | Add first and follow sets to XML representation of grammar. |
 
 ## Code Generation Features

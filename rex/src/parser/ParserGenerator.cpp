@@ -67,6 +67,7 @@ static void usage()
   fprintf(stdout, "  -interface NAME use interface NAME, or generate it (Java only)\n");
   fprintf(stdout, "\n");
   fprintf(stdout, "  -xml            create XML representation of grammar\n");
+  fprintf(stdout, "  -xmlonly       create XML representation without generating a parser\n");
   fprintf(stdout, "  -ff             add first and follow sets to XML representation of grammar\n");
   fprintf(stdout, "\n");
   fprintf(stdout, "  -tree           generate code for parse tree or parsing event handler\n");
@@ -89,6 +90,7 @@ int generateParser(int argc, char **argv)
   TargetLanguage targetLanguage = REX;
 
   bool printXML = false;
+  bool xmlOnly = false;
   bool printREx = false;
   bool printFF = false;
   bool unlimited = false;
@@ -113,6 +115,7 @@ int generateParser(int argc, char **argv)
 
   int maxLL = -1;
   int maxLR = -1;
+  bool algorithmSpecified = false;
   bool lalr = false;
   bool generalized = false;
   size_t tables = 0;
@@ -135,6 +138,7 @@ int generateParser(int argc, char **argv)
 
     if (strcmp(*arguments, "-ll") == 0)
     {
+      algorithmSpecified = true;
       if (*(arguments + 1))
       {
         maxLL = atoi(*++arguments);
@@ -142,6 +146,7 @@ int generateParser(int argc, char **argv)
     }
     else if (strcmp(*arguments, "-lr") == 0 && flags && strchr(flags, 'R'))
     {
+      algorithmSpecified = true;
       lalr = false;
       maxLR = 0;
       if (*(arguments + 1) && isdigit(**(arguments + 1)))
@@ -151,6 +156,7 @@ int generateParser(int argc, char **argv)
     }
     else if (strcmp(*arguments, "-glr") == 0 && flags && strchr(flags, 'R'))
     {
+      algorithmSpecified = true;
       lalr = false;
       generalized = true;
       maxLR = 0;
@@ -161,6 +167,7 @@ int generateParser(int argc, char **argv)
     }
     else if (strcmp(*arguments, "-lalr") == 0 && flags && strchr(flags, 'R'))
     {
+      algorithmSpecified = true;
       lalr = true;
       maxLR = 0;
       if (*(arguments + 1) && isdigit(**(arguments + 1)))
@@ -170,6 +177,7 @@ int generateParser(int argc, char **argv)
     }
     else if (strcmp(*arguments, "-glalr") == 0 && flags && strchr(flags, 'R'))
     {
+      algorithmSpecified = true;
       lalr = true;
       generalized = true;
       maxLR = 0;
@@ -261,6 +269,11 @@ int generateParser(int argc, char **argv)
     else if (strcmp(*arguments, "-xml") == 0)
     {
       printXML = true;
+    }
+    else if (strcmp(*arguments, "-xmlonly") == 0)
+    {
+      printXML = true;
+      xmlOnly = true;
     }
     else if (strcmp(*arguments, "-rex") == 0)
     {
@@ -367,7 +380,7 @@ int generateParser(int argc, char **argv)
       file = *arguments;
     }
 
-    if (maxLR == 0)
+    if (maxLL == 0 || maxLR == 0)
     {
       fprintf(stdout, "lookahead size must be at least 1\n");
       fflush(stdout);
@@ -403,6 +416,11 @@ int generateParser(int argc, char **argv)
   else if (count > 1)
   {
     fprintf(stdout, "more than one input file specification\n");
+    fflush(stdout);
+  }
+  else if (xmlOnly && algorithmSpecified)
+  {
+    fprintf(stdout, "option -xmlonly cannot be combined with -ll, -lr, -lalr, -glr, or -glalr\n");
     fflush(stdout);
   }
   else if (performance && targetLanguage != CPP
@@ -565,7 +583,7 @@ int generateParser(int argc, char **argv)
   }
   else
   {
-    if (maxLL < 0 && maxLR < 0)
+    if (maxLL < 0 && maxLR < 0 && ! xmlOnly)
     {
       maxLL = CheckLL::DEFAULTMAXLL;
     }

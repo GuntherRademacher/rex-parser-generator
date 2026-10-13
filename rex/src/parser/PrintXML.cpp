@@ -280,6 +280,11 @@ void PrintXML::openTag(Node *node, bool tagOpen, const wchar_t *nodeType, const 
 
     if (printFF)
     {
+      if (grammar->k == 0)
+      {
+        node->first(1);
+        node->follow(1);
+      }
 /*
       for (size_t k = 1; k <= kMax; ++k)
       {
