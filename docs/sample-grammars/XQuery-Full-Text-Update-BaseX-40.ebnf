@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Oct 15, 2026, 19:52 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Oct 15, 2026, 21:21 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * with productions from https://www.w3.org/TR/xquery-update-30/ added
@@ -881,13 +881,13 @@ CoerceExpr
          ::= CastableExpr ( 'coerce' 'to' SequenceType )?
 CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget )?
-CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget )?
+CastExpr ::= TransformWithExpr ( 'cast' 'as' CastTarget )?
+TransformWithExpr
+         ::= PipelineExpr ( ( 'transform' 'with' | 'update' ) '{' Expr? '}' )*
 PipelineExpr
          ::= ArrowExpr ( '->' ArrowExpr )*
 ArrowExpr
-         ::= TransformWithExpr ( SequenceArrowTarget | MappingArrowTarget )*
-TransformWithExpr
-         ::= UnaryExpr ( ( 'transform' 'with' | 'update' ) '{' Expr? '}' )*
+         ::= UnaryExpr ( SequenceArrowTarget | MappingArrowTarget )*
 UnaryExpr
          ::= ( '-' | '+' )* ValueExpr
 ValueExpr

@@ -165,7 +165,7 @@ declare function u:include-xquery-update($nodes as node()*, $xquery-update-30-gr
         u:include-xquery-update($node/*, $xquery-update-30-grammar)
       }
     case element(g:ref) return
-      if ($node/@name eq 'UnaryExpr') then
+      if ($node/@name eq 'PipelineExpr') then
         <g:ref name='TransformWithExpr'/>
       else if ($node[@name eq 'Annotation']/parent::g:zeroOrMore/parent::g:production/@name eq 'FunctionDecl') then
         <g:choice>{$node}<g:ref name='CompatibilityAnnotation'/></g:choice>
@@ -204,8 +204,10 @@ declare function u:include-xquery-update($nodes as node()*, $xquery-update-30-gr
           'CopyModifyExpr'
         )
       ]
-      return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
-      $node
+      return
+        copy $p := $p modify replace value of node $p/self::g:production[@name="TransformWithExpr"]//g:ref[@name = "UnaryExpr"]/@name with "PipelineExpr"
+        return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
+        $node
     )
     default return
       $node
@@ -304,8 +306,8 @@ declare function u:include-basex($nodes as node()*) as node()*
       if ($node/self::g:production/@name = ("UnreservedName", "UnbracedActions", "BracedAction")) then
         ()
       else if ($node/self::g:production/@name eq "TransformWithExpr" and
-        deep-equal($node/*, u:ast("TransformWithExpr ::= UnaryExpr ( 'transform' 'with' '{' Expr? '}' )?")/*)) then
-        u:ast("TransformWithExpr ::= UnaryExpr ( ( 'transform' 'with' | 'update' ) '{' Expr? '}' )*")
+        deep-equal($node/*, u:ast("TransformWithExpr ::= PipelineExpr ( 'transform' 'with' '{' Expr? '}' )?")/*)) then
+        u:ast("TransformWithExpr ::= PipelineExpr ( ( 'transform' 'with' | 'update' ) '{' Expr? '}' )*")
       else
         element {node-name($node)} {u:include-basex(($node/@*, $node/node()))}
     )
