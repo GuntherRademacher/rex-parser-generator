@@ -237,7 +237,7 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
     case element(g:ref) return
       if ($node[@name eq 'Import']/parent::g:choice/ancestor::g:production/@name eq 'Prolog') then
         ($node, <g:ref name='FTOptionDecl'/>)
-      else if ($node[@name eq 'StringConcatExpr']/ancestor::g:production/@name eq 'OtherwiseExpr') then
+      else if ($node[@name eq 'OtherwiseExpr']/ancestor::g:production/@name eq 'ComparisonExpr') then
         <g:ref name='FTContainsExpr'/>
       else if ($node[@name eq 'VarNameAndType']/parent::g:production/@name eq 'LetValueBinding') then
         <g:choice>{$node}<g:ref name='FTScoreVar'/></g:choice>
@@ -251,7 +251,9 @@ declare function u:include-full-text($nodes as node()*, $full-text-30-grammar) a
         starts-with(@name, 'FT') and (@name ne 'FTOptionDecl' or u:is-xquery($node))
         or not(u:is-xquery($node)) and @name = ('Pragma', 'PragmaContents')
       ]
-      return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
+      return
+        copy $p := $p modify replace value of node $p/self::g:production[@name="FTContainsExpr"]//g:ref[@name = "StringConcatExpr"]/@name with "OtherwiseExpr"
+        return u:ast(b:render($p) => replace("'\$' VarName", 'VarName')),
       $node
     )
     default return
@@ -285,23 +287,21 @@ declare function u:include-basex($nodes as node()*) as node()*
         <g:ref name="EQName"/>
       else if ($node/@name eq "UnreservedNCName") then
         <g:ref name="NCName"/>
-      else if ($node/@name eq "UpdatingFunctionCall" and $node/parent::g:choice/parent::g:production/@name eq "ExprSingle") then
-        ()
       else if ($node/@name eq "CastableExpr" and $node/ancestor::g:production/@name eq "TreatExpr") then
         <g:ref name="CoerceExpr"/>
-      else if ($node/@name eq "PostfixExpr" and $node/ancestor::g:production/@name eq "DynamicFunctionCall") then
-        u:ast("DynamicFunctionCall ::= 'invoke'? 'updating'? 'nondeterministic'? PostfixExpr")/*
       else
         $node
     )
     case element(g:string) return
       if ($node eq "node" and $node/ancestor::g:production/@name = ("ReplaceExpr", "RenameExpr")) then
         u:ast("_ ::= 'node' | 'nodes'")//g:choice
+      else if ($node eq "invoke" and $node/ancestor::g:production/@name eq "UpdatingFunctionCall") then
+        element g:optional {$node}
       else
         $node
     case element() return
     (
-      if ($node/self::g:production/@name = ("UnreservedName", "UnbracedActions", "BracedAction", "UpdatingFunctionCall")) then
+      if ($node/self::g:production/@name = ("UnreservedName", "UnbracedActions", "BracedAction")) then
         ()
       else if ($node/self::g:production/@name eq "TransformWithExpr" and
         deep-equal($node/*, u:ast("TransformWithExpr ::= UnaryExpr ( 'transform' 'with' '{' Expr? '}' )?")/*)) then

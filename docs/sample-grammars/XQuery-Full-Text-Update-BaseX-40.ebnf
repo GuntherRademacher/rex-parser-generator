@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Oct 6, 2026, 21:06 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Thu Oct 15, 2026, 19:52 (UTC+02)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * with productions from https://www.w3.org/TR/xquery-update-30/ added
@@ -149,7 +149,6 @@ NCName   ::= UnreservedNCName
            | 'no-preserve'
            | 'node'
            | 'nodes'
-           | 'nondeterministic'
            | 'not'
            | 'occurs'
            | 'of'
@@ -419,7 +418,6 @@ UnreservedFunctionQName
            | 'no-inherit'
            | 'no-preserve'
            | 'nodes'
-           | 'nondeterministic'
            | 'not'
            | 'occurs'
            | 'of'
@@ -711,6 +709,7 @@ ExprSingle
            | DeleteExpr
            | RenameExpr
            | ReplaceExpr
+           | UpdatingFunctionCall
            | CopyModifyExpr
 FLWORExpr
          ::= InitialClause IntermediateClause* ReturnClause
@@ -855,11 +854,11 @@ FinallyClause
 OrExpr   ::= AndExpr ( 'or' AndExpr )*
 AndExpr  ::= ComparisonExpr ( 'and' ComparisonExpr )*
 ComparisonExpr
-         ::= OtherwiseExpr ( ( ValueComp | GeneralComp | NodeComp ) OtherwiseExpr )?
-OtherwiseExpr
-         ::= FTContainsExpr ( 'otherwise' FTContainsExpr )*
+         ::= FTContainsExpr ( ( ValueComp | GeneralComp | NodeComp ) FTContainsExpr )?
 FTContainsExpr
-         ::= StringConcatExpr ( 'contains' 'text' FTSelection FTIgnoreOption? )?
+         ::= OtherwiseExpr ( 'contains' 'text' FTSelection FTIgnoreOption? )?
+OtherwiseExpr
+         ::= StringConcatExpr ( 'otherwise' StringConcatExpr )*
 StringConcatExpr
          ::= RangeExpr ( '||' RangeExpr )*
 RangeExpr
@@ -1098,7 +1097,7 @@ FilterExpr
 Predicate
          ::= '[' Expr ']'
 DynamicFunctionCall
-         ::= 'invoke'? 'updating'? 'nondeterministic'? PostfixExpr PositionalArgumentList
+         ::= PostfixExpr PositionalArgumentList
 PositionalArgumentList
          ::= '(' PositionalArguments? ')'
 LookupExpr
@@ -1235,6 +1234,8 @@ NewNameExpr
          ::= ExprSingle
 ReplaceExpr
          ::= 'replace' ( 'value' 'of' )? ( 'node' | 'nodes' ) TargetExpr 'with' ExprSingle
+UpdatingFunctionCall
+         ::= 'invoke'? 'updating' PrimaryExpr '(' ( ExprSingle ( ',' ExprSingle )* )? ')'
 CopyModifyExpr
          ::= 'copy' VarName ':=' ExprSingle ( ',' VarName ':=' ExprSingle )* 'modify' ExprSingle 'return' ExprSingle
 VarDefaultValue
@@ -1454,7 +1455,6 @@ Keyword  ::= 'NaN'
            | 'no-preserve'
            | 'node'
            | 'nodes'
-           | 'nondeterministic'
            | 'not'
            | 'occurs'
            | 'of'
@@ -1639,7 +1639,7 @@ DirElemConstructorDelimiter
          ::= QName ( S QName S? '=' | S? [/>] )
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ NonKeywordQName 'NaN' 'after' 'all' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'any' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'before' 'boundary-space' 'but' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'coerce' 'collation' 'comment' 'construction' 'contains' 'content' 'context' 'copy' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'delete' 'descendant' 'descendant-or-self' 'descending' 'diacritics' 'different' 'digit' 'distance' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'entire' 'enum' 'eq' 'errors' 'every' 'exactly' 'except' 'exponent-separator' 'external' 'false' 'finally' 'first' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'from' 'ft-option' 'ftand' 'ftnot' 'ftor' 'function' 'fuzzy' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'insensitive' 'insert' 'instance' 'intersect' 'into' 'invoke' 'is' 'is-not' 'item' 'jnode' 'key' 'language' 'last' 'lax' 'le' 'least' 'let' 'levels' 'lowercase' 'lt' 'map' 'member' 'minus-sign' 'mod' 'modify' 'module' 'most' 'namespace' 'namespace-node' 'ne' 'next' 'no' 'no-inherit' 'no-preserve' 'node' 'nodes' 'nondeterministic' 'not' 'occurs' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'paragraph' 'paragraphs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'phrase' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'relationship' 'rename' 'replace' 'return' 'revalidation' 'same' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'score' 'self' 'sensitive' 'sentence' 'sentences' 'skip' 'sliding' 'some' 'stable' 'start' 'stemming' 'stop' 'strict' 'strip' 'switch' 'text' 'then' 'thesaurus' 'times' 'to' 'trace' 'transform' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'update' 'updating' 'uppercase' 'using' 'validate' 'value' 'variable' 'version' 'weight' 'when' 'where' 'while' 'wildcards' 'window' 'with' 'without' 'word' 'words' 'xnode' 'xquery' 'zero-digit'
+          \\ NonKeywordQName 'NaN' 'after' 'all' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'any' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'before' 'boundary-space' 'but' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'coerce' 'collation' 'comment' 'construction' 'contains' 'content' 'context' 'copy' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'delete' 'descendant' 'descendant-or-self' 'descending' 'diacritics' 'different' 'digit' 'distance' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'entire' 'enum' 'eq' 'errors' 'every' 'exactly' 'except' 'exponent-separator' 'external' 'false' 'finally' 'first' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'from' 'ft-option' 'ftand' 'ftnot' 'ftor' 'function' 'fuzzy' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'insensitive' 'insert' 'instance' 'intersect' 'into' 'invoke' 'is' 'is-not' 'item' 'jnode' 'key' 'language' 'last' 'lax' 'le' 'least' 'let' 'levels' 'lowercase' 'lt' 'map' 'member' 'minus-sign' 'mod' 'modify' 'module' 'most' 'namespace' 'namespace-node' 'ne' 'next' 'no' 'no-inherit' 'no-preserve' 'node' 'nodes' 'not' 'occurs' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'paragraph' 'paragraphs' 'parent' 'pattern-separator' 'per-mille' 'percent' 'phrase' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'relationship' 'rename' 'replace' 'return' 'revalidation' 'same' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'score' 'self' 'sensitive' 'sentence' 'sentences' 'skip' 'sliding' 'some' 'stable' 'start' 'stemming' 'stop' 'strict' 'strip' 'switch' 'text' 'then' 'thesaurus' 'times' 'to' 'trace' 'transform' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'update' 'updating' 'uppercase' 'using' 'validate' 'value' 'variable' 'version' 'weight' 'when' 'where' 'while' 'wildcards' 'window' 'with' 'without' 'word' 'words' 'xnode' 'xquery' 'zero-digit'
 Char      \\ '</' '<<' '<='
 NCNameDelimiter
           \\ UnreservedNCName
