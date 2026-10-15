@@ -129,6 +129,7 @@ import org.basex.util.Token;~                                   }
 ~
 ~                                                               }
 ~
+@SuppressWarnings("all")
 public class ~                                                  print(className.c_str());
                                                                 if (! interfaceName.empty())
                                                                 {
@@ -632,7 +633,8 @@ public class ~                                                  print(className.
 ~
   public static class BaseXTreeBuilder implements EventHandler
   {
-    private CharSequence input;
+    private ~                                                     print(inputType());
+            ~ input;
     private MemBuilder builder;
     private Atts nsp = new Atts();
     private Atts atts = new Atts();
@@ -644,7 +646,8 @@ public class ~                                                  print(className.
     }
 
     @Override
-    public void reset(CharSequence string)
+    public void reset(~                                           print(inputType());
+                      ~ string)
     {
       input = string;
     }
@@ -699,7 +702,8 @@ public class ~                                                  print(className.
       {
         try
         {
-          builder.text(Token.token(input.subSequence(begin, end).toString()));
+          builder.text(Token.token(~                              print(substring());
+                                   ~));
         }
         catch (IOException e)
         {
@@ -729,10 +733,25 @@ public class ~                                                  print(className.
 }
 ~                                                                 decreaseIndent();
                                                                 }
-                                                                WString args(L"CharSequence string");
-                                                                if (noLexer) args += L", Lexer lexer";
-                                                                if (tree) args += isLrParser ? L", BottomUpEventHandler t" : L", EventHandler t";
+                                                                WString tail;
+                                                                if (noLexer) tail += L", Lexer lexer";
+                                                                if (tree) tail += isLrParser ? L", BottomUpEventHandler t" : L", EventHandler t";
                                                                 increaseIndent();
+                                                                if (codepoints)
+                                                                {
+                                                                  WString args(L"int[] codepoints");
+                                                                  args += tail;
+                                                                  openMethod(L"", L"", className.c_str(), args.c_str());
+~
+{
+  initialize(codepoints~                                          if (tree)
+                                                                  {
+                       ~, t~                                      }
+                       ~);
+}
+~                                                               }
+                                                                WString args(L"CharSequence string");
+                                                                args += tail;
                                                                 openMethod(L"", L"", className.c_str(), args.c_str());
 ~
 {
@@ -1073,7 +1092,8 @@ private ParsingThread thread = new ParsingThread();~          if (tree)
 ~
 private BottomUpEventHandler eventHandler;~                   }
 ~
-private CharSequence input = null;
+private ~                                                     print(inputType());
+        ~ input = null;
 private int size = 0;
 private int maxId = 0;~                                       if (trace)
                                                               {
@@ -1361,7 +1381,8 @@ flushTrace();~                                                  decreaseIndent(i
   private static class ParseJob
   {
     public String name;
-    public String input;
+    public ~                                                  print(codepoints ? L"int[]" : L"String");
+          ~ input;
     public ~                                                  print(className.c_str());
            ~ parser;~                                         if (tree)
                                                               {
@@ -1376,7 +1397,10 @@ flushTrace();~                                                  decreaseIndent(i
     public ParseJob(String s, String i)
     {
       name = s;
-      input = i;~                                             if (tree)
+      input = i~                                              if (codepoints)
+                                                              {
+               ~.codePoints().toArray()~                      }
+               ~;~                                            if (tree)
                                                               {
                ~
       contentCounter = new ContentCounter();~                   if (isLrParser)
@@ -1473,27 +1497,40 @@ flushTrace();~                                                  decreaseIndent(i
               try
               {
                 if (! quiet) System.out.print("parsing " + job.name);
-                job.parser~                                       if (useGlr)
-                                                                  {
-                          ~.thread~                               }
+                job.parser~                                   if (useGlr)
+                                                              {
+                          ~.thread~                           }
                           ~.reset(0, 0, 0);
-                job.parser.~                                      print(methodPrefixParse);
-                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                job.parser.~                                  print(methodPrefixParse);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                            ~();
-                if (! quiet) System.out.println();~               if (tree)
-                                                                  {
-                                                                    if (isLrParser)
-                                                                    {
+                if (! quiet) System.out.println();~           if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
 ~
                 job.parseTreeBuilder.serialize(job.contentCounter);~
-                                                                    }
+                                                                }
 ~
-                if (job.contentCounter.getLength() != job.input.length())
+                if (job.contentCounter.getLength() != job.input.length~
+                                                                if (! codepoints)
+                                                                {
+                                                  ~()~
+                                                                }
+                                                  ~)
                 {
-                  throw new RuntimeException("content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length());
-                }~                                                }
+                  throw new RuntimeException("content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length~
+                                                                if (! codepoints)
+                                                                {
+                                                  ~()~
+                                                                }
+                                                  ~);
+                }~                                            }
 ~
-                parsed += job.input.length();
+                parsed += job.input.length~                   if (! codepoints)
+                                                              {
+                                          ~()~                }
+                                          ~;
               }
               catch (ParseException pe)
               {
@@ -1627,15 +1664,15 @@ import net.sf.saxon.str.StringView;~                              }
 public interface ~                                            print(className.c_str());
 ~
 {
-  public void initialize(CharSequence input~                  if (noLexer)
+  public void initialize(~                                    print(inputType());
+                         ~ input~                             if (noLexer)
                                                               {
                                            ~, Lexer l~        }
                                                               if (tree)
                                                               {
                                            ~, ~                 if (isLrParser)
                                                                 {
-                                              ~BottomUp~
-                                                                }
+                                              ~BottomUp~        }
                                               ~EventHandler eh~
                                                               }
                                            ~);
@@ -1752,7 +1789,8 @@ public interface ~                                            print(className.c_
 ~
   public interface EventHandler
   {
-    public void reset(CharSequence string);
+    public void reset(~                                         print(inputType());
+                      ~ string);
     public void startNonterminal(String name, int begin);
     public void endNonterminal(String name, int end);
     public void terminal(String name, int begin, int end);
@@ -1761,12 +1799,14 @@ public interface ~                                            print(className.c_
 
   public static class TopDownTreeBuilder implements EventHandler
   {
-    private CharSequence input = null;
+    private ~                                                   print(inputType());
+            ~ input = null;
     private Nonterminal[] stack = new Nonterminal[64];
     private int top = -1;
 
     @Override
-    public void reset(CharSequence input)
+    public void reset(~                                         print(inputType());
+                      ~ input)
     {
       this.input = input;
       top = -1;
@@ -1873,7 +1913,8 @@ public interface ~                                            print(className.c_
 ~
   public interface BottomUpEventHandler
   {
-    public void reset(CharSequence string);
+    public void reset(~                                           print(inputType());
+                      ~ string);
     public void nonterminal(String name, int begin, int end, int count);
     public void terminal(String name, int begin, int end);
   }
@@ -1890,7 +1931,8 @@ public interface ~                                            print(className.c_
 ~
   public static class XmlSerializer implements EventHandler
   {
-    private CharSequence input;
+    private ~                                                     print(inputType());
+            ~ input;
     private String delayedTag;
     private Writer out;
     private boolean indent;
@@ -1906,7 +1948,8 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void reset(CharSequence string)
+    public void reset(~                                           print(inputType());
+                      ~ string)
     {
       writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
       input = string;
@@ -1997,8 +2040,14 @@ public interface ~                                            print(className.c_
           writeOutput(">");
           delayedTag = null;
         }
-        writeOutput(input.subSequence(begin, end)
-                         .toString()
+        writeOutput(~                                             if (codepoints)
+                                                                  {
+                    ~new String(input, begin, end - begin)~       }
+                                                                  else
+                                                                  {
+                    ~input.subSequence(begin, end)
+                         .toString()~                             }
+                                                                ~
                          .replace("&", "&amp;")
                          .replace("<", "&lt;")
                          .replace(">", "&gt;"));
@@ -2026,7 +2075,8 @@ public interface ~                                            print(className.c_
     private int length = 0;
     public int getLength() {return length;}
     @Override
-    public void reset(CharSequence string) {length = 0;}
+    public void reset(~                                           print(inputType());
+                      ~ string) {length = 0;}
     @Override
     public void startNonterminal(String name, int begin) {}
     @Override
@@ -2043,7 +2093,8 @@ public interface ~                                            print(className.c_
 ~
   public static class SaxonTreeBuilder implements EventHandler
   {
-    private CharSequence input;
+    private ~                                                     print(inputType());
+            ~ input;
     private Builder builder;
     private AnyType anyType;
 
@@ -2055,7 +2106,8 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void reset(CharSequence string)
+    public void reset(~                                           print(inputType());
+                      ~ string)
     {
       input = string;
     }
@@ -2117,9 +2169,20 @@ public interface ~                                            print(className.c_
           builder.characters(~                                    if (saxon == 110)
                                                                   {
                              ~StringView.of(~                     }
-                             ~input.subSequence(begin, end)~      if (saxon == 110)
+                                                                  if (codepoints)
                                                                   {
+                                                                    print(substring());
+                                                                    if (saxon == 110)
+                                                                    {
+                             ~)~
+                                                                    }
+                                                                  }
+                                                                  else
+                                                                  {
+                             ~input.subSequence(begin, end)~        if (saxon == 110)
+                                                                    {
                                                            ~.toString())~
+                                                                    }
                                                                   }
                                                            ~, LOCATION, 0);
         }
@@ -2136,12 +2199,14 @@ public interface ~                                            print(className.c_
 ~
   public static class ParseTreeBuilder implements BottomUpEventHandler
   {
-    private CharSequence input;
+    private ~                                                     print(inputType());
+            ~ input;
     public Symbol[] stack = new Symbol[64];
     public int top = -1;
 
     @Override
-    public void reset(CharSequence input)
+    public void reset(~                                           print(inputType());
+                      ~ input)
     {
       this.input = input;
       top = -1;

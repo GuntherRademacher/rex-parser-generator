@@ -11,6 +11,8 @@
                                                               const char *prefix = variable("useGlr").boolean() && targetLanguage != JAVA
                                                                                  ? "parser."
                                                                                  : "";
+                                                              bool codepoints = targetLanguage == JAVA
+                                                                             && variable("codepoints").boolean();
                                                               if (! variable("append").boolean() && ! variable("embedded").boolean())
                                                               {
                                                                 if (*variable("package").string())
@@ -38,7 +40,10 @@ public class ~                                                  print(variable("
                                                               }
                                                               else
                                                               {
-~  private ~                                                    if (targetLanguage == JAVA)
+~  private ~                                                    if (codepoints)
+                                                                {
+           ~int[]~                                              }
+                                                                else if (targetLanguage == JAVA)
                                                                 {
            ~CharSequence~                                       }
                                                                 else
@@ -84,13 +89,30 @@ public class ~                                                  print(variable("
 ~
                                                               if (! variable("embedded").boolean())
                                                               {
+                                                                if (codepoints)
+                                                                {
+~
+  public void init(int[] codepoints)
+  {
+    input = codepoints;
+    size = codepoints.length;
+    end = 0;
+  }
+
+  public void init(String string)
+  {
+    init(string.codePoints().toArray());
+  }~                                                            }
+                                                                else
+                                                                {
 ~
   public void init(String string)
   {
     input = string;
     size = string.length();
     end = 0;
-  }
+  }~                                                            }
+~
 
   public int getOffset() {return begin;}
   public int getSize()   {return end - begin;}
@@ -100,7 +122,15 @@ public class ~                                                  print(variable("
   {
     init(string);
     return match(tokenSetId);
-  }
+  }~                                                            if (codepoints)
+                                                                {
+~
+  public int match(int tokenSetId, int[] codepoints)
+  {
+    init(codepoints);
+    return match(tokenSetId);
+  }~                                                            }
+~
 
   public~                                                     }
                                                               else
@@ -148,7 +178,7 @@ public class ~                                                  print(variable("
                              ~thread=\"" + id + "\" ~             }
                              ~tokenset=\"" + tokenSetId + "\">\n");
 ~                                                               }
-                                                                if (lookahead)
+                                                                if (lookahead && ! codepoints)
                                                                 {
                                                                   if (targetLanguage == JAVA)
                                                                   {
@@ -182,7 +212,7 @@ public class ~                                                  print(variable("
       int charclass;
       int c0 = current < ~                                      print(prefix);
                          ~size ? ~                                      print(prefix);
-                                 ~input~                        if (targetLanguage == JAVA)
+                                 ~input~                        if (targetLanguage == JAVA && ! codepoints)
                                                                 {
                                        ~.charAt(current)~       }
                                                                 else
@@ -234,32 +264,35 @@ public class ~                                                  print(variable("
         charclass = 0;~                                         }
                                                                 else
                                                                 {
-       ~
-        if (~                                                     if (variable("uncompressedMapSize").integer() != 0xd800)
+                                                                  if (! codepoints)
                                                                   {
-            ~c0 >= 0xd800 && ~                                    }
+       ~
+        if (~                                                       if (variable("uncompressedMapSize").integer() != 0xd800)
+                                                                    {
+            ~c0 >= 0xd800 && ~                                      }
                              ~c0 < 0xdc00)
         {
-          int c1 = current < ~                                    print(prefix);
-                             ~size ? ~                            print(prefix);
-                                     ~input~                      if (targetLanguage == JAVA)
-                                                                  {
-                                           ~.charAt(current)~     }
-                                                                  else
-                                                                  {
-                                           ~[current]~            }
+          int c1 = current < ~                                      print(prefix);
+                             ~size ? ~                              print(prefix);
+                                     ~input~                        if (targetLanguage == JAVA)
+                                                                    {
+                                           ~.charAt(current)~       }
+                                                                    else
+                                                                    {
+                                           ~[current]~              }
                                            ~ : 0;
           if (c1 >= 0xdc00 && c1 < 0xe000)
-          {~                                                      if (lookahead)
-                                                                  {
+          {~                                                        if (lookahead)
+                                                                    {
 ~
-            nonbmp = true;~                                       }
+            nonbmp = true;~                                         }
 ~
             ++current;
             c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;
           }
         }
-
+~                                                                 }
+~
         int lo = 0, hi = ~                                        print(variable("m2").size / 3 - 1);
                          ~;
         for (int m = ~                                            print((variable("m2").size / 3) >> 1);
@@ -362,20 +395,23 @@ public class ~                                                  print(variable("
                ~;
     if (result == 0)
     {
-      end = current - 1;
-      int c1 = end < ~                                          print(prefix);
-                     ~size ? ~                                  print(prefix);
-                             ~input~                            if (targetLanguage == JAVA)
+      end = current - 1;~                                       if (! codepoints)
                                                                 {
-                                   ~.charAt(end)~               }
-                                                                else
-                                                                {
-                                   ~[end]~                      }
+~
+      int c1 = end < ~                                            print(prefix);
+                     ~size ? ~                                    print(prefix);
+                             ~input~                              if (targetLanguage == JAVA)
+                                                                  {
+                                   ~.charAt(end)~                 }
+                                                                  else
+                                                                  {
+                                   ~[end]~                        }
                                    ~ : 0;
       if (c1 >= 0xdc00 && c1 < 0xe000)
       {
         --end;
-      }~                                                        if (variable("trace").boolean())
+      }~                                                        }
+                                                                if (variable("trace").boolean())
                                                                 {
 ~
       ~                                                           if (variable("useGlr").boolean() && targetLanguage != JAVA)
@@ -418,23 +454,30 @@ public class ~                                                  print(variable("
                                                                     ++lowBits;
                        ~) != 0)
     {
-      end = begin;
-      if (nonbmp)
-      {
-        for (int i = result >> ~                                    print(lowBits);
-                               ~; i > 0; --i)
-        {
-          int c1 = end < ~                                          print(prefix);
-                         ~size ? ~                                  print(prefix);
-                                 ~input~                            if (targetLanguage == JAVA)
+      end = begin;~                                                 if (codepoints)
                                                                     {
-                                       ~.charAt(end)~               }
+~
+      end += (result >> ~                                             print(lowBits);
+                        ~);~                                        }
                                                                     else
                                                                     {
-                                       ~[end]~                      }
+~
+      if (nonbmp)
+      {
+        for (int i = result >> ~                                      print(lowBits);
+                               ~; i > 0; --i)
+        {
+          int c1 = end < ~                                            print(prefix);
+                         ~size ? ~                                    print(prefix);
+                                 ~input~                              if (targetLanguage == JAVA)
+                                                                      {
+                                       ~.charAt(end)~                 }
+                                                                      else
+                                                                      {
+                                       ~[end]~                        }
                                        ~ : 0;
           ++end;
-          if (c1 >= 0xd800 && c1 < 0xdc000)
+          if (c1 >= 0xd800 && c1 < 0xdc00)
           {
             ++end;
           }
@@ -442,34 +485,38 @@ public class ~                                                  print(variable("
       }
       else
       {
-        end += (result >> ~                                         print(lowBits);
+        end += (result >> ~                                           print(lowBits);
                           ~);
-      }
+      }~                                                            }
+~
     }~                                                            }
                                                                   if (lookahead)
                                                                   {
+                                                                    if (! codepoints)
+                                                                    {
 ~
     else if (nonbmp)
     {
-      for (int i = result >> ~                                      print(lowBits);
+      for (int i = result >> ~                                        print(lowBits);
                              ~; i > 0; --i)
       {
         --end;
-        int c1 = end < ~                                            print(prefix);
-                       ~size ? ~                                    print(prefix);
-                               ~input~                              if (targetLanguage == JAVA)
-                                                                    {
-                                     ~.charAt(end)~                 }
-                                                                    else
-                                                                    {
-                                     ~[end]~                        }
+        int c1 = end < ~                                              print(prefix);
+                       ~size ? ~                                      print(prefix);
+                               ~input~                                if (targetLanguage == JAVA)
+                                                                      {
+                                     ~.charAt(end)~                   }
+                                                                      else
+                                                                      {
+                                     ~[end]~                          }
                                      ~ : 0;
         if (c1 >= 0xdc00 && c1 < 0xe000)
         {
           --end;
         }
       }
-    }
+    }~                                                              }
+~
     else
     {
       end -= result >> ~                                            print(lowBits);
@@ -837,7 +884,16 @@ public class ~                                                  print(variable("
       {
         int result = match(set, tokenString + " ");
         int resultSize = getSize();
-        if (result != tokenId || resultSize != tokenString.length())
+        if (result != tokenId || resultSize != tokenString.~
+                                                                if (codepoints)
+                                                                {
+                                                           ~codePointCount(0, tokenString.length())~
+                                                                }
+                                                                else
+                                                                {
+                                                           ~length()~
+                                                                }
+                                                           ~)
         {
           System.out.println();
           System.out.println("  tested: " + tokenString);

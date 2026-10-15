@@ -710,6 +710,7 @@ public:
     hasBacktracking(false),
     noThrow(false),
     noLexer(false),
+    codepoints(false),
     singleLexer(false),
     basex(false),
     tables(0),
@@ -853,6 +854,7 @@ public:
   bool hasBacktracking;
   bool noThrow;
   bool noLexer;
+  bool codepoints;
   bool singleLexer;
   bool basex;
 

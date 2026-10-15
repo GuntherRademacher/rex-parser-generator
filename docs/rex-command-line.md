@@ -74,6 +74,7 @@ Options specific to Java code generation:
 
 | Option            | Description                                                 |
 |-------------------|-------------------------------------------------------------|
+| `-codepoints`     | Generate code taking `int[]` codepoints as input.           |
 | `-nolexer`        | Generate code for using an external lexer.                  |
 | `-interface NAME` | Use interface NAME, or generate it, when there is no input. |
 | `-saxon`          | Generate Saxon extension function.                          |

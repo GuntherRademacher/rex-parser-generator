@@ -61,6 +61,7 @@ static void usage()
   fprintf(stdout, "  -xslt           generate parser in XSLT\n");
   fprintf(stdout, "\n");
   fprintf(stdout, "  -char           generate C++ code using UTF-8 char rather than wchar_t\n");
+  fprintf(stdout, "  -codepoints     generate Java code taking int[] codepoints as input\n");
   fprintf(stdout, "  -nolexer        generate code for using an external lexer (Java only)\n");
   fprintf(stdout, "  -saxon          generate Saxon extension function (Java only)\n");
   fprintf(stdout, "  -basex          generate BaseX extension function (Java only)\n");
@@ -112,6 +113,7 @@ int generateParser(int argc, char **argv)
   bool basex = false;
   bool noThrow = false;
   bool noLexer = false;
+  bool codepoints = false;
 
   int maxLL = -1;
   int maxLR = -1;
@@ -359,6 +361,10 @@ int generateParser(int argc, char **argv)
     {
       noLexer = true;
     }
+    else if (strcmp(*arguments, "-codepoints") == 0)
+    {
+      codepoints = true;
+    }
     else if (strcmp(*arguments, "-contextindependentlexer") == 0)
     {
       singleLexer = true;
@@ -484,6 +490,16 @@ int generateParser(int argc, char **argv)
     fprintf(stdout, "missing option: -nolexer only supported for -java or -javascript\n");
     fflush(stdout);
   }
+  else if (codepoints && targetLanguage != JAVA)
+  {
+    fprintf(stdout, "missing option: -codepoints also requires -java\n");
+    fflush(stdout);
+  }
+  else if (codepoints && noLexer)
+  {
+    fprintf(stdout, "option -codepoints cannot be combined with -nolexer\n");
+    fflush(stdout);
+  }
   else if (automaticSemicolonInsertion && ! (maxLL == 1 && backtrack))
   {
     fprintf(stdout, "missing option: -asi only supported for -ll 1 with -backtrack\n");
@@ -507,6 +523,7 @@ int generateParser(int argc, char **argv)
       {
         PrintJava pj(argv, wInterfaceName, wInterfaceName, 0, unlimited, printTree, omitPosition, printMain, performance, printTrace, saxon);
         pj.setNoLexer(noLexer);
+        pj.setCodepoints(codepoints);
         pj.setLrParser(maxLR >= 0);
         pj.setUseGlr(generalized);
         pj.printInterface();
@@ -659,6 +676,7 @@ int generateParser(int argc, char **argv)
             grammar->faster = faster;
             grammar->smaller = smaller;
             grammar->noLexer = noLexer;
+            grammar->codepoints = codepoints;
             grammar->singleLexer = singleLexer;
             grammar->basex = basex;
             grammar->noThrow = noThrow;

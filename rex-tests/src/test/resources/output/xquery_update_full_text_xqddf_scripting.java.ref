@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 06:59 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 15, 2026 12:32 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q xquery-update-full-text-xqddf-scripting.ebnf -backtrack -ll 2 -java -tree -main
 
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Arrays;
 
+@SuppressWarnings("all")
 public class xquery_update_full_text_xqddf_scripting
 {
   public static void main(String args[]) throws Exception

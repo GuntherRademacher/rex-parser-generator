@@ -1731,7 +1731,7 @@ function init(source~                                           if (noLexer)
                     ~)~                                       }
                                                               else
                                                               {
-                                                                WString args(isJava() ? L"CharSequence " : isTypescript() ? L"string " : stringType());
+                                                                WString args(isJava() ? (codepoints ? L"int[] " : L"CharSequence ") : isTypescript() ? L"string " : stringType());
                                                                 args += L"source";
                                                                 if (noLexer) args += L", Lexer l";
                                                                 if (tree)
@@ -1747,6 +1747,25 @@ function init(source~                                           if (noLexer)
                                                                   if (isCpp()) args += L"*";
                                                                   args += L"parsingEventHandler";
                                                                 }
+                                                                if (isJava() && codepoints)
+                                                                {
+                                                                  WString charSequenceArgs(L"CharSequence source");
+                                                                  if (tree)
+                                                                  {
+                                                                    charSequenceArgs += isLrParser
+                                                                                      ? L", BottomUpEventHandler parsingEventHandler"
+                                                                                      : L", EventHandler parsingEventHandler";
+                                                                  }
+                                                                  openMethod(voidType(), L"", L"initialize", charSequenceArgs.c_str());
+                                                                  print(leftBrace());
+~
+  initialize(source.codePoints().toArray()~                       if (tree)
+                                                                  {
+                                          ~, parsingEventHandler~
+                                                                  }
+                                          ~);~                    print(rightBrace());
+~
+~                                                               }
                                                                 openMethod(voidType(), L"", L"initialize", args.c_str());
                                                               }
                                                               print(leftBrace());
@@ -1784,7 +1803,7 @@ function init(source~                                           if (noLexer)
 ~
   ~                                                             print(thiz());
   ~size = source.~                                              print(isCSharp() ? L"L" : L"l");
-                 ~ength~                                        if (! isJavascript() && ! isTypescript() && ! isScala() && ! isHaxe() && ! isCSharp())
+                 ~ength~                                        if (! isJavascript() && ! isTypescript() && ! isScala() && ! isHaxe() && ! isCSharp() && ! (isJava() && codepoints))
                                                                 {
                        ~()~                                     }
                                                                 print(semicolon());
@@ -2095,6 +2114,20 @@ public String getErrorMessage(ParseException e)
                                                                   decreaseIndent();
 ~
   }~                                                            }
+                                                                if (codepoints)
+                                                                {
+~
+  String prefix = new String(input, 0, e.getBegin());
+  int line = prefix.replaceAll("[^^\n]", "").length() + 1;
+  int column = prefix.codePointCount(prefix.lastIndexOf('\n') + 1, prefix.length()) + 1;
+  return message
+       + "at line " + line + ", column " + column + ":\n..."
+       + new String(input, e.getBegin(), Math.min(input.length, e.getBegin() + 64) - e.getBegin())
+       + "...";
+}
+~                                                               }
+                                                                else
+                                                                {
 ~
   String prefix = input.subSequence(0, e.getBegin()).toString();
   int line = prefix.replaceAll("[^^\n]", "").length() + 1;
@@ -2104,7 +2137,8 @@ public String getErrorMessage(ParseException e)
        + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
        + "...";
 }
-~                                                               if (! interfaceName.empty())
+~                                                               }
+                                                                if (! interfaceName.empty())
                                                                 {
 ~
 public void parse()
@@ -2637,7 +2671,7 @@ c, _ := utf8.DecodeRuneInString(this.input[i:])~                }
 ~
 ~                                                                 print(intVar());
 ~c~                                                               print(assign());
-                                                                  if (isCpp() || isCSharp() || isPython())
+                                                                  if (isCpp() || isCSharp() || isPython() || (isJava() && codepoints))
                                                                   {
                                                                     if (isPython())
                                                                     {
@@ -5706,7 +5740,7 @@ if ~                                                              print(ifLeftPa
                                                               if (! useGlr)
                                                               {
                                                                 const wchar_t *type = isJava()
-                                                                                    ? L"CharSequence "
+                                                                                    ? (codepoints ? L"int[] " : L"CharSequence ")
                                                                                     : isHaxe()
                                                                                     ? L"Bytes "
                                                                                     : stringType();
@@ -6067,7 +6101,7 @@ if ~                                                                print(isPyth
                                                                       else
                                                                       {
                                                  ~ or ~               }
-                                                                      if (isCpp() || isCSharp() || isPython())
+                                                                      if (isCpp() || isCSharp() || isPython() || (isJava() && codepoints))
                                                                       {
                                                                         print(thiz());
                                                       ~input~

@@ -58,6 +58,7 @@ public:
     trace(0),
     tree(0),
     nolexer(0),
+    codepoints(0),
     casesensitive(0),
     faster(0),
     smaller(0),
@@ -248,6 +249,7 @@ protected:
     trace = false;
     tree = false;
     nolexer = false;
+    codepoints = false;
 
     casesensitive = false;
     symbolTable = new SymbolTable(casesensitive);
@@ -1345,6 +1347,7 @@ protected:
   bool trace;
   bool tree;
   bool nolexer;
+  bool codepoints;
   bool casesensitive;
   bool faster;
   bool smaller;
