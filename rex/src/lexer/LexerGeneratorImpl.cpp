@@ -2752,6 +2752,7 @@ void LexerGeneratorImpl::dfaConstruction(const GrammarCharClasses &gcc, DfaState
         cg->bind(CGVariable("trace", trace));
         cg->bind(CGVariable("tree", tree));
         cg->bind(CGVariable("nolexer", nolexer));
+        cg->bind(CGVariable("codepoints", codepoints));
         cg->bind(CGVariable("entrycount", (int) entrycount));
         cg->bind(CGVariable("transitionStateCount", (int) transitionStateCount));
         cg->bind(CGVariable("maxcontextlength", maxcontextlength));

@@ -126,6 +126,10 @@ void PrintREx::printProlog(Grammar *grammar)
   {
     lineFeed(); print(L"#option tree");
   }
+  if (grammar->codepoints)
+  {
+    lineFeed(); print(L"#option codepoints");
+  }
   if (grammar->noLexer)
   {
     lineFeed(); print(L"#option nolexer");

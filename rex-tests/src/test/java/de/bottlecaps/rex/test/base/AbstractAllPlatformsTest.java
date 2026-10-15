@@ -79,6 +79,17 @@ public abstract class AbstractAllPlatformsTest extends RExRunner
   }
 
   @Test
+  public void testJavaCodepoints()
+  {
+    Pass.expectPass(() ->
+    {
+      long start = System.currentTimeMillis();
+      verifyResult(runJavaCodepoints(rexOptions, runtimeOptions, files));
+      stop("Java (codepoints)", start);
+    });
+  }
+
+  @Test
   public void testNode()
   {
     Pass.expectPass(() ->

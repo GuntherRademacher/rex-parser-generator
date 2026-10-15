@@ -87,6 +87,7 @@ public:
     toBeEscaped(0),
     loopId(0),
     noLexer(false),
+    codepoints(false),
     isLrParser(false),
     useGlr(false)
   {
@@ -232,6 +233,7 @@ public:
   const wchar_t *getFileName() const {return wFileName.c_str();}
 
   void setNoLexer(bool n) {noLexer = n;}
+  void setCodepoints(bool c) {codepoints = c;}
   void setLrParser(bool l) {isLrParser = l;}
   void setUseGlr(bool l) {useGlr = l;}
 
@@ -302,6 +304,7 @@ protected:
     hasCustomCode = ! grammar->distinctCodeAnnotations.empty();
 
     setNoLexer(grammar->noLexer);
+    setCodepoints(grammar->codepoints);
 
     simpleWhitespace = ! grammar->simpleWhitespaceIntroducers.empty();
     complexWhitespace = ! grammar->complexWhitespaceIntroducers.empty();
@@ -444,6 +447,7 @@ protected:
   int loopId;
 
   bool noLexer;
+  bool codepoints;
   bool isLrParser;
   bool useGlr;
 };

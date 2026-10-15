@@ -108,6 +108,15 @@ public:
   void printParseException();
   void printEventHandlerImplementation();
 
+  // type of the parser input, and expression extracting input text from begin to end
+  const wchar_t *inputType() const {return codepoints ? L"int[]" : L"CharSequence";}
+  const wchar_t *substring() const
+  {
+    return codepoints
+         ? L"new String(input, begin, end - begin)"
+         : L"input.subSequence(begin, end).toString()";
+  }
+
 private:
   const wchar_t *embeddedOutputString;
   const wchar_t *visibility;

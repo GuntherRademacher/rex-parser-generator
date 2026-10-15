@@ -319,7 +319,24 @@ public class RExRunner
       String runtimeOptions,
       NamedFile... files)
   {
-    String commandLine = commandLine("-java -main", rexOptions, files);
+    return runJava("", rexOptions, runtimeOptions, files);
+  }
+
+  public Runner runJavaCodepoints(
+      String rexOptions,
+      String runtimeOptions,
+      NamedFile... files)
+  {
+    return runJava(" -codepoints", rexOptions, runtimeOptions, files);
+  }
+
+  private Runner runJava(
+      String inputOption,
+      String rexOptions,
+      String runtimeOptions,
+      NamedFile... files)
+  {
+    String commandLine = commandLine("-java" + inputOption + " -main", rexOptions, files);
     Runner runner = new Runner();
     if (0 != runner.run(REX, commandLine, files)) return runner;
     String className = className(runner.getArgs(), JAVAC);

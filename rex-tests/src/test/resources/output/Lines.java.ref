@@ -1,4 +1,4 @@
-// This file was generated on Fri Aug 7, 2026 23:24 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 15, 2026 12:31 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Lines.ebnf -java -basex -tree
 
 import java.io.IOException;
@@ -12,6 +12,7 @@ import org.basex.query.value.node.DBNode;
 import org.basex.util.Atts;
 import org.basex.util.Token;
 
+@SuppressWarnings("all")
 public class Lines
 {
   public static class ParseException extends RuntimeException

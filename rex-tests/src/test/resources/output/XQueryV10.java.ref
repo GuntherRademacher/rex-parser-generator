@@ -1,6 +1,7 @@
-// This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 15, 2026 12:32 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryV10.ebnf -java
 
+@SuppressWarnings("all")
 public class XQueryV10
 {
   public static class ParseException extends RuntimeException

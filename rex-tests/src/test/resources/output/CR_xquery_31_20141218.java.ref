@@ -1,6 +1,7 @@
-// This file was generated on Thu Dec 26, 2024 06:54 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 15, 2026 12:30 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q CR-xquery-31-20141218.ebnf -java -performance
 
+@SuppressWarnings("all")
 public class CR_xquery_31_20141218
 {
   public static class ParseException extends RuntimeException

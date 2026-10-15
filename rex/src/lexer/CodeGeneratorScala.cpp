@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Oct 15, 2026 12:17 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorScala.cpp.template
                                                             #line 1 "CodeGeneratorScala.cpp.template"
                                                             // generate CodeGeneratorScala.cpp using this command:
@@ -827,7 +827,7 @@
                                                             #line 828 "CodeGeneratorScala.cpp"
   append(L"input(end) else 0\n");
   append(L"            end += 1\n");
-  append(L"            if (c1 >= 0xd800 && c1 < 0xdc000) {\n");
+  append(L"            if (c1 >= 0xd800 && c1 < 0xdc00) {\n");
   append(L"              end += 1\n");
   append(L"            }\n");
   append(L"            i -= 1\n");

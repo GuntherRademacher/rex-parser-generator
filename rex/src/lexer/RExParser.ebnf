@@ -183,6 +183,8 @@ option_specifier
         | 'NOTREE'                                                 <?rex tree=false;?>
         | 'LEXER'                                               <?rex nolexer=false;?>
         | 'NOLEXER'                                              <?rex nolexer=true;?>
+        | 'CODEPOINTS'                                        <?rex codepoints=true;?>
+        | 'NOCODEPOINTS'                                     <?rex codepoints=false;?>
         | 'CASE-SENSITIVE'                             <?rex setCaseSensitive(true);?>
         | 'CASE-INSENSITIVE'                          <?rex setCaseSensitive(false);?>
         | 'COMPRESS'       equ integer             <?rex compression = getInteger();?>

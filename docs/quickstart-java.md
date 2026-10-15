@@ -424,6 +424,26 @@ Now it can be run to actually evaluate arithmetic expressions specified in the f
 java Arithmetic "( 42 * 17 + 6 ) / 8 - -9"
 ```
 
+## Optional: Parse Codepoints Rather than UTF-16 Characters
+
+By default, the generated parser takes its input as a `CharSequence`. All offsets that it reports, e.g. the `begin` and `end` arguments passed to an `EventHandler`, or `ParseException.getBegin()`, are UTF-16 offsets then. Characters outside of the Basic Multilingual Plane occupy two `char` positions, and the lexer combines surrogate pairs while scanning.
+
+With command line option `-codepoints`, REx generates a Java parser that takes an `int[]` array of Unicode codepoints instead, similar to how option `-char` selects the input type for C++:
+
+```sh
+rex -java -codepoints -tree -main Arithmetic.ebnf
+```
+
+The generated code then differs in these points:
+
+- `initialize(int[] source, ...)` and the constructor accept the codepoint array. For convenience, there are also overloads that accept a `CharSequence` and convert it by calling `codePoints().toArray()`.
+- All offsets are codepoint offsets. This includes `EventHandler` events, `ParseException` positions, the `getTokenOffset()`/`getTokenEnd()` methods, trace output, and the column that `getErrorMessage` reports.
+- `getInput()` returns the `int[]` array, and `EventHandler.reset` (and `BottomUpEventHandler.reset`) take an `int[]` argument. Text can be extracted as `new String(input, begin, end - begin)`.
+
+The array must contain valid codepoints in the range 0 to 0x10FFFF. Codepoint 0 is treated like end of input, just as `'\0'` is with `CharSequence` input.
+
+Option `-codepoints` can be combined with `-tree`, `-trace`, `-main`, `-performance`, `-saxon`, `-basex`, `-interface`, and any of the parsing algorithms, but not with `-nolexer`.
+
 &nbsp;
 ---
 [⇦ Previous page](quickstart-haxe.md) &nbsp;&nbsp;│&nbsp;&nbsp; [⇧ Back to index](../README.md#-rex-parser-generator) &nbsp;&nbsp;│&nbsp;&nbsp; [Next page ⇨ ](quickstart-javascript.md)
