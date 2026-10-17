@@ -22,7 +22,7 @@ jobs:
       - name: Select g++ Version
         run: |
           ls /usr/bin | grep ^g++- | sort -V
-          
+
           if [ -n "${{ inputs.gcc_version }}" ]; then
             selected_gcc="${{ inputs.gcc_version }}"
             if ! ls /usr/bin/$selected_gcc &>/dev/null; then

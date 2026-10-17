@@ -97,7 +97,7 @@ public class Pass extends RuntimeException
       File cacheFile = new File(cachePath + fileName);
       if (cacheFile.exists())
       {
-        String cacheContent = new NamedFile(Paths.get(cacheFile.getCanonicalPath())).getContent();    
+        String cacheContent = new NamedFile(Paths.get(cacheFile.getCanonicalPath())).getContent();
         if (isSameCode(content, cacheContent))
         {
           runner.cleanup();
@@ -140,7 +140,7 @@ public class Pass extends RuntimeException
       throw new RuntimeException(e.getMessage(), e);
     }
   }
-  
+
   public static void assume(boolean b, Runner runner, String message)
   {
     if (! b)

@@ -205,7 +205,11 @@ public:~                                                      }
     virtual void nonterminal(~                                    print(stringType());
                              ~name, int begin, int end, int count) = 0;
     virtual void terminal(~                                       print(stringType());
-                          ~name, int begin, int end) = 0;
+                          ~name, int begin, int end) = 0;~        if (minimalAmbiguity)
+                                                                  {
+~
+    virtual void ambiguity(int begin, int end) = 0;~              }
+~
   };
 ~                                                               }
                                                               }
@@ -533,7 +537,7 @@ public:~                                                      }
 
     void nonterminal(~                                          print(stringType());
                      ~name, int begin, int end, int count)
-    {~                                                          if (useGlr)
+    {~                                                          if (rejectsAmbiguity())
                                                                 {
 ~
       if (count > top + 1)
@@ -556,7 +560,14 @@ public:~                                                      }
                   ~name, int begin, int end)
     {
       push(new Terminal(name, begin, end));
-    }
+    }~                                                          if (minimalAmbiguity)
+                                                                {
+~
+
+    void ambiguity(int begin, int end)
+    {
+    }~                                                          }
+~
 
     void serialize(EventHandler *e)
     {
@@ -609,7 +620,7 @@ public:~                                                      }
   class ParseException
   {
   private:
-    int begin, end, offending, expected, state;~              if (useGlr)
+    int begin, end, offending, expected, state;~              if (rejectsAmbiguity())
                                                               {
 ~
     bool ambiguousInput;~                                       if (tree)
@@ -623,7 +634,7 @@ public:~                                                      }
 
   protected:
     ParseException(int b, int e, int s, int o, int x)
-    : begin(b), end(e), offending(o), expected(x), state(s)~  if (useGlr)
+    : begin(b), end(e), offending(o), expected(x), state(s)~  if (rejectsAmbiguity())
                                                               {
                                                            ~,
       ambiguousInput(false)~                                    if (tree)
@@ -633,7 +644,7 @@ public:~                                                      }
 ~
     {
     }
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     ParseException(int b, int e~                                if (tree)
@@ -651,7 +662,7 @@ public:~                                                      }
     }
 ~                                                             }
 ~
-  public:~                                                    if (useGlr && tree)
+  public:~                                                    if (rejectsAmbiguity() && tree)
                                                               {
 ~
     ~~ParseException()
@@ -663,7 +674,7 @@ public:~                                                      }
     ~                                                         print(stringType());
     ~getMessage() const
     {
-      return ~                                                if (useGlr)
+      return ~                                                if (rejectsAmbiguity())
                                                               {
              ~ambiguousInput
            ? ~                                                  print(stringIntroducer());
@@ -675,7 +686,7 @@ public:~                                                      }
            : ~                                                print(stringIntroducer());
                              ~"syntax error";
     }
-~                                                             if (useGlr && tree)
+~                                                             if (rejectsAmbiguity() && tree)
                                                               {
 ~
     void serialize(EventHandler *eventHandler)
@@ -691,7 +702,13 @@ public:~                                                      }
     int getExpected() const {return expected;}~               if (useGlr)
                                                               {
 ~
-    int isAmbiguousInput() const {return ambiguousInput;}~    }
+    int isAmbiguousInput() const {return ~                      if (rejectsAmbiguity())
+                                                                {
+~ambiguousInput~                                                }
+                                                                else
+                                                                {
+~false~                              }
+~;}~                              }
 ~
   };
 ~                                                             /*
@@ -933,7 +950,24 @@ public:
     eventHandler->nonterminal(name, begin, end, count);
   }
 };
-~                                                             }
+~                                                               if (minimalAmbiguity)
+                                                                {
+~
+
+class AmbiguityEvent : public DeferredEvent
+{
+public:
+  AmbiguityEvent(DeferredEvent *link, int begin, int end)
+  : DeferredEvent(link, 0, begin, end)
+  {}
+
+  void execute(BottomUpEventHandler *eventHandler)
+  {
+    eventHandler->ambiguity(begin, end);
+  }
+};
+~                                                               }
+                                                              }
 ~
 class ParsingThread;
 
@@ -974,7 +1008,9 @@ void parse(int target, int initialState, ~                    if (tree)
     thread = threads.top();
     threads.pop();
     if (thread->accepted)
-    {
+    {~                                                        if (rejectsAmbiguity())
+                                                              {
+~
       ParsingThread *other = 0;
       while (! threads.empty())
       {
@@ -991,12 +1027,29 @@ void parse(int target, int initialState, ~                    if (tree)
       if (other != 0)
       {
         threads.push(other);
-        rejectAmbiguity(thread~                               if (tree)
-                                                              {
+        rejectAmbiguity(thread~                                 if (tree)
+                                                                {
                               ~, thread->deferredEvent, other->deferredEvent~
-                                                              }
+                                                                }
                               ~);
-      }~
+      }~                                                      }
+                                                              else
+                                                              {
+~
+      while (! threads.empty())
+      {
+        ParsingThread *other = threads.top();
+        threads.pop();
+        if (thread->e0 < other->e0)
+        {
+          delete thread;
+          thread = other;
+        }
+        else
+        {
+          thread = resolve(thread, other);
+        }
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -1013,21 +1066,40 @@ void parse(int target, int initialState, ~                    if (tree)
       return;
     }
 
-    if (! threads.empty())
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.empty())
     {
       if (*threads.top() == *thread)
       {
-        rejectAmbiguity(thread~                               if (tree)
-                                                              {
+        rejectAmbiguity(thread~                                 if (tree)
+                                                                {
                               ~, thread->deferredEvent, threads.top()->deferredEvent~
-                                                              }
+                                                                }
                               ~);
       }
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                        }
+                                                              else
                                                               {
+~    while (! threads.empty() && *threads.top() == *thread)
+    {
+      ParsingThread *other = threads.top();
+      threads.pop();
+      thread = resolve(thread, other);
+    }~                                                        }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
     else
-    {~                                                          if (tree)
+    {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.empty())
+    {~                                                          }
+                                                                if (tree)
                                                                 {
 ~
       if (thread->deferredEvent != 0)
@@ -1070,14 +1142,16 @@ void parse(int target, int initialState, ~                    if (tree)
     }
   }
 }
-
-void rejectAmbiguity(ParsingThread *&thread~                  if (tree)
+~                                                             if (rejectsAmbiguity())
                                                               {
+~
+void rejectAmbiguity(ParsingThread *&thread~                    if (tree)
+                                                                {
                                            ~, DeferredEvent *first, DeferredEvent *second~
-                                                              }
+                                                                }
                                            ~)
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   ParseTreeBuilder *treeBuilder = new ParseTreeBuilder();
   treeBuilder->reset(input);
@@ -1092,17 +1166,37 @@ void rejectAmbiguity(ParsingThread *&thread~                  if (tree)
   delete secondTree;
   treeBuilder->nonterminal(~                                    print(stringIntroducer());
                            ~"AMBIGUOUS", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, 2);~
-                                                              }
+                                                                }
 ~
   int begin = thread->stack->pos;
   int end = thread->e0;
   thread->cleanup();
-  throw ParseException(begin, end~                            if (tree)
-                                                              {
-                                 ~, treeBuilder~              }
+  throw ParseException(begin, end~                              if (tree)
+                                                                {
+                                 ~, treeBuilder~                }
                                  ~);
-}
+}~                                                            }
+                                                              else
+                                                              {
 ~
+ParsingThread *resolve(ParsingThread *thread, ParsingThread *other)
+{~                                                              if (tree)
+                                                                {
+~
+  int begin = thread->stack->pos;
+  for (StackNode *a = thread->stack, *b = other->stack; a != b && a != 0 && b != 0; a = a->link, b = b->link)
+  {
+    begin = a->pos;
+  }~                                                            }
+~
+  ParsingThread *winner = other->eventCount < thread->eventCount ? other : thread;
+  delete (winner == thread ? other : thread);~                  if (tree)
+                                                                {
+~
+  winner->addAmbiguity(begin, winner->e0);~                     }
+~
+  return winner;
+}~                                                             }
                                                             }
 
                                                             void PrintCpp::openThread()
@@ -1127,7 +1221,11 @@ public:
 ~
   DeferredCode *deferredCode;~                                }
 ~
-  int id;
+  int id;~                                                    if (minimalAmbiguity)
+                                                              {
+~
+  int eventCount;~                                            }
+~
 
   ParsingThread()
   : stack(0)
@@ -1145,7 +1243,11 @@ public:
                                                     ~, int target)
   {
     this->threads = &threads;
-    this->target = target;~                                   if (tree)
+    this->target = target;~                                   if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = 0;~                                          }
+                                                              if (tree)
                                                               {
 ~
     bw = e0;
@@ -1202,7 +1304,11 @@ public:
     this->action = action;
     accepted = other->accepted;
     target = other->target;
-    parser = other->parser;~                                  if (tree)
+    parser = other->parser;~                                  if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = other->eventCount;~                          }
+                                                              if (tree)
                                                               {
 ~
     bs = other->bs;
@@ -1234,13 +1340,23 @@ public:
                  ~;
     e~                                                          print(iString);
      ~ = other->e~                                              print(iString);
-                 ~;~                                         }
+                 ~;~                                          }
 ~
     end = other->end;
     return this;
   }
 
-  bool operator<(const ParsingThread &other)
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~
+  void addAmbiguity(int begin, int end)
+  {
+    if (eventHandler != 0)
+      deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+  }
+
+~                                                             }
+~  bool operator<(const ParsingThread &other)
   {
     int comp;
     if (accepted != other.accepted)
@@ -1700,7 +1816,7 @@ static std::~                                                   if (! parseChars
           catch (ParseException &pe)
           {~                                                      if (tree)
                                                                   {
-                                                                    if (useGlr)
+                                                                    if (rejectsAmbiguity())
                                                                     {
 ~
             if (pe.isAmbiguousInput())

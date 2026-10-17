@@ -74,9 +74,9 @@ declare variable $basex-known-failures as xs:string* :=
   "K2-ForExprWithout-42a",
   "K2-ForExprWithout-43a",
   "K2-ForExprWithout-44a",
-  
+
   (: BaseX treatment of xgc:leading-lone-slash :)
-  
+
   "PathExpr-10"
 );
 
@@ -162,7 +162,7 @@ declare function local:parse($path, $name, $query as fn() as xs:string, $expect-
           (if ($verbose) {$msg()}, $expected-fail)
         else
           ($msg(), local:msg(1, "expected syntax error has not occured"), $unexpected-fail)
-      else 
+      else
         if ($name = $known-failures) then
           ($msg(), local:msg(1, "test passed unexpectedly"), $unexpected-pass)
         else
@@ -223,7 +223,7 @@ declare function local:test-case($path, $test-case)
 declare function local:process($path)
 {
   if (matches($path, "\.xml$", "i")) then
-    let $doc := 
+    let $doc :=
       try
       {
         doc($path)/*
@@ -249,7 +249,7 @@ declare function local:process($path)
     else if (contains($language, "xpath") and matches($path, "\.xp[^.]*$", "i")) then
       let $query := fn() {unparsed-text($path)}
       return local:parse($path, (), $query, false())
-    else 
+    else
       ()
 };
 

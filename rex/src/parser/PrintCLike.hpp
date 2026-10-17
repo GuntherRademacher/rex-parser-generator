@@ -89,7 +89,8 @@ public:
     noLexer(false),
     codepoints(false),
     isLrParser(false),
-    useGlr(false)
+    useGlr(false),
+    minimalAmbiguity(false)
   {
     wFileName = aClassName;
     className = aClassName;
@@ -216,6 +217,7 @@ public:
   virtual const wchar_t *leftBrace() const {return L"\n{";}
   virtual const wchar_t *rightBrace() const {return L"\n}";}
   virtual const wchar_t *thiz() const {return L"";}
+  virtual const wchar_t *incrementOp() const {return L"++";}
   virtual const wchar_t *staticPrefix() const {return L"";}
   virtual const wchar_t *leftbracket() const {return L"[";}
   virtual const wchar_t *rightbracket() const {return L"]";}
@@ -236,6 +238,7 @@ public:
   void setCodepoints(bool c) {codepoints = c;}
   void setLrParser(bool l) {isLrParser = l;}
   void setUseGlr(bool l) {useGlr = l;}
+  bool rejectsAmbiguity() const {return useGlr && ! minimalAmbiguity;}
 
 protected:
   void printCase(const CompressedTokenSet *lookahead, size_t k, Node *c, int backtrackedCaseId);
@@ -301,6 +304,7 @@ protected:
     grammar = node;
     isLrParser = grammar->states != 0;
     useGlr = grammar->useGlr;
+    minimalAmbiguity = grammar->minimalAmbiguity;
     hasCustomCode = ! grammar->distinctCodeAnnotations.empty();
 
     setNoLexer(grammar->noLexer);
@@ -450,6 +454,7 @@ protected:
   bool codepoints;
   bool isLrParser;
   bool useGlr;
+  bool minimalAmbiguity;
 };
 
 #endif

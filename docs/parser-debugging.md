@@ -36,11 +36,11 @@ Sample lexer trace elements might look like this:
     <next state="3" offset="3" char="+" codepoint="43" class="4" result="'+'"/>
     <done result="'+'" begin="3" end="4"/>
   </tokenize>
-  ...  
+  ...
   <tokenize tokenset="1">
     <next state="2" offset="4" char="!" codepoint="33" class="0"/>
     <fail begin="4" end="4" state="2"/>
-  </tokenize>   
+  </tokenize>
  ```
 
 These are the details of a lexer trace:
@@ -79,14 +79,14 @@ This is a sample of LL parser trace elements:
 The details of an LL parser trace are:
 
  - `parse`: this element shows a parser event in the trace.
- - `startnonterminal`: this attribute shows the name of the nonterminal that is going to be processed. 
+ - `startnonterminal`: this attribute shows the name of the nonterminal that is going to be processed.
  - `input`: this attribute shows the current lookahead tokens.
  - `endnonterminal`: this attribute shows the name of a completed nonterminal.
  - `terminal`: this attribute show the name of a terminal that is being consumed.
 
 ## Parser Trace (LR Parsing)
 
-An LR parser is implemented by a state machine that maintains a stack. Its actions are called 
+An LR parser is implemented by a state machine that maintains a stack. Its actions are called
 
  - `shift`, which is pushing a single symbol onto the stack, and proceeding to a follow-up state,
  - `reduce`, which is popping groups of symbols and the next state off of the stack, and
@@ -110,7 +110,7 @@ An LR parser is implemented by a state machine that maintains a stack. Its actio
   <parse state="6" input="END" action="reduce" nonterminal="Term" count="1"/>
   <parse state="3" input="Term END" action="shift"/>
   <parse state="5" input="END" action="reduce" nonterminal="Expression" count="3"/>
-  <parse state="0" input="Expression END" action="accept"/>  
+  <parse state="0" input="Expression END" action="accept"/>
  ```
 
 The details of an LR parser trace are:

@@ -916,21 +916,40 @@ declare function p:parse-glr($input as xs:string,
       return
         if (count($longest-accept) eq 1) then
           $longest-accept?lexer-state
-        else
-          p:reject-ambiguity($longest-accept[1]~                if (tree)
-                                                                {
+        else~                                                     if (grammar->minimalAmbiguity)
+                                                                  {
+~
+          sort($longest-accept, (), function($t) {$t?created})[1]?lexer-state~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+          p:reject-ambiguity($longest-accept[1]~                    if (tree)
+                                                                    {
                                                ~, $longest-accept[2]~
-                                                                }
-                                               ~)
+                                                                    }
+                                               ~)~                }
+~
     else
       let $threads := (subsequence($threads, 1, $i - 1), subsequence($threads, $i + 1))
       let $other := if (exists($threads)) then $threads[p:next-thread($threads, 1, 2)] else ()
       return
-        if (exists($other) and p:thread-equals($thread, $other)) then
-          p:reject-ambiguity($thread~                           if (tree)
-                                                                {
-                                    ~, $other~                  }
-                                    ~)
+        if (exists($other) and p:thread-equals($thread, $other)) then~
+                                                                  if (grammar->minimalAmbiguity)
+                                                                  {
+~
+          let $j := p:next-thread($threads, 1, 2)
+          return
+            p:parse-glr($input, $target, $max-id, (subsequence($threads, 1, $j - 1), subsequence($threads, $j + 1), if ($other?created lt $thread?created) then $other else $thread))~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+          p:reject-ambiguity($thread~                             if (tree)
+                                                                  {
+                                    ~, $other~                    }
+                                    ~)~                         }
+~
         else
           let $thread := p:parse($input, $target, $max-id, $thread)
           let $lexer-state := $thread?lexer-state
@@ -944,21 +963,23 @@ declare function p:parse-glr($input as xs:string,
             else
               $lexer-state
 };
-
+~                                                               if (! grammar->minimalAmbiguity)
+                                                                {
+~
 (:~~
  : Raise an error for ambiguous input.
  :
- : @param $thread the parsing thread data.~                     if (tree)
-                                                                {
+ : @param $thread the parsing thread data.~                       if (tree)
+                                                                  {
 ~
- : @param $other the parsing thread data of the other thread.~  }
+ : @param $other the parsing thread data of the other thread.~    }
 ~
  : @return a lexer state containing an error element describing the ambiguity.
  :)
-declare function p:reject-ambiguity($thread as map(*)~          if (tree)
-                                                                {
+declare function p:reject-ambiguity($thread as map(*)~            if (tree)
+                                                                  {
                                                      ~, $other as map(*)~
-                                                                }
+                                                                  }
                                                      ~) as item()+
 {
   let $lexer-state := $thread?lexer-state
@@ -969,8 +990,8 @@ declare function p:reject-ambiguity($thread as map(*)~          if (tree)
     {
       attribute b {$thread?stack[last() - 2]},
       attribute e {$lexer-state[$p:e0]},
-      attribute ambiguous-input {true()}~                       if (tree)
-                                                                {
+      attribute ambiguous-input {true()}~                         if (tree)
+                                                                  {
                                         ~,
       let $first-tree := subsequence($lexer-state, $p:result)
       let $second-tree := subsequence($other?lexer-state, $p:result)
@@ -979,14 +1000,14 @@ declare function p:reject-ambiguity($thread as map(*)~          if (tree)
         <AMBIGUOUS>
           <ALTERNATIVE>{p:rewrite-ambiguity($first-tree, $shared, true())}</ALTERNATIVE>
           <ALTERNATIVE>{p:rewrite-ambiguity($second-tree, $shared, true())}</ALTERNATIVE>
-        </AMBIGUOUS>~                                           }
+        </AMBIGUOUS>~                                             }
 ~
     },
     subsequence($lexer-state, $p:error + 1)
   )
 };
-~                                                               if (tree)
-                                                                {
+~                                                                 if (tree)
+                                                                  {
 ~
 (:~~
  : Determine the number of elements that two threads have in common, from their fork history. The
@@ -1067,6 +1088,7 @@ declare function p:shared-run($nodes as node()*, $i as xs:integer, $last as xs:i
       p:shared-run($nodes, $i + 1, $last, $left)
 };
 ~                                                               }
+                                                              }
 ~
 (:~~
  : Construct a new map containing data for one parsing thread.
@@ -1184,9 +1206,7 @@ declare function p:parse($input as xs:string,
                      ~), ", lookback: ", string(($action idiv ~ print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
                                    ~) mod ~                     print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
                      ~),  ", argument: ", string($action idiv ~ print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
-                     ~)~
-    ~)),~
-                                                                */
+                     ~))),~                                     */
                                                                 if (trace)
                                                                 {
 ~
@@ -1380,7 +1400,8 @@ declare function p:parse($input as xs:string,
                                                                   whitespaceCalled = true;
                                                                 }
 ~
-            let $accept := $reduce eq $target and count($stack) eq 3
+            let $accept := ~                                    print(hasCustomCode ? L"$p:REDUCTION[$reduce + 1]" : L"$reduce");
+~ eq $target and count($stack) eq 3
             let $bs := if ($accept) then $bw else $bs
             let $es := if ($accept) then $lexer-state[$p:b1] else $es
             let $bw := if ($accept) then $es else $bw~          if (tree)
@@ -1390,7 +1411,8 @@ declare function p:parse($input as xs:string,
             let $lexer-state :=
             (
               subsequence($lexer-state, 1, $index - 1),
-              element {$p:NONTERMINAL[$reduce + 1]}
+              element {$p:NONTERMINAL[~                           print(hasCustomCode ? L"$p:REDUCTION[$reduce + 1]" : L"$reduce");
+~ + 1]}
               {
                 (: bs, es :)
                 subsequence($lexer-state, $index)

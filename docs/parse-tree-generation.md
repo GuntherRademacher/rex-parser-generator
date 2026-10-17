@@ -23,6 +23,7 @@ The following is explained in this document:
    - [`reset(input)`](#resetinput-1)
    - [`terminal(name, begin, end)`](#terminalname-begin-end-1)
    - [`nonterminal(input)`](#nonterminalinput)
+   - [`ambiguity(begin, end)`](#ambiguitybegin-end)
  - [Top-Down Parsing: `TopDownTreeBuilder` Class](#top-down-parsing-topdowntreebuilder-class)
  - [Bottom-Up Parsing: `ParseTreeBuilder` Class](#bottom-up-parsing-parsetreebuilder-class)
  - [Parse Tree Representation](#parse-tree-representation)
@@ -41,42 +42,42 @@ The `EventHandler` interface defines the communication between an LL parser and 
 ---
 
 ### `reset(input)`
-**Description:** Prepares the handler to process a new input.  
-- **Parameter:**  
-  `input` - The content to be parsed.  
+**Description:** Prepares the handler to process a new input.
+- **Parameter:**
+  `input` - The content to be parsed.
 
 ---
 
 ### `startNonterminal(name, begin)`
-**Description:** Signals the start of a non-terminal symbol in the input at a given position.  
-- **Parameters:**  
-  `name` - The name of the non-terminal symbol.  
-  `begin` - The starting position of the non-terminal in the input.  
+**Description:** Signals the start of a non-terminal symbol in the input at a given position.
+- **Parameters:**
+  `name` - The name of the non-terminal symbol.
+  `begin` - The starting position of the non-terminal in the input.
 
 ---
 
 ### `endNonterminal(name, end)`
-**Description:** Signals the end of a non-terminal symbol in the input at a given position.  
-- **Parameters:**  
-  `name` - The name of the non-terminal symbol.  
-  `end` - The ending position of the non-terminal in the input.  
+**Description:** Signals the end of a non-terminal symbol in the input at a given position.
+- **Parameters:**
+  `name` - The name of the non-terminal symbol.
+  `end` - The ending position of the non-terminal in the input.
 
 ---
 
 ### `terminal(name, begin, end)`
-**Description:** Reports the recognition of a terminal symbol in the input at the given position range.  
-- **Parameters:**  
-  `name` - The name of the terminal symbol.  
-  `begin` - The starting position of the terminal in the input.  
-  `end` - The ending position of the terminal in the input.  
+**Description:** Reports the recognition of a terminal symbol in the input at the given position range.
+- **Parameters:**
+  `name` - The name of the terminal symbol.
+  `begin` - The starting position of the terminal in the input.
+  `end` - The ending position of the terminal in the input.
 
 ---
 
 ### `whitespace(begin, end)`
-**Description:** Identifies a sequence of whitespace characters in the input.  
-- **Parameters:**  
-  `begin` - The starting position of the whitespace sequence in the input.  
-  `end` - The ending position of the whitespace sequence in the input.  
+**Description:** Identifies a sequence of whitespace characters in the input.
+- **Parameters:**
+  `begin` - The starting position of the whitespace sequence in the input.
+  `end` - The ending position of the whitespace sequence in the input.
 
 ---
 
@@ -96,28 +97,40 @@ The `BottomUpEventHandler` interface defines the communication between an LALR, 
 ---
 
 ### `reset(input)`
-**Description:** Prepares the handler to process a new input.  
-- **Parameter:**  
+**Description:** Prepares the handler to process a new input.
+- **Parameter:**
   `input` - The content to be parsed.
 
---- 
+---
 
 ### `terminal(name, begin, end)`
-**Description:** Reports the recognition of a terminal symbol in the grammar.  
-- **Parameters:**  
-  - `name` - The name of the terminal symbol.  
-  - `begin` - The starting position of the terminal in the input.  
-  - `end` - The ending position of the terminal in the input.  
+**Description:** Reports the recognition of a terminal symbol in the grammar.
+- **Parameters:**
+  - `name` - The name of the terminal symbol.
+  - `begin` - The starting position of the terminal in the input.
+  - `end` - The ending position of the terminal in the input.
 
---- 
+---
 
 ### `nonterminal(input)`
-**Description:** Reports the recognition of a nonterminal symbol in the input. 
-- **Parameters:**  
-  - `name` - The name of the nonterminal symbol.  
-  - `begin` - The starting position of the non-terminal in the input.  
-  - `end` - The ending position of the non-terminal in the input.  
-  - `count` - The number of child symbols (terminals or nonterminals) that make up this nonterminal.  
+**Description:** Reports the recognition of a nonterminal symbol in the input.
+- **Parameters:**
+  - `name` - The name of the nonterminal symbol.
+  - `begin` - The starting position of the non-terminal in the input.
+  - `end` - The ending position of the non-terminal in the input.
+  - `count` - The number of child symbols (terminals or nonterminals) that make up this nonterminal.
+
+---
+
+### `ambiguity(begin, end)`
+**Description:** Only present for parsers generated with `-ambiguity minimal` (see [Disambiguation Techniques](disambiguation-techniques.md#resolving-ambiguity-in-glr-parsers)). Reports that an ambiguity has been resolved by selecting one of the alternatives. The range from `begin` to `end` is an over-approximation of the ambiguous input: it contains the ambiguous part, but may start earlier, and it includes the lookahead token that had been read when the alternatives were merged.
+- The notification is delivered after the events of the selected alternative, and possibly after further events: the lookahead terminal, or, if the ambiguity is only detected at the end of the input, the enclosing nonterminals.
+- The events of the discarded alternatives are never delivered.
+- For more than two alternatives, more than one notification may be delivered.
+- `ParseTreeBuilder` ignores it.
+- **Parameters:**
+  - `begin` - The starting position of the range.
+  - `end` - The ending position of the range.
 
 ## Bottom-Up Parsing: `ParseTreeBuilder` Class
 
@@ -142,7 +155,7 @@ The base class for all nodes in the parse tree. It defines common properties and
   - `end`: The ending position of the symbol in the input.
 
 - **Abstract Method:**
-  - `send(EventHandler e)`  
+  - `send(EventHandler e)`
     Sends the symbol to an `EventHandler`, enabling traversal or processing of the parse tree.
 
 ---

@@ -95,7 +95,7 @@ Then press `Ctrl+Shift+V` (Windows/Linux) or `Cmd+Shift+V` (macOS) to toggle the
 
 Running the tests after building REx may help to confirm that a valid executable has been produced that meets the expectations.
 
-The tests are located in the `rex-tests` subfolder, and they come as a Gradle project that executes Java code invoking REx. They run the REx executable on sample grammars and compile and execute generated parsers on their repective target platform. This is however only done if the target platform is available: many tests are optional, because they require specific compilers to be available in the test execution environment. The Java-based tests are always executed, because their dependencies are resolved automatically from Maven Central. Tests where the target platform is unavailable will be skipped. 
+The tests are located in the `rex-tests` subfolder, and they come as a Gradle project that executes Java code invoking REx. They run the REx executable on sample grammars and compile and execute generated parsers on their repective target platform. This is however only done if the target platform is available: many tests are optional, because they require specific compilers to be available in the test execution environment. The Java-based tests are always executed, because their dependencies are resolved automatically from Maven Central. Tests where the target platform is unavailable will be skipped.
 
 The table below shows the compile and runtime commands that the tests will use.
 

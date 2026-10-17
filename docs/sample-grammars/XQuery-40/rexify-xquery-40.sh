@@ -63,10 +63,10 @@ rexify() {
     local with_basex="$7"
     local name="$(basename "$ebnf" .ebnf)"
     local class="${name//-/_}"
-    
+
     echo "...RExifying $html into $ebnf"
     java $BASEX_JVM org.basex.BaseX -bwith-update="$with_update" -bwith-full-text="$with_full_text" -bwith-basex="$with_basex" -bspecification-url="$html" -smethod=text "../$(basename "$0" .sh).xq" > "$ebnf"
-    
+
     echo "...generating parser for $ebnf in XQuery"
     rex $algorithm $lookahead -xquery -name "de/bottlecaps/rex/$name" "$ebnf"
     echo "...generating parser for $ebnf in Java"

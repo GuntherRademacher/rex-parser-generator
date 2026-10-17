@@ -167,6 +167,7 @@ public:
   virtual const wchar_t *stringIntroducer() const {return L"";}
   virtual const wchar_t *staticPrefix() const {return staticPrefixString.c_str();}
   virtual const wchar_t *semicolon() const {return L"";}
+  virtual const wchar_t *incrementOp() const {return L" += 1";}
   virtual const wchar_t *leftBrace() const {return L" {";}
   virtual const wchar_t *leftbracket() const {return L"(";}
   virtual const wchar_t *rightbracket() const {return L")";}

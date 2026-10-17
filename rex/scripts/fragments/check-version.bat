@@ -17,6 +17,6 @@ for /f "tokens=*" %%i in ('%VERSION_COMMAND% 2^>^&1') do (
 )
 
 echo This script is for %EXPECTED_VERSION%, but that could not be identified. Received this from command "%VERSION_COMMAND%"
-echo/ 
+echo/
 %VERSION_COMMAND%
 exit /b 1

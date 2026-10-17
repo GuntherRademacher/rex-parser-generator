@@ -1,5 +1,5 @@
                                         <?javascript-regex
-										  const { XmlXlLexer } = require('./XmlXlLexer');
+                                          const { XmlXlLexer } = require('./XmlXlLexer');
 
                                           function XmlXl(string, lexer)
                                           {

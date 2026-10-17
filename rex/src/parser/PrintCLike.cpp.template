@@ -2051,9 +2051,8 @@ if ~                                                              print(ifLeftPa
                                                                 }
                                                                 else
                                                                 {
-         ~input.substring(e.getBegin(), ~
-                                        ~Math.min(~               print(thiz());
-                                                  ~input.length, e.getBegin() + 64)~
+         ~input.substring(e.getBegin(), Math.min(~                print(thiz());
+                                                 ~input.length, e.getBegin() + 64)~
                                                                 }
                                         ~)
        + "...";
@@ -3586,6 +3585,13 @@ if ~                                                            print(ifLeftPare
   if ~                                                          print(ifLeftParen());
      ~nonterminalId < 0~                                        print(ifRightParen());
                                                                 printIndented(1, leftBrace());
+                                                                if (minimalAmbiguity)
+                                                                {
+~
+    ~                                                              print(thiz());
+    ~eventCount~                                                      print(incrementOp());
+                                                                      print(semicolon());
+                                                                }
                                                                 if (tree)
                                                                 {
 ~
@@ -3918,6 +3924,13 @@ if ~                                                            print(ifLeftPare
                                                                 {
 ~
   nonterminalId = reduce~                                         print(semicolon());
+                                                                }
+                                                                if (minimalAmbiguity)
+                                                                {
+~
+  ~                                                               print(thiz());
+  ~eventCount~                                                    print(incrementOp());
+                                                                  print(semicolon());
                                                                 }
                                                                 if (trace)
                                                                 {
@@ -5351,7 +5364,7 @@ if ~                                                            print(ifLeftPare
 ~
   ~                                                             if (isGo())
                                                                 {
-  ~panic(&ParseError{b, e, s, l, t~                               if (useGlr)
+  ~panic(&ParseError{b, e, s, l, t~                               if (rejectsAmbiguity())
                                                                   {
                                   ~, false~                         if (tree)
                                                                     {
@@ -5383,7 +5396,8 @@ if ~                                                            print(ifLeftPare
                                                               const wchar_t *clazz = useGlr ? L"StackNode" : className.c_str();
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                                openMethod(intType(), L"", L"lookback", L"int x, int y", false, clazz);
+~
+~                                                               openMethod(intType(), L"", L"lookback", L"int x, int y", false, clazz);
                                                                 const wchar_t *lookback = isGo() ? L"lookback" : L"LOOKBACK";
                                                                 print(leftBrace());
                                                                 increaseIndent();
@@ -5635,8 +5649,7 @@ for ~                                                                 print(ifLe
                                                                 if (isJavascript() && useGlr)
                                                                 {
  ~;~                                                            }
-~
-~                                                             }
+                                                              }
                                                             }
 
                                                             void PrintCLike::printLookaheadMethods(size_t lookaheadMethods, bool withWhitespace)
@@ -6104,9 +6117,8 @@ if ~                                                                print(isPyth
                                                                       if (isCpp() || isCSharp() || isPython() || (isJava() && codepoints))
                                                                       {
                                                                         print(thiz());
-                                                      ~input~
-                                                            ~[~         print(thiz());
-                                                              ~b0]~   }
+                                                      ~input[~          print(thiz());
+                                                             ~b0]~    }
                                                                       else
                                                                       {
                                                                         print(thiz());

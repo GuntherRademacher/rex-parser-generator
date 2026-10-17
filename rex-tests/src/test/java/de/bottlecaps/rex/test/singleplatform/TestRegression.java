@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -782,9 +781,9 @@ public class TestRegression extends AbstractSinglePlatformTest
       if (0 == runner.run(REX, commandLine, ebnf))
       {
         ensureGoAvailable(runner);
-  
+
         Pass.passEarlyIfPossible(runner, "file.go");
-        
+
         runner.setFolder(folder);
         if (0 != runner.run(GO, "mod init m")) throw new RuntimeException(runner.summary());
         if (0 == runner.run(GO, "build -buildvcs=false", main))
@@ -802,71 +801,119 @@ public class TestRegression extends AbstractSinglePlatformTest
     });
   }
 
+  // wraps A's tree into the S parse tree
+  private static String glalrTree(String a)
+  {
+    return "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S>" + a + "<TOKEN>x</TOKEN><EOF/></S>";
+  }
+
+  // exact language of the ordered choice, with expected trees
+  private static Map<String, String> glalrOrderedValid()
+  {
+    Map<String, String> valid = new LinkedHashMap<>();
+    valid.put("xx",   glalrTree("<A><C><D><TOKEN>x</TOKEN></D></C></A>"));
+    valid.put("yx",   glalrTree("<A><C><D><TOKEN>y</TOKEN></D></C></A>"));
+    valid.put("yxx",  glalrTree("<A><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></A>"));
+    valid.put("yyx",  glalrTree("<A><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></A>"));
+    valid.put("wxx",  glalrTree("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>x</TOKEN></D></C></B></A>"));
+    valid.put("wyx",  glalrTree("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>y</TOKEN></D></C></B></A>"));
+    valid.put("wyxx", glalrTree("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></B></A>"));
+    valid.put("wyyx", glalrTree("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></B></A>"));
+    return valid;
+  }
+
+  private static NamedFile glalrGrammar(String choice)
+  {
+    return new NamedFile
+    (
+      "S.ebnf",
+      "S ::= A 'x' EOF",
+      "A ::= B",
+      "    | C",
+      "D ::= 'x'",
+      "    | 'y'",
+      "B ::= 'w' ( C " + choice + " )",
+      "C ::= 'y'? D",
+      "<?TOKENS?>",
+      "EOF ::= $"
+    );
+  }
+
   @Test
   public void testGlalrOrderedChoiceConflictResolution()
   {
-    // ordered choice ( C / ) resolves the 'x' conflict - regression for a bogus FORK
-    NamedFile orderedChoice = new NamedFile
-    (
-      "S.ebnf",
-      "S ::= A 'x' EOF",
-      "A ::= B",
-      "    | C",
-      "D ::= 'x'",
-      "    | 'y'",
-      "B ::= 'w' ( C / )",
-      "C ::= 'y'? D",
-      "<?TOKENS?>",
-      "EOF ::= $"
-    );
-
-    // wraps A's tree into the S parse tree
-    Function<String, String> tree =
-        a -> "<?xml version=\"1.0\" encoding=\"UTF-8\"?><S>" + a + "<TOKEN>x</TOKEN><EOF/></S>";
-
-    // exact language, with expected trees
-    Map<String, String> orderedValid = new LinkedHashMap<>();
-    orderedValid.put("xx",   tree.apply("<A><C><D><TOKEN>x</TOKEN></D></C></A>"));
-    orderedValid.put("yx",   tree.apply("<A><C><D><TOKEN>y</TOKEN></D></C></A>"));
-    orderedValid.put("yxx",  tree.apply("<A><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></A>"));
-    orderedValid.put("yyx",  tree.apply("<A><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></A>"));
-    orderedValid.put("wxx",  tree.apply("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>x</TOKEN></D></C></B></A>"));
-    orderedValid.put("wyx",  tree.apply("<A><B><TOKEN>w</TOKEN><C><D><TOKEN>y</TOKEN></D></C></B></A>"));
-    orderedValid.put("wyxx", tree.apply("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>x</TOKEN></D></C></B></A>"));
-    orderedValid.put("wyyx", tree.apply("<A><B><TOKEN>w</TOKEN><C><TOKEN>y</TOKEN><D><TOKEN>y</TOKEN></D></C></B></A>"));
-
-    // 'wx' rejected: C wins over the empty alternative, leaving no 'x' for S
-    List<String> orderedInvalid = Arrays.asList("wx");
-
-    checkGlalrLanguage(orderedChoice,
-        "1 LALR(1)-conflict handled by GLALR processing",
-        orderedValid, orderedInvalid);
-
-    // unordered choice ( C | ): larger language, 'wx' now valid - conflict not resolved away
-    NamedFile unorderedChoice = new NamedFile
-    (
-      "S.ebnf",
-      "S ::= A 'x' EOF",
-      "A ::= B",
-      "    | C",
-      "D ::= 'x'",
-      "    | 'y'",
-      "B ::= 'w' ( C | )",
-      "C ::= 'y'? D",
-      "<?TOKENS?>",
-      "EOF ::= $"
-    );
-
-    Map<String, String> unorderedValid = new LinkedHashMap<>(orderedValid);
-    unorderedValid.put("wx", tree.apply("<A><B><TOKEN>w</TOKEN></B></A>"));
-
-    checkGlalrLanguage(unorderedChoice,
-        "2 LALR(1)-conflicts handled by GLALR processing",
-        unorderedValid, Collections.emptyList());
+    Pass.expectPass(() ->
+    {
+      // ordered choice ( C / ) resolves the 'x' conflict - regression for a bogus FORK
+      // 'wx' rejected: C wins over the empty alternative, leaving no 'x' for S
+      checkGlalrLanguage(glalrGrammar("/"),
+          "1 LALR(1)-conflict handled by GLALR processing",
+          glalrOrderedValid(), Arrays.asList("wx"));
+    });
   }
 
-  /** Generates a GLALR(1) parser, checks the conflict count, then parses every valid input,
-   *  compares its tree, and verifies that every invalid one is rejected.
+  @Test
+  public void testGlalrUnorderedChoiceConflictResolution()
+  {
+    Pass.expectPass(() ->
+    {
+      // unordered choice ( C | ): larger language, 'wx' now valid - conflict not resolved away
+      Map<String, String> valid = glalrOrderedValid();
+      valid.put("wx", glalrTree("<A><B><TOKEN>w</TOKEN></B></A>"));
+
+      checkGlalrLanguage(glalrGrammar("|"),
+          "2 LALR(1)-conflicts handled by GLALR processing",
+          valid, Collections.emptyList());
+    });
+  }
+
+  /**
+   * With code annotations and -tree, the XQuery and XSLT parsers used the index into the table of
+   * reductions as nonterminal number when creating a parse tree element, which resulted in an
+   * element with an empty name.
+   */
+  private static final NamedFile CODE_ANNOTATIONS_WITH_TREE = new NamedFile
+  (
+    "S.ebnf",
+    "S ::= X X                    <?xquery let $state := ($state, ())?>",
+    "                             <?xslt <xsl:variable name=\"state\" select=\"$state\"/>?>",
+    "X ::= B | C",
+    "B ::= 'x'",
+    "C ::= D",
+    "D ::= 'y'"
+  );
+
+  private static final String CODE_ANNOTATIONS_WITH_TREE_RESULT =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      + "<S><X><B><TOKEN>x</TOKEN></B></X><X><C><D><TOKEN>y</TOKEN></D></C></X></S>";
+
+  @Test
+  public void testXQueryCodeAnnotationsWithTree()
+  {
+    Pass.expectPass(() ->
+    {
+      Runner runner = runXQuerySaxon("-lalr 1 -tree -a xquery", "{xy}", CODE_ANNOTATIONS_WITH_TREE);
+      assertEquals(0, runner.getExitCode(), runner.summary());
+      assertEquals(CODE_ANNOTATIONS_WITH_TREE_RESULT, runner.getStdout().trim(), runner.summary());
+      Pass.passNormally(runner);
+    });
+  }
+
+  @Test
+  public void testXsltCodeAnnotationsWithTree()
+  {
+    Pass.expectPass(() ->
+    {
+      Runner runner = runXsltSaxon("-lalr 1 -tree -a xslt", "{xy}", CODE_ANNOTATIONS_WITH_TREE);
+      assertEquals(0, runner.getExitCode(), runner.summary());
+      assertEquals(CODE_ANNOTATIONS_WITH_TREE_RESULT, runner.getStdout().trim(), runner.summary());
+      Pass.passNormally(runner);
+    });
+  }
+
+  /** Generates a GLALR(1) parser, checks the conflict count, compiles it (using the cache), then
+   *  parses every valid input, compares its tree, and verifies that every invalid one is rejected.
+   *  Does not return normally: the test passes by throwing {@link Pass}.
    */
   private void checkGlalrLanguage(NamedFile grammar, String expectedConflictMessage,
       Map<String, String> valid, List<String> invalid)
@@ -879,7 +926,7 @@ public class TestRegression extends AbstractSinglePlatformTest
         runner.summary("expected conflict message: " + expectedConflictMessage));
 
     String className = className(runner.getArgs(), JAVAC);
-    runner.expectSuccess("Java compilation", JAVAC, "-encoding UTF-8 " + className + ".java");
+    runner.compile(className + ".java");
 
     for (Map.Entry<String, String> e : valid.entrySet())
     {
@@ -895,7 +942,7 @@ public class TestRegression extends AbstractSinglePlatformTest
       assertNotEquals(0, exitCode, runner.summary("input {" + input + "} should be rejected"));
     }
 
-    runner.cleanup();
+    Pass.passNormally(runner);
   }
 
 }

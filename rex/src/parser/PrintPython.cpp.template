@@ -179,7 +179,22 @@ class NonterminalEvent(DeferredEvent):
 
   def toString(self):
     return "nonterminal(" + self.name + ", " + str(self.begin) + ", " + str(self.end) + ", " + str(self.count) + ")"
+~                                                             if (minimalAmbiguity)
+                                                              {
+~
+
+class AmbiguityEvent(DeferredEvent):
+
+  def __init__(self, link, begin, end):
+    super().__init__(link, None, begin, end)
+
+  def execute(self, eventHandler):
+    eventHandler.ambiguity(self.begin, self.end)
+
+  def toString(self):
+    return "ambiguity(" + str(self.begin) + ", " + str(self.end) + ")"
 ~                                                             }
+                                                              }
 ~
 PARSING = 0
 ACCEPTED = 1
@@ -196,7 +211,9 @@ def parse(self, target, initialState, ~                       if (tree)
                                      ~, target)
   while True:
     thread = heapq.heappop(threads)[3]
-    if thread.accepted:
+    if thread.accepted:~                                        if (rejectsAmbiguity())
+                                                              {
+~
       other = None
       while len(threads) != 0:
         other = heapq.heappop(threads)[3]
@@ -208,7 +225,14 @@ def parse(self, target, initialState, ~                       if (tree)
                                                               {
                         ~, thread.deferredEvent, other.deferredEvent~
                                                               }
-                        ~)~                                   if (tree)
+                        ~)~                                      }
+                                                              else
+                                                              {
+~
+      while len(threads) != 0:
+        other = heapq.heappop(threads)[3]
+        thread = other if thread.e0 < other.e0 else self.resolve(thread, other)~          }
+                                                              if (tree)
                                                               {
 ~
       if thread.deferredEvent != None:
@@ -221,16 +245,30 @@ def parse(self, target, initialState, ~                       if (tree)
 ~
       return thread
 
-    if len(threads) != 0:
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if len(threads) != 0:
       if threads[0][3].equals(thread):
         self.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
                                                               {
                         ~, thread.deferredEvent, threads[0][3].deferredEvent~
                                                               }
-                        ~)~                                   if (tree || hasCustomCode)
+                        ~)~                                      }
+                                                              else
                                                               {
+~    while len(threads) != 0 and threads[0][3].equals(thread):
+      thread = self.resolve(thread, heapq.heappop(threads)[3])~          }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
-    else:~                                                      if (tree)
+    else:~                                                          }
+                                                                else
+                                                                {
+~
+    if len(threads) == 0:~                                        }
+                                                                if (tree)
                                                                 {
 ~
       if thread.deferredEvent != None:
@@ -268,7 +306,9 @@ def parse(self, target, initialState, ~                       if (tree)
                              ~thread.l1,~                     print(L"\n");
                                                               print(filler, L" ");
                              ~-1)
-
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~
 def rejectAmbiguity(self, begin, end~                         if (tree)
                                                               {
                              ~, first, second~                }
@@ -291,8 +331,29 @@ def rejectAmbiguity(self, begin, end~                         if (tree)
         ~.ParseException(begin, end, 1, -1, -1, True~         if (tree)
                                                               {
                                    ~, treeBuilder~            }
-                                   ~)
-~                                                           }
+                                   ~)~                              }
+                                                              else
+                                                              {
+~
+def resolve(self, thread, other):~                              if (tree)
+                                                              {
+~
+  a = thread.stack
+  b = other.stack
+  begin = a.pos
+  while a is not b and a is not None and b is not None:
+    begin = a.pos
+    a = a.link
+    b = b.link~                              }
+~
+  if other.eventCount < thread.eventCount:
+    thread = other~                              if (tree)
+                                                              {
+~
+  thread.addAmbiguity(begin, thread.e0)~                              }
+~
+  return thread~                              }
+                                                              }
 
                                                             void PrintPython::openThread()
                                                             {
@@ -304,7 +365,11 @@ class ParsingThread:
                              ~, eh~                           }
                              ~, t):
     self.accepted = False
-    self.target = t~                                          if (tree)
+    self.target = t~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    self.eventCount = 0~                                                  }
+                                                              if (tree)
                                                               {
 ~
     self.eventHandler = eh
@@ -336,7 +401,11 @@ class ParsingThread:
     self.action = action
     self.accepted = other.accepted
     self.target = other.target
-    self.parser = other.parser~                               if (tree)
+    self.parser = other.parser~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    self.eventCount = other.eventCount~                                                  }
+                                                              if (tree)
                                                               {
 ~
     self.bs = other.bs
@@ -371,7 +440,15 @@ class ParsingThread:
 ~
     self.end = other.end
     return self
-
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~
+  def addAmbiguity(self, begin, end):
+    if self.eventHandler != None:
+      self.deferredEvent = ~                              print(className.c_str());
+                           ~.AmbiguityEvent(self.deferredEvent, begin, end)
+~                                                             }
+~
   def equals(self, other):
     if self.accepted != other.accepted:
       return False
@@ -729,7 +806,7 @@ public interface ~                                            print(className.c_
 class ParseException(Exception):
 ~                                                             increaseIndent();
 ~
-def __init__(self, b, e, s, o, x~                             if (useGlr)
+def __init__(self, b, e, s, o, x~                             if (rejectsAmbiguity())
                                                               {
                                 ~, ambiguousInput = False~      if (tree)
                                                                 {
@@ -740,7 +817,7 @@ def __init__(self, b, e, s, o, x~                             if (useGlr)
   self.end = e
   self.state = s
   self.offending = o
-  self.expected = x~                                          if (useGlr)
+  self.expected = x~                                          if (rejectsAmbiguity())
                                                               {
 ~
   self.ambiguousInput = ambiguousInput~                         if (tree)
@@ -751,7 +828,7 @@ def __init__(self, b, e, s, o, x~                             if (useGlr)
 ~
 
 def error(self):
-  if ~                                                        if (useGlr)
+  if ~                                                        if (rejectsAmbiguity())
                                                               {
      ~self.ambiguousInput:
     return "ambiguous input"
@@ -763,7 +840,7 @@ def error(self):
 ~                                                             if (tree)
                                                               {
 ~
-def serialize(self, eventHandler):~                             if (useGlr)
+def serialize(self, eventHandler):~                             if (rejectsAmbiguity())
                                                                 {
 ~
   self.ambiguityDescriptor.serialize(eventHandler)~             }
@@ -790,7 +867,7 @@ def getExpected(self):
   return self.expected
 
 def isAmbiguousInput(self):
-  return ~                                                    if (useGlr)
+  return ~                                                    if (rejectsAmbiguity())
                                                               {
          ~self.ambiguousInput~                                }
                                                               else
@@ -998,7 +1075,7 @@ def reset(self, inputString):
   self.stack = []
 
 def nonterminal(self, name, begin, end, count):~
-                                                                  if (useGlr)
+                                                                  if (rejectsAmbiguity())
                                                                   {
 ~
   if count > len(self.stack):
@@ -1017,7 +1094,14 @@ def nonterminal(self, name, begin, end, count):~
 def terminal(self, name, begin, end):
   self.push(~                                                     print(className.c_str());
             ~.Terminal(name, begin, end))
+~                                                             if (minimalAmbiguity)
+                                                              {
+~
 
+def ambiguity(self, begin, end):
+  pass
+~                                                             }
+~
 def serialize(self, e):
   e.reset(self.input)
   for symbol in self.stack:
@@ -1161,7 +1245,7 @@ def main(args):
         b.serialize(s)~                                       }
 ~
       except ~                                                print(className.c_str());
-             ~.ParseException as pe:~                         if (useGlr && tree)
+             ~.ParseException as pe:~                         if (rejectsAmbiguity() && tree)
                                                               {
 ~
         if pe.isAmbiguousInput():

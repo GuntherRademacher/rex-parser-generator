@@ -970,13 +970,22 @@
         <xsl:when test="count($longest-accept) eq 1">
           <xsl:sequence select="$longest-accept?lexer-state"/>
         </xsl:when>
-        <xsl:otherwise>
+        <xsl:otherwise>~                                          if (grammar->minimalAmbiguity)
+                                                                  {
+~
+          <xsl:sequence select="sort($longest-accept, (), function($t) {$t?created})[1]?lexer-state"/>~
+                                                                  }
+                                                                  else
+                                                                  {
+~
           <xsl:sequence select="p:reject-ambiguity($longest-accept[1]~
-                                                                if (tree)
-                                                                {
+                                                                    if (tree)
+                                                                    {
                                                                      ~, $longest-accept[2]~
-                                                                }
-                                                                     ~)"/>
+                                                                    }
+                                                                     ~)"/>~
+                                                                  }
+~
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
@@ -984,13 +993,23 @@
       <xsl:variable name="threads" select="(subsequence($threads, 1, $i - 1), subsequence($threads, $i + 1))"/>
       <xsl:variable name="other" select="if (exists($threads)) then $threads[p:next-thread($threads, 1, 2)] else ()"/>
       <xsl:choose>
-        <xsl:when test="exists($other) and p:thread-equals($thread, $other)">
-          <xsl:sequence select="p:reject-ambiguity($thread~
-                                                                if (tree)
-                                                                {
+        <xsl:when test="exists($other) and p:thread-equals($thread, $other)">~
+                                                                  if (grammar->minimalAmbiguity)
+                                                                  {
+~
+          <xsl:variable name="j" select="p:next-thread($threads, 1, 2)"/>
+          <xsl:sequence select="p:parse-glr($input, $target, $max-id, (subsequence($threads, 1, $j - 1), subsequence($threads, $j + 1), if ($other?created lt $thread?created) then $other else $thread))"/>~
+                                                                  }
+                                                                  else
+                                                                  {
+~
+          <xsl:sequence select="p:reject-ambiguity($thread~         if (tree)
+                                                                    {
                                                           ~, $other~
-                                                                }
-                                                          ~)"/>
+                                                                    }
+                                                          ~)"/>~
+                                                                  }
+~
         </xsl:when>
         <xsl:otherwise>
           <xsl:variable name="thread" select="p:parse($input, $target, $max-id, $thread)"/>
@@ -1010,39 +1029,41 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:function>
-
+~                                                                 if (! grammar->minimalAmbiguity)
+                                                                  {
+~
 <!--~~
  ! Raise an error for ambiguous input.
  !
- ! @param $thread the parsing thread data.~                     if (tree)
-                                                                {
+ ! @param $thread the parsing thread data.~                         if (tree)
+                                                                    {
 ~
- ! @param $other the parsing thread data of the other thread.~  }
+ ! @param $other the parsing thread data of the other thread.~      }
 ~
  ! @return a lexer state containing an error element describing the ambiguity.
 -->
 <xsl:function name="p:reject-ambiguity" as="item()+">
-  <xsl:param name="thread" as="map(*)"/>~                       if (tree)
-                                                                {
+  <xsl:param name="thread" as="map(*)"/>~                           if (tree)
+                                                                    {
 ~
-  <xsl:param name="other" as="map(*)"/>~                        }
+  <xsl:param name="other" as="map(*)"/>~                            }
 ~
 
   <xsl:variable name="lexer-state" select="$thread?lexer-state"/>~
-                                                                if (tree)
-                                                                {
+                                                                    if (tree)
+                                                                    {
 ~
   <xsl:variable name="first-tree" select="subsequence($lexer-state, $p:result)"/>
   <xsl:variable name="second-tree" select="subsequence($other?lexer-state, $p:result)"/>
   <xsl:variable name="shared" select="p:shared-elements($thread?fork, $other?fork)"/>~
-                                                                }
+                                                                    }
 ~
   <xsl:variable name="node">
     <xsl:element name="error">
       <xsl:attribute name="b" select="$thread?stack[last() - 2]"/>
       <xsl:attribute name="e" select="$lexer-state[$p:e0]"/>
-      <xsl:attribute name="ambiguous-input" select="true()"/>~  if (tree)
-                                                                {
+      <xsl:attribute name="ambiguous-input" select="true()"/>~      if (tree)
+                                                                    {
 ~
       <xsl:element name="AMBIGUOUS">
         <xsl:element name="ALTERNATIVE">
@@ -1051,7 +1072,7 @@
         <xsl:element name="ALTERNATIVE">
           <xsl:sequence select="p:rewrite-ambiguity($second-tree, $shared, true())"/>
         </xsl:element>
-      </xsl:element>~                                           }
+      </xsl:element>~                                               }
 ~
     </xsl:element>
   </xsl:variable>
@@ -1061,8 +1082,8 @@
     subsequence($lexer-state, $p:error + 1)
   "/>
 </xsl:function>
-~                                                               if (tree)
-                                                                {
+~                                                                   if (tree)
+                                                                    {
 ~
 <!--~~
  ! Determine the number of elements that two threads have in common, from their fork history. The
@@ -1163,6 +1184,7 @@
   </xsl:choose>
 </xsl:function>
 ~                                                               }
+                                                              }
 ~
 <!--~~
  ! Construct a new map containing data for one parsing thread.
@@ -1286,8 +1308,7 @@
                      ~), ', lookback: ', string(($action idiv ~ print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
                                    ~) mod ~                     print(format.toString<wchar_t>(1 << grammar->states->dominoBits));
                      ~),  ', argument: ', string($action idiv ~ print(format.toString<wchar_t>(1 << (grammar->states->dominoBits + LrStates::actionBits)));
-                     ~)~
-      ~))"/>~
+                     ~)))"/>~
                                                                 */
                                                                 if (trace)
                                                                 {
@@ -1494,7 +1515,8 @@
                                                                   whitespaceCalled = true;
                                                                 }
 ~
-              <xsl:variable name="accept" select="$reduce eq $target and count($stack) eq 3"/>
+              <xsl:variable name="accept" select="~                              print(hasCustomCode ? L"$p:REDUCTION[$reduce + 1]" : L"$reduce");
+~ eq $target and count($stack) eq 3"/>
               <xsl:variable name="bs" select="if ($accept) then $bw else $bs"/>
               <xsl:variable name="es" select="if ($accept) then $lexer-state[$p:b1] else $es"/>
               <xsl:variable name="bw" select="if ($accept) then $es else $bw"/>~
@@ -1503,7 +1525,8 @@
 ~
               <xsl:variable name="index" select="if ($accept) then $p:result else p:first-child-node-index($lexer-state, count($lexer-state) + 1, $symbols)"/>
               <xsl:variable name="node">
-                <xsl:element name="{$p:NONTERMINAL[$reduce + 1]}">
+                <xsl:element name="{$p:NONTERMINAL[~                              print(hasCustomCode ? L"$p:REDUCTION[$reduce + 1]" : L"$reduce");
+~ + 1]}">
                   <xsl:sequence select="subsequence($lexer-state, $index)"/>
                 </xsl:element>
               </xsl:variable>

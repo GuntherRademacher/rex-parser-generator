@@ -54,7 +54,7 @@ Only allowed in syntax rules, and disallowed in lexical rules, are
 
 A name in the Grammar begins with a Unicode letter, and continues with zero or more Unicode letters or digits or additional name characters (see `Name` in the [Grammar for Parsing EBNF](grammar-for-parsing-ebnf.md) for details).
 
-The names are case-sensitive. Upper and lower case characters can be used, but no particular meaning is assigned to the case of characters. The names of syntax rules are mapped to names in the generated program. For some target languages, the case might be adapted automatically. 
+The names are case-sensitive. Upper and lower case characters can be used, but no particular meaning is assigned to the case of characters. The names of syntax rules are mapped to names in the generated program. For some target languages, the case might be adapted automatically.
 
 **Examples:**
 
@@ -64,7 +64,7 @@ Term
 Factor
 Number
 Letter
-Digit 
+Digit
 ```
 
 Names are used for nonterminal symbols in the syntax rules, and for tokens defined in the lexical definition.
@@ -89,13 +89,13 @@ Expression
 
 ## Terminal Symbols
 
-The terminal symbols, or tokens, of the grammar are 
+The terminal symbols, or tokens, of the grammar are
 
  - quoted string literals occurring in the syntax rules, enclosed in single quotes or double quotes. There is no escape notation for having the quote character withing the literal, so a literal cannot contain both a single quote and a double quote.
  - names occurring in the syntax rules, but not defined there. Any names that are not defined as nonterminals within the syntax rules are considered terminal names and must be defined in the lexical definition.
  - names (or string literals) that carry a suffix introduced by a caret `^`. These are used to distinguish a terminal name from an otherwise identical nonterminal name, or a terminal from another distinct terminal sharing the same definition.
 
-**Example:** 
+**Example:**
 
 ```
 '{' | '}' | "0" | "1" | Letter | Operator^Token
@@ -123,7 +123,7 @@ Integer ::= Digit Digit*
 
 ## Alternation
 
-Alternation denotes a choice between multiple options. It is represented by the vertical bar `|`. 
+Alternation denotes a choice between multiple options. It is represented by the vertical bar `|`.
 
 **Example:**
 
@@ -200,7 +200,7 @@ Digit ::= '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
 
 ## Annotation with Target Language Code
 
-Annotations with actions in target language code can be included 
+Annotations with actions in target language code can be included
 
  - before the syntax definition. Code placed here will be go to the beginning of the generated parser file. It must also contain the initial part of the generated program up to class declarations and constructors.
  - anywhere in a syntax rule. The action will be executed whenever the parser's control flow passes by its position in the rule.
@@ -350,7 +350,7 @@ Without using the lookahead, the content would include the two brackets near the
 
 ## Lookahead List
 
-In the lexical definition, a lookahead list can be used to ask for a list of tokens all to be followed by the same lookahead. 
+In the lexical definition, a lookahead list can be used to ask for a list of tokens all to be followed by the same lookahead.
 
 The specification begins with the name of a lexical rule (specifiying the lookahead) on the left hand side, followed by the `\\` operator, followed by one or more token names or literals on the right hand side. The lexer will only recognize the tokens in this list, when they are immediately followed by the given lookahead.
 
@@ -396,7 +396,7 @@ This is useful for case-insensitive languages, eliminating the need to enumerate
 
 For allowing the generated parser to skip whitespace implicitly, without having to specify its occurrences throughout the grammar, a whitespace definition rule can be used. This is accomplished by appending an annotation of `/*ws: definition*/` to the end of a rule. This annotation allows the parser to ignore matching whitespace between any two symbols of each syntax rule, unless the rule itself is annotated with `/*ws: explicit*/`.
 
-The rule annotated with `/*ws: definition*/` can be a lexical rule or a syntax rule. With a syntax rule, the whitespace definition can be recursive, which is not possible with a lexical rule. However when using a syntax rule, the tokens that whitespace may start with, must be distinct from any tokens used in non-whitespace rules. 
+The rule annotated with `/*ws: definition*/` can be a lexical rule or a syntax rule. With a syntax rule, the whitespace definition can be recursive, which is not possible with a lexical rule. However when using a syntax rule, the tokens that whitespace may start with, must be distinct from any tokens used in non-whitespace rules.
 
 Disallowing whitespace with `/*ws: explicit*/` only applies to the syntax section. There is no implicit whitespace handling in the lexical section. There is thus no need to annotate lexical rules with `/*ws: explicit*/`, as it is the only available option for them.
 

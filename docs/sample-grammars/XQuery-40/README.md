@@ -6,10 +6,10 @@ This folder contains the script used to adapt the grammars
 
  - from the [XQuery 4.0 specification](https://qt4cg.org/specifications/xquery-40/xquery-40.html) to the grammar file [XQuery-40.ebnf](../XQuery-40.ebnf) for creating an LALR(2) parser,
  - from [XQuery 4.0](https://qt4cg.org/specifications/xquery-40/xquery-40.html), [XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/), [XQuery and XPath Full Text 3.0](https://www.w3.org/TR/xpath-full-text-30/), and extensions made by [BaseX](https://basex.org/) to the grammar file [XQuery-Full-Text-Update-BaseX-40.ebnf](../XQuery-Full-Text-Update-BaseX-40.ebnf) for creating a GLALR(1) parser,
- 
+
  - from the [XPath 4.0 specification](https://qt4cg.org/specifications/xquery-40/xpath-40.html) to the grammar file [XPath-40.ebnf](../XPath-40.ebnf) for creating an LALR(1) parser.
 
-The transformation logic is implemented in XQuery and can be found in [rexify-xquery-40.xq](rexify-xquery-40.xq). It leverages several XQuery modules from the [RR](https://github.com/GuntherRademacher/rr) project. 
+The transformation logic is implemented in XQuery and can be found in [rexify-xquery-40.xq](rexify-xquery-40.xq). It leverages several XQuery modules from the [RR](https://github.com/GuntherRademacher/rr) project.
 
 The transformation process is automated via:
 

@@ -35,7 +35,7 @@ function ~                                                      print(className.
     var end = e;
     var state = s;
     var offending = o;
-    var expected = x;~                                        if (useGlr)
+    var expected = x;~                                        if (rejectsAmbiguity())
                                                               {
 ~
     var ambiguousInput = false;~                                if (tree)
@@ -50,7 +50,7 @@ function ~                                                      print(className.
     this.getState = function() {return state;};
     this.getExpected = function() {return expected;};
     this.getOffending = function() {return offending;};
-    this.isAmbiguousInput = function() {return ~              if (useGlr)
+    this.isAmbiguousInput = function() {return ~              if (rejectsAmbiguity())
                                                               {
                                                ~ambiguousInput~
                                                               }
@@ -58,7 +58,7 @@ function ~                                                      print(className.
                                                               {
                                                ~false~        }
                                                ~;};
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     this.setAmbiguousInput = function(a)
@@ -70,7 +70,7 @@ function ~                                                      print(className.
 ~
     this.getMessage = function()
     {
-      return ~                                                if (useGlr)
+      return ~                                                if (rejectsAmbiguity())
                                                               {
              ~ambiguousInput
            ? "ambiguous input"
@@ -78,7 +78,7 @@ function ~                                                      print(className.
              ~offending < 0
            ? "lexical analysis failed"
            : "syntax error";
-    };~                                                       if (useGlr)
+    };~                                                       if (rejectsAmbiguity())
                                                               {
 ~
 
@@ -164,7 +164,14 @@ flushTrace();~                                                }
 
   this.execute = function(eventHandler)
   {
-    if (count == null)
+    ~                                                           if (minimalAmbiguity)
+                                                                {
+    ~if (name == null)
+    {
+      eventHandler.ambiguity(begin, end);
+    }
+    else ~                                                      }
+         ~if (count == null)
     {
       eventHandler.terminal(name, begin, end);
     }
@@ -193,7 +200,9 @@ flushTrace();~                                                }
     }
     while (current != null);
   };
-
+~                                                               if (rejectsAmbiguity())
+                                                                {
+~
   this.show = function(eventHandler)
   {
     var stack = [];
@@ -206,7 +215,8 @@ flushTrace();~                                                }
       stack.pop().execute(eventHandler);
     }
   };
-
+~                                                               }
+~
   this.toString = function()
   {
     if (count == null)
@@ -411,7 +421,9 @@ function parse(target, initialState, ~                        if (tree)
   {
     thread = threads.poll();
     if (thread.getAccepted())
-    {
+    {~                                                        if (rejectsAmbiguity())
+                                                              {
+~
       var other = null;
       while (! threads.isEmpty())
       {
@@ -425,14 +437,22 @@ function parse(target, initialState, ~                        if (tree)
       if (other != null)
       {
         rejectAmbiguity(thread.getStack().pos, thread.getE0()~
-                                                              if (tree)
-                                                              {
+                                                                if (tree)
+                                                                {
                        ~, thread.getDeferredEvent(), other.getDeferredEvent()~
-                                                              }
+                                                                }
                        ~);
-      }~
-                                                              if (tree)
+      }~                                                      }
+                                                              else
                                                               {
+~
+      while (! threads.isEmpty())
+      {
+        var other = threads.poll();
+        thread = thread.getE0() < other.getE0() ? other : resolve(thread, other);
+      }~                                                      }
+                                                              if (tree)
+                                                               {
 ~
       thread.release();~                                      }
                                                               if (hasCustomCode)
@@ -443,22 +463,39 @@ function parse(target, initialState, ~                        if (tree)
       return thread;
     }
 
-    if (! threads.isEmpty())
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.isEmpty())
     {
       if (threads.peek().equals(thread))
       {
         rejectAmbiguity(thread.getStack().pos, thread.getE0()~
-                                                              if (tree)
-                                                              {
+                                                                if (tree)
+                                                                {
                        ~, thread.getDeferredEvent(), threads.peek().getDeferredEvent()~
-                                                              }
+                                                                }
                        ~);
       }
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                        }
+                                                              else
                                                               {
+~    while (! threads.isEmpty() && threads.peek().equals(thread))
+    {
+      thread = resolve(thread, threads.poll());
+    }~                                                        }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
     else
-    {~                                                          if (tree)
+    {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.isEmpty())
+    {~                                                          }
+                                                                if (tree)
                                                                 {
 ~
       thread.release();~                                        }
@@ -493,15 +530,17 @@ function parse(target, initialState, ~                        if (tree)
     }
   }
 }
-
-function rejectAmbiguity(begin, end~                        if (tree)
-                                                              {
-                                   ~, first, second~          }
-                                   ~)
-{~                                                            if (tree)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
-  var treeBuilder = new ~                                       print(className.c_str());
+function rejectAmbiguity(begin, end~                            if (tree)
+                                                                {
+                                   ~, first, second~            }
+                                   ~)
+{~                                                              if (tree)
+                                                                {
+~
+  var treeBuilder = new ~                                         print(className.c_str());
                         ~.ParseTreeBuilder();
   treeBuilder.reset(input);
   second.show(treeBuilder);
@@ -511,15 +550,41 @@ function rejectAmbiguity(begin, end~                        if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
-                                                              }
+                                                                }
 ~
   var exception = new thisParser.ParseException(begin, end, -1, -1, -1);
-  exception.setAmbiguousInput(~                               if (tree)
-                                                              {
-                              ~treeBuilder~                   }
+  exception.setAmbiguousInput(~                                 if (tree)
+                                                                {
+                              ~treeBuilder~                     }
                                           ~);
   throw exception;
-}
+}~                                                            }
+                                                              else
+                                                              {
+~
+function resolve(thread, other)
+{~                                                            if (tree)
+                                                              {
+~
+  var a = thread.getStack();
+  var b = other.getStack();
+  var begin = a.pos;
+  while (a !== b && a != null && b != null)
+  {
+    begin = a.pos;
+    a = a.link;
+    b = b.link;
+  }~                                                          }
+~
+  if (other.getEventCount() < thread.getEventCount())
+    thread = other;~                                          if (tree)
+                                                              {
+~
+  thread.addAmbiguity(begin, thread.getE0());~                                                              }
+~
+  return thread;
+}~                                                            }
+~
 
 var thread;~                                                  if (tree)
                                                               {
@@ -557,9 +622,17 @@ function ParsingThread()
 ~
   var deferredCode;~                                          }
 ~
-  var id;
+  var id;~                                                    if (minimalAmbiguity)
+                                                              {
+~
+  var eventCount;~                                            }
+~
 
-  this.getId = function() {return id;};
+  this.getId = function() {return id;};~                      if (minimalAmbiguity)
+                                                              {
+~
+  this.getEventCount = function() {return eventCount;};~      }
+~
   this.getAction = function() {return action;};
   this.getAccepted = function() {return accepted;};
   this.getThreads = function() {return threads};
@@ -594,7 +667,16 @@ function ParsingThread()
 ~
   this.getEs = function() {return es;};
   this.getEventHandler = function() {return eventHandler;};
-  this.getDeferredEvent = function() {return deferredEvent;};~
+  this.getDeferredEvent = function() {return deferredEvent;};~  if (minimalAmbiguity)
+                                                                {
+~
+  this.addAmbiguity = function(begin, end)
+  {
+    if (eventHandler != null)
+      deferredEvent = new ~                                       print(className.c_str());
+~.DeferredEvent(deferredEvent, null, begin, end);
+  };~                                                           }
+
                                                               }
                                                               if (hasCustomCode)
                                                               {
@@ -608,7 +690,11 @@ function ParsingThread()
                                    ~, t)
   {
     accepted = false;
-    target = t;~                                              if (tree)
+    target = t;~                                              if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = 0;~                                          }
+                                                              if (tree)
                                                               {
 ~
     if (eh != null)
@@ -651,7 +737,11 @@ function ParsingThread()
     end = other.getEnd();
     target = other.getTarget();
     bs = other.getBs();
-    bw = other.getBw();~                                      if (tree)
+    bw = other.getBw();~                                      if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = other.getEventCount();~                      }
+                                                              if (tree)
                                                               {
 ~
     es = other.getEs();
@@ -1221,7 +1311,7 @@ function main(args)
           throw pe;
         }
         else
-        {~                                                      if (useGlr && tree)
+        {~                                                      if (rejectsAmbiguity() && tree)
                                                                 {
 ~
           if (pe.isAmbiguousInput())
