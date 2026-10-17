@@ -20,7 +20,7 @@ class SymbolTableEntry
 public:
   SymbolTableEntry(const char *key, size_t size)
   : size(size),
-	rules(0),
+    rules(0),
     effectiveCharSet(0),
     trailingcontext(0),
     code(-1),

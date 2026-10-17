@@ -83,7 +83,7 @@ An identifier is usually defined as a letter, followed by more letters or other 
 Identifier ::= [a-zA-Z] [a-zA-Z0-9]*
 ```
 
-This already collides with `package`, `class`, `interface`, because these are sequences of letters. 
+This already collides with `package`, `class`, `interface`, because these are sequences of letters.
 
 For allowing the lexer to return a unique response, the keywords thus must be excluded from the identifier token. This can be accomplished by using the exclusion operator:
 

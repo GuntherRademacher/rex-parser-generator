@@ -28,7 +28,11 @@ export namespace ~                                              print(className.
   {
     reset(input: string): void;
     nonterminal(name: string, begin: number, end: number, count: number): void;
-    terminal(name: string, begin: number, end: number): void;
+    terminal(name: string, begin: number, end: number): void;~  if (minimalAmbiguity)
+                                                                {
+~
+    ambiguity(begin: number, end: number): void;~               }
+~
   }
 ~                                                             }
 ~
@@ -38,7 +42,7 @@ export namespace ~                                              print(className.
     private end: number;
     private state: number;
     private offending: number;
-    private expected: number;~                                if (useGlr)
+    private expected: number;~                                if (rejectsAmbiguity())
                                                               {
 ~
     private ambiguousInput: boolean;~                           if (tree)
@@ -55,7 +59,7 @@ export namespace ~                                              print(className.
       this.end = e;
       this.state = s;
       this.offending = o;
-      this.expected = x;~                                     if (useGlr)
+      this.expected = x;~                                     if (rejectsAmbiguity())
                                                               {
 ~
       this.ambiguousInput = false;~                             if (tree)
@@ -64,7 +68,7 @@ export namespace ~                                              print(className.
                                                               }
 ~
     }
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     setAmbiguousInput(~                                         if (tree)
@@ -85,7 +89,7 @@ export namespace ~                                              print(className.
     getState() {return this.state;}
     getExpected() {return this.expected;}
     getOffending() {return this.offending;}
-    isAmbiguousInput() {return ~                              if (useGlr)
+    isAmbiguousInput() {return ~                              if (rejectsAmbiguity())
                                                               {
                                ~this.ambiguousInput~          }
                                                               else
@@ -95,7 +99,7 @@ export namespace ~                                              print(className.
 
     getMessage()
     {
-      return ~                                                if (useGlr)
+      return ~                                                if (rejectsAmbiguity())
                                                               {
              ~this.ambiguousInput
            ? "ambiguous input"
@@ -103,7 +107,7 @@ export namespace ~                                              print(className.
              ~this.offending < 0
            ? "lexical analysis failed"
            : "syntax error";
-    }~                                                        if (useGlr && tree)
+    }~                                                        if (rejectsAmbiguity() && tree)
                                                               {
 ~
 
@@ -183,7 +187,9 @@ public parse(target: number, initialState: number, ~      if (tree)
   {
     thread = threads.poll();
     if (thread.accepted)
-    {
+    {~                                                        if (rejectsAmbiguity())
+                                                              {
+~
       var other = null;
       while (! threads.isEmpty())
       {
@@ -201,7 +207,15 @@ public parse(target: number, initialState: number, ~      if (tree)
                 ~, thread.deferredEvent!, other.deferredEvent!~
                                                               }
                 ~);
-      }~
+      }~                                                      }
+                                                              else
+                                                              {
+~
+      while (! threads.isEmpty())
+      {
+        var other = threads.poll();
+        thread = thread.e0 < other.e0 ? other : this.resolve(thread, other);
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -218,21 +232,38 @@ public parse(target: number, initialState: number, ~      if (tree)
       return thread;
     }
 
-    if (! threads.isEmpty())
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.isEmpty())
     {
       if (threads.peek().equals(thread))
       {
-        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
-                                                              {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~       if (tree)
+                                                                {
        ~, thread.deferredEvent!, threads.peek().deferredEvent!~
-                                                              }
+                                                                }
        ~);
       }
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                        }
+                                                              else
                                                               {
+~    while (! threads.isEmpty() && threads.peek().equals(thread))
+    {
+      thread = this.resolve(thread, threads.poll());
+    }~                                                      }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
     else
-    {~                                                          if (tree)
+    {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.isEmpty())
+    {~                                                          }
+                                                                if (tree)
                                                                 {
 ~
       if (thread.deferredEvent != null)
@@ -270,13 +301,15 @@ public parse(target: number, initialState: number, ~      if (tree)
     }
   }
 }
-
-private rejectAmbiguity(begin: number, end: number~           if (tree)
+~                                                             if (rejectsAmbiguity())
                                                               {
-             ~, first: DeferredEvent, second: DeferredEvent~  }
+~
+private rejectAmbiguity(begin: number, end: number~             if (tree)
+                                                                {
+             ~, first: DeferredEvent, second: DeferredEvent~    }
              ~): void
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   var treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(this.input);
@@ -287,15 +320,41 @@ private rejectAmbiguity(begin: number, end: number~           if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
-                                                              }
+                                                                }
 ~
   var exception = new ParseException(begin, end, -1, -1, -1);
-  exception.setAmbiguousInput(~                               if (tree)
-                                                              {
-                              ~treeBuilder~                   }
+  exception.setAmbiguousInput(~                                 if (tree)
+                                                                {
+                              ~treeBuilder~                     }
                               ~);
   throw exception;
-}
+}~                                                            }
+                                                              else
+                                                              {
+~
+private resolve(thread: ParsingThread, other: ParsingThread): ParsingThread
+{~                                                              if (tree)
+                                                                {
+~
+  var a: StackNode | null = thread.stack;
+  var b: StackNode | null = other.stack;
+  var begin = thread.stack.pos;
+  while (a != b && a != null && b != null)
+  {
+    begin = a.pos;
+    a = a.link;
+    b = b.link;
+  }~                                                            }
+~
+  if (other.eventCount < thread.eventCount)
+    thread = other;~                                            if (tree)
+                                                                {
+~
+  thread.addAmbiguity(begin, thread.e0);~                       }
+~
+  return thread;
+}~                                                            }
+~
 
 private thread!: ParsingThread;~                              if (tree)
                                                               {
@@ -401,7 +460,14 @@ class DeferredEvent
 
   execute(eventHandler: BottomUpEventHandler)
   {
-    if (this.count < 0)
+    ~                                                           if (minimalAmbiguity)
+                                                                {
+    ~if (this.count == -2)
+    {
+      eventHandler.ambiguity(this.begin, this.end);
+    }
+    else ~                                                      }
+         ~if (this.count < 0)
     {
       eventHandler.terminal(this.name, this.begin, this.end);
     }
@@ -534,7 +600,11 @@ class ParsingThread
 ~
   public deferredCode!: DeferredCode | null;~                 }
 ~
-  private id!: number;
+  private id!: number;~                                       if (minimalAmbiguity)
+                                                              {
+~
+  public eventCount!: number;~                                }
+~
 
   open(initialState: number~                                  if (tree)
                                                               {
@@ -542,7 +612,11 @@ class ParsingThread
                                                               }
                            ~): Heap
   {
-    this.accepted = false;~                                   if (tree)
+    this.accepted = false;~                                   if (minimalAmbiguity)
+                                                              {
+~
+    this.eventCount = 0;~                                     }
+                                                              if (tree)
                                                               {
 ~
     if (eventHandler != null)
@@ -582,7 +656,11 @@ class ParsingThread
     this.threads = other.threads;
     this.state = other.state;
     this.stack = other.stack;
-    this.end = other.end;~                                    if (tree)
+    this.end = other.end;~                                    if (minimalAmbiguity)
+                                                              {
+~
+    this.eventCount = other.eventCount;~                      }
+                                                              if (tree)
                                                               {
 ~
     this.bs = other.bs;
@@ -624,7 +702,16 @@ class ParsingThread
     if (! this.stack.equals(other.stack)) return false;
     return true;
   }
-~                                                             if (tree)
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~
+  addAmbiguity(begin: number, end: number)
+  {
+    if (this.eventHandler != null)
+      this.deferredEvent = new DeferredEvent(this.deferredEvent, "", begin, end, -2);
+  }
+~                                                             }
+                                                              if (tree)
                                                               {
 ~
   release()
@@ -1228,7 +1315,7 @@ else
     public getTop(): number {return this.top;}
 
     public nonterminal(name: string, begin: number, end: number, count: number): void
-    {~                                                            if (useGlr)
+    {~                                                            if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > this.top + 1)
@@ -1248,7 +1335,14 @@ else
     public terminal(name: string, begin: number, end: number): void
     {
       this.push(new Terminal(name, begin, end));
-    }
+    }~                                                            if (minimalAmbiguity)
+                                                                  {
+~
+
+    public ambiguity(begin: number, end: number): void
+    {
+    }~                                                            }
+~
 
     public serialize(e: ParsingEventHandler): void
     {
@@ -1486,7 +1580,7 @@ else
         throw pe;
       }
       else
-      {~                                                        if (useGlr && tree)
+      {~                                                        if (rejectsAmbiguity() && tree)
                                                                 {
 ~
         if (pe.isAmbiguousInput())

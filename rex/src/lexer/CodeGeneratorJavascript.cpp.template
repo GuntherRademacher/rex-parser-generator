@@ -489,7 +489,7 @@
   var input;
   var stack;
   var top;
-~                                                                 if (variable("useGlr").boolean())
+~                                                                 if (variable("useGlr").boolean() && ! variable("minimalAmbiguity").boolean())
                                                                   {
 ~
   this.getStack = function() {return stack;}
@@ -504,7 +504,7 @@
   };
 
   this.nonterminal = function(name, begin, end, count)
-  {~                                                              if (variable("useGlr").boolean())
+  {~                                                              if (variable("useGlr").boolean() && ! variable("minimalAmbiguity").boolean())
                                                                   {
 ~
     if (count > top + 1)
@@ -521,7 +521,14 @@
     this.push(new ~                                               print(variable("classname").string());
                   ~.Nonterminal(name, begin, end, this.pop(count)));
   };
-
+~                                                                 if (variable("useGlr").boolean() && variable("minimalAmbiguity").boolean())
+                                                                  {
+~
+  this.ambiguity = function(begin, end)
+  {
+  };
+~                                                                 }
+~
   this.terminal = function(name, begin, end)
   {
     this.push(new ~                                               print(variable("classname").string());

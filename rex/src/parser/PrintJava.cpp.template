@@ -258,7 +258,7 @@ public class ~                                                  print(className.
   ~
         }
         catch (ParseException pe)
-        {~                                                      if (useGlr && tree)
+        {~                                                      if (rejectsAmbiguity() && tree)
                                                                 {
 ~
           if (pe.isAmbiguousInput())
@@ -623,7 +623,7 @@ public class ~                                                  print(className.
       {
         if (e.getCause() instanceof IOException) throw (IOException) e.getCause();
         throw e;
-      }      
+      }
       return new DBNode(memBuilder.data());
     }
   }
@@ -897,7 +897,9 @@ private abstract static class DeferredEvent
     while (current != null);
   }
 
-  public void show(BottomUpEventHandler eventHandler)
+~                                                               if (rejectsAmbiguity())
+                                                                {
+~  public void show(BottomUpEventHandler eventHandler)
   {
     java.util.Stack<DeferredEvent> stack = new java.util.Stack<>();
     for (DeferredEvent current = this; current != null; current = current.link)
@@ -909,9 +911,33 @@ private abstract static class DeferredEvent
       stack.pop().execute(eventHandler);
     }
   }
+~                                                               }
+~}
+
+~                                                               if (minimalAmbiguity)
+                                                                {
+~public static class AmbiguityEvent extends DeferredEvent
+{
+  public AmbiguityEvent(DeferredEvent link, int begin, int end)
+  {
+    super(link, null, begin, end);
+  }
+
+  @Override
+  public void execute(BottomUpEventHandler eventHandler)
+  {
+    eventHandler.ambiguity(begin, end);
+  }
+
+  @Override
+  public String toString()
+  {
+    return "ambiguity(" + begin + ", " + end + ")";
+  }
 }
 
-public static class TerminalEvent extends DeferredEvent
+~                                                               }
+~public static class TerminalEvent extends DeferredEvent
 {
   public TerminalEvent(DeferredEvent link, String name, int begin, int end)
   {
@@ -974,7 +1000,9 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
   {
     thread = threads.poll();
     if (thread.accepted)
-    {
+    {~                                                        if (rejectsAmbiguity())
+                                                              {
+~
       ParsingThread other = null;
       while (! threads.isEmpty())
       {
@@ -987,12 +1015,20 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
       }
       if (other != null)
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
                         ~, thread.deferredEvent, other.deferredEvent~
-                                                              }
+                                                                }
                         ~);
-      }~
+      }~                                                      }
+                                                              else
+                                                              {
+~
+      while (! threads.isEmpty())
+      {
+        ParsingThread other = threads.poll();
+        thread = thread.e0 < other.e0 ? other : resolve(thread, other);
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -1009,7 +1045,9 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
       return thread;
     }
 
-    if (! threads.isEmpty())
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.isEmpty())
     {
       if (threads.peek().equals(thread))
       {
@@ -1019,11 +1057,26 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
                                                               }
                         ~);
       }
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                        }
+                                                              else
                                                               {
+~    while (! threads.isEmpty() && threads.peek().equals(thread))
+    {
+      thread = resolve(thread, threads.poll());
+    }~                                                        }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
     else
-    {~                                                          if (tree)
+    {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.isEmpty())
+    {~                                                          }
+                                                                if (tree)
                                                                 {
 ~
       if (thread.deferredEvent != null)
@@ -1061,14 +1114,16 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
     }
   }
 }
-
-private void rejectAmbiguity(int begin, int end~              if (tree)
+~                                                             if (rejectsAmbiguity())
                                                               {
+~
+private void rejectAmbiguity(int begin, int end~                if (tree)
+                                                                {
                              ~, DeferredEvent first, DeferredEvent second~
-                                                              }
+                                                                }
                              ~)
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   ParseTreeBuilder treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(input);
@@ -1079,13 +1134,39 @@ private void rejectAmbiguity(int begin, int end~              if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
   treeBuilder.push(secondTree);
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, 2);~
-                                                              }
+                                                                }
 ~
-  throw new ParseException(begin, end~                        if (tree)
-                                                              {
-                                     ~, treeBuilder~          }
+  throw new ParseException(begin, end~                          if (tree)
+                                                                {
+                                     ~, treeBuilder~            }
                                      ~);
-}
+}~                                                            }
+                                                              else
+                                                              {
+~
+private ParsingThread resolve(ParsingThread thread, ParsingThread other)
+{~                                                              if (tree)
+                                                                {
+~
+  StackNode a = thread.stack;
+  StackNode b = other.stack;
+  int begin = a.pos;
+  while (a != b && a != null && b != null)
+  {
+    begin = a.pos;
+    a = a.link;
+    b = b.link;
+  }~                                                            }
+~
+  if (other.eventCount < thread.eventCount)
+    thread = other;~                                            if (tree)
+                                                                {
+~
+  thread.addAmbiguity(begin, thread.e0);~                       }
+~
+  return thread;
+}~                                                            }
+~
 
 private ParsingThread thread = new ParsingThread();~          if (tree)
                                                               {
@@ -1129,7 +1210,11 @@ private class ParsingThread implements Comparable<ParsingThread>
 ~
   public DeferredCode deferredCode;~                          }
 ~
-  public int id;
+  public int id;~                                             if (minimalAmbiguity)
+                                                              {
+~
+  public int eventCount;~                                     }
+~
 
   public PriorityQueue<ParsingThread> open(int initialState~  if (tree)
                                                               {
@@ -1137,7 +1222,11 @@ private class ParsingThread implements Comparable<ParsingThread>
                          ~, int t)
   {
     accepted = false;
-    target = t;~                                              if (tree)
+    target = t;~                                              if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = 0;~                                          }
+                                                              if (tree)
                                                               {
 ~
     eventHandler = eh;
@@ -1149,7 +1238,7 @@ private class ParsingThread implements Comparable<ParsingThread>
                                                               if (hasCustomCode && useGlr)
                                                               {
 ~
-    deferredCode = null;~                                }
+    deferredCode = null;~                                     }
 ~
     stack = new StackNode(-1, ~
                                                               if (grammar->states->hasLookback)
@@ -1169,11 +1258,24 @@ private class ParsingThread implements Comparable<ParsingThread>
     return threads;
   }
 
-  public ParsingThread copy(ParsingThread other, int action)
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~  public void addAmbiguity(int begin, int end)
+  {
+    if (eventHandler != null)
+      deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+  }
+
+~                                                             }
+~  public ParsingThread copy(ParsingThread other, int action)
   {
     this.action = action;
     accepted = other.accepted;
-    target = other.target;~                                   if (tree)
+    target = other.target;~                                   if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = other.eventCount;~                           }
+                                                              if (tree)
                                                               {
 ~
     bs = other.bs;
@@ -1690,7 +1792,7 @@ public interface ~                                            print(className.c_
   public static class ParseException extends RuntimeException
   {
     private static final long serialVersionUID = 1L;
-    private int begin, end, offending, expected, state;~      if (useGlr)
+    private int begin, end, offending, expected, state;~      if (rejectsAmbiguity())
                                                               {
 ~
     private boolean ambiguousInput;~                            if (tree)
@@ -1706,13 +1808,13 @@ public interface ~                                            print(className.c_
       end = e;
       state = s;
       offending = o;
-      expected = x;~                                          if (useGlr)
+      expected = x;~                                          if (rejectsAmbiguity())
                                                               {
 ~
       ambiguousInput = false;~                                }
 ~
     }
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     public ParseException(int b, int e~                         if (tree)
@@ -1733,7 +1835,7 @@ public interface ~                                            print(className.c_
     @Override
     public String getMessage()
     {
-      return ~                                                if (useGlr)
+      return ~                                                if (rejectsAmbiguity())
                                                               {
              ~ambiguousInput
            ? "ambiguous input"
@@ -1746,7 +1848,7 @@ public interface ~                                            print(className.c_
                                                               {
 ~
     public void serialize(EventHandler eventHandler)
-    {~                                                          if (useGlr)
+    {~                                                          if (rejectsAmbiguity())
                                                                 {
 ~
       ambiguityDescriptor.serialize(eventHandler);~             }
@@ -1759,7 +1861,7 @@ public interface ~                                            print(className.c_
     public int getState() {return state;}
     public int getOffending() {return offending;}
     public int getExpected() {return expected;}
-    public boolean isAmbiguousInput() {return ~               if (useGlr)
+    public boolean isAmbiguousInput() {return ~               if (rejectsAmbiguity())
                                                               {
                                               ~ambiguousInput~
                                                               }
@@ -1916,7 +2018,11 @@ public interface ~                                            print(className.c_
     public void reset(~                                           print(inputType());
                       ~ string);
     public void nonterminal(String name, int begin, int end, int count);
-    public void terminal(String name, int begin, int end);
+    public void terminal(String name, int begin, int end);~       if (minimalAmbiguity)
+                                                                  {
+~
+    public void ambiguity(int begin, int end);~                   }
+~
   }
 ~                                                               }
                                                               }
@@ -2214,8 +2320,8 @@ public interface ~                                            print(className.c_
 
     @Override
     public void nonterminal(String name, int begin, int end, int count)
-    {~                                                          if (useGlr)
-                                                                {
+    {~                                                            if (rejectsAmbiguity())
+                                                                  {
 ~
       if (count > top + 1)
       {
@@ -2226,7 +2332,7 @@ public interface ~                                            print(className.c_
           push(symbol);
         }
         count = top + 1;
-      }~                                                        }
+      }~                                                          }
 ~
       push(new Nonterminal(name, begin, end, pop(count)));
     }
@@ -2235,7 +2341,15 @@ public interface ~                                            print(className.c_
     public void terminal(String name, int begin, int end)
     {
       push(new Terminal(name, begin, end));
-    }
+    }~                                                            if (minimalAmbiguity)
+                                                                  {
+~
+
+    @Override
+    public void ambiguity(int begin, int end)
+    {
+    }~                                                            }
+~
 
     public void serialize(EventHandler e)
     {

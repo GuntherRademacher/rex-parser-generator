@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:17 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sat Oct 17, 2026 11:26 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorScala.cpp.template
                                                             #line 1 "CodeGeneratorScala.cpp.template"
                                                             // generate CodeGeneratorScala.cpp using this command:

@@ -721,7 +721,8 @@ public:
     maxK(0),
     maxDistance(UNKNOWN),
     variant(0),
-    useGlr(false)
+    useGlr(false),
+    minimalAmbiguity(false)
   {}
 
   enum
@@ -869,6 +870,7 @@ public:
   int maxDistance;
   const wchar_t *variant;
   bool useGlr;
+  bool minimalAmbiguity;
 
   EmbeddedReduceItems embeddedReduceItems;
   std::vector<ProcessingInstruction *> distinctCodeAnnotations;

@@ -19,7 +19,8 @@ In addition to supporting lookaheads longer than a single token, REx provides me
 
  - [Token preference rules](#token-preference-rules)
  - [Lexical lookahead](#lexical-lookahead)
- - [Ordered alternation](#using-ordered-alternation) 
+ - [Ordered alternation](#using-ordered-alternation)
+ - [Resolving ambiguity in GLR parsers](#resolving-ambiguity-in-glr-parsers)
 
 ## Token Preference Rules
 
@@ -92,7 +93,7 @@ Sometimes during parser construction the distinction of alternatives cannot be d
 An example where this comes to help can be found in the specification of [XQuery](https://www.w3.org/TR/xquery-31/). It has [this rule](https://www.w3.org/TR/xquery-31/#id-path-expressions):
 
 ```
-PathExpr	   ::= ("/" RelativePathExpr?)         /* xgc: leading-lone-slash */
+PathExpr     ::= ("/" RelativePathExpr?)         /* xgc: leading-lone-slash */
                  | ("//" RelativePathExpr)
                  | RelativePathExpr
 ```
@@ -129,14 +130,18 @@ Fortunately the specification additionally has this ["extra-grammatical constrai
 Though this cannot be fed to REx as is, we can slightly change the grammar to resolve the conflicts. We will rewrite the "optional" operator `?` to a choice between `RelativePathExpr` and the empty alternative, and use an ordered alternation `/` for it:
 
 ```
-PathExpr	   ::= ("/" ( RelativePathExpr
-                        / 
+PathExpr     ::= ("/" ( RelativePathExpr
+                        /
                         )
                  | ("//" RelativePathExpr)
                  | RelativePathExpr
 ```
 
 The effect will be that during parser construction, the first alternative, `RelativePathExpr`, is preferred over the second, which is still used in cases where the lookahead is not suitable for the first one.
+
+## Resolving Ambiguity in GLR Parsers
+
+By default, GLR and GLALR parsers reject ambiguous input. With `-ambiguity minimal`, they instead select the alternative that results in the fewest parse events, i.e. the fewest terminals and nonterminals in the parse tree, whether or not `-tree` is given. The selection is reported to the application by the [`ambiguity(begin, end)`](parse-tree-generation.md#ambiguitybegin-end) event. Parsers generated in XQuery or XSLT have no event interface and make the same selection without notification.
 
 &nbsp;
 ---

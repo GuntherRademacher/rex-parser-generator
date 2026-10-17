@@ -165,7 +165,17 @@ private class NonterminalEvent(link: DeferredEvent, name: String, begin: Int, en
     eventHandler.nonterminal(name, begin, end, count)
   }
 }
+~                                                             if (minimalAmbiguity)
+                                                              {
+~
+
+private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, null, begin, end) {
+  override def execute(eventHandler: BottomUpEventHandler): Unit = {
+    eventHandler.ambiguity(begin, end)
+  }
+}
 ~                                                             }
+                                                              }
 ~
 private val PARSING = 0
 private val ACCEPTED = 1
@@ -193,7 +203,9 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                         ~, target)
   while (true) {
     thread = threads.dequeue()
-    if (thread.accepted) {
+    if (thread.accepted) {~                                      if (rejectsAmbiguity())
+                                                              {
+~
       var other: ~
                                                               print(className.c_str());
                  ~.ParsingThread = null
@@ -209,7 +221,15 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                                               {
                 ~, thread.deferredEvent, other.deferredEvent~
                                                               }
-                ~)~                                           if (tree)
+                ~)~                                              }
+                                                              else
+                                                              {
+~
+      while (! threads.isEmpty) {
+        val other = threads.dequeue()
+        thread = if (thread.e0 < other.e0) other else resolve(thread, other)
+      }~                                              }
+                                                              if (tree)
                                                               {
 ~
       if (thread.deferredEvent != null) {
@@ -224,16 +244,30 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
       return thread
     }
 
-    if (! threads.isEmpty) {
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.isEmpty) {
       if (threads.head == thread)
         rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
                                                               {
          ~, thread.deferredEvent, threads.head.deferredEvent~ }
          ~)
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                      }
+                                                              else
                                                               {
+~    while (! threads.isEmpty && threads.head == thread)
+      thread = resolve(thread, threads.dequeue())~                              }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
-    else {~                                                     if (tree)
+    else {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.isEmpty) {~                                                 }
+                                                                if (tree)
                                                                 {
 ~
       if (thread.deferredEvent != null) {
@@ -279,7 +313,9 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
   }
   thread
 }
-
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~
 def rejectAmbiguity(begin: Int, end: Int~                     if (tree)
                                                               {
           ~, first: ~                                           print(className.c_str());
@@ -307,8 +343,33 @@ def rejectAmbiguity(begin: Int, end: Int~                     if (tree)
                               ~treeBuilder~                   }
                               ~)
   throw exception
-}
-~                                                           }
+}~                                                            }
+                                                              else
+                                                              {
+~
+def resolve(thread: ~                                        print(className.c_str());
+                ~.ParsingThread, other: ~                              print(className.c_str());
+                                       ~.ParsingThread): ~                    print(className.c_str());
+                                                          ~.ParsingThread = {~          if (tree)
+                                                              {
+~
+  var a = thread.stack
+  var b = other.stack
+  var begin = a.pos
+  while ((a ne b) && a != null && b != null) {
+    begin = a.pos
+    a = a.link
+    b = b.link
+  }~                                                          }
+~
+  val result = if (other.eventCount < thread.eventCount) other else thread~                    if (tree)
+                                                              {
+~
+  result.addAmbiguity(begin, result.e0)~                                        }
+~
+  result
+}~                                                            }
+                                                            }
 
                                                             void PrintScala::openThread()
                                                             {
@@ -330,14 +391,22 @@ class ParsingThread extends Ordered[ParsingThread] {
 ~
   var deferredCode: DeferredCode = null~                      }
 ~
-  var id = 0
+  var id = 0~                                                     if (minimalAmbiguity)
+                                                              {
+~
+  var eventCount = 0~                                                     }
+~
 
   def open(initialState: Int~                                 if (tree)
                                                               {
                             ~, eh: BottomUpEventHandler~
                                                               }
                             ~, t: Int): PriorityQueue[ParsingThread] = {
-    accepted = false~                                         if (tree)
+    accepted = false~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = 0~                                                  }
+                                                              if (tree)
                                                               {
 ~
     eventHandler = eh
@@ -372,7 +441,11 @@ class ParsingThread extends Ordered[ParsingThread] {
   def copy(other: ParsingThread, action: Int): ParsingThread = {
     this.action = action
     accepted = other.accepted
-    parser = other.parser~                                    if (tree)
+    parser = other.parser~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = other.eventCount~                                                  }
+                                                              if (tree)
                                                               {
 ~
     bs = other.bs
@@ -423,7 +496,16 @@ class ParsingThread extends Ordered[ParsingThread] {
     comp
   }
 
-  override def equals(other: Any): Boolean =
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~
+  def addAmbiguity(begin: Int, end: Int): Unit = {
+    if (eventHandler != null)
+      deferredEvent = new AmbiguityEvent(deferredEvent, begin, end)
+  }
+
+~                                                             }
+~  override def equals(other: Any): Boolean =
     other match {
       case other: ParsingThread =>
         if (accepted != other.accepted) false
@@ -638,7 +720,7 @@ class ParsingThread extends Ordered[ParsingThread] {
 ~
         }
         catch {
-          case pe: ParseException =>~                         if (useGlr && tree)
+          case pe: ParseException =>~                         if (rejectsAmbiguity() && tree)
                                                               {
 ~
             if (pe.isAmbiguousInput) {
@@ -893,7 +975,7 @@ public interface ~                                            print(className.c_
                                                             {
 ~
   class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     private var ambiguousInput = false~                         if (tree)
@@ -917,17 +999,23 @@ public interface ~                                            print(className.c_
                                                               }
 ~
     override def getMessage = {
-      ~                                                       if (useGlr)
+      ~                                                       if (rejectsAmbiguity())
                                                               {
       ~if (ambiguousInput) "ambiguous input" else ~           }
       ~if (offending < 0) "lexical analysis failed" else "syntax error"
-    }~                                                        if (useGlr)
+    }~                                                  if (useGlr)
                                                               {
 ~
 
     def isAmbiguousInput: Boolean =
-      ambiguousInput~                                           if (tree)
-                                                                {
+      ~                                                  if (rejectsAmbiguity())
+                                                              {
+      ~ambiguousInput~                                        }
+                                                              else
+                                                              {
+      ~false~                                        }
+                                                              if (rejectsAmbiguity() && tree)
+                                                              {
 ~
 
     def serialize(eventHandler: EventHandler): Unit = {
@@ -1054,7 +1142,11 @@ public interface ~                                            print(className.c_
   trait BottomUpEventHandler {
     def reset(string: String): Unit
     def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit
+    def terminal(name: String, begin: Int, end: Int): Unit~                  if (minimalAmbiguity)
+                                                              {
+~
+    def ambiguity(begin: Int, end: Int): Unit~                  }
+~
   }
 ~                                                               }
 
@@ -1163,7 +1255,7 @@ public interface ~                                            print(className.c_
     }
 
     override def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit = {~
-                                                                  if (useGlr)
+                                                                  if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > top + 1) {
@@ -1186,7 +1278,13 @@ public interface ~                                            print(className.c_
     override def terminal(name: String, begin: Int, end: Int): Unit = {
       push(new Terminal(name, begin, end))
     }
-
+~                                                             if (minimalAmbiguity)
+                                                              {
+~
+    override def ambiguity(begin: Int, end: Int): Unit = {
+    }
+~                                                             }
+~
     def serialize(e: EventHandler): Unit = {
       e.reset(input)
       var i = 0

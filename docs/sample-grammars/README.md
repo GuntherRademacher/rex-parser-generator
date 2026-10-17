@@ -56,7 +56,7 @@ This grammar was extracted by [RR][rr] from W3C Recommendation [RDF 1.1. Turtle]
 ## Sample Grammar: [XML.ebnf](XML.ebnf)
 
 This XML grammar is based on a grammar extracted by [RR][rr] from W3C Recommendation [Extensible Markup Language (XML) 1.0](https://www.w3.org/TR/xml/). The grammar is sLL(3).
- 
+
 ## Sample Grammar: [XPath-20.ebnf](XPath-20.ebnf)
 
 This grammar was extracted by [RR][rr] from W3C Recommendation [XML Path Language (XPath) 2.0](https://www.w3.org/TR/2010/REC-xpath20-20101214/), and tweaked for working with REx. It is sLL(2).
@@ -83,7 +83,7 @@ This grammar was created from the W3C Editor's Draft [XML Path Language (XPath) 
 
 ## Sample Grammar: [XQuery-Update-10.ebnf](XQuery-Update-10.ebnf)
 
-This grammar was extracted by [RR][rr] from W3C Recommendation [XQuery Update Facility 1.0](https://www.w3.org/TR/2011/REC-xquery-update-10-20110317/), and tweaked to fit REx LL(3) parsing. 
+This grammar was extracted by [RR][rr] from W3C Recommendation [XQuery Update Facility 1.0](https://www.w3.org/TR/2011/REC-xquery-update-10-20110317/), and tweaked to fit REx LL(3) parsing.
 
 ## Sample Grammar: [EcmaScript-5.ebnf](EcmaScript-5.ebnf)
 

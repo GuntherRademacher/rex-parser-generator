@@ -82,7 +82,7 @@ public class RExRunner
                 ? false
                 : propertyValue.isEmpty() ? true
                                           : Boolean.parseBoolean(propertyValue);
-    
+
     Runner runner = new RExRunner().new Runner(false);
 
     JAVA = executableName(runner, "java");

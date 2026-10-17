@@ -144,6 +144,7 @@ public:
   virtual const wchar_t *boolVar() const {return L"bool";}
   virtual const wchar_t *stringIntroducer() const {return L"";}
   virtual const wchar_t *semicolon() const {return L"";}
+  virtual const wchar_t *incrementOp() const {return L" += 1";}
   virtual const wchar_t *ifLeftParen() const {return L"";}
   virtual const wchar_t *ifRightParen() const {return L":";}
   virtual const wchar_t *elseWithBraces() const {return L"else:";}

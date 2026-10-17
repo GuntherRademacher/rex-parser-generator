@@ -1,4 +1,4 @@
-// This file was generated on Sat May 30, 2026 10:47 (UTC+02) by REx v6.2 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sat Oct 17, 2026 11:26 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintJavascript.cpp.template
                                                             #line 1 "PrintJavascript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -63,7 +63,7 @@
   append(L"    var offending = o;\n");
   append(L"    var expected = x;");
                                                             #line 38 "PrintJavascript.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 69 "PrintJavascript.cpp"
   append(L"\n");
@@ -87,7 +87,7 @@
   append(L"    this.getOffending = function() {return offending;};\n");
   append(L"    this.isAmbiguousInput = function() {return ");
                                                             #line 53 "PrintJavascript.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 93 "PrintJavascript.cpp"
   append(L"ambiguousInput");
@@ -102,7 +102,7 @@
                                                             #line 103 "PrintJavascript.cpp"
   append(L";};\n");
                                                             #line 61 "PrintJavascript.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 108 "PrintJavascript.cpp"
   append(L"\n");
@@ -119,7 +119,7 @@
   append(L"    {\n");
   append(L"      return ");
                                                             #line 73 "PrintJavascript.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 125 "PrintJavascript.cpp"
   append(L"ambiguousInput\n");
@@ -133,7 +133,7 @@
   append(L"           : \"syntax error\";\n");
   append(L"    };");
                                                             #line 81 "PrintJavascript.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 139 "PrintJavascript.cpp"
   append(L"\n");
@@ -256,7 +256,20 @@
   append(L"\n");
   append(L"  this.execute = function(eventHandler)\n");
   append(L"  {\n");
-  append(L"    if (count == null)\n");
+  append(L"    ");
+                                                            #line 167 "PrintJavascript.cpp.template"
+                                                                if (minimalAmbiguity)
+                                                                {
+                                                            #line 264 "PrintJavascript.cpp"
+  append(L"if (name == null)\n");
+  append(L"    {\n");
+  append(L"      eventHandler.ambiguity(begin, end);\n");
+  append(L"    }\n");
+  append(L"    else ");
+                                                            #line 173 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 272 "PrintJavascript.cpp"
+  append(L"if (count == null)\n");
   append(L"    {\n");
   append(L"      eventHandler.terminal(name, begin, end);\n");
   append(L"    }\n");
@@ -285,6 +298,10 @@
   append(L"    }\n");
   append(L"    while (current != null);\n");
   append(L"  };\n");
+                                                            #line 203 "PrintJavascript.cpp.template"
+                                                                if (rejectsAmbiguity())
+                                                                {
+                                                            #line 305 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.show = function(eventHandler)\n");
   append(L"  {\n");
@@ -298,6 +315,9 @@
   append(L"      stack.pop().execute(eventHandler);\n");
   append(L"    }\n");
   append(L"  };\n");
+                                                            #line 218 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 321 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.toString = function()\n");
   append(L"  {\n");
@@ -307,13 +327,13 @@
   append(L"      return \"nonterminal(\" + name + \", \" + begin + \", \" + end + \", \" + count + \")\";\n");
   append(L"  };\n");
   append(L"};\n");
-                                                            #line 218 "PrintJavascript.cpp.template"
+                                                            #line 228 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 313 "PrintJavascript.cpp"
+                                                            #line 333 "PrintJavascript.cpp"
   append(L"\n");
-                                                            #line 220 "PrintJavascript.cpp.template"
+                                                            #line 230 "PrintJavascript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 317 "PrintJavascript.cpp"
+                                                            #line 337 "PrintJavascript.cpp"
   append(L".Heap = function()\n");
   append(L"{\n");
   append(L"  var array = [];\n");
@@ -377,18 +397,18 @@
   append(L"    return size == 0;\n");
   append(L"  };\n");
   append(L"};\n");
-                                                            #line 284 "PrintJavascript.cpp.template"
+                                                            #line 294 "PrintJavascript.cpp.template"
                                                             }
 
                                                             void PrintJavascript::printXmlSerializer()
                                                             {
                                                               if (tree)
                                                               {
-                                                            #line 388 "PrintJavascript.cpp"
+                                                            #line 408 "PrintJavascript.cpp"
   append(L"\n");
-                                                            #line 291 "PrintJavascript.cpp.template"
+                                                            #line 301 "PrintJavascript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 392 "PrintJavascript.cpp"
+                                                            #line 412 "PrintJavascript.cpp"
   append(L".XmlSerializer = function(log, indent)\n");
   append(L"{\n");
   append(L"  var input = null;\n");
@@ -487,44 +507,49 @@
   append(L"    }\n");
   append(L"  }\n");
   append(L"};\n");
-                                                            #line 390 "PrintJavascript.cpp.template"
+                                                            #line 400 "PrintJavascript.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintJavascript::openThread()
                                                             {
-                                                            #line 497 "PrintJavascript.cpp"
+                                                            #line 517 "PrintJavascript.cpp"
   append(L"\n");
   append(L"var PARSING = 0;\n");
   append(L"var ACCEPTED = 1;\n");
   append(L"var ERROR = 2;\n");
   append(L"\n");
   append(L"function parse(target, initialState, ");
-                                                            #line 400 "PrintJavascript.cpp.template"
+                                                            #line 410 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 507 "PrintJavascript.cpp"
+                                                            #line 527 "PrintJavascript.cpp"
   append(L"eventHandler, ");
-                                                            #line 403 "PrintJavascript.cpp.template"
+                                                            #line 413 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 511 "PrintJavascript.cpp"
+                                                            #line 531 "PrintJavascript.cpp"
   append(L"thread)\n");
   append(L"{\n");
   append(L"  var threads = thread.open(initialState");
-                                                            #line 406 "PrintJavascript.cpp.template"
+                                                            #line 416 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 518 "PrintJavascript.cpp"
+                                                            #line 538 "PrintJavascript.cpp"
   append(L", eventHandler");
-                                                            #line 408 "PrintJavascript.cpp.template"
+                                                            #line 418 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 522 "PrintJavascript.cpp"
+                                                            #line 542 "PrintJavascript.cpp"
   append(L", target);\n");
   append(L"  for (;;)\n");
   append(L"  {\n");
   append(L"    thread = threads.poll();\n");
   append(L"    if (thread.getAccepted())\n");
-  append(L"    {\n");
+  append(L"    {");
+                                                            #line 424 "PrintJavascript.cpp.template"
+                                                              if (rejectsAmbiguity())
+                                                              {
+                                                            #line 552 "PrintJavascript.cpp"
+  append(L"\n");
   append(L"      var other = null;\n");
   append(L"      while (! threads.isEmpty())\n");
   append(L"      {\n");
@@ -538,80 +563,117 @@
   append(L"      if (other != null)\n");
   append(L"      {\n");
   append(L"        rejectAmbiguity(thread.getStack().pos, thread.getE0()");
-                                                            #line 428 "PrintJavascript.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 545 "PrintJavascript.cpp"
+                                                            #line 440 "PrintJavascript.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 570 "PrintJavascript.cpp"
   append(L", thread.getDeferredEvent(), other.getDeferredEvent()");
-                                                            #line 431 "PrintJavascript.cpp.template"
-                                                              }
-                                                            #line 549 "PrintJavascript.cpp"
+                                                            #line 443 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 574 "PrintJavascript.cpp"
   append(L");\n");
   append(L"      }");
-                                                            #line 434 "PrintJavascript.cpp.template"
-                                                              if (tree)
+                                                            #line 445 "PrintJavascript.cpp.template"
+                                                              }
+                                                              else
                                                               {
-                                                            #line 555 "PrintJavascript.cpp"
+                                                            #line 581 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"      while (! threads.isEmpty())\n");
+  append(L"      {\n");
+  append(L"        var other = threads.poll();\n");
+  append(L"        thread = thread.getE0() < other.getE0() ? other : resolve(thread, other);\n");
+  append(L"      }");
+                                                            #line 453 "PrintJavascript.cpp.template"
+                                                              }
+                                                              if (tree)
+                                                               {
+                                                            #line 592 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      thread.release();");
-                                                            #line 437 "PrintJavascript.cpp.template"
+                                                            #line 457 "PrintJavascript.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 562 "PrintJavascript.cpp"
+                                                            #line 599 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
-                                                            #line 441 "PrintJavascript.cpp.template"
+                                                            #line 461 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 567 "PrintJavascript.cpp"
+                                                            #line 604 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      return thread;\n");
   append(L"    }\n");
   append(L"\n");
+                                                            #line 466 "PrintJavascript.cpp.template"
+                                                              if (rejectsAmbiguity())
+                                                              {
+                                                            #line 612 "PrintJavascript.cpp"
   append(L"    if (! threads.isEmpty())\n");
   append(L"    {\n");
   append(L"      if (threads.peek().equals(thread))\n");
   append(L"      {\n");
   append(L"        rejectAmbiguity(thread.getStack().pos, thread.getE0()");
-                                                            #line 451 "PrintJavascript.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 580 "PrintJavascript.cpp"
+                                                            #line 473 "PrintJavascript.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 621 "PrintJavascript.cpp"
   append(L", thread.getDeferredEvent(), threads.peek().getDeferredEvent()");
-                                                            #line 454 "PrintJavascript.cpp.template"
-                                                              }
-                                                            #line 584 "PrintJavascript.cpp"
+                                                            #line 476 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 625 "PrintJavascript.cpp"
   append(L");\n");
   append(L"      }\n");
   append(L"    }");
-                                                            #line 457 "PrintJavascript.cpp.template"
+                                                            #line 479 "PrintJavascript.cpp.template"
+                                                              }
+                                                              else
+                                                              {
+                                                            #line 633 "PrintJavascript.cpp"
+  append(L"    while (! threads.isEmpty() && threads.peek().equals(thread))\n");
+  append(L"    {\n");
+  append(L"      thread = resolve(thread, threads.poll());\n");
+  append(L"    }");
+                                                            #line 485 "PrintJavascript.cpp.template"
+                                                              }
                                                               if (tree || hasCustomCode)
                                                               {
-                                                            #line 591 "PrintJavascript.cpp"
+                                                                if (rejectsAmbiguity())
+                                                                {
+                                                            #line 644 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    else\n");
   append(L"    {");
-                                                            #line 461 "PrintJavascript.cpp.template"
+                                                            #line 492 "PrintJavascript.cpp.template"
+                                                                }
+                                                                else
+                                                                {
+                                                            #line 652 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"    if (threads.isEmpty())\n");
+  append(L"    {");
+                                                            #line 497 "PrintJavascript.cpp.template"
+                                                                }
                                                                 if (tree)
                                                                 {
-                                                            #line 598 "PrintJavascript.cpp"
+                                                            #line 660 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      thread.release();");
-                                                            #line 464 "PrintJavascript.cpp.template"
+                                                            #line 501 "PrintJavascript.cpp.template"
                                                                 }
                                                                 if (hasCustomCode)
                                                                 {
-                                                            #line 605 "PrintJavascript.cpp"
+                                                            #line 667 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
-                                                            #line 468 "PrintJavascript.cpp.template"
+                                                            #line 505 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 610 "PrintJavascript.cpp"
+                                                            #line 672 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    }");
-                                                            #line 470 "PrintJavascript.cpp.template"
+                                                            #line 507 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 615 "PrintJavascript.cpp"
+                                                            #line 677 "PrintJavascript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    var status;\n");
@@ -630,9 +692,9 @@
   append(L"      throw new thisParser.ParseException(thread.getB1(),\n");
   append(L"                                          thread.getE1(),\n");
   append(L"                                          ");
-                                                            #line 488 "PrintJavascript.cpp.template"
+                                                            #line 525 "PrintJavascript.cpp.template"
                                                               print(staticPrefix());
-                                                            #line 636 "PrintJavascript.cpp"
+                                                            #line 698 "PrintJavascript.cpp"
   append(L"TOKENSET[thread.getState()] + 1,\n");
   append(L"                                          thread.getL1(),\n");
   append(L"                                          -1\n");
@@ -640,27 +702,31 @@
   append(L"    }\n");
   append(L"  }\n");
   append(L"}\n");
+                                                            #line 533 "PrintJavascript.cpp.template"
+                                                              if (rejectsAmbiguity())
+                                                              {
+                                                            #line 709 "PrintJavascript.cpp"
   append(L"\n");
   append(L"function rejectAmbiguity(begin, end");
-                                                            #line 497 "PrintJavascript.cpp.template"
-                                                            if (tree)
-                                                              {
-                                                            #line 649 "PrintJavascript.cpp"
+                                                            #line 536 "PrintJavascript.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 715 "PrintJavascript.cpp"
   append(L", first, second");
-                                                            #line 499 "PrintJavascript.cpp.template"
-                                                              }
-                                                            #line 653 "PrintJavascript.cpp"
+                                                            #line 538 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 719 "PrintJavascript.cpp"
   append(L")\n");
   append(L"{");
-                                                            #line 501 "PrintJavascript.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 659 "PrintJavascript.cpp"
+                                                            #line 540 "PrintJavascript.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 725 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var treeBuilder = new ");
-                                                            #line 504 "PrintJavascript.cpp.template"
-                                                                print(className.c_str());
-                                                            #line 664 "PrintJavascript.cpp"
+                                                            #line 543 "PrintJavascript.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 730 "PrintJavascript.cpp"
   append(L".ParseTreeBuilder();\n");
   append(L"  treeBuilder.reset(input);\n");
   append(L"  second.show(treeBuilder);\n");
@@ -670,34 +736,78 @@
   append(L"  treeBuilder.nonterminal(\"ALTERNATIVE\", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);\n");
   append(L"  treeBuilder.push(secondTree);\n");
   append(L"  treeBuilder.nonterminal(\"AMBIGUOUS\", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);");
-                                                            #line 514 "PrintJavascript.cpp.template"
-                                                              }
-                                                            #line 676 "PrintJavascript.cpp"
+                                                            #line 553 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 742 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var exception = new thisParser.ParseException(begin, end, -1, -1, -1);\n");
   append(L"  exception.setAmbiguousInput(");
-                                                            #line 517 "PrintJavascript.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 683 "PrintJavascript.cpp"
+                                                            #line 556 "PrintJavascript.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 749 "PrintJavascript.cpp"
   append(L"treeBuilder");
-                                                            #line 519 "PrintJavascript.cpp.template"
-                                                              }
-                                                            #line 687 "PrintJavascript.cpp"
+                                                            #line 558 "PrintJavascript.cpp.template"
+                                                                }
+                                                            #line 753 "PrintJavascript.cpp"
   append(L");\n");
   append(L"  throw exception;\n");
-  append(L"}\n");
+  append(L"}");
+                                                            #line 561 "PrintJavascript.cpp.template"
+                                                              }
+                                                              else
+                                                              {
+                                                            #line 761 "PrintJavascript.cpp"
   append(L"\n");
-  append(L"var thread;");
-                                                            #line 524 "PrintJavascript.cpp.template"
+  append(L"function resolve(thread, other)\n");
+  append(L"{");
+                                                            #line 566 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 696 "PrintJavascript.cpp"
+                                                            #line 768 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  var a = thread.getStack();\n");
+  append(L"  var b = other.getStack();\n");
+  append(L"  var begin = a.pos;\n");
+  append(L"  while (a !== b && a != null && b != null)\n");
+  append(L"  {\n");
+  append(L"    begin = a.pos;\n");
+  append(L"    a = a.link;\n");
+  append(L"    b = b.link;\n");
+  append(L"  }");
+                                                            #line 577 "PrintJavascript.cpp.template"
+                                                              }
+                                                            #line 781 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  if (other.getEventCount() < thread.getEventCount())\n");
+  append(L"    thread = other;");
+                                                            #line 580 "PrintJavascript.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                            #line 788 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  thread.addAmbiguity(begin, thread.getE0());");
+                                                            #line 583 "PrintJavascript.cpp.template"
+                                                                                                            }
+                                                            #line 793 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  return thread;\n");
+  append(L"}");
+                                                            #line 586 "PrintJavascript.cpp.template"
+                                                              }
+                                                            #line 799 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"\n");
+  append(L"var thread;");
+                                                            #line 589 "PrintJavascript.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                            #line 806 "PrintJavascript.cpp"
   append(L"\n");
   append(L"var eventHandler;");
-                                                            #line 527 "PrintJavascript.cpp.template"
+                                                            #line 592 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 701 "PrintJavascript.cpp"
+                                                            #line 811 "PrintJavascript.cpp"
   append(L"\n");
   append(L"var input;\n");
   append(L"var size;\n");
@@ -711,46 +821,66 @@
   append(L"  var stack;\n");
   append(L"  var state;\n");
   append(L"  var action;");
-                                                            #line 540 "PrintJavascript.cpp.template"
+                                                            #line 605 "PrintJavascript.cpp.template"
                                                               if (tree || useGlr)
                                                               {
-                                                            #line 718 "PrintJavascript.cpp"
+                                                            #line 828 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var target;");
-                                                            #line 543 "PrintJavascript.cpp.template"
+                                                            #line 608 "PrintJavascript.cpp.template"
                                                               }                                                if (tree)
                                                               {
-                                                            #line 724 "PrintJavascript.cpp"
+                                                            #line 834 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var deferredEvent;");
-                                                            #line 546 "PrintJavascript.cpp.template"
+                                                            #line 611 "PrintJavascript.cpp.template"
                                                                 if (useGlr)
                                                                 {
-                                                            #line 730 "PrintJavascript.cpp"
+                                                            #line 840 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var es;");
-                                                            #line 549 "PrintJavascript.cpp.template"
+                                                            #line 614 "PrintJavascript.cpp.template"
                                                                 }
                                                               }
                                                               if (useGlr)
                                                               {
-                                                            #line 738 "PrintJavascript.cpp"
+                                                            #line 848 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var bw, bs;");
-                                                            #line 554 "PrintJavascript.cpp.template"
+                                                            #line 619 "PrintJavascript.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 745 "PrintJavascript.cpp"
+                                                            #line 855 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var deferredCode;");
-                                                            #line 558 "PrintJavascript.cpp.template"
+                                                            #line 623 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 750 "PrintJavascript.cpp"
+                                                            #line 860 "PrintJavascript.cpp"
   append(L"\n");
-  append(L"  var id;\n");
+  append(L"  var id;");
+                                                            #line 625 "PrintJavascript.cpp.template"
+                                                              if (minimalAmbiguity)
+                                                              {
+                                                            #line 866 "PrintJavascript.cpp"
   append(L"\n");
-  append(L"  this.getId = function() {return id;};\n");
+  append(L"  var eventCount;");
+                                                            #line 628 "PrintJavascript.cpp.template"
+                                                              }
+                                                            #line 871 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"\n");
+  append(L"  this.getId = function() {return id;};");
+                                                            #line 631 "PrintJavascript.cpp.template"
+                                                              if (minimalAmbiguity)
+                                                              {
+                                                            #line 878 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  this.getEventCount = function() {return eventCount;};");
+                                                            #line 634 "PrintJavascript.cpp.template"
+                                                              }
+                                                            #line 883 "PrintJavascript.cpp"
+  append(L"\n");
   append(L"  this.getAction = function() {return action;};\n");
   append(L"  this.getAccepted = function() {return accepted;};\n");
   append(L"  this.getThreads = function() {return threads};\n");
@@ -759,92 +889,115 @@
   append(L"  this.getEnd = function() {return end;};\n");
   append(L"  this.getB0 = function() {return b0;};\n");
   append(L"  this.getE0 = function() {return e0;};");
-                                                            #line 570 "PrintJavascript.cpp.template"
+                                                            #line 643 "PrintJavascript.cpp.template"
                                                               for (size_t i = 1; i <= grammar->k; ++i)
                                                               {
                                                                 const wchar_t *iString = format.toString<wchar_t>(i);
-                                                            #line 767 "PrintJavascript.cpp"
+                                                            #line 897 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.getB");
-                                                            #line 574 "PrintJavascript.cpp.template"
+                                                            #line 647 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 772 "PrintJavascript.cpp"
+                                                            #line 902 "PrintJavascript.cpp"
   append(L" = function() {return b");
-                                                            #line 575 "PrintJavascript.cpp.template"
+                                                            #line 648 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 776 "PrintJavascript.cpp"
+                                                            #line 906 "PrintJavascript.cpp"
   append(L";};\n");
   append(L"  this.getE");
-                                                            #line 577 "PrintJavascript.cpp.template"
+                                                            #line 650 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 781 "PrintJavascript.cpp"
+                                                            #line 911 "PrintJavascript.cpp"
   append(L" = function() {return e");
-                                                            #line 578 "PrintJavascript.cpp.template"
+                                                            #line 651 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 785 "PrintJavascript.cpp"
+                                                            #line 915 "PrintJavascript.cpp"
   append(L";};\n");
   append(L"  this.getL");
-                                                            #line 580 "PrintJavascript.cpp.template"
+                                                            #line 653 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 790 "PrintJavascript.cpp"
+                                                            #line 920 "PrintJavascript.cpp"
   append(L" = function() {return l");
-                                                            #line 581 "PrintJavascript.cpp.template"
+                                                            #line 654 "PrintJavascript.cpp.template"
                                                                 print(iString);
-                                                            #line 794 "PrintJavascript.cpp"
+                                                            #line 924 "PrintJavascript.cpp"
   append(L";};");
-                                                            #line 582 "PrintJavascript.cpp.template"
+                                                            #line 655 "PrintJavascript.cpp.template"
                                                               }
                                                               if (complexWhitespace)
                                                               {
-                                                            #line 800 "PrintJavascript.cpp"
+                                                            #line 930 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.setB1 = function(b) {b1 = b;};\n");
   append(L"  this.setE1 = function(e) {e1 = e;};\n");
   append(L"  this.setL1 = function(l) {l1 = l;};");
-                                                            #line 588 "PrintJavascript.cpp.template"
+                                                            #line 661 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 807 "PrintJavascript.cpp"
+                                                            #line 937 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.getBs = function() {return bs;};\n");
   append(L"  this.getBw = function() {return bw;};\n");
   append(L"  this.getTarget = function() {return target;};");
-                                                            #line 592 "PrintJavascript.cpp.template"
+                                                            #line 665 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 815 "PrintJavascript.cpp"
+                                                            #line 945 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.getEs = function() {return es;};\n");
   append(L"  this.getEventHandler = function() {return eventHandler;};\n");
   append(L"  this.getDeferredEvent = function() {return deferredEvent;};");
-                                                            #line 598 "PrintJavascript.cpp.template"
+                                                            #line 670 "PrintJavascript.cpp.template"
+                                                                if (minimalAmbiguity)
+                                                                {
+                                                            #line 953 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"  this.addAmbiguity = function(begin, end)\n");
+  append(L"  {\n");
+  append(L"    if (eventHandler != null)\n");
+  append(L"      deferredEvent = new ");
+                                                            #line 676 "PrintJavascript.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 961 "PrintJavascript.cpp"
+  append(L".DeferredEvent(deferredEvent, null, begin, end);\n");
+  append(L"  };");
+                                                            #line 678 "PrintJavascript.cpp.template"
+                                                                }
+
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 824 "PrintJavascript.cpp"
+                                                            #line 970 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.getDeferredCode = function() {return deferredCode};");
-                                                            #line 602 "PrintJavascript.cpp.template"
+                                                            #line 684 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 829 "PrintJavascript.cpp"
+                                                            #line 975 "PrintJavascript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  this.open = function(initialState");
-                                                            #line 605 "PrintJavascript.cpp.template"
+                                                            #line 687 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 836 "PrintJavascript.cpp"
+                                                            #line 982 "PrintJavascript.cpp"
   append(L", eh");
-                                                            #line 607 "PrintJavascript.cpp.template"
+                                                            #line 689 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 840 "PrintJavascript.cpp"
+                                                            #line 986 "PrintJavascript.cpp"
   append(L", t)\n");
   append(L"  {\n");
   append(L"    accepted = false;\n");
   append(L"    target = t;");
-                                                            #line 611 "PrintJavascript.cpp.template"
+                                                            #line 693 "PrintJavascript.cpp.template"
+                                                              if (minimalAmbiguity)
+                                                              {
+                                                            #line 994 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"    eventCount = 0;");
+                                                            #line 696 "PrintJavascript.cpp.template"
+                                                              }
                                                               if (tree)
                                                               {
-                                                            #line 848 "PrintJavascript.cpp"
+                                                            #line 1001 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    if (eh != null)\n");
   append(L"    {\n");
@@ -852,49 +1005,49 @@
   append(L"    }\n");
   append(L"    eventHandler = eh;\n");
   append(L"    deferredEvent = null;");
-                                                            #line 619 "PrintJavascript.cpp.template"
+                                                            #line 705 "PrintJavascript.cpp.template"
                                                               }
                                                               if (hasCustomCode && useGlr)
                                                               {
-                                                            #line 860 "PrintJavascript.cpp"
+                                                            #line 1013 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    deferredCode = null;");
-                                                            #line 623 "PrintJavascript.cpp.template"
+                                                            #line 709 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 865 "PrintJavascript.cpp"
+                                                            #line 1018 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    stack = new ");
-                                                            #line 625 "PrintJavascript.cpp.template"
+                                                            #line 711 "PrintJavascript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 870 "PrintJavascript.cpp"
+                                                            #line 1023 "PrintJavascript.cpp"
   append(L".StackNode(-1, ");
-                                                            #line 626 "PrintJavascript.cpp.template"
+                                                            #line 712 "PrintJavascript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 875 "PrintJavascript.cpp"
+                                                            #line 1028 "PrintJavascript.cpp"
   append(L"0, ");
-                                                            #line 628 "PrintJavascript.cpp.template"
+                                                            #line 714 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 879 "PrintJavascript.cpp"
+                                                            #line 1032 "PrintJavascript.cpp"
   append(L"e0, null);\n");
   append(L"    state = initialState;\n");
   append(L"    action = predict(initialState);\n");
   append(L"    bw = e0;\n");
   append(L"    bs = e0;");
-                                                            #line 633 "PrintJavascript.cpp.template"
+                                                            #line 719 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 888 "PrintJavascript.cpp"
+                                                            #line 1041 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    es = e0;");
-                                                            #line 636 "PrintJavascript.cpp.template"
+                                                            #line 722 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 893 "PrintJavascript.cpp"
+                                                            #line 1046 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    threads = new ");
-                                                            #line 638 "PrintJavascript.cpp.template"
+                                                            #line 724 "PrintJavascript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 898 "PrintJavascript.cpp"
+                                                            #line 1051 "PrintJavascript.cpp"
   append(L".Heap();\n");
   append(L"    threads.offer(this);\n");
   append(L"    return threads;\n");
@@ -911,24 +1064,31 @@
   append(L"    target = other.getTarget();\n");
   append(L"    bs = other.getBs();\n");
   append(L"    bw = other.getBw();");
-                                                            #line 654 "PrintJavascript.cpp.template"
+                                                            #line 740 "PrintJavascript.cpp.template"
+                                                              if (minimalAmbiguity)
+                                                              {
+                                                            #line 1071 "PrintJavascript.cpp"
+  append(L"\n");
+  append(L"    eventCount = other.getEventCount();");
+                                                            #line 743 "PrintJavascript.cpp.template"
+                                                              }
                                                               if (tree)
                                                               {
-                                                            #line 918 "PrintJavascript.cpp"
+                                                            #line 1078 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    es = other.getEs();\n");
   append(L"    eventHandler = other.getEventHandler();\n");
   append(L"    deferredEvent = other.getDeferredEvent();");
-                                                            #line 659 "PrintJavascript.cpp.template"
+                                                            #line 749 "PrintJavascript.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 927 "PrintJavascript.cpp"
+                                                            #line 1087 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    deferredCode = other.getDeferredCode();");
-                                                            #line 663 "PrintJavascript.cpp.template"
+                                                            #line 753 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 932 "PrintJavascript.cpp"
+                                                            #line 1092 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    id = ++maxId;\n");
   append(L"    b0 = other.getB0();\n");
@@ -958,10 +1118,10 @@
   append(L"    if (! stack.equals(other.getStack())) return false;\n");
   append(L"    return true;\n");
   append(L"  };\n");
-                                                            #line 693 "PrintJavascript.cpp.template"
+                                                            #line 783 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 965 "PrintJavascript.cpp"
+                                                            #line 1125 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.release = function()\n");
   append(L"  {\n");
@@ -971,13 +1131,13 @@
   append(L"      deferredEvent = null;\n");
   append(L"    }\n");
   append(L"  };\n");
-                                                            #line 704 "PrintJavascript.cpp.template"
+                                                            #line 794 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 977 "PrintJavascript.cpp"
+                                                            #line 1137 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  this.parse = function()\n");
   append(L"  {");
-                                                            #line 707 "PrintJavascript.cpp.template"
+                                                            #line 797 "PrintJavascript.cpp.template"
                                                               increaseIndent();
                                                             }
 
@@ -990,37 +1150,37 @@
                                                             {
                                                               if (isPublic)
                                                               {
-                                                            #line 994 "PrintJavascript.cpp"
+                                                            #line 1154 "PrintJavascript.cpp"
   append(L"\n");
   append(L"this.");
-                                                            #line 720 "PrintJavascript.cpp.template"
+                                                            #line 810 "PrintJavascript.cpp.template"
                                                                 print(name);
-                                                            #line 999 "PrintJavascript.cpp"
+                                                            #line 1159 "PrintJavascript.cpp"
   append(L" = function");
-                                                            #line 721 "PrintJavascript.cpp.template"
+                                                            #line 811 "PrintJavascript.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1005 "PrintJavascript.cpp"
+                                                            #line 1165 "PrintJavascript.cpp"
   append(L"\n");
   append(L"function ");
-                                                            #line 725 "PrintJavascript.cpp.template"
+                                                            #line 815 "PrintJavascript.cpp.template"
                                                                 print(name);
                                                               }
-                                                            #line 1011 "PrintJavascript.cpp"
+                                                            #line 1171 "PrintJavascript.cpp"
   append(L"(");
-                                                            #line 727 "PrintJavascript.cpp.template"
+                                                            #line 817 "PrintJavascript.cpp.template"
                                                               printArgNamesOnly(args);
-                                                            #line 1015 "PrintJavascript.cpp"
+                                                            #line 1175 "PrintJavascript.cpp"
   append(L")");
-                                                            #line 728 "PrintJavascript.cpp.template"
+                                                            #line 818 "PrintJavascript.cpp.template"
                                                             }
 
                                                             void PrintJavascript::privateVars()
                                                             {
                                                               if (trace)
                                                               {
-                                                            #line 1024 "PrintJavascript.cpp"
+                                                            #line 1184 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  function lookaheadString()\n");
   append(L"  {\n");
@@ -1028,148 +1188,148 @@
   append(L"    if (l1 > 0)\n");
   append(L"    {\n");
   append(L"      result += ");
-                                                            #line 740 "PrintJavascript.cpp.template"
+                                                            #line 830 "PrintJavascript.cpp.template"
                                                                 print(staticPrefix());
-                                                            #line 1034 "PrintJavascript.cpp"
+                                                            #line 1194 "PrintJavascript.cpp"
   append(L"TOKEN[l1];");
-                                                            #line 741 "PrintJavascript.cpp.template"
+                                                            #line 831 "PrintJavascript.cpp.template"
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 1039 "PrintJavascript.cpp"
+                                                            #line 1199 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      if (l");
-                                                            #line 744 "PrintJavascript.cpp.template"
+                                                            #line 834 "PrintJavascript.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1044 "PrintJavascript.cpp"
+                                                            #line 1204 "PrintJavascript.cpp"
   append(L" > 0)\n");
   append(L"      {\n");
   append(L"        result += \" \" + ");
-                                                            #line 747 "PrintJavascript.cpp.template"
+                                                            #line 837 "PrintJavascript.cpp.template"
                                                                   print(staticPrefix());
-                                                            #line 1050 "PrintJavascript.cpp"
+                                                            #line 1210 "PrintJavascript.cpp"
   append(L"TOKEN[l");
-                                                            #line 748 "PrintJavascript.cpp.template"
+                                                            #line 838 "PrintJavascript.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1054 "PrintJavascript.cpp"
+                                                            #line 1214 "PrintJavascript.cpp"
   append(L"];");
-                                                            #line 749 "PrintJavascript.cpp.template"
+                                                            #line 839 "PrintJavascript.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 1062 "PrintJavascript.cpp"
+                                                            #line 1222 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      }");
-                                                            #line 755 "PrintJavascript.cpp.template"
+                                                            #line 845 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1067 "PrintJavascript.cpp"
+                                                            #line 1227 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    return result;\n");
   append(L"  }\n");
-                                                            #line 760 "PrintJavascript.cpp.template"
+                                                            #line 850 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 1074 "PrintJavascript.cpp"
+                                                            #line 1234 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var ");
-                                                            #line 762 "PrintJavascript.cpp.template"
+                                                            #line 852 "PrintJavascript.cpp.template"
                                                               if (! isLrParser && (grammar->k > 1 ||
                                                                                    memoization ||
                                                                                    ! grammar->decisionPoints.empty()))
                                                               {
-                                                            #line 1082 "PrintJavascript.cpp"
+                                                            #line 1242 "PrintJavascript.cpp"
   append(L"lk,");
-                                                            #line 766 "PrintJavascript.cpp.template"
+                                                            #line 856 "PrintJavascript.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1088 "PrintJavascript.cpp"
+                                                            #line 1248 "PrintJavascript.cpp"
   append(L"   ");
-                                                            #line 769 "PrintJavascript.cpp.template"
+                                                            #line 859 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 1092 "PrintJavascript.cpp"
+                                                            #line 1252 "PrintJavascript.cpp"
   append(L" b0, e0;");
-                                                            #line 770 "PrintJavascript.cpp.template"
+                                                            #line 860 "PrintJavascript.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 1099 "PrintJavascript.cpp"
+                                                            #line 1259 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var l");
-                                                            #line 775 "PrintJavascript.cpp.template"
+                                                            #line 865 "PrintJavascript.cpp.template"
                                                                 print(asString);
-                                                            #line 1104 "PrintJavascript.cpp"
+                                                            #line 1264 "PrintJavascript.cpp"
   append(L", b");
-                                                            #line 776 "PrintJavascript.cpp.template"
+                                                            #line 866 "PrintJavascript.cpp.template"
                                                                 print(asString);
-                                                            #line 1108 "PrintJavascript.cpp"
+                                                            #line 1268 "PrintJavascript.cpp"
   append(L", e");
-                                                            #line 777 "PrintJavascript.cpp.template"
+                                                            #line 867 "PrintJavascript.cpp.template"
                                                                 print(asString);
-                                                            #line 1112 "PrintJavascript.cpp"
+                                                            #line 1272 "PrintJavascript.cpp"
   append(L";");
-                                                            #line 778 "PrintJavascript.cpp.template"
+                                                            #line 868 "PrintJavascript.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 1118 "PrintJavascript.cpp"
+                                                            #line 1278 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var bx, ex, sx, lx, tx;");
-                                                            #line 782 "PrintJavascript.cpp.template"
+                                                            #line 872 "PrintJavascript.cpp.template"
                                                               }
                                                               if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 1125 "PrintJavascript.cpp"
+                                                            #line 1285 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var iStack = [];\n");
   append(L"  var top = -1;");
-                                                            #line 787 "PrintJavascript.cpp.template"
+                                                            #line 877 "PrintJavascript.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1133 "PrintJavascript.cpp"
+                                                            #line 1293 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var eventHandler;");
-                                                            #line 791 "PrintJavascript.cpp.template"
+                                                            #line 881 "PrintJavascript.cpp.template"
                                                               }
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 1141 "PrintJavascript.cpp"
+                                                            #line 1301 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var memo;");
-                                                            #line 796 "PrintJavascript.cpp.template"
+                                                            #line 886 "PrintJavascript.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1147 "PrintJavascript.cpp"
+                                                            #line 1307 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var viable;");
-                                                            #line 799 "PrintJavascript.cpp.template"
+                                                            #line 889 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1152 "PrintJavascript.cpp"
+                                                            #line 1312 "PrintJavascript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  function memoize(i, e, v)\n");
   append(L"  {\n");
   append(L"    memo[(e << ");
-                                                            #line 804 "PrintJavascript.cpp.template"
+                                                            #line 894 "PrintJavascript.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1160 "PrintJavascript.cpp"
+                                                            #line 1320 "PrintJavascript.cpp"
   append(L") + i] = v;\n");
   append(L"  }\n");
   append(L"\n");
   append(L"  function memoized(i, e)\n");
   append(L"  {\n");
   append(L"    var v = memo[(e << ");
-                                                            #line 810 "PrintJavascript.cpp.template"
+                                                            #line 900 "PrintJavascript.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1169 "PrintJavascript.cpp"
+                                                            #line 1329 "PrintJavascript.cpp"
   append(L") + i];\n");
   append(L"    return typeof v != \"undefined\" ? v : 0;\n");
   append(L"  }");
-                                                            #line 813 "PrintJavascript.cpp.template"
+                                                            #line 903 "PrintJavascript.cpp.template"
                                                               }
                                                               if (useGlr)
                                                               {
@@ -1179,7 +1339,7 @@
 
                                                             void PrintJavascript::printPlatformSpecific()
                                                             {
-                                                            #line 1183 "PrintJavascript.cpp"
+                                                            #line 1343 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  if (typeof process !== \"undefined\")   // assume node.js\n");
   append(L"  {\n");
@@ -1188,16 +1348,16 @@
   append(L"    var log = function(string) {process.stdout.write(string);};\n");
   append(L"    var fs = require(\"fs\");\n");
   append(L"    var readTextFile = fs.readFileSync;");
-                                                            #line 829 "PrintJavascript.cpp.template"
+                                                            #line 919 "PrintJavascript.cpp.template"
                                                               if (performanceTest)
                                                               {
-                                                            #line 1195 "PrintJavascript.cpp"
+                                                            #line 1355 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    var readDir = fs.readdirSync;\n");
   append(L"    var isDirectory = function(filename) {return fs.statSync(filename).isDirectory();};");
-                                                            #line 834 "PrintJavascript.cpp.template"
+                                                            #line 924 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 1201 "PrintJavascript.cpp"
+                                                            #line 1361 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  }\n");
   append(L"  else                                  // assume rhino or jrunscript\n");
@@ -1211,10 +1371,10 @@
   append(L"                      }\n");
   append(L"                      return strings;\n");
   append(L"                    }();");
-                                                            #line 847 "PrintJavascript.cpp.template"
+                                                            #line 937 "PrintJavascript.cpp.template"
                                                               if (performanceTest)
                                                               {
-                                                            #line 1218 "PrintJavascript.cpp"
+                                                            #line 1378 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    var readDir = function(dirName)\n");
   append(L"                  {\n");
@@ -1227,9 +1387,9 @@
   append(L"                    return names;\n");
   append(L"                  };\n");
   append(L"    var isDirectory = function(filename) {return new java.io.File(filename).isDirectory();};");
-                                                            #line 861 "PrintJavascript.cpp.template"
+                                                            #line 951 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 1233 "PrintJavascript.cpp"
+                                                            #line 1393 "PrintJavascript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    if (typeof println == \"undefined\")  // assume rhino\n");
@@ -1251,20 +1411,20 @@
   append(L"                         };\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 883 "PrintJavascript.cpp.template"
+                                                            #line 973 "PrintJavascript.cpp.template"
                                                             }
 
                                                             void PrintJavascript::printFileProcessor()
                                                             {
-                                                            #line 1260 "PrintJavascript.cpp"
+                                                            #line 1420 "PrintJavascript.cpp"
   append(L"\n");
   append(L"// performance test main program for use with node.js, rhino, or jrunscript\n");
   append(L"\n");
   append(L"function main(args)\n");
   append(L"{");
-                                                            #line 891 "PrintJavascript.cpp.template"
+                                                            #line 981 "PrintJavascript.cpp.template"
                                                               printPlatformSpecific();
-                                                            #line 1268 "PrintJavascript.cpp"
+                                                            #line 1428 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  var quiet = false;\n");
   append(L"  var parsed = 0;\n");
@@ -1275,61 +1435,61 @@
   append(L"  {\n");
   append(L"    this.name = s;\n");
   append(L"    this.input = i;");
-                                                            #line 901 "PrintJavascript.cpp.template"
+                                                            #line 991 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1282 "PrintJavascript.cpp"
+                                                            #line 1442 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    this.contentCounter = new ContentCounter();");
-                                                            #line 904 "PrintJavascript.cpp.template"
+                                                            #line 994 "PrintJavascript.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1288 "PrintJavascript.cpp"
+                                                            #line 1448 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    this.parseTreeBuilder = new ");
-                                                            #line 907 "PrintJavascript.cpp.template"
+                                                            #line 997 "PrintJavascript.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1293 "PrintJavascript.cpp"
+                                                            #line 1453 "PrintJavascript.cpp"
   append(L".ParseTreeBuilder();");
-                                                            #line 908 "PrintJavascript.cpp.template"
+                                                            #line 998 "PrintJavascript.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1298 "PrintJavascript.cpp"
+                                                            #line 1458 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    this.parser = new ");
-                                                            #line 911 "PrintJavascript.cpp.template"
+                                                            #line 1001 "PrintJavascript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1303 "PrintJavascript.cpp"
+                                                            #line 1463 "PrintJavascript.cpp"
   append(L"(i");
-                                                            #line 912 "PrintJavascript.cpp.template"
+                                                            #line 1002 "PrintJavascript.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1308 "PrintJavascript.cpp"
+                                                            #line 1468 "PrintJavascript.cpp"
   append(L", null");
-                                                            #line 914 "PrintJavascript.cpp.template"
+                                                            #line 1004 "PrintJavascript.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1316 "PrintJavascript.cpp"
+                                                            #line 1476 "PrintJavascript.cpp"
   append(L", this.parseTreeBuilder");
-                                                            #line 919 "PrintJavascript.cpp.template"
+                                                            #line 1009 "PrintJavascript.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1322 "PrintJavascript.cpp"
+                                                            #line 1482 "PrintJavascript.cpp"
   append(L", this.contentCounter");
-                                                            #line 922 "PrintJavascript.cpp.template"
+                                                            #line 1012 "PrintJavascript.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1327 "PrintJavascript.cpp"
+                                                            #line 1487 "PrintJavascript.cpp"
   append(L");\n");
   append(L"  }\n");
-                                                            #line 926 "PrintJavascript.cpp.template"
+                                                            #line 1016 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1333 "PrintJavascript.cpp"
+                                                            #line 1493 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  function ContentCounter()\n");
   append(L"  {\n");
@@ -1341,10 +1501,10 @@
   append(L"    this.terminal = function(name, begin, end) {length += end - begin;};\n");
   append(L"    this.whitespace = function(begin, end) {length += end - begin;};\n");
   append(L"  }\n");
-                                                            #line 939 "PrintJavascript.cpp.template"
+                                                            #line 1029 "PrintJavascript.cpp.template"
                                                               }
                                                               printReadMethod();
-                                                            #line 1348 "PrintJavascript.cpp"
+                                                            #line 1508 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  function findFiles(f, filter)\n");
   append(L"  {\n");
@@ -1371,9 +1531,9 @@
   append(L"  if (arguments.length == 0)\n");
   append(L"  {\n");
   append(L"    log(\"Usage: \" + command + \" ");
-                                                            #line 966 "PrintJavascript.cpp.template"
+                                                            #line 1056 "PrintJavascript.cpp.template"
                                                                     print(className.c_str());
-                                                            #line 1377 "PrintJavascript.cpp"
+                                                            #line 1537 "PrintJavascript.cpp"
   append(L".js [-q] [-r N] [-t N] ENDING...\\n\");\n");
   append(L"    log(\"\\n\");\n");
   append(L"    log(\"  parse all files that have names ending with ENDING, in current dir and below,\\n\");\n");
@@ -1447,32 +1607,32 @@
   append(L"              if (! quiet) log(\"parsing \" + job.name);\n");
   append(L"              job.parser.reset(0, 0, 0);\n");
   append(L"              job.parser.");
-                                                            #line 1039 "PrintJavascript.cpp.template"
+                                                            #line 1129 "PrintJavascript.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1454 "PrintJavascript.cpp"
+                                                            #line 1614 "PrintJavascript.cpp"
   append(L"();\n");
   append(L"              if (! quiet) log(\"\\n\");");
-                                                            #line 1042 "PrintJavascript.cpp.template"
+                                                            #line 1132 "PrintJavascript.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1462 "PrintJavascript.cpp"
+                                                            #line 1622 "PrintJavascript.cpp"
   append(L"\n");
   append(L"              job.parseTreeBuilder.serialize(job.contentCounter);");
-                                                            #line 1048 "PrintJavascript.cpp.template"
+                                                            #line 1138 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1467 "PrintJavascript.cpp"
+                                                            #line 1627 "PrintJavascript.cpp"
   append(L"\n");
   append(L"              if (job.contentCounter.getLength() != job.input.length)\n");
   append(L"              {\n");
   append(L"                throw \"content counter saw \" + job.contentCounter.getLength() +\n");
   append(L"                      \", but input length is \" + job.input.length;\n");
   append(L"              }");
-                                                            #line 1054 "PrintJavascript.cpp.template"
+                                                            #line 1144 "PrintJavascript.cpp.template"
                                                               }
-                                                            #line 1476 "PrintJavascript.cpp"
+                                                            #line 1636 "PrintJavascript.cpp"
   append(L"\n");
   append(L"              parsed += job.input.length;\n");
   append(L"            }\n");
@@ -1511,12 +1671,12 @@
   append(L"}\n");
   append(L"\n");
   append(L"main(arguments);\n");
-                                                            #line 1093 "PrintJavascript.cpp.template"
+                                                            #line 1183 "PrintJavascript.cpp.template"
                                                             }
 
                                                             void PrintJavascript::printReadMethod()
                                                             {
-                                                            #line 1520 "PrintJavascript.cpp"
+                                                            #line 1680 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  function read(input)\n");
   append(L"  {\n");
@@ -1534,7 +1694,7 @@
   append(L"           : content;\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1112 "PrintJavascript.cpp.template"
+                                                            #line 1202 "PrintJavascript.cpp.template"
                                                             }
 
                                                             void PrintJavascript::close(Grammar *node)
@@ -1546,10 +1706,10 @@
 
                                                               print(L"\n");
                                                               print(lexerInstanceCode);
-                                                            #line 1550 "PrintJavascript.cpp"
+                                                            #line 1710 "PrintJavascript.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 1125 "PrintJavascript.cpp.template"
+                                                            #line 1215 "PrintJavascript.cpp.template"
                                                               if (useGlr)
                                                               {
                                                                 openStackNode();
@@ -1562,46 +1722,46 @@
 
                                                               if (main)
                                                               {
-                                                            #line 1566 "PrintJavascript.cpp"
+                                                            #line 1726 "PrintJavascript.cpp"
   append(L"\n");
   append(L"// main program for use with node.js, rhino, or jrunscript\n");
   append(L"\n");
   append(L"function main(args)\n");
   append(L"{");
-                                                            #line 1141 "PrintJavascript.cpp.template"
+                                                            #line 1231 "PrintJavascript.cpp.template"
                                                                 printPlatformSpecific();
                                                                 printReadMethod();
-                                                            #line 1575 "PrintJavascript.cpp"
+                                                            #line 1735 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  if (arguments.length == 0)\n");
   append(L"  {\n");
   append(L"    log(\"Usage: \" + command + \" ");
-                                                            #line 1147 "PrintJavascript.cpp.template"
+                                                            #line 1237 "PrintJavascript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1582 "PrintJavascript.cpp"
+                                                            #line 1742 "PrintJavascript.cpp"
   append(L".js ");
-                                                            #line 1148 "PrintJavascript.cpp.template"
+                                                            #line 1238 "PrintJavascript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1587 "PrintJavascript.cpp"
+                                                            #line 1747 "PrintJavascript.cpp"
   append(L"[-i] ");
-                                                            #line 1150 "PrintJavascript.cpp.template"
+                                                            #line 1240 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1591 "PrintJavascript.cpp"
+                                                            #line 1751 "PrintJavascript.cpp"
   append(L"INPUT...\\n\");\n");
   append(L"    log(\"\\n\");\n");
   append(L"    log(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\");");
-                                                            #line 1154 "PrintJavascript.cpp.template"
+                                                            #line 1244 "PrintJavascript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1598 "PrintJavascript.cpp"
+                                                            #line 1758 "PrintJavascript.cpp"
   append(L"\n");
   append(L"    log(\"\\n\");\n");
   append(L"    log(\"  Option:\\n\");\n");
   append(L"    log(\"    -i     indented parse tree\\n\");");
-                                                            #line 1159 "PrintJavascript.cpp.template"
+                                                            #line 1249 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1605 "PrintJavascript.cpp"
+                                                            #line 1765 "PrintJavascript.cpp"
   append(L"\n");
   append(L"  }\n");
   append(L"  else\n");
@@ -1609,104 +1769,104 @@
   append(L"    var indent = false;\n");
   append(L"    for (var i = 0; i < arguments.length; ++i)\n");
   append(L"    {");
-                                                            #line 1166 "PrintJavascript.cpp.template"
+                                                            #line 1256 "PrintJavascript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1616 "PrintJavascript.cpp"
+                                                            #line 1776 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      if (arguments[i] === \"-i\")\n");
   append(L"      {\n");
   append(L"        indent = true;\n");
   append(L"        continue;\n");
   append(L"      }");
-                                                            #line 1173 "PrintJavascript.cpp.template"
+                                                            #line 1263 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1625 "PrintJavascript.cpp"
+                                                            #line 1785 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      var input = read(String(arguments[i]));");
-                                                            #line 1175 "PrintJavascript.cpp.template"
+                                                            #line 1265 "PrintJavascript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1631 "PrintJavascript.cpp"
+                                                            #line 1791 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      var s = new ");
-                                                            #line 1178 "PrintJavascript.cpp.template"
+                                                            #line 1268 "PrintJavascript.cpp.template"
                                                                   print(staticPrefix());
-                                                            #line 1636 "PrintJavascript.cpp"
+                                                            #line 1796 "PrintJavascript.cpp"
   append(L"XmlSerializer(log, indent);");
-                                                            #line 1179 "PrintJavascript.cpp.template"
+                                                            #line 1269 "PrintJavascript.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 1641 "PrintJavascript.cpp"
+                                                            #line 1801 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      var b = new ");
-                                                            #line 1182 "PrintJavascript.cpp.template"
+                                                            #line 1272 "PrintJavascript.cpp.template"
                                                                     print(staticPrefix());
-                                                            #line 1646 "PrintJavascript.cpp"
+                                                            #line 1806 "PrintJavascript.cpp"
   append(L"ParseTreeBuilder();");
-                                                            #line 1183 "PrintJavascript.cpp.template"
+                                                            #line 1273 "PrintJavascript.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 1651 "PrintJavascript.cpp"
+                                                            #line 1811 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      var parser = new ");
-                                                            #line 1186 "PrintJavascript.cpp.template"
+                                                            #line 1276 "PrintJavascript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1656 "PrintJavascript.cpp"
+                                                            #line 1816 "PrintJavascript.cpp"
   append(L"(input");
-                                                            #line 1187 "PrintJavascript.cpp.template"
+                                                            #line 1277 "PrintJavascript.cpp.template"
                                                                 if (tree)
                                                                 {
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 1663 "PrintJavascript.cpp"
+                                                            #line 1823 "PrintJavascript.cpp"
   append(L", b");
-                                                            #line 1191 "PrintJavascript.cpp.template"
+                                                            #line 1281 "PrintJavascript.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 1669 "PrintJavascript.cpp"
+                                                            #line 1829 "PrintJavascript.cpp"
   append(L", s");
-                                                            #line 1194 "PrintJavascript.cpp.template"
+                                                            #line 1284 "PrintJavascript.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 1674 "PrintJavascript.cpp"
+                                                            #line 1834 "PrintJavascript.cpp"
   append(L");\n");
   append(L"      try\n");
   append(L"      {");
-                                                            #line 1198 "PrintJavascript.cpp.template"
+                                                            #line 1288 "PrintJavascript.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 1681 "PrintJavascript.cpp"
+                                                            #line 1841 "PrintJavascript.cpp"
   append(L"\n");
   append(L"        parser.writeTrace(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?\" + \">\\n<trace>\\n\");");
-                                                            #line 1202 "PrintJavascript.cpp.template"
+                                                            #line 1292 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1686 "PrintJavascript.cpp"
+                                                            #line 1846 "PrintJavascript.cpp"
   append(L"\n");
   append(L"        parser.");
-                                                            #line 1204 "PrintJavascript.cpp.template"
+                                                            #line 1294 "PrintJavascript.cpp.template"
                                                                 print(methodPrefixParse);
                                                                 print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1692 "PrintJavascript.cpp"
+                                                            #line 1852 "PrintJavascript.cpp"
   append(L"();");
-                                                            #line 1206 "PrintJavascript.cpp.template"
+                                                            #line 1296 "PrintJavascript.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 1697 "PrintJavascript.cpp"
+                                                            #line 1857 "PrintJavascript.cpp"
   append(L"\n");
   append(L"        parser.writeTrace(\"</trace>\\n\");\n");
   append(L"        parser.flushTrace();");
-                                                            #line 1210 "PrintJavascript.cpp.template"
+                                                            #line 1300 "PrintJavascript.cpp.template"
                                                                 }
                                                                 if (tree && isLrParser)
                                                                 {
-                                                            #line 1705 "PrintJavascript.cpp"
+                                                            #line 1865 "PrintJavascript.cpp"
   append(L"\n");
   append(L"        b.serialize(s);");
-                                                            #line 1214 "PrintJavascript.cpp.template"
+                                                            #line 1304 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1710 "PrintJavascript.cpp"
+                                                            #line 1870 "PrintJavascript.cpp"
   append(L"\n");
   append(L"      }\n");
   append(L"      catch (pe)\n");
@@ -1717,19 +1877,19 @@
   append(L"        }\n");
   append(L"        else\n");
   append(L"        {");
-                                                            #line 1224 "PrintJavascript.cpp.template"
-                                                                if (useGlr && tree)
+                                                            #line 1314 "PrintJavascript.cpp.template"
+                                                                if (rejectsAmbiguity() && tree)
                                                                 {
-                                                            #line 1724 "PrintJavascript.cpp"
+                                                            #line 1884 "PrintJavascript.cpp"
   append(L"\n");
   append(L"          if (pe.isAmbiguousInput())\n");
   append(L"          {\n");
   append(L"            pe.serialize(s);\n");
   append(L"            log(\"\\n\");\n");
   append(L"          }");
-                                                            #line 1231 "PrintJavascript.cpp.template"
+                                                            #line 1321 "PrintJavascript.cpp.template"
                                                                 }
-                                                            #line 1733 "PrintJavascript.cpp"
+                                                            #line 1893 "PrintJavascript.cpp"
   append(L"\n");
   append(L"          throw parser.getErrorMessage(pe);\n");
   append(L"        }\n");
@@ -1739,7 +1899,7 @@
   append(L"}\n");
   append(L"\n");
   append(L"main(arguments);\n");
-                                                            #line 1242 "PrintJavascript.cpp.template"
+                                                            #line 1332 "PrintJavascript.cpp.template"
                                                               }
                                                               if (performanceTest)
                                                               {

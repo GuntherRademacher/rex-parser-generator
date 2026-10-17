@@ -33,7 +33,7 @@ The original implementations of the generators, especially of the lexer generato
 
 ## 1994
 
-During the transition to new host operating systems, the requirement to use both Fortran and Pascal as implementation languages became increasingly cumbersome. Consequently, both the parser generator and the lexer generator were converted into C programs. To facilitate this conversion, REx was used to create Fortran and Pascal parsers, which formed the basis for tools that enabled a semi-automatic transformation into C code. Subsequently, most of that C code was rewritten step by step to become native C. 
+During the transition to new host operating systems, the requirement to use both Fortran and Pascal as implementation languages became increasingly cumbersome. Consequently, both the parser generator and the lexer generator were converted into C programs. To facilitate this conversion, REx was used to create Fortran and Pascal parsers, which formed the basis for tools that enabled a semi-automatic transformation into C code. Subsequently, most of that C code was rewritten step by step to become native C.
 
 ## 2002
 
@@ -57,21 +57,21 @@ Lexer operations are driven by transition tables that represent deterministic fi
 
 Up to this point, REx only supported annotating the grammar with target language code for creating results from the parse, such as building result trees or extracting relevant information from the input. Subsequently, additional infrastructure was added to the generated parsers to automatically build the concrete parse tree.
 
-REx was equipped with an XQuery code generator. Initially, this was intended solely to explore the feasibility of implementing heavy character processing code in XQuery and to conduct performance testing of XQuery implementations. However, it proved to be useful and eventually gained attention in the XML community, demonstrating the need for a parser generator in that environment. 
+REx was equipped with an XQuery code generator. Initially, this was intended solely to explore the feasibility of implementing heavy character processing code in XQuery and to conduct performance testing of XQuery implementations. However, it proved to be useful and eventually gained attention in the XML community, demonstrating the need for a parser generator in that environment.
 
 ## 2010
 
-As an additional tool supporting REx applications, the [RR Railroad Diagram Generator][RR] was developed. This tool takes a REx grammar and transforms it into an HTML page with syntax diagrams in SVG or PNG formats, after also slightly optimizing it for achieving compact and expressive diagrams. [RR][RR] was implemented in XQuery and won a prize in an XQuery programming contest. It is often used today for documenting formal languages. 
+As an additional tool supporting REx applications, the [RR Railroad Diagram Generator][RR] was developed. This tool takes a REx grammar and transforms it into an HTML page with syntax diagrams in SVG or PNG formats, after also slightly optimizing it for achieving compact and expressive diagrams. [RR][RR] was implemented in XQuery and won a prize in an XQuery programming contest. It is often used today for documenting formal languages.
 
 ## 2011
 
 Accompanying [RR][RR], the [ebnf-convert][ebnf-convert] grammar converter was developed. This tool can take grammars in various forms of EBNF, such as the input languages of other parser generators, and convert them to the W3C style used by REx and [RR][RR]. The arrival of this tool facilitated the quick adoption of REx, as it allowed initial grammars for projects to be based on pre-existing sources, even if those sources were created for different environments. Partly utilizing [RR][RR] infrastructure, [ebnf-convert][ebnf-convert] was also implemented in XQuery.
 
-## 2012 
+## 2012
 
 A code generator for C# as a target language was added.
 
-## 2013 
+## 2013
 
 Code generators for using XSLT and TypeScript as target languages were added.
 
@@ -79,11 +79,11 @@ Code generators for using XSLT and TypeScript as target languages were added.
 
 The old LR parser generator implementation was dropped and replaced by a completely new implementation, which had been under development for several years. The design goals for the new implementation included: direct supporting EBNF for LR without transforming to BNF, lookaheads longer than one with no hard limit, support for LR(k) and LALR(k), support for GLR, shared conventions with the LL generator to allow switching parsing algorithms with existing grammars, and support for the same set of target languages.
 
-## 2019 
+## 2019
 
 A code generator for Go as a target language was added.
 
-## 2020 
+## 2020
 
 A code generator for Python as a target language was added.
 

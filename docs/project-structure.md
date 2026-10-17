@@ -15,11 +15,11 @@ This is an overview of the topmost files and folders in this repository:
  │     │     ├─── 📄 build-and-test-macos.yml    # Build and test workflow for macOS
  │     │     ├─── 📄 build-and-test-windows.yml  # Build and test workflow for Windows
  │     │     ├─── 📄 check-markdown-links.yml    # documentation link check workflow
- │     │     └─── 📄 rexify-xquery-40.yml        # XQuery 4.0 grammar adaptation 
+ │     │     └─── 📄 rexify-xquery-40.yml        # XQuery 4.0 grammar adaptation
  │     └─── 📄 dependabot.yml                    # Dependency update workflow
  ├─── 📂 docs                                    # Project documentation
  │     └─── ...
- ├─── 📂 rex-tests                               # Java Gradle project testing the C++ executable 
+ ├─── 📂 rex-tests                               # Java Gradle project testing the C++ executable
  │     ├─── 📂 gradle/wrapper                    # Gradle wrapper files
  │     │     └─── ...
  │     ├─── 📂 src/test                          # Java test source code
@@ -51,7 +51,7 @@ When building and testing, there will be additional files and folders holding ge
 
 ```
 📂 rex-parser-generator
- ├─── 📂 rex-tests                               # Java Gradle project testing the C++ executable 
+ ├─── 📂 rex-tests                               # Java Gradle project testing the C++ executable
  │     ├─── 📂 build                             # Java build and test artifacts folder
  │     │     ├─── 📂 cache                       # Generated parser cache for test speedup
  │     │     │     └─── ...

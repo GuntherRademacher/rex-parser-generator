@@ -17,7 +17,7 @@ Note: this is currently only supported for Java as the target language.
 
 When the option is used, generation of the integrated lexer will be suppressed. In this case the grammar is not required to contain a lexical section. When token definitions are present, they are ignored at generation time. They are still required to be syntactically correct, though.
 
-As usual, all names in the syntax section, that do not refer to nonterminal definitions, are considered as token references, together with all literals occurring in the syntax section. 
+As usual, all names in the syntax section, that do not refer to nonterminal definitions, are considered as token references, together with all literals occurring in the syntax section.
 
 With `-nolexer` in effect, the generated Java parser includes
 

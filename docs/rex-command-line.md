@@ -35,6 +35,7 @@ Enhance or modify the parsing behavior with these options:
 |---------------|-----------------------------------------------------------------|
 | `-backtrack`  | Allow PEG-style backtracking for LL-conflicts.                  |
 | `-asi`        | Handle EcmaScript automatic semicolon insertion (LL(1) only).   |
+| `-ambiguity MODE` | With `-glr` or `-glalr`: `reject` (default) fails on ambiguous input, `minimal` selects the alternative with the fewest parse events and reports it through `ambiguity(begin, end)` on the event handler (the XQuery and XSLT targets just select the alternative). |
 
 ## Lexer Options
 

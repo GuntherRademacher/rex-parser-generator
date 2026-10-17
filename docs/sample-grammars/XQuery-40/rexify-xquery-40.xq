@@ -76,7 +76,7 @@ declare variable $rules as local:rule+ :=
     function($node) {$node/self::g:string[ancestor::g:production/@name eq 'DirElemConstructor'] = '<'},
     function($node) {<g:string context='DirElemConstructor'>&lt;</g:string>}
   ),
-  
+
   (: Add context 'GeneralComp' to '<' in a general comparison. This serves for distinguishing it
    : from a '<' operator introducing a direct element constructor.
    :)
@@ -85,7 +85,7 @@ declare variable $rules as local:rule+ :=
     function($node) {$node/self::g:string[ancestor::g:production/@name eq 'GeneralComp'] = '<' and root($node)//g:production/@name = 'DirElemConstructor'},
     function($node) {<g:string context='GeneralComp'>&lt;</g:string>}
   ),
-  
+
   (: Prevent $reserved-function-names to be used as unqualified function names by replacing EQName
    : by new nonterminal UnreservedFunctionEQName in productions FunctionCall, FunctionDecl, and
    : NamedFunctionRef. This basically implements extra-grammatical constraint
@@ -192,7 +192,7 @@ declare variable $rules as local:rule+ :=
     function($node) {$node/self::g:choice/ancestor::g:production/@name = ("UnbracedActions", "BracedActions")},
     function($node) {element g:orderedChoice {$node/*}}
   ),
-  
+
   (: Process the <?TOKENS?> separator, by adding some prodcutions to the syntax section preceding
    : it, and some more to the lexical section following it. Whitespace and comment processing need
    : to go to the syntax section, because the nested comments are non-regular and thus cannot be
@@ -365,7 +365,7 @@ declare variable $rules as local:rule+ :=
     function($node) {$node/self::g:production/@name = 'MarkedNCName'},
     function($node) {($node[@name = root(.)//g:ref/@name], text {''})[1]}
   ),
-  
+
   (: Allow unreserved keywords as computed node names :)
   local:rule
   (
@@ -380,7 +380,7 @@ declare variable $rules as local:rule+ :=
     },
     function($node)
     {
-      let $reserved := 
+      let $reserved :=
       (
         $reserved-constructor-names,
         ('after', 'as', 'before', 'into', 'modify', 'with')[$with-update]

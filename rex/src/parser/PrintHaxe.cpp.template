@@ -132,7 +132,7 @@ class ~                                                         print(className.
   ~
         }
         catch (pe: ParseException)
-        {~                                                      if (useGlr && tree)
+        {~                                                      if (rejectsAmbiguity() && tree)
                                                                 {
 ~
           if (pe.isAmbiguousInput())
@@ -237,8 +237,7 @@ private class StackNode
       rhs = rhs.link;
     }
     return lhs == rhs;
-  }
-~                                                             increaseIndent();
+  }~                                                          increaseIndent();
                                                               beginPublic();
                                                             }
 
@@ -423,7 +422,23 @@ private class NonterminalEvent extends DeferredEvent
     eventHandler.nonterminal(name, begin, end, count);
   }
 }
+~                                                             if (minimalAmbiguity)
+                                                              {
+~
+private class AmbiguityEvent extends DeferredEvent
+{
+  public function new(link: DeferredEvent, begin: Int, end: Int)
+  {
+    super(link, null, begin, end);
+  }
+
+  public override function execute(eventHandler: BottomUpEventHandler): Void
+  {
+    eventHandler.ambiguity(begin, end);
+  }
+}
 ~                                                             }
+                                                              }
                                                             }
 
                                                             void PrintHaxe::openThread()
@@ -447,7 +462,11 @@ private class ParsingThread
 ~
   public var deferredCode: DeferredCode;~                     }
 ~
-  public var id: Int;
+  public var id: Int;~                                        if (minimalAmbiguity)
+                                                              {
+~
+  public var eventCount: Int;~                                        }
+~
 
   public function new()
   {
@@ -459,7 +478,11 @@ private class ParsingThread
                          ~, t: Int): Heap
   {
     accepted = false;
-    target = t;~                                              if (tree)
+    target = t;~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = 0;~                                                  }
+                                                              if (tree)
                                                               {
 ~
     eventHandler = eh;
@@ -498,7 +521,11 @@ private class ParsingThread
     this.action = action;
     target = other.target;
     bs = other.bs;
-    bw = other.bw;~                                           if (tree)
+    bw = other.bw;~                                                  if (minimalAmbiguity)
+                                                              {
+~
+    eventCount = other.eventCount;~                                                  }
+                                                              if (tree)
                                                               {
 ~
     es = other.es;
@@ -551,7 +578,16 @@ private class ParsingThread
     if (! stack.equals(other.stack)) return false;
     return true;
   }
-
+~                                                             if (minimalAmbiguity && tree)
+                                                              {
+~
+  public function addAmbiguity(begin: Int, end: Int): Void
+  {
+    if (eventHandler != null)
+      deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+  }
+~                                                             }
+~
   public function parse(): Int
   {~                                                          increaseIndent();
                                                               beginPublic();
@@ -580,7 +616,9 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
   {
     thread = threads.poll();
     if (thread.accepted)
-    {
+    {~                                                      if (rejectsAmbiguity())
+                                                              {
+~
       var other: ParsingThread = null;
       while (! threads.isEmpty())
       {
@@ -597,7 +635,15 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
                                                               {
                 ~, thread.deferredEvent, other.deferredEvent~ }
                 ~);
-      }~
+      }~                                                      }
+                                                              else
+                                                              {
+~
+      while (! threads.isEmpty())
+      {
+        var other: ParsingThread = threads.poll();
+        thread = thread.e0 < other.e0 ? other : resolve(thread, other);
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -614,7 +660,9 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
       return thread;
     }
 
-    if (! threads.isEmpty())
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~    if (! threads.isEmpty())
     {
       if (threads.peek().equals(thread))
       {
@@ -623,11 +671,26 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
        ~, thread.deferredEvent, threads.peek().deferredEvent~ }
        ~);
       }
-    }~                                                        if (tree || hasCustomCode)
+    }~                                                      }
+                                                              else
                                                               {
+~    while (! threads.isEmpty() && threads.peek().equals(thread))
+    {
+      thread = resolve(thread, threads.poll());
+    }~                                                      }
+                                                              if (tree || hasCustomCode)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
     else
-    {~                                                          if (tree)
+    {~                                                          }
+                                                                else
+                                                                {
+~
+    if (threads.isEmpty())
+    {~                                                          }
+                                                                if (tree)
                                                                 {
 ~
       if (thread.deferredEvent != null)
@@ -665,7 +728,9 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
     }
   }
 }
-
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~
 private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
                                                               {
               ~, first: DeferredEvent, second: DeferredEvent~ }
@@ -690,7 +755,33 @@ private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
                               ~treeBuilder~                   }
                               ~);
   throw exception;
-}
+}~                                                            }
+                                                              else
+                                                              {
+~
+private function resolve(thread: ParsingThread, other: ParsingThread): ParsingThread
+{~                                                            if (tree)
+                                                              {
+~
+  var a = thread.stack;
+  var b = other.stack;
+  var begin = a.pos;
+  while (a != b && a != null && b != null)
+  {
+    begin = a.pos;
+    a = a.link;
+    b = b.link;
+  }~                                                          }
+~
+  if (other.eventCount < thread.eventCount)
+    thread = other;~                                               if (tree)
+                                                              {
+~
+  thread.addAmbiguity(begin, thread.e0);~                                             }
+~
+  return thread;
+}~                                                            }
+~
 
 private var thread: ParsingThread;~                           if (tree)
                                                               {
@@ -1081,7 +1172,7 @@ class ParseException
   private var end: Int;
   private var state: Int;
   private var offending: Int;
-  private var expected: Int;~                                 if (useGlr)
+  private var expected: Int;~                                 if (rejectsAmbiguity())
                                                               {
 ~
   private var ambiguousInput: Bool;~                            if (tree)
@@ -1099,7 +1190,7 @@ class ParseException
     offending = o;
     expected = x;
   }
-~                                                             if (useGlr)
+~                                                             if (rejectsAmbiguity())
                                                               {
 ~
   public function setAmbiguousInput(~                           if (tree)
@@ -1120,7 +1211,7 @@ class ParseException
   public function getState() {return state;}
   public function getExpected() {return expected;}
   public function getOffending() {return offending;}
-  public function isAmbiguousInput() {return ~                if (useGlr)
+  public function isAmbiguousInput() {return ~                if (rejectsAmbiguity())
                                                               {
                                              ~ambiguousInput~ }
                                                               else
@@ -1131,7 +1222,7 @@ class ParseException
 
   public function getMessage()
   {
-    return ~                                                  if (useGlr)
+    return ~                                                  if (rejectsAmbiguity())
                                                               {
            ~ambiguousInput
          ? "ambiguous input"
@@ -1139,7 +1230,7 @@ class ParseException
            ~offending < 0
          ? "lexical analysis failed"
          : "syntax error";
-  }~                                                          if (useGlr && tree)
+  }~                                                          if (rejectsAmbiguity() && tree)
                                                               {
 ~
 
@@ -1184,7 +1275,11 @@ interface BottomUpEventHandler
 {
   public function reset(input: Bytes): Void;
   public function nonterminal(name: String, begin: Int, end: Int, count: Int): Void;
-  public function terminal(name: String , begin: Int, end: Int): Void;
+  public function terminal(name: String , begin: Int, end: Int): Void;~                           if (minimalAmbiguity)
+                                                              {
+~
+  public function ambiguity(begin: Int, end: Int): Void;~       }
+~
 }
 ~                                                               }
                                                                 #if EXPATH_EXTENSION_FUNCTION
@@ -1554,7 +1649,7 @@ class ParseTreeBuilder implements BottomUpEventHandler
 ~                                                                 }
 ~
   public function nonterminal(name: String, begin: Int, end: Int, count: Int)
-  {~                                                              if (useGlr)
+  {~                                                              if (rejectsAmbiguity())
                                                                   {
 ~
     if (count > top + 1)
@@ -1575,7 +1670,14 @@ class ParseTreeBuilder implements BottomUpEventHandler
   public function terminal(name: String, begin: Int, end: Int)
   {
     push(new Terminal(name, begin, end));
-  }
+  }~                                        if (minimalAmbiguity)
+                                                              {
+~
+
+  public function ambiguity(begin: Int, end: Int)
+  {
+  }~                                        }
+~
 
   public function serialize(e: EventHandler)
   {

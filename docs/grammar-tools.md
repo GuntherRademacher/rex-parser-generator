@@ -12,7 +12,7 @@ These tools can help with creating and visualizing REx grammars:
 
 ## **ebnf-convert** Grammar Converter
 
-**ebnf-convert** Grammar Converter is a tool that helps transform various grammar formats into W3C EBNF, which is the basis of REx EBNF. It is particularly useful for importing grammars that were made for other parser generators into a REx environment. 
+**ebnf-convert** Grammar Converter is a tool that helps transform various grammar formats into W3C EBNF, which is the basis of REx EBNF. It is particularly useful for importing grammars that were made for other parser generators into a REx environment.
 
 It can be used both as a command line tool and with a simple browser-based UI.
 
