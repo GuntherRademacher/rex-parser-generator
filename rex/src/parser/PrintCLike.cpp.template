@@ -241,8 +241,7 @@ case _ =>~                                                          }
                                                                       if (isPython())
                                                                       {
 ~
-else:~
-                                                                      }
+else:~                                                                }
                                                                       else if (! isScala())
                                                                       {
 ~
@@ -761,8 +760,7 @@ if (lk == -3) {
                                                               {
 ~
   c~                                                            print(format.toString<wchar_t>(node->loopId));
-   ~ = false~
-                                                              }
+   ~ = false~                                                 }
                                                               print(rightBrace());
                                                               if (nestedTry)
                                                               {
@@ -905,8 +903,7 @@ pass~                                                           }
 ~b0~                                                          print(L'A' + ncl);
                                                               print(assign());
                                                               print(thiz());
-   ~b0; ~
-                                                              print(intVal());
+   ~b0; ~                                                     print(intVal());
         ~e0~                                                  print(L'A' + ncl);
                                                               print(assign());
                                                               print(thiz());
@@ -1165,11 +1162,11 @@ break~                                                                    print(
                                                                     if (! grammar->noThrow)
                                                                     {
 ~
-try~                                                                 if (isPython())
-                                                                     {
-   ~:~                                                               }
-                                                                     print(leftBrace());
-                                                                     increaseIndent();
+try~                                                                  if (isPython())
+                                                                      {
+   ~:~                                                                }
+                                                                      print(leftBrace());
+                                                                      increaseIndent();
                                                                     }
                                                                     if (caseId != firstConflictCaseId)
                                                                     {
@@ -1277,8 +1274,7 @@ case _: ~                                                                 print(
         ~.ParseException =>~                                            }
                                                                         else
                                                                         {
-      ~(~
-                                                                          if (! isJavascript() && ! isTypescript() && ! isHaxe())
+      ~(~                                                                 if (! isJavascript() && ! isTypescript() && ! isHaxe())
                                                                           {
        ~ParseException~                                                   }
                                                                           if (! isCSharp() && ! isJavascript() && ! isTypescript() && ! isHaxe())
@@ -1442,12 +1438,10 @@ elif self.~                                                       if (node->k ==
 case -~                                                           print(format.toString<wchar_t>(node->cases.size() + 1));
                                                                   if (isScala())
                                                                   {
-      ~ =>~
-                                                                  }
+      ~ =>~                                                       }
                                                                   else if (isHaxe())
                                                                   {
-      ~:~
-                                                                  }
+      ~:~                                                         }
                                                                   else
                                                                   {
       ~:~                                                           if (! isGo())
@@ -1694,8 +1688,7 @@ if ~                                                              print(ifLeftPa
                                                               if (variant != 0 && wcscmp(node->target, variant) == 0)
                                                               {
 ~
-~
-                                                                int spaces = isPython() ? 0 : Math::max(0, static_cast<int>(piIndent) - getIndent());
+~                                                               int spaces = isPython() ? 0 : Math::max(0, static_cast<int>(piIndent) - getIndent());
                                                                 print(spaces, L" ");
                                                                 print(lineCommentPrefix());
 ~line ~                                                         print(format.toString<wchar_t>(node->line));
@@ -1761,8 +1754,7 @@ function init(source~                                           if (noLexer)
 ~
   initialize(source.codePoints().toArray()~                       if (tree)
                                                                   {
-                                          ~, parsingEventHandler~
-                                                                  }
+                                          ~, parsingEventHandler~ }
                                           ~);~                    print(rightBrace());
 ~
 ~                                                               }
@@ -1956,8 +1948,7 @@ def getOffendingToken(e):
                                                                 print(leftBrace());
 ~
   return e.getOffending() < 0 ? ~                               print(nullPtr());
-                                ~ : TOKEN[e.getOffending()];~
-                                                                print(rightBrace());
+                                ~ : TOKEN[e.getOffending()];~   print(rightBrace());
 ~
 ~                                                             }
 
@@ -2086,8 +2077,7 @@ if ~                                                              print(ifLeftPa
 
 public String getErrorMessage(ParseException e)
 {
-  String message = e.getMessage();~
-                                                                if (useGlr)
+  String message = e.getMessage();~                             if (useGlr)
                                                                 {
 ~
   if ~                                                            print(ifLeftParen());
@@ -2166,8 +2156,7 @@ public void parse()
 
 public String getErrorMessage(ParseException e)
 {
-  String message = e.getMessage();~
-                                                                if (useGlr)
+  String message = e.getMessage();~                             if (useGlr)
                                                                 {
 ~
   if (e.isAmbiguousInput())
@@ -2224,8 +2213,7 @@ func GetExpectedTokenSet(e ParseError) []string {
 
 func (this *~                                                   print(className.c_str());
             ~) GetErrorMessage(e ParseError) string {
-  message := e.Error()~
-                                                                if (useGlr)
+  message := e.Error()~                                         if (useGlr)
                                                                 {
 ~
   if e.IsAmbiguousInput() {
@@ -2499,11 +2487,11 @@ std::~                                                          if (stringIntrod
   }
   message += ~                                                  print(stringIntroducer());
              ~"at line ";
-  message += to_~                                             if (stringIntroducer()[0]) append(L"w");
+  message += to_~                                               if (stringIntroducer()[0]) append(L"w");
                 ~string(line);
-  message += ~                                                print(stringIntroducer());
+  message += ~                                                  print(stringIntroducer());
              ~", column ";
-  message += to_~                                             if (stringIntroducer()[0]) append(L"w");
+  message += to_~                                               if (stringIntroducer()[0]) append(L"w");
                 ~string(column);
   message += ~                                                  print(stringIntroducer());
              ~":\n...";
@@ -2694,22 +2682,19 @@ c, _ := utf8.DecodeRuneInString(this.input[i:])~                }
                                                                 }
 ~
 if ~                                                            print(ifLeftParen());
-   ~c == 0xA ~
-                                                                if (isPython())
+   ~c == 0xA ~                                                  if (isPython())
                                                                 {
              ~or~                                               }
                                                                 else
                                                                 {
              ~||~                                               }
-                ~ c == 0xD ~
-                                                                if (isPython())
+                ~ c == 0xD ~                                    if (isPython())
                                                                 {
                            ~or~                                 }
                                                                 else
                                                                 {
                            ~||~                                 }
-                              ~ c == 0x2028 ~
-                                                                if (isPython())
+                              ~ c == 0x2028 ~                   if (isPython())
                                                                 {
                                             ~or~                }
                                                                 else
@@ -2729,8 +2714,7 @@ if ~                                                            print(ifLeftPare
                                                                 if (isScala() || isPython())
                                                                 {
 ~
-i += 1~
-                                                                }
+i += 1~                                                         }
                                                                 else if (isHaxe())
                                                                 {
 ~
@@ -2851,8 +2835,7 @@ return ~                                                        if (isPython())
 ~
   if (top >= (int) iStack.size())
     iStack.resize(iStack.size() == 0 ? ~                            print(tree ? L"192" : L"128");
-                                       ~ : iStack.size() << 1);~
-                                                                  }
+                                       ~ : iStack.size() << 1);~  }
                                                                   else if (isScala())
                                                                   {
 ~
@@ -3008,8 +2991,7 @@ object ~                                                        print(className.
   def getOffendingToken(e: ParseException) = {
     if (e.offending < 0) null else TOKEN(e.offending)
   }
-~
-                                                              }
+~                                                             }
                                                             }
 
                                                             void PrintCLike::printThreadBody1()
@@ -3064,8 +3046,7 @@ fprintf(stderr, "  <parse ~                                         if (useGlr)
                                                                     {
                            ~Utf8Encoder::encode(~                   }
                            ~xmlEscape(~                             print(isGo() ? L"nonterminal" : L"NONTERMINAL");
-                                      ~[nonterminalId], 0).c_str()~
-                                                                    if (stringIntroducer()[0])
+                                      ~[nonterminalId], 0).c_str()~ if (stringIntroducer()[0])
                                                                     {
                          ~).c_str()~                                }
                          ~,
@@ -3132,8 +3113,7 @@ if ~                                                                print(ifLeft
 ~
   ~                                                                 print(writeTrace());
                                                                     print(staticPrefix());
-  ~xmlEscape(~
-                                                                    print(staticPrefix());
+  ~xmlEscape(~                                                      print(staticPrefix());
                                                                     print(isGo() ? L"nonterminal" : L"NONTERMINAL");
                                                                     print(leftbracket());
              ~nonterminalId~                                        print(rightbracket());
@@ -3189,8 +3169,7 @@ if ~                                                                print(ifLeft
                                                                 if (isPython())
                                                                 {
 ~
-~
-                                                                  if (useGlr) print(thiz());
+~                                                                 if (useGlr) print(thiz());
 ~action &= ~                                                      print(format.toString<wchar_t>((int) LrStates::actionMask));
                                                                 }
                                                                 else
@@ -3585,12 +3564,12 @@ if ~                                                            print(ifLeftPare
   if ~                                                          print(ifLeftParen());
      ~nonterminalId < 0~                                        print(ifRightParen());
                                                                 printIndented(1, leftBrace());
-                                                                if (minimalAmbiguity)
+                                                                if (resolvesAmbiguity)
                                                                 {
 ~
-    ~                                                              print(thiz());
-    ~eventCount~                                                      print(incrementOp());
-                                                                      print(semicolon());
+    ~                                                             print(thiz());
+    ~eventCount~                                                  print(incrementOp());
+                                                                  print(semicolon());
                                                                 }
                                                                 if (tree)
                                                                 {
@@ -3598,6 +3577,13 @@ if ~                                                            print(ifLeftPare
     if ~                                                          print(ifLeftParen());
                                                                   if (useGlr) print(thiz());
        ~eventHandler != ~                                         print(nullPtr());
+                                                                  if (shiftAmbiguity)
+                                                                  {
+                                                                    print(isPython() ? L" or not " : L" || ! ");
+                                                                    print(thiz());
+                                                                    print(isGo() ? L"IsUnambiguous" : L"isUnambiguous");
+                                                                    if (! isScala()) print(L"()");
+                                                                  }
                                                                   print(ifRightParen());
                                                                   printIndented(2, leftBrace());
                                                                   if (useGlr)
@@ -3618,7 +3604,8 @@ if ~                                                            print(ifLeftPare
                                                                   }
 ~
       ~                                                           if (useGlr) print(thiz());
-      ~eventHandler~                                              print(arrow());
+      ~eventHandler~                                              if (shiftAmbiguity && isTypescript()) print(L"!");
+                                                                  print(arrow());
                                                                   if (isGo())
                                                                   {
                    ~T~                                            }
@@ -3670,10 +3657,10 @@ if ~                                                            print(ifLeftPare
                                                 ~l1~                print(rightbracket());
                                                    ~, ~             print(thiz());
                                                       ~b1, ~        print(thiz());
-                                                           ~e1~
-                                                                    if (isTypescript())
+                                                           ~e1~     if (isTypescript())
                                                                     {
-                                                              ~, -1~}
+                                                              ~, -1~
+                                                                    }
                                                                     if (isGo())
                                                                     {
                                                                      ~}}~
@@ -3794,8 +3781,7 @@ if ~                                                            print(ifLeftPare
 ~
   ~                                                                 print(writeTrace());
                                                                   }
-  ~"\"/>~
-                                                                  if (! isHaxe())
+  ~"\"/>~                                                         if (! isHaxe())
                                                                   {
         ~\n"~                                                       print(endWriteTrace());
                                                                     print(semicolon());
@@ -3884,8 +3870,7 @@ if ~                                                            print(ifLeftPare
     ~                                                               print(thiz());
     ~deferredCode = ~                                               if (isGo())
                                                                     {
-                    ~&DeferredCode{~
-                                                                    }
+                    ~&DeferredCode{~                                }
                                                                     else
                                                                     {
                                                                       if (! isPython())
@@ -3925,7 +3910,7 @@ if ~                                                            print(ifLeftPare
 ~
   nonterminalId = reduce~                                         print(semicolon());
                                                                 }
-                                                                if (minimalAmbiguity)
+                                                                if (resolvesAmbiguity)
                                                                 {
 ~
   ~                                                               print(thiz());
@@ -3968,8 +3953,7 @@ if ~                                                            print(ifLeftPare
                                                                   {
 ~
   ~                                                                 print(writeTrace());
-  ~"reduce\" nonterminal=\"" + ~
-                                                                    print(staticPrefix());
+  ~"reduce\" nonterminal=\"" + ~                                    print(staticPrefix());
                                ~xmlEscape(~                         print(staticPrefix());
                                                                     print(isGo() ? L"nonterminal" : L"NONTERMINAL");
                                                                     print(leftbracket());
@@ -3991,8 +3975,7 @@ if ~                                                            print(ifLeftPare
                                                                                      ~ + "\"/>~
                                                                     if (! isHaxe())
                                                                     {
-                               ~\n"~
-                                                                      print(endWriteTrace());
+                               ~\n"~                                  print(endWriteTrace());
                                                                       print(semicolon());
                                                                     }
                                                                     else
@@ -4152,6 +4135,13 @@ for ~                                                                   print(if
   if ~                                                            print(ifLeftParen());
                                                                   if (useGlr) print(thiz());
      ~eventHandler != ~                                           print(nullPtr());
+                                                                  if (shiftAmbiguity)
+                                                                  {
+                                                                    print(isPython() ? L" or not " : L" || ! ");
+                                                                    print(thiz());
+                                                                    print(isGo() ? L"IsUnambiguous" : L"isUnambiguous");
+                                                                    if (! isScala()) print(L"()");
+                                                                  }
                                                                   print(ifRightParen());
                                                                   printIndented(1, leftBrace());
                                                                   if (useGlr)
@@ -4172,7 +4162,8 @@ for ~                                                                   print(if
                                                                   }
 ~
     ~                                                             if (useGlr) print(thiz());
-    ~eventHandler~                                                print(arrow());
+    ~eventHandler~                                                if (shiftAmbiguity && isTypescript()) print(L"!");
+                                                                  print(arrow());
                                                                   if (isGo())
                                                                   {
                  ~N~                                              }
@@ -4215,8 +4206,7 @@ for ~                                                                   print(if
                                              ~NONTERMINAL~            print(leftbracket());
                                              ~nonterminalId~          print(rightbracket());
                                                            ~, ~       print(thiz());
-                                                              ~bs, ~
-                                                                      print(thiz());
+                                                              ~bs, ~  print(thiz());
                                                                    ~es, symbols)~
                                                                       print(semicolon());
                                                                     }
@@ -4639,9 +4629,9 @@ if ~                                                            print(ifLeftPare
                                                                     print(semicolon());
                                                                   }
 ~
-~
-                                                                  print(thiz());
-    ~eventHandler~                                                print(arrow());
+~                                                                 print(thiz());
+    ~eventHandler~                                                if (shiftAmbiguity && isTypescript()) print(L"!");
+                                                                  print(arrow());
                                                                   if (isGo())
                                                                   {
     ~T~                                                           }
@@ -4767,8 +4757,7 @@ if ~                                                            print(ifLeftPare
 ~
   ~                                                                 if (isHaxe())
                                                                     {
-  ~trace(~
-                                                                    }
+  ~trace(~                                                          }
                                                                     else
                                                                     {
                                                                       print(writeTrace());
@@ -5130,7 +5119,8 @@ if ~                                                            print(ifLeftPare
                                                                   decreaseIndent();
 ~
     ~                                                             print(thiz());
-    ~eventHandler~                                                print(arrow());
+    ~eventHandler~                                                if (shiftAmbiguity && isTypescript()) print(L"!");
+                                                                  print(arrow());
                                                                   if (isGo())
                                                                   {
     ~W~                                                           }
@@ -5940,7 +5930,7 @@ public function reset(l, b, e)
   ~id = ~                                                       if (isCSharp() || isCpp() || isHaxe() || isScala() || isTypescript() || isGo())
                                                                 {
                                                                   print(thiz());
-        ~parser~                                                   print(arrow());
+        ~parser~                                                  print(arrow());
                                                                 }
         ~maxId~                                                 print(semicolon());
                                                               }
@@ -5999,8 +5989,7 @@ if ~                                                                print(ifLeft
                                                                     print(thiz());
                                                                     print(token());
                ~ == ~                                               print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
-                    ~)~
-                                                                    if (isPython())
+                    ~)~                                             if (isPython())
                                                                     {
                       ~ and ~                                       }
                                                                     else
@@ -6033,8 +6022,7 @@ if ~                                                                print(ifLeft
         ~ && ~                                                      }
                                                                     print(thiz());
                                                                     print(token());
-             ~ >= 0~
-                                                                    if (isPython())
+             ~ >= 0~                                                if (isPython())
                                                                     {
                    ~ and ~                                          }
                                                                     else
@@ -6104,8 +6092,7 @@ if ~                                                                print(isPyth
          ~ && ~                                                     }
                                                                     print(thiz());
                                                                     print(token());
-              ~ >= 0~
-                                                                    if (isPython())
+              ~ >= 0~                                               if (isPython())
                                                                     {
                     ~ and ~                                         }
                                                                     else
@@ -6136,9 +6123,8 @@ if ~                                                                print(isPyth
                                                                         print(thiz());
                                                       ~input.char~      if (isTypescript() || isJavascript() || isHaxe())
                                                                         {
-                                                                 ~Code~
-                                                                        }
-                                                                 ~At(~ print(thiz());
+                                                                 ~Code~ }
+                                                                 ~At(~  print(thiz());
                                                                      ~b0)~
                                                                       }
                                                       ~ == 0x7D)~   }

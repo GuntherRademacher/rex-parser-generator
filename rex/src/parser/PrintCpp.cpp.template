@@ -1,5 +1,4 @@
-~
-                                                            #include "../common/Memory.hpp"
+~                                                           #include "../common/Memory.hpp"
 
                                                             #include "PrintCpp.hpp"
                                                             #include "ItemSet.hpp"
@@ -52,8 +51,7 @@
 #include <stdlib.h>
 #ifdef _WIN32
   #include <fcntl.h>
-  #include <io.h>~
-                                                                if (performanceTest)
+  #include <io.h>~                                              if (performanceTest)
                                                                 {
 ~
 #else
@@ -72,8 +70,7 @@
                                                               if (useGlr)
                                                               {
 ~
-#include <queue>~
-                                                                if (tree)
+#include <queue>~                                               if (tree)
                                                                 {
 ~
 #include <stack>~                                               }
@@ -161,8 +158,7 @@ public:~                                                        if (tree)
 }
 ~                                                               openMethod (L"", L"virtual ~~", className.c_str(), L"");
 ~
-{~
-                                                                if (useGlr)
+{~                                                              if (useGlr)
                                                                 {
 ~
   delete thread;~                                               }
@@ -205,7 +201,7 @@ public:~                                                      }
     virtual void nonterminal(~                                    print(stringType());
                              ~name, int begin, int end, int count) = 0;
     virtual void terminal(~                                       print(stringType());
-                          ~name, int begin, int end) = 0;~        if (minimalAmbiguity)
+                          ~name, int begin, int end) = 0;~        if (resolvesAmbiguity)
                                                                   {
 ~
     virtual void ambiguity(int begin, int end) = 0;~              }
@@ -509,8 +505,8 @@ public:~                                                      }
     std::vector<Nonterminal *> stack;
     int top;
   };
-~                                                             if (tree && isLrParser)
-                                                              {
+~                                                               if (tree && isLrParser)
+                                                                {
 ~
   class ParseTreeBuilder : public BottomUpEventHandler
   {
@@ -524,7 +520,7 @@ public:~                                                      }
       reset(0);
     }
 
-    void reset(~                                                print(stringType());
+    void reset(~                                                  print(stringType());
                ~input)
     {
       for (int i = 0; i <= top; ++i)
@@ -535,15 +531,15 @@ public:~                                                      }
       this->input = input;
     }
 
-    void nonterminal(~                                          print(stringType());
+    void nonterminal(~                                            print(stringType());
                      ~name, int begin, int end, int count)
-    {~                                                          if (rejectsAmbiguity())
-                                                                {
+    {~                                                            if (rejectsAmbiguity())
+                                                                  {
 ~
       if (count > top + 1)
       {
         std::vector<Symbol *> *content = pop(top + 1);
-        nonterminal(~                                             print(stringIntroducer());
+        nonterminal(~                                               print(stringIntroducer());
                     ~"UNAMBIGUOUS", begin, content->size() == 0 ? end : (*content)[0]->begin, 0);
         for (size_t i = 0; i < content->size(); ++i)
         {
@@ -551,22 +547,22 @@ public:~                                                      }
         }
         delete content;
         count = top + 1;
-      }~                                                        }
+      }~                                                          }
 ~
       push(new Nonterminal(name, begin, end, pop(count)));
     }
 
-    void terminal(~                                             print(stringType());
+    void terminal(~                                               print(stringType());
                   ~name, int begin, int end)
     {
       push(new Terminal(name, begin, end));
-    }~                                                          if (minimalAmbiguity)
-                                                                {
+    }~                                                            if (resolvesAmbiguity)
+                                                                  {
 ~
 
     void ambiguity(int begin, int end)
     {
-    }~                                                          }
+    }~                                                            }
 ~
 
     void serialize(EventHandler *e)
@@ -577,12 +573,12 @@ public:~                                                      }
         stack[i]->send(e);
       }
     }
-~                                                               if (useGlr)
-                                                                {
+~                                                                 if (useGlr)
+                                                                  {
 ~
     const std::vector<Symbol *> &getStack() const {return stack;}
     int getTop() const {return top;}
-~                                                               }
+~                                                                 }
 ~
     void push(Symbol *s)
     {
@@ -707,8 +703,8 @@ public:~                                                      }
 ~ambiguousInput~                                                }
                                                                 else
                                                                 {
-~false~                              }
-~;}~                              }
+~false~                                                         }
+~;}~                                                          }
 ~
   };
 ~                                                             /*
@@ -814,13 +810,11 @@ public:
 ~
   int pos;
 
-  StackNode(int state, ~
-                                                              if (grammar->states->hasLookback)
+  StackNode(int state, ~                                      if (grammar->states->hasLookback)
                                                               {
                        ~int code, ~                           }
                        ~int pos, StackNode *link)
-  : TreeStructuredStack(link), state(state)~
-                                                              if (grammar->states->hasLookback)
+  : TreeStructuredStack(link), state(state)~                  if (grammar->states->hasLookback)
                                                               {
                                            ~, code(code)~     }
                                            ~, pos(pos)
@@ -875,11 +869,22 @@ public:
   ~                                                             print(stringType());
   ~name;
   int begin;
-  int end;
+  int end;~                                                     if (shiftAmbiguity)
+                                                                {
+~
+  int depth;
+
+  virtual bool isTerminal() const {return false;}~              }
+~
 
   DeferredEvent(DeferredEvent *link, ~                          print(stringType());
                                      ~name, int begin, int end)
-  : TreeStructuredStack(link), name(name), begin(begin), end(end)
+  : TreeStructuredStack(link), name(name), begin(begin), end(end)~
+                                                                if (shiftAmbiguity)
+                                                                {
+~
+  , depth(link == 0 ? 1 : link->depth + 1)~                     }
+~
   {}
 
   virtual void execute(BottomUpEventHandler *eventHandler) = 0;
@@ -899,7 +904,11 @@ public:
     do
     {
       DeferredEvent *next = current->link;
-      current->execute(eventHandler);
+      ~                                                         if (shiftAmbiguity)
+                                                                {
+~if (eventHandler != 0)
+        ~                                                       }
+~current->execute(eventHandler);
       delete current;
       current = next;
     }
@@ -932,7 +941,12 @@ public:
   void execute(BottomUpEventHandler *eventHandler)
   {
     eventHandler->terminal(name, begin, end);
-  }
+  }~                                                            if (shiftAmbiguity)
+                                                                {
+~
+
+  bool isTerminal() const {return true;}~                       }
+~
 };
 
 class NonterminalEvent : public DeferredEvent
@@ -950,7 +964,7 @@ public:
     eventHandler->nonterminal(name, begin, end, count);
   }
 };
-~                                                               if (minimalAmbiguity)
+~                                                               if (resolvesAmbiguity)
                                                                 {
 ~
 
@@ -1110,7 +1124,7 @@ void parse(int target, int initialState, ~                    if (tree)
                                                                 if (hasCustomCode)
                                                                 {
 ~
-      thread->executeDeferredCode();~                            }
+      thread->executeDeferredCode();~                           }
 ~
     }~                                                        }
 ~
@@ -1156,15 +1170,15 @@ void rejectAmbiguity(ParsingThread *&thread~                    if (tree)
   ParseTreeBuilder *treeBuilder = new ParseTreeBuilder();
   treeBuilder->reset(input);
   second->show(treeBuilder);
-  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+  treeBuilder->nonterminal(~                                      print(stringIntroducer());
                            ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
   std::vector<Symbol *> *secondTree = treeBuilder->pop(1);
   first->show(treeBuilder);
-  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+  treeBuilder->nonterminal(~                                      print(stringIntroducer());
                            ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
   treeBuilder->push((*secondTree)[0]);
   delete secondTree;
-  treeBuilder->nonterminal(~                                    print(stringIntroducer());
+  treeBuilder->nonterminal(~                                      print(stringIntroducer());
                            ~"AMBIGUOUS", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, 2);~
                                                                 }
 ~
@@ -1189,14 +1203,41 @@ ParsingThread *resolve(ParsingThread *thread, ParsingThread *other)
     begin = a->pos;
   }~                                                            }
 ~
-  ParsingThread *winner = other->eventCount < thread->eventCount ? other : thread;
+~                                                               if (shiftAmbiguity)
+                                                                {
+~  DeferredEvent *ea = thread->deferredEvent;
+  DeferredEvent *eb = other->deferredEvent;
+  DeferredEvent *ua = 0;
+  DeferredEvent *ub = 0;
+  while (ea != eb)
+  {
+    if ((ea == 0 ? 0 : ea->depth) >= (eb == 0 ? 0 : eb->depth))
+    {
+      ua = ea;
+      ea = ea->link;
+    }
+    else
+    {
+      ub = eb;
+      eb = eb->link;
+    }
+  }
+  bool sa = ua != 0 && ua->isTerminal();
+  bool sb = ub != 0 && ub->isTerminal();
+  ParsingThread *winner = sa != sb ? (sb ? other : thread) : (other->eventCount < thread->eventCount ? other : thread);~
+                                                                }
+                                                                else
+                                                                {
+~  ParsingThread *winner = other->eventCount < thread->eventCount ? other : thread;~
+                                                                }
+~
   delete (winner == thread ? other : thread);~                  if (tree)
                                                                 {
 ~
   winner->addAmbiguity(begin, winner->e0);~                     }
 ~
   return winner;
-}~                                                             }
+}~                                                            }
                                                             }
 
                                                             void PrintCpp::openThread()
@@ -1221,7 +1262,7 @@ public:
 ~
   DeferredCode *deferredCode;~                                }
 ~
-  int id;~                                                    if (minimalAmbiguity)
+  int id;~                                                    if (resolvesAmbiguity)
                                                               {
 ~
   int eventCount;~                                            }
@@ -1243,7 +1284,7 @@ public:
                                                     ~, int target)
   {
     this->threads = &threads;
-    this->target = target;~                                   if (minimalAmbiguity)
+    this->target = target;~                                   if (resolvesAmbiguity)
                                                               {
 ~
     eventCount = 0;~                                          }
@@ -1304,7 +1345,7 @@ public:
     this->action = action;
     accepted = other->accepted;
     target = other->target;
-    parser = other->parser;~                                  if (minimalAmbiguity)
+    parser = other->parser;~                                  if (resolvesAmbiguity)
                                                               {
 ~
     eventCount = other->eventCount;~                          }
@@ -1346,7 +1387,7 @@ public:
     return this;
   }
 
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~
   void addAmbiguity(int begin, int end)
@@ -1711,16 +1752,16 @@ static std::~                                                   if (! parseChars
       content.erase(0, 3);
     }
 
-    return ~                                                   if (! parseChars)
-                                                               {
-           ~Utf8Decoder::decode(~                              }
-           ~content~                                           if (! parseChars)
-                                                               {
-                                ~.c_str())~                    }
+    return ~                                                    if (! parseChars)
+                                                                {
+           ~Utf8Decoder::decode(~                               }
+           ~content~                                            if (! parseChars)
+                                                                {
+                                ~.c_str())~                     }
                    ~;
   }
 }
-~                                                            }
+~                                                             }
                                                             }
 
                                                             void PrintCpp::printFileProcessor()
@@ -1755,87 +1796,86 @@ static std::~                                                   if (! parseChars
 #ifdef _WIN32
       _setmode(1, O_BINARY);
 #endif
-~                                                                 if (tree)
-                                                                  {
+~                                                             if (tree)
+                                                              {
 ~
-      bool indent = false;~                                       }
+      bool indent = false;~                                   }
 ~
       for (int i = 1; i < argc; ++i)
-      {~                                                          if (tree)
-                                                                  {
+      {~                                                      if (tree)
+                                                              {
 ~
         if (strcmp(argv[i], "-i") == 0)
         {
           indent = true;
           continue;
-        }~                                                        }
+        }~                                                    }
 ~
         try
-        {~                                                        if (tree)
-                                                                  {
+        {~                                                    if (tree)
+                                                              {
 ~
-          XmlSerializer s(indent);~                               }
+          XmlSerializer s(indent);~                           }
 ~
-          std::~                                                  if (! parseChars) append(L"w");
-               ~string input = read(argv[i]);~                    if (tree && isLrParser)
-                                                                  {
+          std::~                                              if (! parseChars) append(L"w");
+               ~string input = read(argv[i]);~                if (tree && isLrParser)
+                                                              {
 ~
-          ParseTreeBuilder t;~                                    }
+          ParseTreeBuilder t;~                                }
 ~
-          ~                                                       print(className.c_str());
-          ~ parser(input.c_str()~                                 if (tree)
-                                                                  {
-                                                                    if (isLrParser)
-                                                                    {
-                                ~, &t~                              }
-                                                                    else
-                                                                    {
-                                ~, &s~                              }
-                                                                  }
+          ~                                                   print(className.c_str());
+          ~ parser(input.c_str()~                             if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                ~, &t~                          }
+                                                                else
+                                                                {
+                                ~, &s~                          }
+                                                              }
                                 ~);
           try
-          {~
-                                                                  if (trace)
-                                                                  {
+          {~                                                  if (trace)
+                                                              {
 ~
             fprintf(stderr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-            fprintf(stderr, "<trace>\n");~                        }
+            fprintf(stderr, "<trace>\n");~                    }
 ~
-            parser.~                                              print(methodPrefix);
-                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                   ~();~                                          if (trace)
-                                                                  {
+            parser.~                                          print(methodPrefix);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                   ~();~                                      if (trace)
+                                                              {
 ~
-            fprintf(stderr, "</trace>\n");~                       }
-                                                                  if (tree && isLrParser)
-                                                                  {
+            fprintf(stderr, "</trace>\n");~                   }
+                                                              if (tree && isLrParser)
+                                                              {
 ~
-            t.serialize(&s);~                                     }
+            t.serialize(&s);~                                 }
 ~
           }
           catch (ParseException &pe)
-          {~                                                      if (tree)
-                                                                  {
-                                                                    if (rejectsAmbiguity())
-                                                                    {
+          {~                                                  if (tree)
+                                                              {
+                                                                if (rejectsAmbiguity())
+                                                                {
 ~
             if (pe.isAmbiguousInput())
             {
               pe.serialize(&s);
               putchar('\n');
               fflush(stdout);
-            }~                                                      }
+            }~                                                  }
 ~
-            fprintf(stderr, "\n");~                               }
+            fprintf(stderr, "\n");~                           }
 ~
-            fprintf(stderr, "%s\n", ~                             if (! parseChars)
-                                                                  {
-                                    ~Utf8Encoder::encode(~        }
+            fprintf(stderr, "%s\n", ~                         if (! parseChars)
+                                                              {
+                                    ~Utf8Encoder::encode(~    }
                                     ~parser.getErrorMessage(pe).c_str()~
-                                                                  if (! parseChars)
-                                                                  {
+                                                              if (! parseChars)
+                                                              {
                                                                        ~).c_str()~
-                                                                  }
+                                                              }
                          ~);
             returnCode = 1;
             break;
@@ -1976,32 +2016,32 @@ static std::~                                                   if (! parseChars
                 {
                   fprintf(stderr, "content counter saw %d but input length is %d\n", job->contentCounter->getLength(), job->content->size());
                   exit(1);
-                }~                                                      }
+                }~                                            }
 ~
                 parsed += job->content->size();
               }
               catch (ParseException &pe)
               {
                 ++errorCount;
-                if (quiet) fprintf(stdout, "parsing %s", ~      if (! parseChars)
-                                                                {
+                if (quiet) fprintf(stdout, "parsing %s", ~    if (! parseChars)
+                                                              {
                                                          ~Utf8Encoder::encode(~
-                                                                }
+                                                              }
                                                          ~job->name->c_str()~
-                                                                if (! parseChars)
-                                                                {
+                                                              if (! parseChars)
+                                                              {
                                                                             ~).c_str()~
-                                                                }
+                                                              }
                                                                                       ~);
-                fprintf(stdout, ": error:\n%s", ~               if (! parseChars)
-                                                                {
+                fprintf(stdout, ": error:\n%s", ~             if (! parseChars)
+                                                              {
                                                 ~Utf8Encoder::encode(~
-                                                                }
+                                                              }
                                                 ~job->parser->getErrorMessage(pe).c_str()~
-                                                                if (! parseChars)
-                                                                {
+                                                              if (! parseChars)
+                                                              {
                                                                                          ~).c_str()~
-                                                                }
+                                                              }
                                                                                                    ~);
                 delete job->parser;
                 job->parser = 0;

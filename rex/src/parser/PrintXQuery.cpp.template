@@ -724,8 +724,7 @@ return
                                ~", "end", "~                    print(node->name);
                                            ~"),
   $state
-)~
-                                                                decreaseIndent();
+)~                                                              decreaseIndent();
                                                               }
 ~
 };
@@ -890,7 +889,52 @@ declare function p:thread-equals($t1 as map(*), $t2 as map(*)) as xs:boolean
   if ($t1?state ne $t2?state) then false() else
   if ($t1?action ne $t2?action) then false() else deep-equal($t1?stack, $t2?stack)
 };
+~                                                                 if (grammar->shiftAmbiguity)
+                                                                  {
+~
+(:~~
+ : Replace the shift flags of a fork history that are still undecided, because the fork is
+ : continued by another fork, with the flag of the first action that was actually taken.
+ :
+ : @param $fork the fork history.
+ : @param $flag the flag of the first action: 1 for shift, 0 for reduce, 2 for another fork.
+ : @return the fork history with settled flags.
+ :)
+declare function p:settle($fork as xs:integer*, $flag as xs:integer) as xs:integer*
+{
+  if ($flag eq 2) then
+    $fork
+  else
+    for $i in 1 to count($fork)
+    return if ($i mod 3 eq 0 and $fork[$i] eq 2) then $flag else $fork[$i]
+};
 
+(:~~
+ : Select one of two threads. At the fork where the threads diverged, the thread that started with a
+ : shift is preferred, if the other one did not. Otherwise, the thread that has created fewer elements
+ : is selected, and in case of a tie the first one.
+ :
+ : @param $thread the first thread data.
+ : @param $other the second thread data.
+ : @return the preferred thread data.
+ :)
+declare function p:prefer($thread as map(*), $other as map(*)) as map(*)
+{
+  let $fork1 := $thread?fork
+  let $fork2 := $other?fork
+  let $k := (for $i in 1 to min((count($fork1), count($fork2))) return if ($fork1[$i] ne $fork2[$i]) then $i else ())[1]
+  let $j := ($k + 2) idiv 3
+  let $fewer := if ($other?created lt $thread?created) then $other else $thread
+  return
+    if (empty($k) or $fork1[3 * $j - 2] ne $fork2[3 * $j - 2] or ($fork1[3 * $j] eq 1) eq ($fork2[3 * $j] eq 1)) then
+      $fewer
+    else if ($fork1[3 * $j] eq 1) then
+      $thread
+    else
+      $other
+};
+~                                                                 }
+~
 (:~~
  : Perform GLR parsing by selecting a thread and invoke the LR parse function
  : on it for a single token. Process result with respect to thread management.
@@ -916,10 +960,17 @@ declare function p:parse-glr($input as xs:string,
       return
         if (count($longest-accept) eq 1) then
           $longest-accept?lexer-state
-        else~                                                     if (grammar->minimalAmbiguity)
+        else~                                                     if (grammar->resolvesAmbiguity)
                                                                   {
 ~
-          sort($longest-accept, (), function($t) {$t?created})[1]?lexer-state~
+~                                                                   if (grammar->shiftAmbiguity)
+                                                                    {
+~          fold-left(tail($longest-accept), head($longest-accept), p:prefer#2)?lexer-state~
+                                                                    }
+                                                                    else
+                                                                    {
+~          sort($longest-accept, (), function($t) {$t?created})[1]?lexer-state~
+                                                                    }
                                                                   }
                                                                   else
                                                                   {
@@ -935,20 +986,26 @@ declare function p:parse-glr($input as xs:string,
       let $other := if (exists($threads)) then $threads[p:next-thread($threads, 1, 2)] else ()
       return
         if (exists($other) and p:thread-equals($thread, $other)) then~
-                                                                  if (grammar->minimalAmbiguity)
+                                                                  if (grammar->resolvesAmbiguity)
                                                                   {
 ~
           let $j := p:next-thread($threads, 1, 2)
           return
-            p:parse-glr($input, $target, $max-id, (subsequence($threads, 1, $j - 1), subsequence($threads, $j + 1), if ($other?created lt $thread?created) then $other else $thread))~
-                                                                  }
+            p:parse-glr($input, $target, $max-id, (subsequence($threads, 1, $j - 1), subsequence($threads, $j + 1), ~
+                                                                    if (grammar->shiftAmbiguity)
+                                                                    {
+~p:prefer($thread, $other)~                                         }
+                                                                    else
+                                                                    {
+~if ($other?created lt $thread?created) then $other else $thread~   }
+~))~                                                              }
                                                                   else
                                                                   {
 ~
-          p:reject-ambiguity($thread~                             if (tree)
-                                                                  {
-                                    ~, $other~                    }
-                                    ~)~                         }
+          p:reject-ambiguity($thread~                               if (tree)
+                                                                    {
+                                    ~, $other~                      }
+                                    ~)~                           }
 ~
         else
           let $thread := p:parse($input, $target, $max-id, $thread)
@@ -963,23 +1020,23 @@ declare function p:parse-glr($input as xs:string,
             else
               $lexer-state
 };
-~                                                               if (! grammar->minimalAmbiguity)
-                                                                {
+~                                                                 if (! grammar->resolvesAmbiguity)
+                                                                  {
 ~
 (:~~
  : Raise an error for ambiguous input.
  :
- : @param $thread the parsing thread data.~                       if (tree)
-                                                                  {
+ : @param $thread the parsing thread data.~                         if (tree)
+                                                                    {
 ~
- : @param $other the parsing thread data of the other thread.~    }
+ : @param $other the parsing thread data of the other thread.~      }
 ~
  : @return a lexer state containing an error element describing the ambiguity.
  :)
-declare function p:reject-ambiguity($thread as map(*)~            if (tree)
-                                                                  {
+declare function p:reject-ambiguity($thread as map(*)~              if (tree)
+                                                                    {
                                                      ~, $other as map(*)~
-                                                                  }
+                                                                    }
                                                      ~) as item()+
 {
   let $lexer-state := $thread?lexer-state
@@ -990,8 +1047,8 @@ declare function p:reject-ambiguity($thread as map(*)~            if (tree)
     {
       attribute b {$thread?stack[last() - 2]},
       attribute e {$lexer-state[$p:e0]},
-      attribute ambiguous-input {true()}~                         if (tree)
-                                                                  {
+      attribute ambiguous-input {true()}~                           if (tree)
+                                                                    {
                                         ~,
       let $first-tree := subsequence($lexer-state, $p:result)
       let $second-tree := subsequence($other?lexer-state, $p:result)
@@ -1000,14 +1057,14 @@ declare function p:reject-ambiguity($thread as map(*)~            if (tree)
         <AMBIGUOUS>
           <ALTERNATIVE>{p:rewrite-ambiguity($first-tree, $shared, true())}</ALTERNATIVE>
           <ALTERNATIVE>{p:rewrite-ambiguity($second-tree, $shared, true())}</ALTERNATIVE>
-        </AMBIGUOUS>~                                             }
+        </AMBIGUOUS>~                                               }
 ~
     },
     subsequence($lexer-state, $p:error + 1)
   )
 };
-~                                                                 if (tree)
-                                                                  {
+~                                                                   if (tree)
+                                                                    {
 ~
 (:~~
  : Determine the number of elements that two threads have in common, from their fork history. The
@@ -1087,8 +1144,8 @@ declare function p:shared-run($nodes as node()*, $i as xs:integer, $last as xs:i
     else
       p:shared-run($nodes, $i + 1, $last, $left)
 };
-~                                                               }
-                                                              }
+~                                                                   }
+                                                                  }
 ~
 (:~~
  : Construct a new map containing data for one parsing thread.
@@ -1263,7 +1320,22 @@ declare function p:parse($input as xs:string,
         p:trace(concat($trace, "fork""/>")),~                     }
 ~
         for $i in (1, 2)
-        return p:thread(($max-id + 1, $thread?id)[$i], false(), ($thread?fork, $thread?created, $i - 1), $thread?created, $state, $p:APPENDIX[$argument + $i], -1, $bw, $bs, $es, $stack, $lexer-state)~
+        return~                                                   if (grammar->shiftAmbiguity)
+                                                                  {
+~ let $flag := (if (($p:APPENDIX[$argument + $i] mod ~              print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+~) eq 7) then 2 else if ((1, 4, 5, 6) = ($p:APPENDIX[$argument + $i] mod ~
+                                                                    print(format.toString<wchar_t>(1 << (int) LrStates::actionBits));
+~)) then 1 else 0) return~                                        }
+~ p:thread(($max-id + 1, $thread?id)[$i], false(), (~             if (grammar->shiftAmbiguity)
+                                                                  {
+~p:settle($thread?fork, $flag)~                                   }
+                                                                  else
+                                                                  {
+~$thread?fork~                                                    }
+~, $thread?created, $i - 1~                                       if (grammar->shiftAmbiguity)
+                                                                  {
+~, $flag~                                                         }
+~), $thread?created, $state, $p:APPENDIX[$argument + $i], -1, $bw, $bs, $es, $stack, $lexer-state)~
                                                                   if (trace)
                                                                   {
 ~
@@ -1459,8 +1531,7 @@ declare function p:parse($input as xs:string,
                                                                   decreaseIndent();
 ~
 };
-~
-                                                                if (hasCustomCode)
+~                                                               if (hasCustomCode)
                                                                 {
 ~
 (:~~
@@ -1628,8 +1699,7 @@ declare function p:error-message($input as xs:string, $error as element(error)) 
       ""
     )
 };
-~
-                                                              const wchar_t *name[2] = {L"consume", L"consumeT"};
+~                                                             const wchar_t *name[2] = {L"consume", L"consumeT"};
                                                               for (int i = 0; i < consumeMethods; ++i)
                                                               {
 ~
@@ -1770,8 +1840,7 @@ declare function p:whitespace($input as xs:string,
       }
     )
 };
-~
-                                                                }
+~                                                               }
 ~
 (:~~
  : Use p:match to fetch the next token, but skip any leading
@@ -1834,14 +1903,13 @@ declare function p:matchW($input as xs:string,
                        ~-glr~                                       }
                        ~($input, -1~                                if (grammar->useGlr)
                                                                     {
-                                  ~, 0, p:thread(0, false(), (), 0~     }
+                                  ~, 0, p:thread(0, false(), (), 0~ }
                                   ~, ~                              print(format.toString<wchar_t>((*grammar->states)[grammar->whitespace->state]->getStateId()));
                                   ~, $state[$p:lk], -1, $e0, $e0, $e0, (1, -1, 0), $state~
                                                                     if (grammar->useGlr)
                                                                     {
                                   ~)~                               }
-                                  ~)~
-                                                                  }
+                                  ~)~                             }
                                                                   else
                                                                   {
 ~
@@ -1853,8 +1921,7 @@ declare function p:matchW($input as xs:string,
                                                                     {
                                                           ~, <memo/>~
                                                                     }
-                                                          ~))~
-                                                                  }
+                                                          ~))~    }
 ~
   return
     if ($state[$p:error]) then
@@ -1866,9 +1933,9 @@ declare function p:matchW($input as xs:string,
           xs:integer($error/@e)
         )
     else
-      p:matchW($input, $state[$p:e0], $token-set~                   if (grammar->useGlr)
-                                                                    {
-                                                   ~, $id~          }
+      p:matchW($input, $state[$p:e0], $token-set~                 if (grammar->useGlr)
+                                                                  {
+                                                   ~, $id~        }
                                                    ~)~          }
 ~
 else
@@ -2043,8 +2110,7 @@ declare function p:memoized($state as item()+, $dpi as xs:integer) as item()+
 declare function p:lookahead~                                   print(format.toString<wchar_t>(k));
                                                                 if (withWhitespace)
                                                                 {
-                            ~W~
-                                                                }
+                            ~W~                                 }
                             ~(~                                 if (k != 1 && unlimitedLookahead)
                                                                 {
                               ~$prefix as xs:integer, ~         }
@@ -2079,8 +2145,7 @@ declare function p:lookahead~                                   print(format.toS
 ~
       p:match~                                                  if (withWhitespace)
                                                                 {
-             ~W~
-                                                                }
+             ~W~                                                }
              ~($input, $state[$p:e~                             print(format.toString<wchar_t>(k - 1));
                                   ~], $set~                     if (grammar->useGlr)
                                                                 {
@@ -2126,8 +2191,7 @@ declare function p:lookahead~                                   print(format.toS
   )~                                                            if (k == 1) decreaseIndent();
 ~
 };
-~
-                                                              }
+~                                                             }
                                                               setIndent(0);
                                                             }
 
@@ -2189,14 +2253,13 @@ declare function p:~                                              print(methodPr
                        ~($s, ~                                      print(format.toString<wchar_t>(p->nonterminalCode));
                                                                     if (grammar->useGlr)
                                                                     {
-                             ~, 0, p:thread(0, false(), (), 0~          }
+                             ~, 0, p:thread(0, false(), (), 0~      }
                              ~, ~                                   print(format.toString<wchar_t>((*grammar->states)[p->state]->getStateId()));
                              ~, $state[$p:lk], -1, 1, 1, 1, (1, -1, 0), $state~
                                                                     if (grammar->useGlr)
                                                                     {
                              ~)~                                    }
-                             ~)~
-                                                                  }
+                             ~)~                                  }
                                                                   else
                                                                   {
 ~
@@ -2214,8 +2277,7 @@ declare function p:~                                              print(methodPr
       element ERROR {$error/@*, p:error-message($s, $error)}~     if (tree && grammar->useGlr)
                                                                   {
 ~
-    )~
-                                                                  }
+    )~                                                            }
 ~
     else
       subsequence($state, $p:result)
@@ -2280,8 +2342,7 @@ declare function p:trace-nonterminal($state as item()+,
  :)
 declare variable $input as xs:string external;
 
-let $result :=~
-                                                                if (trace)
+let $result :=~                                                 if (trace)
                                                                 {
 ~
 (
@@ -2400,8 +2461,7 @@ declare variable $p:memo as xs:integer := ~                     print(format.toS
  : used for collecting action results.
  :)
 declare variable $p:result as xs:integer := ~                 print(format.toString<wchar_t>(++stateIndex));
-                                            ~;~
-                                                            }
+                                            ~;~             }
 
                                                             void PrintXQuery::printProlog(Grammar *aNode)
                                                             {
@@ -2423,8 +2483,7 @@ module namespace p="~                                             print(classNam
                     ~";~                                        }
 ~
 declare default function namespace "http://www.w3.org/2005/xpath-functions";
-~
-                                                                if (debug)
+~                                                               if (debug)
                                                                 {
 ~declare namespace debug="DEBUG";
 ~                                                               }
@@ -2442,21 +2501,21 @@ declare default function namespace "http://www.w3.org/2005/xpath-functions";
                                                               {
 ~
 (:~~
- : ~                                                          if (px->methodPrefix != px->methodPrefixTry)
-                                                              {
-   ~Parse~                                                    }
-                                                              else
-                                                              {
-   ~Try parsing~                                              }
-               ~ the ~                                        px->print(px->format.toString<wchar_t>(node->loopId));
-                                                              switch (node->loopId)
-                                                              {
-                                                              case 1:  append(L"st"); break;
-                                                              case 2:  append(L"nd"); break;
-                                                              case 3:  append(L"rd"); break;
-                                                              default: append(L"th"); break;
-                                                              }
-                     ~ loop of production ~                   px->print(node->production->name);
+ : ~                                                            if (px->methodPrefix != px->methodPrefixTry)
+                                                                {
+   ~Parse~                                                      }
+                                                                else
+                                                                {
+   ~Try parsing~                                                }
+               ~ the ~                                          px->print(px->format.toString<wchar_t>(node->loopId));
+                                                                switch (node->loopId)
+                                                                {
+                                                                case 1:  append(L"st"); break;
+                                                                case 2:  append(L"nd"); break;
+                                                                case 3:  append(L"rd"); break;
+                                                                default: append(L"th"); break;
+                                                                }
+                     ~ loop of production ~                     px->print(node->production->name);
                                           ~ (zero or more). Use
  : tail recursion for iteratively updating the lexer state.
  :
@@ -2464,65 +2523,64 @@ declare default function namespace "http://www.w3.org/2005/xpath-functions";
  : @param $state lexer state, error indicator, and result stack.
  : @return the updated state.
  :)
-declare function p:~                                          px->print(px->methodPrefix);
-                   ~-~                                        px->print(node->production->name);
-                     ~-~                                      px->print(px->format.toString<wchar_t>(node->loopId));
+declare function p:~                                            px->print(px->methodPrefix);
+                   ~-~                                          px->print(node->production->name);
+                     ~-~                                        px->print(px->format.toString<wchar_t>(node->loopId));
                        ~($input as xs:string, $state as item()+)
 {
   if ($state[$p:error]) then
     $state
-  else~                                                       px->increaseIndent(2);
-                                                              bool hasLookahead =
-                                                                px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
-                                                              px->automaticSemicolonInsertion(node);
-                                                              bool nestedTry = px->methodPrefix == px->methodPrefixTry;
-                                                              bool hasBacktracking =
-                                                                px->printBacktracking(node,
-                                                                                      node->getLookahead(),
-                                                                                      node->conflictCaseId,
-                                                                                      node->conflictId,
-                                                                                      node->firstElementChild);
-                                                              if (hasLookahead || hasBacktracking)
-                                                              {
+  else~                                                         px->increaseIndent(2);
+                                                                bool hasLookahead =
+                                                                  px->printLookahead(node->k, *px->grammar->epsilon, 1, node->getLookahead(), node->findsLookahead);
+                                                                px->automaticSemicolonInsertion(node);
+                                                                bool nestedTry = px->methodPrefix == px->methodPrefixTry;
+                                                                bool hasBacktracking =
+                                                                  px->printBacktracking(node,
+                                                                                        node->getLookahead(),
+                                                                                        node->conflictCaseId,
+                                                                                        node->conflictId,
+                                                                                        node->firstElementChild);
+                                                                if (hasLookahead || hasBacktracking)
+                                                                {
 ~
-return~                                                         px->increaseIndent();
-                                                              }
-                                                              const wchar_t *prefix = L"if (";
-                                                              if (hasBacktracking && nestedTry)
-                                                              {
+return~                                                           px->increaseIndent();
+                                                                }
+                                                                const wchar_t *prefix = L"if (";
+                                                                if (hasBacktracking && nestedTry)
+                                                                {
 ~
 if ($state[$p:lk] = -3) then
-  p:~                                                           px->print(px->methodPrefix);
-    ~-~                                                         px->print(node->production->name);
-      ~-~                                                       px->print(px->format.toString<wchar_t>(node->loopId));
-        ~($input, $state)~                                      prefix = L"else if (";
-                                                              }
-                                                              MatchType matchType;
-                                                              const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
-                                                              px->printMatch(node->getLookahead(),
-                                                                             node->k,
-                                                                             node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
-                                                                             match,
-                                                                             matchType == IF ? IFNOT : IF,
-                                                                             1,
-                                                                             prefix,
-                                                                             L") then");
+  p:~                                                             px->print(px->methodPrefix);
+    ~-~                                                           px->print(node->production->name);
+      ~-~                                                         px->print(px->format.toString<wchar_t>(node->loopId));
+        ~($input, $state)~                                        prefix = L"else if (";
+                                                                }
+                                                                MatchType matchType;
+                                                                const TokenSequenceSet &match = node->firstElementChild->getMatch(matchType);
+                                                                px->printMatch(node->getLookahead(),
+                                                                               node->k,
+                                                                               node->conflicts(node->k) == 0 ? 0 : matchType == IF ? 1 : 2,
+                                                                               match,
+                                                                               matchType == IF ? IFNOT : IF,
+                                                                               1,
+                                                                               prefix,
+                                                                               L") then");
 ~
   $state
-else~                                                         px->Visitor::visitNodeWithChildren(node);
+else~                                                           px->Visitor::visitNodeWithChildren(node);
 ~
-  return p:~                                                  px->print(px->methodPrefix);
-           ~-~                                                px->print(node->production->name);
-             ~-~                                              px->print(px->format.toString<wchar_t>(node->loopId));
-               ~($input, $state)~                             px->decreaseIndent(2);
-                                                              if (hasLookahead || hasBacktracking)
-                                                              {
-                                                                px->decreaseIndent();
-                                                              }
+  return p:~                                                    px->print(px->methodPrefix);
+           ~-~                                                  px->print(node->production->name);
+             ~-~                                                px->print(px->format.toString<wchar_t>(node->loopId));
+               ~($input, $state)~                               px->decreaseIndent(2);
+                                                                if (hasLookahead || hasBacktracking)
+                                                                {
+                                                                  px->decreaseIndent();
+                                                                }
 ~
 };
-~
-                                                              }
+~                                                             }
                                                               if (px->methodPrefix != px->methodPrefixTry && node->runOffLoad)
                                                               {
                                                                 px->methodPrefix = px->methodPrefixTry;
@@ -2646,7 +2704,8 @@ let $state :=~                                                  switch (node->au
 ~
   if ($state[$p:l1] = (~                                            print(format.toString<wchar_t>(grammar->externalTokenCode[plusplus]));
                        ~, ~                                         print(format.toString<wchar_t>(grammar->externalTokenCode[minusminus]));
-                          ~) and p:follows-line-terminator($input, $state)) then~ tss.insert(grammar->tokenSequence(plusplus));
+                          ~) and p:follows-line-terminator($input, $state)) then~
+                                                                    tss.insert(grammar->tokenSequence(plusplus));
                                                                     tss.insert(grammar->tokenSequence(minusminus));
                                                                     printCodeSequenceAnnotation(tss);
                                                                   }

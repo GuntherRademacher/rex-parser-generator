@@ -46,8 +46,7 @@
   state int~                                                  }
 ~
 }
-~
-                                                              const char *clazz = variable("useGlr").boolean() ? "ParsingThread" : variable("classname").string();
+~                                                             const char *clazz = variable("useGlr").boolean() ? "ParsingThread" : variable("classname").string();
                                                               if (! variable("embedded").boolean())
                                                               {
 ~
@@ -104,11 +103,10 @@ func (this *~                                                 print(clazz);
                                                                 if (variable("trace").boolean())
                                                                 {
 ~
-  writeTrace("  <tokenize ~
-                                                                if (variable("useGlr").boolean())
-                                                                {
+  writeTrace("  <tokenize ~                                       if (variable("useGlr").boolean())
+                                                                  {
                           ~thread=\"" + strconv.Itoa(this.id) + "\" ~
-                                                                }
+                                                                  }
                           ~tokenset=\"" + strconv.Itoa(tokenSetId) + "\">\n")
 ~                                                               }
                                                                 if (lookahead)
@@ -126,13 +124,12 @@ func (this *~                                                 print(clazz);
 ~                                                               if (variable("trace").boolean())
                                                                 {
 ~
-  writeTrace("    <next state=\"" + strconv.Itoa(result & ~      print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+  writeTrace("    <next state=\"" + strconv.Itoa(result & ~       print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                           ~) + "\"")~
                                                                 }
 ~
   for code := result & ~                                        print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                       ~; code != 0; {~
-                                                                if (variable("trace").boolean())
+                       ~; code != 0; {~                         if (variable("trace").boolean())
                                                                 {
 ~
     writeTrace(" offset=\"" + strconv.Itoa(current) + "\"")~    }
@@ -151,8 +148,7 @@ func (this *~                                                 print(clazz);
     }~
 ~
     if c0 < 0x~                                                 print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
-              ~ {~
-                                                                if (variable("trace").boolean())
+              ~ {~                                              if (variable("trace").boolean())
                                                                 {
 ~
       if c0 >= 32 && c0 <= 126 {
@@ -211,7 +207,7 @@ func (this *~                                                 print(clazz);
       result = code~                                            if (variable("trace").boolean())
                                                                 {
 ~
-      writeTrace(" result=\"" + xmlEscape(token[((result >> ~    print(variable("stateCodeBits").integer());
+      writeTrace(" result=\"" + xmlEscape(token[((result >> ~     print(variable("stateCodeBits").integer());
                                                             ~) & ~
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                             ~) - 1]) + "\"")~
@@ -226,7 +222,7 @@ func (this *~                                                 print(clazz);
 ~
       if result & ~                                                   print(Math::powerof(2, contextOffset));
                   ~ > 0 {
-        writeTrace(" token-size=\"" + strconv.Itoa(result >> ~       print(sizeOffset);
+        writeTrace(" token-size=\"" + strconv.Itoa(result >> ~        print(sizeOffset);
                                                              ~) + "\"")
       } else ~                                                      }
                                                                     else
@@ -344,8 +340,7 @@ func (this *~                                                 print(clazz);
   }~                                                            if (variable("trace").boolean())
                                                                 {
 ~
-  writeTrace("    <done result=\"" + xmlEscape(token[(result & ~
-                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+  writeTrace("    <done result=\"" + xmlEscape(token[(result & ~  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
              ~) - 1]) + "\" begin=\"" + strconv.Itoa(this.begin) + "\" end=\"" + strconv.Itoa(this.end) + "\"/>\n")
   writeTrace("  </tokenize>\n")~                                }
                                                                 if (hack)
@@ -435,8 +430,7 @@ func getTokenSet(tokenSetId int) []string {~                  }
   } else {
     s = initial[tokenSetId] & ~                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                               ~
-  }~
-                                                              }
+  }~                                                          }
 ~
   set := []string {}
   size := 0
@@ -481,8 +475,7 @@ func getTokenSet(tokenSetId int) []string {~                  }
     ~ */ ~                                                        print(token.string(i));
                                                                 }
     ~
-  };~
-                                                              }
+  };~                                                         }
                                                               if (variable("selfTest").boolean())
                                                               {
 ~
@@ -520,21 +513,21 @@ func getTokenSet(tokenSetId int) []string {~                  }
 
   public static void main(String[] args)
   {
-    ~                                                         print(variable("classname").string());
-    ~ testee = new ~                                          print(variable("classname").string());
+    ~                                                           print(variable("classname").string());
+    ~ testee = new ~                                            print(variable("classname").string());
                    ~();
-    for (int e = 0; e < ~                                     print(variable("a0").size);
+    for (int e = 0; e < ~                                       print(variable("a0").size);
                         ~; ++e)
     {
-      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      int s = INITIAL[e] & ~                                    print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                            ~;
-      for (int i = 0; i < ~                                   print(variable("t1").size);
+      for (int i = 0; i < ~                                     print(variable("t1").size);
                           ~; i += 32)
       {
         int j = i;
-        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+        int i0 = (i >> 5) * ~                                   print(variable("transitionStateCount").integer());
                             ~ + s - 1;
-~                                                             compressedMapAccessor(8, "i", "f := ", "expected", &variable("t0bits").integer());
+~                                                               compressedMapAccessor(8, "i", "f := ", "expected", &variable("t0bits").integer());
 ~
         for ( ; f != 0; f >>>= 1, ++j)
         {

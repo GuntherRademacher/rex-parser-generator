@@ -1,4 +1,4 @@
-// This file was generated on Sat Oct 17, 2026 11:26 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorCpp.cpp.template
                                                             #line 1 "CodeGeneratorCpp.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -184,24 +184,24 @@
                                                               }
                                                             #line 186 "CodeGeneratorCpp.cpp"
   append(L"input[current];");
-                                                            #line 104 "CodeGeneratorCpp.cpp.template"
+                                                            #line 103 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 191 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      fprintf(stderr, \" offset=\\\"%d\\\"\", current);");
-                                                            #line 107 "CodeGeneratorCpp.cpp.template"
+                                                            #line 106 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 196 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      ++current;\n");
   append(L"      if (c0 < ");
-                                                            #line 110 "CodeGeneratorCpp.cpp.template"
+                                                            #line 109 "CodeGeneratorCpp.cpp.template"
                                                               print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, "0x", "0123456789abcdef"));
                                                             #line 202 "CodeGeneratorCpp.cpp"
   append(L")\n");
   append(L"      {");
-                                                            #line 112 "CodeGeneratorCpp.cpp.template"
+                                                            #line 111 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 208 "CodeGeneratorCpp.cpp"
@@ -209,251 +209,251 @@
   append(L"        if (c0 >= 32 && c0 <= 126)\n");
   append(L"        {\n");
   append(L"          ");
-                                                            #line 117 "CodeGeneratorCpp.cpp.template"
+                                                            #line 116 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "char" : "wchar_t");
                                                             #line 215 "CodeGeneratorCpp.cpp"
   append(L" c = (");
-                                                            #line 118 "CodeGeneratorCpp.cpp.template"
+                                                            #line 117 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "char" : "wchar_t");
                                                             #line 219 "CodeGeneratorCpp.cpp"
   append(L") c0;\n");
   append(L"          fprintf(stderr, \" char=\\\"%s\\\"\", ");
-                                                            #line 120 "CodeGeneratorCpp.cpp.template"
+                                                            #line 119 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 225 "CodeGeneratorCpp.cpp"
   append(L"Utf8Encoder::encode(");
-                                                            #line 123 "CodeGeneratorCpp.cpp.template"
+                                                            #line 122 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 229 "CodeGeneratorCpp.cpp"
   append(L"xmlEscape(&c, 1).c_str()");
-                                                            #line 125 "CodeGeneratorCpp.cpp.template"
+                                                            #line 124 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 234 "CodeGeneratorCpp.cpp"
   append(L").c_str()");
-                                                            #line 127 "CodeGeneratorCpp.cpp.template"
+                                                            #line 126 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 238 "CodeGeneratorCpp.cpp"
   append(L");\n");
   append(L"        }");
-                                                            #line 129 "CodeGeneratorCpp.cpp.template"
+                                                            #line 128 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 243 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        charclass = MAP0[c0];\n");
   append(L"      }\n");
   append(L"      else");
-                                                            #line 133 "CodeGeneratorCpp.cpp.template"
+                                                            #line 132 "CodeGeneratorCpp.cpp.template"
                                                               if (! utf8)
                                                               {
                                                             #line 251 "CodeGeneratorCpp.cpp"
   append(L" ");
-                                                            #line 135 "CodeGeneratorCpp.cpp.template"
+                                                            #line 134 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else
                                                               {
                                                             #line 257 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      {");
-                                                            #line 139 "CodeGeneratorCpp.cpp.template"
+                                                            #line 138 "CodeGeneratorCpp.cpp.template"
                                                                 if (lookahead)
                                                                 {
                                                             #line 263 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        ");
-                                                            #line 142 "CodeGeneratorCpp.cpp.template"
+                                                            #line 141 "CodeGeneratorCpp.cpp.template"
                                                                   append(multiItem);
                                                             #line 268 "CodeGeneratorCpp.cpp"
   append(L" = true;");
-                                                            #line 143 "CodeGeneratorCpp.cpp.template"
+                                                            #line 142 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 272 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        if      ((c0");
-                                                            #line 146 "CodeGeneratorCpp.cpp.template"
+                                                            #line 144 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 278 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 148 "CodeGeneratorCpp.cpp.template"
+                                                            #line 146 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 282 "CodeGeneratorCpp.cpp"
   append(L"                 & 0xe0) == 0xc0\n");
   append(L"              && (");
-                                                            #line 151 "CodeGeneratorCpp.cpp.template"
+                                                            #line 148 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 288 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 153 "CodeGeneratorCpp.cpp.template"
+                                                            #line 150 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 292 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0xc0) == 0x80)\n");
   append(L"        {\n");
   append(L"          c0 = ((c0");
-                                                            #line 157 "CodeGeneratorCpp.cpp.template"
+                                                            #line 153 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 299 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 159 "CodeGeneratorCpp.cpp.template"
+                                                            #line 155 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 303 "CodeGeneratorCpp.cpp"
   append(L"                 & 0x1f) << 6)\n");
   append(L"             |  (");
-                                                            #line 162 "CodeGeneratorCpp.cpp.template"
+                                                            #line 157 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 309 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 164 "CodeGeneratorCpp.cpp.template"
+                                                            #line 159 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 313 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0x3f);\n");
   append(L"          if (c0 < 0x80) c0 = -1; else ++current;\n");
   append(L"        }\n");
   append(L"        else if ((c0");
-                                                            #line 169 "CodeGeneratorCpp.cpp.template"
+                                                            #line 163 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 321 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 171 "CodeGeneratorCpp.cpp.template"
+                                                            #line 165 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 325 "CodeGeneratorCpp.cpp"
   append(L"                 & 0xf0) == 0xe0\n");
   append(L"              && (");
-                                                            #line 174 "CodeGeneratorCpp.cpp.template"
+                                                            #line 167 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 331 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 176 "CodeGeneratorCpp.cpp.template"
+                                                            #line 169 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 335 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0xc0) == 0x80\n");
   append(L"              && (");
-                                                            #line 179 "CodeGeneratorCpp.cpp.template"
+                                                            #line 171 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 341 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 181 "CodeGeneratorCpp.cpp.template"
+                                                            #line 173 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 345 "CodeGeneratorCpp.cpp"
   append(L"input[current + 1] & 0xc0) == 0x80)\n");
   append(L"        {\n");
   append(L"          c0 = ((c0");
-                                                            #line 185 "CodeGeneratorCpp.cpp.template"
+                                                            #line 176 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 352 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 187 "CodeGeneratorCpp.cpp.template"
+                                                            #line 178 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 356 "CodeGeneratorCpp.cpp"
   append(L"                 & 0x0f) << 12)\n");
   append(L"             | ((");
-                                                            #line 190 "CodeGeneratorCpp.cpp.template"
+                                                            #line 180 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 362 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 192 "CodeGeneratorCpp.cpp.template"
+                                                            #line 182 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 366 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0x3f) <<  6)\n");
   append(L"             |  (");
-                                                            #line 195 "CodeGeneratorCpp.cpp.template"
+                                                            #line 184 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 372 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 197 "CodeGeneratorCpp.cpp.template"
+                                                            #line 186 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 376 "CodeGeneratorCpp.cpp"
   append(L"input[current + 1] & 0x3f);\n");
   append(L"          if (c0 < 0x800) c0 = -1; else current += 2;\n");
   append(L"        }\n");
   append(L"        else if ((c0");
-                                                            #line 202 "CodeGeneratorCpp.cpp.template"
+                                                            #line 190 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 384 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 204 "CodeGeneratorCpp.cpp.template"
+                                                            #line 192 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 388 "CodeGeneratorCpp.cpp"
   append(L"                 & 0xf8) == 0xf0\n");
   append(L"              && (");
-                                                            #line 207 "CodeGeneratorCpp.cpp.template"
+                                                            #line 194 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 394 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 209 "CodeGeneratorCpp.cpp.template"
+                                                            #line 196 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 398 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0xc0) == 0x80\n");
   append(L"              && (");
-                                                            #line 212 "CodeGeneratorCpp.cpp.template"
+                                                            #line 198 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 404 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 214 "CodeGeneratorCpp.cpp.template"
+                                                            #line 200 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 408 "CodeGeneratorCpp.cpp"
   append(L"input[current + 1] & 0xc0) == 0x80\n");
   append(L"              && (");
-                                                            #line 217 "CodeGeneratorCpp.cpp.template"
+                                                            #line 202 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 414 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 219 "CodeGeneratorCpp.cpp.template"
+                                                            #line 204 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 418 "CodeGeneratorCpp.cpp"
   append(L"input[current + 2] & 0xc0) == 0x80)\n");
   append(L"        {\n");
   append(L"          c0 = ((c0");
-                                                            #line 223 "CodeGeneratorCpp.cpp.template"
+                                                            #line 207 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 425 "CodeGeneratorCpp.cpp"
   append(L"        ");
-                                                            #line 225 "CodeGeneratorCpp.cpp.template"
+                                                            #line 209 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 429 "CodeGeneratorCpp.cpp"
   append(L"                 & 0x07) << 18)\n");
   append(L"             | ((");
-                                                            #line 228 "CodeGeneratorCpp.cpp.template"
+                                                            #line 211 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 435 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 230 "CodeGeneratorCpp.cpp.template"
+                                                            #line 213 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 439 "CodeGeneratorCpp.cpp"
   append(L"input[current    ] & 0x3f) << 12)\n");
   append(L"             | ((");
-                                                            #line 233 "CodeGeneratorCpp.cpp.template"
+                                                            #line 215 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 445 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 235 "CodeGeneratorCpp.cpp.template"
+                                                            #line 217 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 449 "CodeGeneratorCpp.cpp"
   append(L"input[current + 1] & 0x3f) <<  6)\n");
   append(L"             | ( ");
-                                                            #line 238 "CodeGeneratorCpp.cpp.template"
+                                                            #line 219 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 455 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 240 "CodeGeneratorCpp.cpp.template"
+                                                            #line 221 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 459 "CodeGeneratorCpp.cpp"
   append(L"input[current + 2] & 0x3f       );\n");
@@ -461,30 +461,30 @@
   append(L"        }\n");
   append(L"\n");
   append(L"        ");
-                                                            #line 245 "CodeGeneratorCpp.cpp.template"
+                                                            #line 226 "CodeGeneratorCpp.cpp.template"
                                                                 indent++;
                                                               }
                                                             #line 468 "CodeGeneratorCpp.cpp"
   append(L"if (c0 < ");
-                                                            #line 247 "CodeGeneratorCpp.cpp.template"
+                                                            #line 228 "CodeGeneratorCpp.cpp.template"
                                                               print(format.toString<char>(variable("uncompressedMapSize").integer(), 16, 0, 0, "0x", "0123456789abcdef"));
                                                             #line 472 "CodeGeneratorCpp.cpp"
   append(L")\n");
   append(L"      {\n");
-                                                            #line 250 "CodeGeneratorCpp.cpp.template"
+                                                            #line 231 "CodeGeneratorCpp.cpp.template"
                                                               compressedMapAccessor(8, "c", "charclass = ", "MAP1", &variable("m1bits").integer());
                                                             #line 477 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      }\n");
   append(L"      else\n");
   append(L"      {");
-                                                            #line 254 "CodeGeneratorCpp.cpp.template"
+                                                            #line 235 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("m2").size == 0)
                                                               {
                                                             #line 485 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        charclass = 0;");
-                                                            #line 257 "CodeGeneratorCpp.cpp.template"
+                                                            #line 238 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else
                                                               {
@@ -493,39 +493,39 @@
                                                             #line 494 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        if (");
-                                                            #line 263 "CodeGeneratorCpp.cpp.template"
+                                                            #line 244 "CodeGeneratorCpp.cpp.template"
                                                                   if (variable("uncompressedMapSize").integer() != 0xd800)
                                                                   {
                                                             #line 500 "CodeGeneratorCpp.cpp"
   append(L"c0 >= 0xd800 && ");
-                                                            #line 265 "CodeGeneratorCpp.cpp.template"
+                                                            #line 246 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 504 "CodeGeneratorCpp.cpp"
   append(L"c0 < 0xdc00)\n");
   append(L"        {\n");
   append(L"          int c1 = ");
-                                                            #line 269 "CodeGeneratorCpp.cpp.template"
+                                                            #line 249 "CodeGeneratorCpp.cpp.template"
                                                                   if (variable("useGlr").boolean())
                                                                   {
                                                             #line 511 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 271 "CodeGeneratorCpp.cpp.template"
+                                                            #line 251 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 515 "CodeGeneratorCpp.cpp"
   append(L"input[current];\n");
   append(L"          if (c1 >= 0xdc00 && c1 < 0xe000)\n");
   append(L"          {");
-                                                            #line 274 "CodeGeneratorCpp.cpp.template"
+                                                            #line 254 "CodeGeneratorCpp.cpp.template"
                                                                   if (lookahead)
                                                                   {
                                                             #line 522 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"            ");
-                                                            #line 277 "CodeGeneratorCpp.cpp.template"
+                                                            #line 257 "CodeGeneratorCpp.cpp.template"
                                                                     append(multiItem);
                                                             #line 527 "CodeGeneratorCpp.cpp"
   append(L" = true;");
-                                                            #line 278 "CodeGeneratorCpp.cpp.template"
+                                                            #line 258 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 531 "CodeGeneratorCpp.cpp"
   append(L"\n");
@@ -533,35 +533,35 @@
   append(L"            c0 = ((c0 & 0x3ff) << 10) + (c1 & 0x3ff) + 0x10000;\n");
   append(L"          }\n");
   append(L"        }");
-                                                            #line 283 "CodeGeneratorCpp.cpp.template"
+                                                            #line 263 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 539 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        int lo = 0, hi = ");
-                                                            #line 285 "CodeGeneratorCpp.cpp.template"
+                                                            #line 265 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("m2").size / 3 - 1);
                                                             #line 544 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"        for (int m = ");
-                                                            #line 287 "CodeGeneratorCpp.cpp.template"
+                                                            #line 267 "CodeGeneratorCpp.cpp.template"
                                                                 print((variable("m2").size / 3) >> 1);
                                                             #line 549 "CodeGeneratorCpp.cpp"
   append(L"; ; m = (hi + lo) >> 1)\n");
   append(L"        {\n");
   append(L"          if (MAP2[m] > c0) hi = m - 1;\n");
   append(L"          else if (MAP2[");
-                                                            #line 291 "CodeGeneratorCpp.cpp.template"
+                                                            #line 271 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("m2").size / 3);
                                                             #line 556 "CodeGeneratorCpp.cpp"
   append(L" + m] < c0) lo = m + 1;\n");
   append(L"          else {charclass = MAP2[");
-                                                            #line 293 "CodeGeneratorCpp.cpp.template"
+                                                            #line 273 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("m2").size / 3 * 2);
                                                             #line 561 "CodeGeneratorCpp.cpp"
   append(L" + m]; break;}\n");
   append(L"          if (lo > hi) {charclass = 0; break;}\n");
   append(L"        }");
-                                                            #line 296 "CodeGeneratorCpp.cpp.template"
+                                                            #line 276 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               if (utf8)
                                                               {
@@ -569,76 +569,76 @@
                                                             #line 570 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        }");
-                                                            #line 301 "CodeGeneratorCpp.cpp.template"
+                                                            #line 281 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 575 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      }");
-                                                            #line 303 "CodeGeneratorCpp.cpp.template"
+                                                            #line 283 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 581 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      fprintf(stderr, \" codepoint=\\\"%d\\\" class=\\\"%d\\\"\", c0, charclass);");
-                                                            #line 307 "CodeGeneratorCpp.cpp.template"
+                                                            #line 287 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 586 "CodeGeneratorCpp.cpp"
   append(L"\n");
-                                                            #line 309 "CodeGeneratorCpp.cpp.template"
+                                                            #line 289 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean() || ! variable("useGlr").boolean())
                                                               {
                                                             #line 591 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      state = code;");
-                                                            #line 312 "CodeGeneratorCpp.cpp.template"
+                                                            #line 292 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 596 "CodeGeneratorCpp.cpp"
   append(L"\n");
-                                                            #line 314 "CodeGeneratorCpp.cpp.template"
+                                                            #line 294 "CodeGeneratorCpp.cpp.template"
                                                               compressedMap2dAccessor("code - 1", "charclass", variable("a1cols").integer(),
                                                                                          6, "i", "code = ", "TRANSITION", &variable("a1bits").integer());
                                                             #line 601 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      if (code > ");
-                                                            #line 317 "CodeGeneratorCpp.cpp.template"
+                                                            #line 297 "CodeGeneratorCpp.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                             #line 606 "CodeGeneratorCpp.cpp"
   append(L")\n");
   append(L"      {\n");
   append(L"        result = code;");
-                                                            #line 320 "CodeGeneratorCpp.cpp.template"
+                                                            #line 300 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 613 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        fprintf(stderr, \" result=\\\"%s\\\"\", ");
-                                                            #line 324 "CodeGeneratorCpp.cpp.template"
+                                                            #line 303 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 619 "CodeGeneratorCpp.cpp"
   append(L"Utf8Encoder::encode(");
-                                                            #line 327 "CodeGeneratorCpp.cpp.template"
+                                                            #line 306 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 623 "CodeGeneratorCpp.cpp"
   append(L"xmlEscape(TOKEN[((result >> ");
-                                                            #line 329 "CodeGeneratorCpp.cpp.template"
+                                                            #line 308 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("stateCodeBits").integer());
                                                             #line 627 "CodeGeneratorCpp.cpp"
   append(L") & ");
-                                                            #line 330 "CodeGeneratorCpp.cpp.template"
-                                                 print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                                            #line 309 "CodeGeneratorCpp.cpp.template"
+                                                                print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                             #line 631 "CodeGeneratorCpp.cpp"
   append(L") - 1], 0).c_str()");
-                                                            #line 331 "CodeGeneratorCpp.cpp.template"
+                                                            #line 310 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 636 "CodeGeneratorCpp.cpp"
   append(L").c_str()");
-                                                            #line 333 "CodeGeneratorCpp.cpp.template"
+                                                            #line 312 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 640 "CodeGeneratorCpp.cpp"
   append(L");");
-                                                            #line 334 "CodeGeneratorCpp.cpp.template"
+                                                            #line 313 "CodeGeneratorCpp.cpp.template"
                                                                 if (lookahead || hasFixedTokenLength)
                                                                 {
                                                                   int contextOffset = variable("stateCodeBits").integer()
@@ -650,53 +650,53 @@
                                                             #line 651 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        if ((result & ");
-                                                            #line 343 "CodeGeneratorCpp.cpp.template"
+                                                            #line 322 "CodeGeneratorCpp.cpp.template"
                                                                     print(Math::powerof(2, contextOffset));
                                                             #line 656 "CodeGeneratorCpp.cpp"
   append(L") > 0)\n");
   append(L"        {\n");
   append(L"          fprintf(stderr, \" token-size=\\\"%d\\\"\", result >> ");
-                                                            #line 346 "CodeGeneratorCpp.cpp.template"
+                                                            #line 325 "CodeGeneratorCpp.cpp.template"
                                                                     print(sizeOffset);
                                                             #line 662 "CodeGeneratorCpp.cpp"
   append(L");\n");
   append(L"        }\n");
   append(L"        else ");
-                                                            #line 349 "CodeGeneratorCpp.cpp.template"
+                                                            #line 328 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                                   else
                                                                   {
                                                             #line 670 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        ");
-                                                            #line 353 "CodeGeneratorCpp.cpp.template"
+                                                            #line 332 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 675 "CodeGeneratorCpp.cpp"
   append(L"if ((result >> ");
-                                                            #line 354 "CodeGeneratorCpp.cpp.template"
+                                                            #line 333 "CodeGeneratorCpp.cpp.template"
                                                                   print(sizeOffset);
                                                             #line 679 "CodeGeneratorCpp.cpp"
   append(L") > 0)\n");
   append(L"        {\n");
   append(L"          fprintf(stderr, \" trailing-context-size=\\\"%d\\\"\", result >> ");
-                                                            #line 358 "CodeGeneratorCpp.cpp.template"
+                                                            #line 337 "CodeGeneratorCpp.cpp.template"
                                                                   print(sizeOffset);
                                                             #line 685 "CodeGeneratorCpp.cpp"
   append(L");\n");
   append(L"        }");
-                                                            #line 360 "CodeGeneratorCpp.cpp.template"
+                                                            #line 339 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                               }
                                                             #line 691 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        code &= ");
-                                                            #line 363 "CodeGeneratorCpp.cpp.template"
+                                                            #line 342 "CodeGeneratorCpp.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                             #line 696 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"        end = current;\n");
   append(L"      }");
-                                                            #line 366 "CodeGeneratorCpp.cpp.template"
+                                                            #line 345 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 703 "CodeGeneratorCpp.cpp"
@@ -706,35 +706,35 @@
   append(L"      {\n");
   append(L"        fprintf(stderr, \"    <next state=\\\"%d\\\"\", code);\n");
   append(L"      }");
-                                                            #line 373 "CodeGeneratorCpp.cpp.template"
+                                                            #line 352 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 712 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"\n");
   append(L"    result >>= ");
-                                                            #line 377 "CodeGeneratorCpp.cpp.template"
+                                                            #line 356 "CodeGeneratorCpp.cpp.template"
                                                               print(variable("stateCodeBits").integer());
                                                             #line 719 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"    if (result == 0)\n");
   append(L"    {");
-                                                            #line 380 "CodeGeneratorCpp.cpp.template"
+                                                            #line 359 "CodeGeneratorCpp.cpp.template"
                                                               if (utf8)
                                                               {
                                                             #line 726 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      for (end = current - 1; (");
-                                                            #line 384 "CodeGeneratorCpp.cpp.template"
+                                                            #line 362 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 732 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 386 "CodeGeneratorCpp.cpp.template"
+                                                            #line 364 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 736 "CodeGeneratorCpp.cpp"
   append(L"input[end] & 0xc0) == 0x80; --end) ;");
-                                                            #line 388 "CodeGeneratorCpp.cpp.template"
+                                                            #line 366 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else
                                                               {
@@ -742,17 +742,17 @@
   append(L"\n");
   append(L"      end = current - 1;\n");
   append(L"      int c1 = ");
-                                                            #line 394 "CodeGeneratorCpp.cpp.template"
+                                                            #line 371 "CodeGeneratorCpp.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 749 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 396 "CodeGeneratorCpp.cpp.template"
+                                                            #line 373 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 753 "CodeGeneratorCpp.cpp"
   append(L"input[end];\n");
   append(L"      if (c1 >= 0xdc00 && c1 < 0xe000) --end;");
-                                                            #line 398 "CodeGeneratorCpp.cpp.template"
+                                                            #line 375 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               if (variable("trace").boolean())
                                                               {
@@ -760,14 +760,14 @@
   append(L"\n");
   append(L"      fprintf(stderr, \"    <fail begin=\\\"%d\\\" end=\\\"%d\\\" state=\\\"%d\\\"/>\\n\", begin, end, state);\n");
   append(L"      fprintf(stderr, \"  </tokenize>\\n\");");
-                                                            #line 403 "CodeGeneratorCpp.cpp.template"
+                                                            #line 380 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
                                                             #line 768 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      return -1;");
-                                                            #line 407 "CodeGeneratorCpp.cpp.template"
+                                                            #line 384 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else if (variable("useGlr").boolean())
                                                               {
@@ -775,34 +775,34 @@
   append(L"\n");
   append(L"      end = begin;\n");
   append(L"      return -1;");
-                                                            #line 412 "CodeGeneratorCpp.cpp.template"
+                                                            #line 389 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else
                                                               {
                                                             #line 783 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"      return error(begin, end, state, -1, -1);");
-                                                            #line 416 "CodeGeneratorCpp.cpp.template"
+                                                            #line 393 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 788 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 419 "CodeGeneratorCpp.cpp.template"
+                                                            #line 396 "CodeGeneratorCpp.cpp.template"
                                                               int lowBits = variable("tokencodeBits").integer();
                                                               if (hasFixedTokenLength && ! lookahead)
                                                               {
                                                             #line 795 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    if ((result & ");
-                                                            #line 423 "CodeGeneratorCpp.cpp.template"
-                                                                  print(Math::powerof(2, lowBits));
-                                                                  ++lowBits;
+                                                            #line 400 "CodeGeneratorCpp.cpp.template"
+                                                                print(Math::powerof(2, lowBits));
+                                                                ++lowBits;
                                                             #line 801 "CodeGeneratorCpp.cpp"
   append(L") != 0)\n");
   append(L"    {\n");
   append(L"      end = begin;\n");
   append(L"    }\n");
-                                                            #line 429 "CodeGeneratorCpp.cpp.template"
+                                                            #line 406 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               else
                                                               {
@@ -811,7 +811,7 @@
                                                             #line 812 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    if ((result & ");
-                                                            #line 435 "CodeGeneratorCpp.cpp.template"
+                                                            #line 412 "CodeGeneratorCpp.cpp.template"
                                                                   print(Math::powerof(2, lowBits));
                                                                   ++lowBits;
                                                             #line 818 "CodeGeneratorCpp.cpp"
@@ -819,32 +819,32 @@
   append(L"    {\n");
   append(L"      end = begin;\n");
   append(L"      if (");
-                                                            #line 440 "CodeGeneratorCpp.cpp.template"
+                                                            #line 417 "CodeGeneratorCpp.cpp.template"
                                                                   append(multiItem);
                                                             #line 825 "CodeGeneratorCpp.cpp"
   append(L")\n");
   append(L"      {\n");
   append(L"        for (int i = result >> ");
-                                                            #line 443 "CodeGeneratorCpp.cpp.template"
+                                                            #line 420 "CodeGeneratorCpp.cpp.template"
                                                                   print(lowBits);
                                                             #line 831 "CodeGeneratorCpp.cpp"
   append(L"; i > 0; --i)");
-                                                            #line 444 "CodeGeneratorCpp.cpp.template"
+                                                            #line 421 "CodeGeneratorCpp.cpp.template"
                                                                   if (utf8)
                                                                   {
                                                             #line 836 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"          for (++end; (");
-                                                            #line 448 "CodeGeneratorCpp.cpp.template"
+                                                            #line 424 "CodeGeneratorCpp.cpp.template"
                                                                     if (variable("useGlr").boolean())
                                                                     {
                                                             #line 842 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 450 "CodeGeneratorCpp.cpp.template"
+                                                            #line 426 "CodeGeneratorCpp.cpp.template"
                                                                     }
                                                             #line 846 "CodeGeneratorCpp.cpp"
   append(L"input[end] & 0xc0) == 0x80 && end <= current; ++end) ;");
-                                                            #line 452 "CodeGeneratorCpp.cpp.template"
+                                                            #line 428 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                                   else
                                                                   {
@@ -852,18 +852,18 @@
   append(L"\n");
   append(L"        {\n");
   append(L"          int c1 = ");
-                                                            #line 458 "CodeGeneratorCpp.cpp.template"
+                                                            #line 433 "CodeGeneratorCpp.cpp.template"
                                                                     if (variable("useGlr").boolean())
                                                                     {
                                                             #line 859 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 460 "CodeGeneratorCpp.cpp.template"
+                                                            #line 435 "CodeGeneratorCpp.cpp.template"
                                                                     }
                                                             #line 863 "CodeGeneratorCpp.cpp"
   append(L"input[end++];\n");
   append(L"          if (c1 >= 0xd800 && c1 < 0xdc00) ++end;\n");
   append(L"        }");
-                                                            #line 463 "CodeGeneratorCpp.cpp.template"
+                                                            #line 438 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 869 "CodeGeneratorCpp.cpp"
   append(L"\n");
@@ -871,7 +871,7 @@
   append(L"      else\n");
   append(L"      {\n");
   append(L"        end += (result >> ");
-                                                            #line 468 "CodeGeneratorCpp.cpp.template"
+                                                            #line 443 "CodeGeneratorCpp.cpp.template"
                                                                   print(lowBits);
                                                             #line 877 "CodeGeneratorCpp.cpp"
   append(L");\n");
@@ -879,7 +879,7 @@
   append(L"    }\n");
   append(L"    else\n");
   append(L"    {");
-                                                            #line 473 "CodeGeneratorCpp.cpp.template"
+                                                            #line 448 "CodeGeneratorCpp.cpp.template"
                                                                   ++indent;
                                                                 }
                                                                 if (lookahead)
@@ -887,32 +887,32 @@
                                                             #line 888 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    if (");
-                                                            #line 478 "CodeGeneratorCpp.cpp.template"
+                                                            #line 453 "CodeGeneratorCpp.cpp.template"
                                                                   append(multiItem);
                                                             #line 893 "CodeGeneratorCpp.cpp"
   append(L")\n");
   append(L"    {\n");
   append(L"      for (int i = result >> ");
-                                                            #line 481 "CodeGeneratorCpp.cpp.template"
+                                                            #line 456 "CodeGeneratorCpp.cpp.template"
                                                                   print(lowBits);
                                                             #line 899 "CodeGeneratorCpp.cpp"
   append(L"; i > 0; --i)");
-                                                            #line 482 "CodeGeneratorCpp.cpp.template"
+                                                            #line 457 "CodeGeneratorCpp.cpp.template"
                                                                   if (utf8)
                                                                   {
                                                             #line 904 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"        for (--end; (");
-                                                            #line 486 "CodeGeneratorCpp.cpp.template"
+                                                            #line 460 "CodeGeneratorCpp.cpp.template"
                                                                     if (variable("useGlr").boolean())
                                                                     {
                                                             #line 910 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 488 "CodeGeneratorCpp.cpp.template"
+                                                            #line 462 "CodeGeneratorCpp.cpp.template"
                                                                     }
                                                             #line 914 "CodeGeneratorCpp.cpp"
   append(L"input[end] & 0xc0) == 0x80; --end) ;");
-                                                            #line 489 "CodeGeneratorCpp.cpp.template"
+                                                            #line 463 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                                   else
                                                                   {
@@ -920,18 +920,18 @@
   append(L"\n");
   append(L"      {\n");
   append(L"        int c1 = ");
-                                                            #line 495 "CodeGeneratorCpp.cpp.template"
+                                                            #line 468 "CodeGeneratorCpp.cpp.template"
                                                                     if (variable("useGlr").boolean())
                                                                     {
                                                             #line 927 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 497 "CodeGeneratorCpp.cpp.template"
+                                                            #line 470 "CodeGeneratorCpp.cpp.template"
                                                                     }
                                                             #line 931 "CodeGeneratorCpp.cpp"
   append(L"input[--end];\n");
   append(L"        if (c1 >= 0xdc00 && c1 < 0xe000) --end;\n");
   append(L"      }");
-                                                            #line 500 "CodeGeneratorCpp.cpp.template"
+                                                            #line 473 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 937 "CodeGeneratorCpp.cpp"
   append(L"\n");
@@ -939,73 +939,73 @@
   append(L"    else\n");
   append(L"    {\n");
   append(L"      end -= result >> ");
-                                                            #line 505 "CodeGeneratorCpp.cpp.template"
+                                                            #line 478 "CodeGeneratorCpp.cpp.template"
                                                                   print(lowBits);
                                                             #line 945 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"    }\n");
-                                                            #line 508 "CodeGeneratorCpp.cpp.template"
+                                                            #line 481 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                                 if (hasFixedTokenLength)
                                                                 {
                                                                   --indent;
                                                             #line 953 "CodeGeneratorCpp.cpp"
   append(L"  }\n");
-                                                            #line 513 "CodeGeneratorCpp.cpp.template"
+                                                            #line 486 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                               }
                                                             #line 958 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    if (");
-                                                            #line 517 "CodeGeneratorCpp.cpp.template"
+                                                            #line 489 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("useGlr").boolean())
                                                               {
                                                             #line 964 "CodeGeneratorCpp.cpp"
   append(L"parser->");
-                                                            #line 519 "CodeGeneratorCpp.cpp.template"
+                                                            #line 491 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 968 "CodeGeneratorCpp.cpp"
   append(L"input[begin] == 0) end = begin;");
-                                                            #line 520 "CodeGeneratorCpp.cpp.template"
+                                                            #line 492 "CodeGeneratorCpp.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 973 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    fprintf(stderr, \"    <done result=\\\"%s\\\" begin=\\\"%d\\\" end=\\\"%d\\\"/>\\n\", ");
-                                                            #line 524 "CodeGeneratorCpp.cpp.template"
+                                                            #line 496 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 979 "CodeGeneratorCpp.cpp"
   append(L"Utf8Encoder::encode(");
-                                                            #line 526 "CodeGeneratorCpp.cpp.template"
+                                                            #line 498 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 983 "CodeGeneratorCpp.cpp"
   append(L"xmlEscape(TOKEN[(result & ");
-                                                            #line 527 "CodeGeneratorCpp.cpp.template"
+                                                            #line 499 "CodeGeneratorCpp.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                             #line 987 "CodeGeneratorCpp.cpp"
   append(L") - 1], 0).c_str()");
-                                                            #line 528 "CodeGeneratorCpp.cpp.template"
+                                                            #line 500 "CodeGeneratorCpp.cpp.template"
                                                                 if (! utf8)
                                                                 {
                                                             #line 992 "CodeGeneratorCpp.cpp"
   append(L").c_str()");
-                                                            #line 530 "CodeGeneratorCpp.cpp.template"
+                                                            #line 502 "CodeGeneratorCpp.cpp.template"
                                                                 }
                                                             #line 996 "CodeGeneratorCpp.cpp"
   append(L", begin, end);\n");
   append(L"    fprintf(stderr, \"  </tokenize>\\n\");");
-                                                            #line 532 "CodeGeneratorCpp.cpp.template"
+                                                            #line 504 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 1001 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"    return (result & ");
-                                                            #line 534 "CodeGeneratorCpp.cpp.template"
+                                                            #line 506 "CodeGeneratorCpp.cpp.template"
                                                               print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                             #line 1006 "CodeGeneratorCpp.cpp"
   append(L") - 1;\n");
   append(L"  }\n");
-                                                            #line 538 "CodeGeneratorCpp.cpp.template"
+                                                            #line 509 "CodeGeneratorCpp.cpp.template"
                                                               if (! variable("embedded").boolean())
                                                               {
                                                             #line 1012 "CodeGeneratorCpp.cpp"
@@ -1014,7 +1014,7 @@
   append(L"  {\n");
   append(L"    return getTokenSet(- state);\n");
   append(L"  }\n");
-                                                            #line 545 "CodeGeneratorCpp.cpp.template"
+                                                            #line 516 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             }
 
@@ -1027,42 +1027,42 @@
   append(L"\n");
   append(L"  static int goTo(int nonterminal, int state)\n");
   append(L"  {\n");
-                                                            #line 556 "CodeGeneratorCpp.cpp.template"
+                                                            #line 527 "CodeGeneratorCpp.cpp.template"
                                                                 compressedMap2dAccessor("nonterminal", "state", variable("gtcols").integer(),
                                                                                            4, "i", "return ", "GOTO", &variable("gtbits").integer());
                                                             #line 1034 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  }\n");
-                                                            #line 560 "CodeGeneratorCpp.cpp.template"
+                                                            #line 531 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 1041 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  static std::");
-                                                            #line 564 "CodeGeneratorCpp.cpp.template"
+                                                            #line 535 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "" : "w");
                                                             #line 1046 "CodeGeneratorCpp.cpp"
   append(L"string xmlEscape(const ");
-                                                            #line 565 "CodeGeneratorCpp.cpp.template"
+                                                            #line 536 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "char" : "wchar_t");
                                                             #line 1050 "CodeGeneratorCpp.cpp"
   append(L" *string, size_t size)\n");
   append(L"  {\n");
   append(L"    std::");
-                                                            #line 568 "CodeGeneratorCpp.cpp.template"
+                                                            #line 539 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "" : "w");
                                                             #line 1056 "CodeGeneratorCpp.cpp"
   append(L"string result;\n");
   append(L"    if (size == 0) size = ");
-                                                            #line 570 "CodeGeneratorCpp.cpp.template"
+                                                            #line 541 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? L"str" : L"wcs");
                                                             #line 1061 "CodeGeneratorCpp.cpp"
   append(L"len(string);\n");
   append(L"    for (size_t i = 0; i < size; ++i)\n");
   append(L"    {\n");
   append(L"      const ");
-                                                            #line 574 "CodeGeneratorCpp.cpp.template"
+                                                            #line 545 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "char" : "wchar_t");
                                                             #line 1068 "CodeGeneratorCpp.cpp"
   append(L" c = string[i];\n");
@@ -1070,17 +1070,17 @@
   append(L"      {\n");
   append(L"      case 0: break;\n");
   append(L"      case '&': result += ");
-                                                            #line 579 "CodeGeneratorCpp.cpp.template"
+                                                            #line 550 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "" : "L");
                                                             #line 1076 "CodeGeneratorCpp.cpp"
   append(L"\"&amp;\"; break;\n");
   append(L"      case '<': result += ");
-                                                            #line 581 "CodeGeneratorCpp.cpp.template"
+                                                            #line 552 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "" : "L");
                                                             #line 1081 "CodeGeneratorCpp.cpp"
   append(L"\"&lt;\"; break;\n");
   append(L"      case '\"': result += ");
-                                                            #line 583 "CodeGeneratorCpp.cpp.template"
+                                                            #line 554 "CodeGeneratorCpp.cpp.template"
                                                                 print(utf8 ? "" : "L");
                                                             #line 1086 "CodeGeneratorCpp.cpp"
   append(L"\"&quot;\"; break;\n");
@@ -1089,23 +1089,23 @@
   append(L"    }\n");
   append(L"    return result;\n");
   append(L"  }\n");
-                                                            #line 590 "CodeGeneratorCpp.cpp.template"
+                                                            #line 561 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 1095 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  static void getTokenSet(int tokenSetId, const ");
-                                                            #line 592 "CodeGeneratorCpp.cpp.template"
+                                                            #line 563 "CodeGeneratorCpp.cpp.template"
                                                               print(variable("stringType").string());
                                                             #line 1100 "CodeGeneratorCpp.cpp"
   append(L"*set, int size)\n");
   append(L"  {\n");
   append(L"    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & ");
-                                                            #line 596 "CodeGeneratorCpp.cpp.template"
+                                                            #line 567 "CodeGeneratorCpp.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                             #line 1106 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"    for (int i = 0; i < ");
-                                                            #line 598 "CodeGeneratorCpp.cpp.template"
+                                                            #line 569 "CodeGeneratorCpp.cpp.template"
                                                               print(variable("t1").size);
                                                             #line 1111 "CodeGeneratorCpp.cpp"
   append(L"; i += 32)\n");
@@ -1133,16 +1133,16 @@
   append(L"  static int ec(int t, int s)\n");
   append(L"  {\n");
   append(L"    int i0 = t * ");
-                                                            #line 623 "CodeGeneratorCpp.cpp.template"
+                                                            #line 594 "CodeGeneratorCpp.cpp.template"
                                                               print(variable("transitionStateCount").integer());
                                                             #line 1139 "CodeGeneratorCpp.cpp"
   append(L" + s - 1;\n");
-                                                            #line 625 "CodeGeneratorCpp.cpp.template"
+                                                            #line 596 "CodeGeneratorCpp.cpp.template"
                                                               compressedMapAccessor(4, "i", "return ", "EXPECTED", &variable("t0bits").integer());
                                                             #line 1143 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  }\n");
-                                                            #line 628 "CodeGeneratorCpp.cpp.template"
+                                                            #line 599 "CodeGeneratorCpp.cpp.template"
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::INTEGER) && strlen(a->name) == 2)
@@ -1150,11 +1150,11 @@
                                                             #line 1151 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  static const int ");
-                                                            #line 633 "CodeGeneratorCpp.cpp.template"
+                                                            #line 604 "CodeGeneratorCpp.cpp.template"
                                                                 print(a->longName);
                                                             #line 1156 "CodeGeneratorCpp.cpp"
   append(L"[];");
-                                                            #line 634 "CodeGeneratorCpp.cpp.template"
+                                                            #line 605 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
@@ -1163,12 +1163,12 @@
                                                             #line 1164 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  static const ");
-                                                            #line 640 "CodeGeneratorCpp.cpp.template"
+                                                            #line 611 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("stringType").string());
                                                                 print(a->longName);
                                                             #line 1170 "CodeGeneratorCpp.cpp"
   append(L"[];");
-                                                            #line 642 "CodeGeneratorCpp.cpp.template"
+                                                            #line 613 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
@@ -1178,7 +1178,7 @@
   append(L"  enum Token\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 649 "CodeGeneratorCpp.cpp.template"
+                                                            #line 620 "CodeGeneratorCpp.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
@@ -1188,26 +1188,26 @@
                                                             #line 1189 "CodeGeneratorCpp.cpp"
   append(L",\n");
   append(L"    ");
-                                                            #line 656 "CodeGeneratorCpp.cpp.template"
+                                                            #line 627 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 1194 "CodeGeneratorCpp.cpp"
   append(L"/* ");
-                                                            #line 657 "CodeGeneratorCpp.cpp.template"
+                                                            #line 628 "CodeGeneratorCpp.cpp.template"
                                                                   print(format.toString<char>(i, 10, w));
                                                             #line 1198 "CodeGeneratorCpp.cpp"
   append(L" */ ");
-                                                            #line 658 "CodeGeneratorCpp.cpp.template"
+                                                            #line 629 "CodeGeneratorCpp.cpp.template"
                                                                   print(token.string(i));
                                                                 }
                                                             #line 1203 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 662 "CodeGeneratorCpp.cpp.template"
+                                                            #line 632 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             #line 1208 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 666 "CodeGeneratorCpp.cpp.template"
+                                                            #line 635 "CodeGeneratorCpp.cpp.template"
                                                               generateData();
                                                               if (variable("selfTest").boolean())
                                                               {
@@ -1247,24 +1247,24 @@
   append(L"  static void main(String[] args)\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 703 "CodeGeneratorCpp.cpp.template"
-                                                              print(Format::acceptableName<CString>(variable("classname").string()).c_str());
+                                                            #line 672 "CodeGeneratorCpp.cpp.template"
+                                                                print(Format::acceptableName<CString>(variable("classname").string()).c_str());
                                                             #line 1253 "CodeGeneratorCpp.cpp"
   append(L" testee();\n");
   append(L"    for (int e = 0; e < ");
-                                                            #line 705 "CodeGeneratorCpp.cpp.template"
-                                                              print(variable("a0").size);
+                                                            #line 674 "CodeGeneratorCpp.cpp.template"
+                                                                print(variable("a0").size);
                                                             #line 1258 "CodeGeneratorCpp.cpp"
   append(L"; ++e)\n");
   append(L"    {\n");
   append(L"      int s = INITIAL[e] & ");
-                                                            #line 708 "CodeGeneratorCpp.cpp.template"
-                                                              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                            #line 677 "CodeGeneratorCpp.cpp.template"
+                                                                print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                             #line 1264 "CodeGeneratorCpp.cpp"
   append(L";\n");
   append(L"      for (int i = 0; i < ");
-                                                            #line 710 "CodeGeneratorCpp.cpp.template"
-                                                              print(variable("t1").size);
+                                                            #line 679 "CodeGeneratorCpp.cpp.template"
+                                                                print(variable("t1").size);
                                                             #line 1269 "CodeGeneratorCpp.cpp"
   append(L"; i += 32)\n");
   append(L"      {\n");
@@ -1279,7 +1279,7 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 724 "CodeGeneratorCpp.cpp.template"
+                                                            #line 693 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             }
 
@@ -1292,16 +1292,16 @@
                                                             #line 1293 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"const int ");
-                                                            #line 734 "CodeGeneratorCpp.cpp.template"
+                                                            #line 703 "CodeGeneratorCpp.cpp.template"
                                                                 print(Format::acceptableName<CString>(variable("classname").string()).c_str());
                                                             #line 1298 "CodeGeneratorCpp.cpp"
   append(L"::");
-                                                            #line 735 "CodeGeneratorCpp.cpp.template"
+                                                            #line 704 "CodeGeneratorCpp.cpp.template"
                                                                 print(a->longName);
                                                             #line 1302 "CodeGeneratorCpp.cpp"
   append(L"[] =\n");
   append(L"{");
-                                                            #line 737 "CodeGeneratorCpp.cpp.template"
+                                                            #line 706 "CodeGeneratorCpp.cpp.template"
                                                                 int w = (int) Format::width(a->size);
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
@@ -1311,17 +1311,17 @@
                                                             #line 1312 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"/* ");
-                                                            #line 744 "CodeGeneratorCpp.cpp.template"
+                                                            #line 713 "CodeGeneratorCpp.cpp.template"
                                                                     print(format.toString<char>(j, 10, w));
                                                             #line 1317 "CodeGeneratorCpp.cpp"
   append(L" */ ");
-                                                            #line 745 "CodeGeneratorCpp.cpp.template"
+                                                            #line 714 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                                   else
                                                                   {
                                                             #line 1323 "CodeGeneratorCpp.cpp"
   append(L", ");
-                                                            #line 748 "CodeGeneratorCpp.cpp.template"
+                                                            #line 717 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                                   if (a->integer(j) != (int) 0x80000000)
                                                                   {
@@ -1331,14 +1331,14 @@
                                                                   {
                                                             #line 1333 "CodeGeneratorCpp.cpp"
   append(L"(int) ");
-                                                            #line 755 "CodeGeneratorCpp.cpp.template"
+                                                            #line 724 "CodeGeneratorCpp.cpp.template"
                                                                     print(format.toString<char>(a->integer(j), 16, 0, 0, "0x", "0123456789abcdef"));
                                                                   }
                                                                 }
                                                             #line 1339 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 760 "CodeGeneratorCpp.cpp.template"
+                                                            #line 729 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
@@ -1347,32 +1347,32 @@
                                                             #line 1348 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"const ");
-                                                            #line 766 "CodeGeneratorCpp.cpp.template"
+                                                            #line 735 "CodeGeneratorCpp.cpp.template"
                                                                 print(variable("stringType").string());
                                                                 print(Format::acceptableName<CString>(variable("classname").string()).c_str());
                                                             #line 1354 "CodeGeneratorCpp.cpp"
   append(L"::");
-                                                            #line 768 "CodeGeneratorCpp.cpp.template"
+                                                            #line 737 "CodeGeneratorCpp.cpp.template"
                                                                 print(a->longName);
                                                             #line 1358 "CodeGeneratorCpp.cpp"
   append(L"[] =\n");
   append(L"{\n");
-                                                            #line 771 "CodeGeneratorCpp.cpp.template"
+                                                            #line 740 "CodeGeneratorCpp.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
                                                             #line 1366 "CodeGeneratorCpp.cpp"
   append(L",\n");
-                                                            #line 776 "CodeGeneratorCpp.cpp.template"
+                                                            #line 745 "CodeGeneratorCpp.cpp.template"
                                                                   }
                                                             #line 1370 "CodeGeneratorCpp.cpp"
   append(L"  ");
-                                                            #line 777 "CodeGeneratorCpp.cpp.template"
+                                                            #line 746 "CodeGeneratorCpp.cpp.template"
                                                                   print(variable("stringPrefix").string());
                                                             #line 1374 "CodeGeneratorCpp.cpp"
   append(L"\"");
-                                                            #line 778 "CodeGeneratorCpp.cpp.template"
+                                                            #line 747 "CodeGeneratorCpp.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1387,13 +1387,13 @@
                                                                   print(s, c - s);
                                                             #line 1389 "CodeGeneratorCpp.cpp"
   append(L"\"");
-                                                            #line 790 "CodeGeneratorCpp.cpp.template"
+                                                            #line 759 "CodeGeneratorCpp.cpp.template"
                                                                   print(variable("stringSuffix").string());
                                                                 }
                                                             #line 1394 "CodeGeneratorCpp.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 794 "CodeGeneratorCpp.cpp.template"
+                                                            #line 763 "CodeGeneratorCpp.cpp.template"
                                                               }
                                                             }
 

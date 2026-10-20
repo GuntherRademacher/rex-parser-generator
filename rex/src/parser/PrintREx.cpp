@@ -326,7 +326,8 @@ void PrintREx::visitGrammar(Grammar *node)
   bool tables = ! node->decisionPoints.empty();
   rex->bind(CGVariable("lrparser", node->states != 0));
   rex->bind(CGVariable("useGlr", node->useGlr));
-  rex->bind(CGVariable("minimalAmbiguity", node->minimalAmbiguity));
+  rex->bind(CGVariable("resolvesAmbiguity", node->resolvesAmbiguity));
+  rex->bind(CGVariable("shiftAmbiguity", node->shiftAmbiguity));
   rex->bind(CGVariable("anywhitespace", ! node->whitespaceIntroducers.empty()));
   rex->bind(CGVariable("tables", tables));
   rex->bind(CGVariable("nothrow", node->noThrow));

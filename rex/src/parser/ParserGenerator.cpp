@@ -47,7 +47,7 @@ static void usage()
   fprintf(stdout, "\n");
   fprintf(stdout, "  -backtrack      allow PEG-style backtracking for LL-conflicts\n");
   fprintf(stdout, "  -asi            handle EcmaScript automatic semicolon insertion (LL(1) only)\n");
-  fprintf(stdout, "  -ambiguity MODE reject (default) or minimal resolution of ambiguities found by GLR\n");
+  fprintf(stdout, "  -ambiguity MODE reject (default), minimal or shift resolution of ambiguities found by GLR\n");
   fprintf(stdout, "\n");
   fprintf(stdout, "  -cpp            generate parser in C++\n");
   fprintf(stdout, "  -csharp         generate parser in C#\n");
@@ -108,7 +108,8 @@ int generateParser(int argc, char **argv)
   bool verbose = false;
   bool version = false;
   bool backtrack = false;
-  bool minimalAmbiguity = false;
+  bool resolvesAmbiguity = false;
+  bool shiftAmbiguity = false;
   bool ambiguityOption = false;
   bool smaller = false;
   bool faster = false;
@@ -322,15 +323,22 @@ int generateParser(int argc, char **argv)
       ambiguityOption = true;
       if (strcmp(*arguments, "minimal") == 0)
       {
-        minimalAmbiguity = true;
+        resolvesAmbiguity = true;
+        shiftAmbiguity = false;
+      }
+      else if (strcmp(*arguments, "shift") == 0)
+      {
+        resolvesAmbiguity = true;
+        shiftAmbiguity = true;
       }
       else if (strcmp(*arguments, "reject") == 0)
       {
-        minimalAmbiguity = false;
+        resolvesAmbiguity = false;
+        shiftAmbiguity = false;
       }
       else
       {
-        fprintf(stdout, "invalid argument for option -ambiguity: %s (expected reject or minimal)\n", *arguments);
+        fprintf(stdout, "invalid argument for option -ambiguity: %s (expected reject, minimal or shift)\n", *arguments);
         fflush(stdout);
         status = -1;
         break;
@@ -470,9 +478,9 @@ int generateParser(int argc, char **argv)
     fprintf(stdout, "missing option: -ambiguity also requires -glalr or -glr\n");
     fflush(stdout);
   }
-  else if (minimalAmbiguity && targetLanguage == REX)
+  else if (shiftAmbiguity && ! printTree)
   {
-    fprintf(stdout, "option -ambiguity minimal is not yet supported for the selected target language\n");
+    fprintf(stdout, "missing option: -ambiguity shift also requires -tree\n");
     fflush(stdout);
   }
   else if (performance && printMain)
@@ -760,7 +768,8 @@ int generateParser(int argc, char **argv)
                 else if (generalized)
                 {
                   grammar->useGlr = true;
-                  grammar->minimalAmbiguity = minimalAmbiguity;
+                  grammar->resolvesAmbiguity = resolvesAmbiguity;
+                  grammar->shiftAmbiguity = shiftAmbiguity;
                   if (! quiet)
                   {
                     int conflictCount = grammar->states->getConflicts()->size();

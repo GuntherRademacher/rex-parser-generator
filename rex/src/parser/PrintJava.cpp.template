@@ -69,8 +69,7 @@ import net.sf.saxon.type.AnyType;~                                if (! tree)
 ~
 import net.sf.saxon.value.EmptySequence;~                         }
 ~
-import net.sf.saxon.value.SequenceType;~
-                                                                  if (interfaceName.empty())
+import net.sf.saxon.value.SequenceType;~                          if (interfaceName.empty())
                                                                   {
 ~
 import net.sf.saxon.expr.parser.ExplicitLocation;
@@ -95,8 +94,7 @@ import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.AnySimpleType;
 import net.sf.saxon.type.AnyType;
-import net.sf.saxon.value.SequenceType;~
-                                                                  if (! tree)
+import net.sf.saxon.value.SequenceType;~                          if (! tree)
                                                                   {
 ~
 import net.sf.saxon.value.EmptySequence;~                         }
@@ -209,8 +207,7 @@ public class ~                                                  print(className.
           for (int p = 0; p < ~                                   print(format.toString<wchar_t>(grammar->caseidTable->getRows()));
                               ~; ++p)
           {
-            int count = 0;~
-                                                                  for (size_t i = 1; i <= grammar->k; ++i)
+            int count = 0;~                                       for (size_t i = 1; i <= grammar->k; ++i)
                                                                   {
 ~
             for (parser.l~                                          print(format.toString<wchar_t>(i));
@@ -235,8 +232,7 @@ public class ~                                                  print(className.
           System.out.println("predictions checked");
           parser.reset(0, 0, 0);
 
-~
-                                                                }
+~                                                               }
                                                                 #endif
 
                                                                 if (trace)
@@ -303,8 +299,7 @@ public class ~                                                  print(className.
   {
     @Override
     public void initialize(Configuration conf)
-    {~
-                                                                for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
+    {~                                                          for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
                                                                 {
                                                                   Production *p = static_cast <Production *> (n);
                                                                   if (p->isStartSymbol())
@@ -316,8 +311,7 @@ public class ~                                                  print(className.
 ~
     }
   }
-~
-                                                                for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
+~                                                               for (Node *n = grammar->nonTerminals; n; n = n->followingSibling)
                                                                 {
                                                                   Production *p = static_cast <Production *> (n);
                                                                   if (p->isStartSymbol())
@@ -340,8 +334,7 @@ public class ~                                                  print(className.
 ~
     builder.open();
     ~                                                               print(className.c_str());
-    ~ parser = new ~
-                                                                    print(className.c_str());
+    ~ parser = new ~                                                print(className.c_str());
                    ~(input~                                         if (noLexer)
                                                                     {
                    ~, new ~                                           print(className.c_str());
@@ -472,8 +465,7 @@ public class ~                                                  print(className.
     {
       builder.attribute(new NoNamespaceName("o"), anySimpleType, Integer.toString(pe.getOffending()), LOCATION, 0);
       builder.attribute(new NoNamespaceName("x"), anySimpleType, Integer.toString(pe.getExpected()), LOCATION, 0);
-    }~
-                                                                }
+    }~                                                          }
                                                                 else
                                                                 {
 ~
@@ -565,7 +557,7 @@ public class ~                                                  print(className.
                      ~();
       parser.initialize(input~                                  if (noLexer)
                                                                 {
-                             ~, new ~                              print(className.c_str());
+                             ~, new ~                             print(className.c_str());
                                     ~Lexer()~                   }
                                                                 if (tree)
                                                                 {
@@ -627,8 +619,7 @@ public class ~                                                  print(className.
       return new DBNode(memBuilder.data());
     }
   }
-~
-                                                                if (tree)
+~                                                               if (tree)
                                                                 {
 ~
   public static class BaseXTreeBuilder implements EventHandler
@@ -772,8 +763,7 @@ public class ~                                                  print(className.
 ~
 private static class StackNode
 {
-  public int state;~
-                                                              if (grammar->states->hasLookback)
+  public int state;~                                          if (grammar->states->hasLookback)
                                                               {
 ~
   public int code;~                                           }
@@ -784,8 +774,7 @@ private static class StackNode
 ~
   public StackNode link;
 
-  public StackNode(int state, ~
-                                                              if (grammar->states->hasLookback)
+  public StackNode(int state, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~int code, ~                    }
                                                               if (tree || useGlr)
@@ -793,8 +782,7 @@ private static class StackNode
                               ~int pos, ~                     }
                               ~StackNode link)
   {
-    this.state = state;~
-                                                              if (grammar->states->hasLookback)
+    this.state = state;~                                      if (grammar->states->hasLookback)
                                                               {
 ~
     this.code = code;~                                        }
@@ -865,14 +853,22 @@ private abstract static class DeferredEvent
   public DeferredEvent link;
   public String name;
   public int begin;
-  public int end;
+  public int end;~                                              if (shiftAmbiguity)
+                                                                {
+~
+  public int depth;~                                            }
+~
 
   public DeferredEvent(DeferredEvent link, String name, int begin, int end)
   {
     this.link = link;
     this.name = name;
     this.begin = begin;
-    this.end = end;
+    this.end = end;~                                            if (shiftAmbiguity)
+                                                                {
+~
+    this.depth = link == null ? 1 : link.depth + 1;~            }
+~
   }
 
   public abstract void execute(BottomUpEventHandler eventHandler);
@@ -891,7 +887,11 @@ private abstract static class DeferredEvent
     }
     do
     {
-      current.execute(eventHandler);
+      ~                                                         if (shiftAmbiguity)
+                                                                {
+~if (eventHandler != null)
+        ~                                                       }
+~current.execute(eventHandler);
       current = current.link;
     }
     while (current != null);
@@ -914,7 +914,7 @@ private abstract static class DeferredEvent
 ~                                                               }
 ~}
 
-~                                                               if (minimalAmbiguity)
+~                                                               if (resolvesAmbiguity)
                                                                 {
 ~public static class AmbiguityEvent extends DeferredEvent
 {
@@ -985,7 +985,7 @@ private static final int PARSING = 0;
 private static final int ACCEPTED = 1;
 private static final int ERROR = 2;
 
-private ParsingThread parse(int target, int initialState, ~            if (tree)
+private ParsingThread parse(int target, int initialState, ~   if (tree)
                                                               {
                                                           ~BottomUpEventHandler eventHandler, ~
                                                               }
@@ -1051,10 +1051,10 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
     {
       if (threads.peek().equals(thread))
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
                         ~, thread.deferredEvent, threads.peek().deferredEvent~
-                                                              }
+                                                                }
                         ~);
       }
     }~                                                        }
@@ -1158,8 +1158,39 @@ private ParsingThread resolve(ParsingThread thread, ParsingThread other)
     b = b.link;
   }~                                                            }
 ~
+~                                                               if (shiftAmbiguity)
+                                                                {
+~
+  DeferredEvent ea = thread.deferredEvent;
+  DeferredEvent eb = other.deferredEvent;
+  DeferredEvent ua = null;
+  DeferredEvent ub = null;
+  while (ea != eb)
+  {
+    if ((ea == null ? 0 : ea.depth) >= (eb == null ? 0 : eb.depth))
+    {
+      ua = ea;
+      ea = ea.link;
+    }
+    else
+    {
+      ub = eb;
+      eb = eb.link;
+    }
+  }
+  if ((ua instanceof TerminalEvent) != (ub instanceof TerminalEvent))
+  {
+    if (ub instanceof TerminalEvent)
+      thread = other;
+  }
+  else if (other.eventCount < thread.eventCount)
+    thread = other;~                                            }
+                                                                else
+                                                                {
+~
   if (other.eventCount < thread.eventCount)
-    thread = other;~                                            if (tree)
+    thread = other;~                                            }
+                                                                if (tree)
                                                                 {
 ~
   thread.addAmbiguity(begin, thread.e0);~                       }
@@ -1210,7 +1241,7 @@ private class ParsingThread implements Comparable<ParsingThread>
 ~
   public DeferredCode deferredCode;~                          }
 ~
-  public int id;~                                             if (minimalAmbiguity)
+  public int id;~                                             if (resolvesAmbiguity)
                                                               {
 ~
   public int eventCount;~                                     }
@@ -1222,7 +1253,7 @@ private class ParsingThread implements Comparable<ParsingThread>
                          ~, int t)
   {
     accepted = false;
-    target = t;~                                              if (minimalAmbiguity)
+    target = t;~                                              if (resolvesAmbiguity)
                                                               {
 ~
     eventCount = 0;~                                          }
@@ -1240,8 +1271,7 @@ private class ParsingThread implements Comparable<ParsingThread>
 ~
     deferredCode = null;~                                     }
 ~
-    stack = new StackNode(-1, ~
-                                                              if (grammar->states->hasLookback)
+    stack = new StackNode(-1, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~0, ~                           }
                               ~e0, null);
@@ -1258,7 +1288,7 @@ private class ParsingThread implements Comparable<ParsingThread>
     return threads;
   }
 
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~  public void addAmbiguity(int begin, int end)
   {
@@ -1271,7 +1301,7 @@ private class ParsingThread implements Comparable<ParsingThread>
   {
     this.action = action;
     accepted = other.accepted;
-    target = other.target;~                                   if (minimalAmbiguity)
+    target = other.target;~                                   if (resolvesAmbiguity)
                                                               {
 ~
     eventCount = other.eventCount;~                           }
@@ -1617,15 +1647,13 @@ flushTrace();~                                                  decreaseIndent(i
                 if (job.contentCounter.getLength() != job.input.length~
                                                                 if (! codepoints)
                                                                 {
-                                                  ~()~
-                                                                }
+                                                  ~()~          }
                                                   ~)
                 {
                   throw new RuntimeException("content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length~
                                                                 if (! codepoints)
                                                                 {
-                                                  ~()~
-                                                                }
+                                                  ~()~          }
                                                   ~);
                 }~                                            }
 ~
@@ -1686,8 +1714,7 @@ flushTrace();~                                                  decreaseIndent(i
       collectInput(f.getPath(), read(f.getPath()));
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintJava::printReadMethod()
                                                             {
@@ -1710,13 +1737,7 @@ flushTrace();~                                                  decreaseIndent(i
            : content;
     }
   }
-~
-//      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
-//      {
-//        content = content.substring(1);
-//      }
-//      return content.replace("\r\n", "\n");
-                                                            }
+~                                                           }
 
                                                             void PrintJava::printInterface()
                                                             {
@@ -1735,8 +1756,7 @@ import java.io.IOException;
 import java.io.Writer;
 ~                                                               }
 ~
-import java.util.Arrays;~
-                                                                if (saxon)
+import java.util.Arrays;~                                       if (saxon)
                                                                 {
 ~
 import net.sf.saxon.event.Builder;~                               if (saxon == 99)
@@ -2018,7 +2038,7 @@ public interface ~                                            print(className.c_
     public void reset(~                                           print(inputType());
                       ~ string);
     public void nonterminal(String name, int begin, int end, int count);
-    public void terminal(String name, int begin, int end);~       if (minimalAmbiguity)
+    public void terminal(String name, int begin, int end);~       if (resolvesAmbiguity)
                                                                   {
 ~
     public void ambiguity(int begin, int end);~                   }
@@ -2192,8 +2212,7 @@ public interface ~                                            print(className.c_
     @Override
     public void whitespace(int begin, int end) {length += end - begin;}
   }
-~
-                                                                }
+~                                                               }
                                                                 if (saxon)
                                                                 {
 ~
@@ -2280,8 +2299,7 @@ public interface ~                                            print(className.c_
                                                                     print(substring());
                                                                     if (saxon == 110)
                                                                     {
-                             ~)~
-                                                                    }
+                             ~)~                                    }
                                                                   }
                                                                   else
                                                                   {
@@ -2341,7 +2359,7 @@ public interface ~                                            print(className.c_
     public void terminal(String name, int begin, int end)
     {
       push(new Terminal(name, begin, end));
-    }~                                                            if (minimalAmbiguity)
+    }~                                                            if (resolvesAmbiguity)
                                                                   {
 ~
 
@@ -2375,8 +2393,7 @@ public interface ~                                            print(className.c_
       return Arrays.copyOfRange(stack, top + 1, top + count + 1);
     }
   }
-~
-                                                                }
+~                                                               }
                                                               }
                                                               if (saxon)
                                                               {
@@ -2451,5 +2468,4 @@ public interface ~                                            print(className.c_
       };
     }
   }
-~
-                                                            */
+~                                                           */

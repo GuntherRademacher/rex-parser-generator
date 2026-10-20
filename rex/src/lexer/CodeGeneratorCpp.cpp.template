@@ -100,8 +100,7 @@
                                                               if (variable("useGlr").boolean())
                                                               {
                ~parser->~                                     }
-               ~input[current];~
-                                                              if (variable("trace").boolean())
+               ~input[current];~                              if (variable("trace").boolean())
                                                               {
 ~
       fprintf(stderr, " offset=\"%d\"", current);~            }
@@ -142,100 +141,82 @@
         ~                                                         append(multiItem);
         ~ = true;~                                              }
 ~
-        if      ((c0~
-                                                                if (variable("useGlr").boolean())
+        if      ((c0~                                           if (variable("useGlr").boolean())
                                                                 {
                     ~        ~                                  }
                     ~                 & 0xe0) == 0xc0
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current    ] & 0xc0) == 0x80)
         {
-          c0 = ((c0~
-                                                                if (variable("useGlr").boolean())
+          c0 = ((c0~                                            if (variable("useGlr").boolean())
                                                                 {
                    ~        ~                                   }
                    ~                 & 0x1f) << 6)
-             |  (~
-                                                                if (variable("useGlr").boolean())
+             |  (~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current    ] & 0x3f);
           if (c0 < 0x80) c0 = -1; else ++current;
         }
-        else if ((c0~
-                                                                if (variable("useGlr").boolean())
+        else if ((c0~                                           if (variable("useGlr").boolean())
                                                                 {
                     ~        ~                                  }
                     ~                 & 0xf0) == 0xe0
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current    ] & 0xc0) == 0x80
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current + 1] & 0xc0) == 0x80)
         {
-          c0 = ((c0~
-                                                                if (variable("useGlr").boolean())
+          c0 = ((c0~                                            if (variable("useGlr").boolean())
                                                                 {
                    ~        ~                                   }
                    ~                 & 0x0f) << 12)
-             | ((~
-                                                                if (variable("useGlr").boolean())
+             | ((~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current    ] & 0x3f) <<  6)
-             |  (~
-                                                                if (variable("useGlr").boolean())
+             |  (~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current + 1] & 0x3f);
           if (c0 < 0x800) c0 = -1; else current += 2;
         }
-        else if ((c0~
-                                                                if (variable("useGlr").boolean())
+        else if ((c0~                                           if (variable("useGlr").boolean())
                                                                 {
                     ~        ~                                  }
                     ~                 & 0xf8) == 0xf0
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current    ] & 0xc0) == 0x80
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current + 1] & 0xc0) == 0x80
-              && (~
-                                                                if (variable("useGlr").boolean())
+              && (~                                             if (variable("useGlr").boolean())
                                                                 {
                   ~parser->~                                    }
                   ~input[current + 2] & 0xc0) == 0x80)
         {
-          c0 = ((c0~
-                                                                if (variable("useGlr").boolean())
+          c0 = ((c0~                                            if (variable("useGlr").boolean())
                                                                 {
                    ~        ~                                   }
                    ~                 & 0x07) << 18)
-             | ((~
-                                                                if (variable("useGlr").boolean())
+             | ((~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current    ] & 0x3f) << 12)
-             | ((~
-                                                                if (variable("useGlr").boolean())
+             | ((~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current + 1] & 0x3f) <<  6)
-             | ( ~
-                                                                if (variable("useGlr").boolean())
+             | ( ~                                              if (variable("useGlr").boolean())
                                                                 {
                  ~parser->~                                     }
                  ~input[current + 2] & 0x3f       );
@@ -265,8 +246,7 @@
             ~c0 >= 0xd800 && ~                                    }
                              ~c0 < 0xdc00)
         {
-          int c1 = ~
-                                                                  if (variable("useGlr").boolean())
+          int c1 = ~                                              if (variable("useGlr").boolean())
                                                                   {
                    ~parser->~                                     }
                    ~input[current];
@@ -320,14 +300,13 @@
         result = code;~                                       if (variable("trace").boolean())
                                                               {
 ~
-        fprintf(stderr, " result=\"%s\"", ~
-                                                                if (! utf8)
+        fprintf(stderr, " result=\"%s\"", ~                     if (! utf8)
                                                                 {
                                           ~Utf8Encoder::encode(~
                                                                 }
                                           ~xmlEscape(TOKEN[((result >> ~
                                                                 print(variable("stateCodeBits").integer());
-                                          ~) & ~ print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                          ~) & ~                print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                           ~) - 1], 0).c_str()~  if (! utf8)
                                                                 {
                                           ~).c_str()~           }
@@ -380,8 +359,7 @@
     {~                                                        if (utf8)
                                                               {
 ~
-      for (end = current - 1; (~
-                                                                if (variable("useGlr").boolean())
+      for (end = current - 1; (~                                if (variable("useGlr").boolean())
                                                                 {
                                ~parser->~                       }
                                ~input[end] & 0xc0) == 0x80; --end) ;~
@@ -390,8 +368,7 @@
                                                               {
 ~
       end = current - 1;
-      int c1 = ~
-                                                                if (variable("useGlr").boolean())
+      int c1 = ~                                                if (variable("useGlr").boolean())
                                                                 {
                ~parser->~                                       }
                ~input[end];
@@ -420,8 +397,8 @@
                                                               if (hasFixedTokenLength && ! lookahead)
                                                               {
 ~
-    if ((result & ~                                               print(Math::powerof(2, lowBits));
-                                                                  ++lowBits;
+    if ((result & ~                                             print(Math::powerof(2, lowBits));
+                                                                ++lowBits;
                   ~) != 0)
     {
       end = begin;
@@ -444,8 +421,7 @@
                                ~; i > 0; --i)~                    if (utf8)
                                                                   {
 ~
-          for (++end; (~
-                                                                    if (variable("useGlr").boolean())
+          for (++end; (~                                            if (variable("useGlr").boolean())
                                                                     {
                        ~parser->~                                   }
                        ~input[end] & 0xc0) == 0x80 && end <= current; ++end) ;~
@@ -454,8 +430,7 @@
                                                                   {
 ~
         {
-          int c1 = ~
-                                                                    if (variable("useGlr").boolean())
+          int c1 = ~                                                if (variable("useGlr").boolean())
                                                                     {
                    ~parser->~                                       }
                    ~input[end++];
@@ -482,8 +457,7 @@
                              ~; i > 0; --i)~                      if (utf8)
                                                                   {
 ~
-        for (--end; (~
-                                                                    if (variable("useGlr").boolean())
+        for (--end; (~                                              if (variable("useGlr").boolean())
                                                                     {
                      ~parser->~                                     }
                      ~input[end] & 0xc0) == 0x80; --end) ;~       }
@@ -491,8 +465,7 @@
                                                                   {
 ~
       {
-        int c1 = ~
-                                                                    if (variable("useGlr").boolean())
+        int c1 = ~                                                  if (variable("useGlr").boolean())
                                                                     {
                  ~parser->~                                         }
                  ~input[--end];
@@ -513,8 +486,7 @@
 ~                                                               }
                                                               }
 ~
-    if (~
-                                                              if (variable("useGlr").boolean())
+    if (~                                                     if (variable("useGlr").boolean())
                                                               {
         ~parser->~                                            }
         ~input[begin] == 0) end = begin;~                     if (variable("trace").boolean())
@@ -534,8 +506,7 @@
     return (result & ~                                        print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                      ~) - 1;
   }
-~
-                                                              if (! variable("embedded").boolean())
+~                                                             if (! variable("embedded").boolean())
                                                               {
 ~
   String[] getExpectedTokenSet()
@@ -658,12 +629,10 @@
     ~ */ ~                                                        print(token.string(i));
                                                                 }
     ~
-  };~
-                                                              }
+  };~                                                         }
 ~
 };
-~
-                                                              generateData();
+~                                                             generateData();
                                                               if (variable("selfTest").boolean())
                                                               {
 ~
@@ -700,14 +669,14 @@
 
   static void main(String[] args)
   {
-    ~                                                         print(Format::acceptableName<CString>(variable("classname").string()).c_str());
+    ~                                                           print(Format::acceptableName<CString>(variable("classname").string()).c_str());
     ~ testee();
-    for (int e = 0; e < ~                                     print(variable("a0").size);
+    for (int e = 0; e < ~                                       print(variable("a0").size);
                         ~; ++e)
     {
-      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      int s = INITIAL[e] & ~                                    print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                            ~;
-      for (int i = 0; i < ~                                   print(variable("t1").size);
+      for (int i = 0; i < ~                                     print(variable("t1").size);
                           ~; i += 32)
       {
         int j = i;

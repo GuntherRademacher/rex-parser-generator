@@ -32,14 +32,14 @@
 
                                                             void PrintCSharp::openClass()
                                                             {
-                                                              if (! hasProlog) {
+                                                              if (! hasProlog)
+                                                              {
 ~
 using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-~
-                                                                if (! packageName.empty())
+~                                                               if (! packageName.empty())
                                                                 {
 ~
 namespace ~                                                       print(packageName.c_str());
@@ -235,8 +235,7 @@ public class ~                                                  print(className.
 ~
 private class StackNode
 {
-  public int state;~
-                                                              if (grammar->states->hasLookback)
+  public int state;~                                          if (grammar->states->hasLookback)
                                                               {
 ~
   public int code;~                                           }
@@ -244,14 +243,12 @@ private class StackNode
   public int pos;
   public StackNode link;
 
-  public StackNode(int state, ~
-                                                              if (grammar->states->hasLookback)
+  public StackNode(int state, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~int code, ~                    }
                               ~int pos, StackNode link)
   {
-    this.state = state;~
-                                                              if (grammar->states->hasLookback)
+    this.state = state;~                                      if (grammar->states->hasLookback)
                                                               {
 ~
     this.code = code;~                                        }
@@ -320,14 +317,22 @@ private abstract class DeferredEvent
   public DeferredEvent link;
   public String name;
   public int begin;
-  public int end;
+  public int end;~                                              if (shiftAmbiguity)
+                                                                {
+~
+  public int depth;~                                            }
+~
 
   public DeferredEvent(DeferredEvent link, String name, int begin, int end)
   {
     this.link = link;
     this.name = name;
     this.begin = begin;
-    this.end = end;
+    this.end = end;~                                            if (shiftAmbiguity)
+                                                                {
+~
+    this.depth = link == null ? 1 : link.depth + 1;~            }
+~
   }
 
   public abstract void execute(BottomUpEventHandler eventHandler);
@@ -346,7 +351,11 @@ private abstract class DeferredEvent
     }
     do
     {
-      current.execute(eventHandler);
+      ~                                                         if (shiftAmbiguity)
+                                                                {
+~if (eventHandler != null)
+        ~                                                       }
+~current.execute(eventHandler);
       current = current.link;
     }
     while (current != null);
@@ -404,8 +413,8 @@ private class NonterminalEvent : DeferredEvent
     return "nonterminal(" + name + ", " + begin + ", " + end + ", " + count + ")";
   }
 }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                               if (resolvesAmbiguity)
+                                                                {
 ~
 
 private class AmbiguityEvent : DeferredEvent
@@ -425,14 +434,14 @@ private class AmbiguityEvent : DeferredEvent
     return "ambiguity(" + begin + ", " + end + ")";
   }
 }
-~                                                             }
+~                                                               }
                                                               }
 ~
 private static int PARSING = 0;
 private static int ACCEPTED = 1;
 private static int ERROR = 2;
 
-private ParsingThread parse(int target, int initialState, ~            if (tree)
+private ParsingThread parse(int target, int initialState, ~   if (tree)
                                                               {
                                                           ~BottomUpEventHandler eventHandler, ~
                                                               }
@@ -446,7 +455,7 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
   {
     thread = threads.poll();
     if (thread.accepted)
-    {~                                                      if (rejectsAmbiguity())
+    {~                                                        if (rejectsAmbiguity())
                                                               {
 ~
       ParsingThread other = null;
@@ -461,10 +470,10 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
       }
       if (other != null)
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
                         ~, thread.deferredEvent, other.deferredEvent~
-                                                              }
+                                                                }
                         ~);
       }~                                                      }
                                                               else
@@ -497,19 +506,19 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
     {
       if (threads.peek().Equals(thread))
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
                         ~, thread.deferredEvent, threads.peek().deferredEvent~
-                                                              }
+                                                                }
                         ~);
       }
-    }~                                                      }
+    }~                                                        }
                                                               else
                                                               {
 ~    while (! threads.isEmpty() && threads.peek().Equals(thread))
     {
       thread = resolve(thread, threads.poll());
-    }~                                                      }
+    }~                                                        }
                                                               if (tree || hasCustomCode)
                                                               {
                                                                 if (rejectsAmbiguity())
@@ -563,13 +572,13 @@ private ParsingThread parse(int target, int initialState, ~            if (tree)
 ~                                                             if (rejectsAmbiguity())
                                                               {
 ~
-private void rejectAmbiguity(int begin, int end~              if (tree)
-                                                              {
+private void rejectAmbiguity(int begin, int end~                if (tree)
+                                                                {
                              ~, DeferredEvent first, DeferredEvent second~
-                                                              }
+                                                                }
                              ~)
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   ParseTreeBuilder treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(input);
@@ -580,19 +589,19 @@ private void rejectAmbiguity(int begin, int end~              if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
-                                                              }
+                                                                }
 ~
-  throw new ParseException(begin, end~                        if (tree)
-                                                              {
-                                     ~, treeBuilder~          }
+  throw new ParseException(begin, end~                          if (tree)
+                                                                {
+                                     ~, treeBuilder~            }
                                      ~);
 }~                                                            }
                                                               else
                                                               {
 ~
 private ParsingThread resolve(ParsingThread thread, ParsingThread other)
-{~                                                  if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   StackNode a = thread.stack;
   StackNode b = other.stack;
@@ -602,13 +611,44 @@ private ParsingThread resolve(ParsingThread thread, ParsingThread other)
     begin = a.pos;
     a = a.link;
     b = b.link;
-  }~                                                  }
+  }~                                                            }
+~
+~                                                               if (shiftAmbiguity)
+                                                                {
+~
+  DeferredEvent ea = thread.deferredEvent;
+  DeferredEvent eb = other.deferredEvent;
+  DeferredEvent ua = null;
+  DeferredEvent ub = null;
+  while (ea != eb)
+  {
+    if ((ea == null ? 0 : ea.depth) >= (eb == null ? 0 : eb.depth))
+    {
+      ua = ea;
+      ea = ea.link;
+    }
+    else
+    {
+      ub = eb;
+      eb = eb.link;
+    }
+  }
+  if ((ua is TerminalEvent) != (ub is TerminalEvent))
+  {
+    if (ub is TerminalEvent)
+      thread = other;
+  }
+  else if (other.eventCount < thread.eventCount)
+    thread = other;~                                            }
+                                                                else
+                                                                {
 ~
   if (other.eventCount < thread.eventCount)
-    thread = other;~                                        if (tree)
-                                                              {
+    thread = other;~                                            }
+                                                                if (tree)
+                                                                {
 ~
-  thread.addAmbiguity(begin, thread.e0);~                                        }
+  thread.addAmbiguity(begin, thread.e0);~                       }
 ~
   return thread;
 }~                                                            }
@@ -648,10 +688,10 @@ private class ParsingThread : IComparable<ParsingThread>
 ~
   public DeferredCode deferredCode;~                          }
 ~
-  public int id;~                                                  if (minimalAmbiguity)
+  public int id;~                                             if (resolvesAmbiguity)
                                                               {
 ~
-  public int eventCount;~                                                  }
+  public int eventCount;~                                     }
 ~
 
   public Heap<ParsingThread> open(int initialState~           if (tree)
@@ -660,10 +700,10 @@ private class ParsingThread : IComparable<ParsingThread>
                          ~, int t)
   {
     accepted = false;
-    target = t;~                                                  if (minimalAmbiguity)
+    target = t;~                                              if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = 0;~                                                  }
+    eventCount = 0;~                                          }
                                                               if (tree)
                                                               {
 ~
@@ -676,10 +716,9 @@ private class ParsingThread : IComparable<ParsingThread>
                                                               if (hasCustomCode && useGlr)
                                                               {
 ~
-    deferredCode = null;~                                }
+    deferredCode = null;~                                     }
 ~
-    stack = new StackNode(-1, ~
-                                                              if (grammar->states->hasLookback)
+    stack = new StackNode(-1, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~0, ~                           }
                               ~e0, null);
@@ -701,10 +740,10 @@ private class ParsingThread : IComparable<ParsingThread>
     this.action = action;
     accepted = other.accepted;
     target = other.target;
-    parser = other.parser;~                                                  if (minimalAmbiguity)
+    parser = other.parser;~                                   if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = other.eventCount;~                                                  }
+    eventCount = other.eventCount;~                           }
                                                               if (tree)
                                                               {
 ~
@@ -741,7 +780,7 @@ private class ParsingThread : IComparable<ParsingThread>
     return this;
   }
 
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~
   public void addAmbiguity(int begin, int end)
@@ -820,20 +859,20 @@ private class ParsingThread : IComparable<ParsingThread>
     String result = "";
     if (l1 > 0)
     {
-      result += TOKEN[l1];~                                   for (size_t i = 2; i <= grammar->k; ++i)
-                                                              {
+      result += TOKEN[l1];~                                     for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
 ~
-      if (l~                                                    print(format.toString<wchar_t>(i));
+      if (l~                                                      print(format.toString<wchar_t>(i));
            ~ > 0)
       {
-        result += " " + TOKEN[l~                                print(format.toString<wchar_t>(i));
-                               ~];~                             increaseIndent();
-                                                              }
-                                                              for (size_t i = 2; i <= grammar->k; ++i)
-                                                              {
-                                                                decreaseIndent();
+        result += " " + TOKEN[l~                                  print(format.toString<wchar_t>(i));
+                               ~];~                               increaseIndent();
+                                                                }
+                                                                for (size_t i = 2; i <= grammar->k; ++i)
+                                                                {
+                                                                  decreaseIndent();
 ~
-      }~                                                      }
+      }~                                                        }
 ~
     }
     return result;
@@ -1043,9 +1082,9 @@ private class ParsingThread : IComparable<ParsingThread>
               try
               {
                 if (! quiet) Console.Out.Write("parsing " + job.name);
-                job.parser~                                       if (useGlr)
-                                                                  {
-                          ~.thread~                               }
+                job.parser~                                   if (useGlr)
+                                                              {
+                          ~.thread~                           }
                           ~.reset(0, 0, 0);
                 job.parser.~                                  print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
@@ -1121,8 +1160,7 @@ private class ParsingThread : IComparable<ParsingThread>
       collectInput(f, read(f));
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintCSharp::printReadMethod()
                                                             {
@@ -1382,10 +1420,10 @@ public interface ~                                            print(className.c_
   {
     void reset(String input);
     void nonterminal(String name, int begin, int end, int count);
-    void terminal(String name, int begin, int end);~          if (minimalAmbiguity)
-                                                              {
+    void terminal(String name, int begin, int end);~              if (resolvesAmbiguity)
+                                                                  {
 ~
-    void ambiguity(int begin, int end);~          }
+    void ambiguity(int begin, int end);~                          }
 ~
   }
 ~                                                               }
@@ -1417,9 +1455,9 @@ public interface ~                                            print(className.c_
       depth = 0;
     }
 
-    public void startNonterminal(String name~                   if (! noPosition)
-                                                                {
-                                            ~, int begin~       }
+    public void startNonterminal(String name~                     if (! noPosition)
+                                                                  {
+                                            ~, int begin~         }
                                             ~)
     {
       if (delayedTag != null)
@@ -1441,9 +1479,9 @@ public interface ~                                            print(className.c_
       ++depth;
     }
 
-    public void endNonterminal(String name~                     if (! noPosition)
-                                                                {
-                                          ~, int end~           }
+    public void endNonterminal(String name~                       if (! noPosition)
+                                                                  {
+                                          ~, int end~             }
                                           ~)
     {
       --depth;
@@ -1480,14 +1518,14 @@ public interface ~                                            print(className.c_
       {
         name = "TOKEN";
       }
-      startNonterminal(name~                                    if (! noPosition)
-                                                                {
-                           ~, begin~                            }
+      startNonterminal(name~                                      if (! noPosition)
+                                                                  {
+                           ~, begin~                              }
                            ~);
       characters(begin, end);
-      endNonterminal(name~                                      if (! noPosition)
-                                                                {
-                         ~, end~                                }
+      endNonterminal(name~                                        if (! noPosition)
+                                                                  {
+                         ~, end~                                  }
                          ~);
     }
 
@@ -1539,8 +1577,7 @@ public interface ~                                            print(className.c_
     public void terminal(String name, int begin, int end) {length += end - begin;}
     public void whitespace(int begin, int end) {length += end - begin;}
   }
-~
-                                                                }
+~                                                               }
                                                                 if (isLrParser)
                                                                 {
 ~
@@ -1560,8 +1597,8 @@ public interface ~                                            print(className.c_
     public int getTop() {return top;}
 
     public void nonterminal(String name, int begin, int end, int count)
-    {~                                                          if (rejectsAmbiguity())
-                                                                {
+    {~                                                            if (rejectsAmbiguity())
+                                                                  {
 ~
       if (count > top + 1)
       {
@@ -1572,7 +1609,7 @@ public interface ~                                            print(className.c_
           push(symbol);
         }
         count = top + 1;
-      }~                                                        }
+      }~                                                          }
 ~
       push(new Nonterminal(name, begin, end, pop(count)));
     }
@@ -1580,13 +1617,13 @@ public interface ~                                            print(className.c_
     public void terminal(String name, int begin, int end)
     {
       push(new Terminal(name, begin, end));
-    }~                                        if (minimalAmbiguity)
-                                                              {
+    }~                                                            if (resolvesAmbiguity)
+                                                                  {
 ~
 
     public void ambiguity(int begin, int end)
     {
-    }~                                        }
+    }~                                                            }
 ~
 
     public void serialize(EventHandler e)
@@ -1612,8 +1649,7 @@ public interface ~                                            print(className.c_
       return result;
     }
   }
-~
-                                                                }
+~                                                               }
                                                               }
                                                             }
 

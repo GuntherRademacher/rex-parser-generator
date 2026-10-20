@@ -11,7 +11,7 @@
                                                                 if (! packageName.empty())
                                                                 {
 ~
-package ~                                                        print(packageName.c_str());
+package ~                                                         print(packageName.c_str());
         ~
 ~                                                               }
                                                                 if (performanceTest)
@@ -41,8 +41,7 @@ import collection.mutable.HashMap~                              }
 class ~                                                         print(className.c_str());
                                                                 if (! interfaceName.empty())
                                                                 {
-       ~ implements ~
-                                                                  print(interfaceName.c_str());
+       ~ implements ~                                             print(interfaceName.c_str());
                                                                 }
        ~ {
 ~                                                             }
@@ -77,8 +76,7 @@ class ~                                                         print(className.
                                                             {
                                                               increaseIndent();
 ~
-class StackNode(val state: Int, ~
-                                                              if (grammar->states->hasLookback)
+class StackNode(val state: Int, ~                             if (grammar->states->hasLookback)
                                                               {
                                 ~val code: Int, ~             }
                                 ~val pos: Int, val link: StackNode) {
@@ -121,7 +119,12 @@ class DeferredCode(var link: DeferredCode, val codeId: Int, val b0: Int, val e0:
                                                               if (tree)
                                                               {
 ~
-abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begin: Int, val end: Int) {
+abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begin: Int, val end: Int) {~
+                                                                if (shiftAmbiguity)
+                                                                {
+~
+  val depth: Int = if (link == null) 1 else link.depth + 1~     }
+~
 
   def execute(eventHandler: BottomUpEventHandler): Unit
 
@@ -136,7 +139,11 @@ abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begi
       predecessor = next
     }
     while (current != null) {
-      current.execute(eventHandler)
+      ~                                                         if (shiftAmbiguity)
+                                                                {
+~if (eventHandler != null)
+        ~                                                       }
+~current.execute(eventHandler)
       current = current.link
     }
   }
@@ -165,8 +172,8 @@ private class NonterminalEvent(link: DeferredEvent, name: String, begin: Int, en
     eventHandler.nonterminal(name, begin, end, count)
   }
 }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                               if (resolvesAmbiguity)
+                                                                {
 ~
 
 private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, null, begin, end) {
@@ -174,7 +181,7 @@ private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends 
     eventHandler.ambiguity(begin, end)
   }
 }
-~                                                             }
+~                                                               }
                                                               }
 ~
 private val PARSING = 0
@@ -191,8 +198,7 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                                                 print(className.c_str());
                                                                  ~.BottomUpEventHandler, ~
                                                               }
-                                                  ~t: ~
-                                                              print(className.c_str());
+                                                  ~t: ~       print(className.c_str());
                                                       ~.ParsingThread): ~
                                                               print(className.c_str());
                                                                         ~.ParsingThread = {
@@ -203,11 +209,10 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                         ~, target)
   while (true) {
     thread = threads.dequeue()
-    if (thread.accepted) {~                                      if (rejectsAmbiguity())
+    if (thread.accepted) {~                                   if (rejectsAmbiguity())
                                                               {
 ~
-      var other: ~
-                                                              print(className.c_str());
+      var other: ~                                              print(className.c_str());
                  ~.ParsingThread = null
       while (! threads.isEmpty) {
         other = threads.dequeue()
@@ -217,18 +222,17 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
         }
       }
       if (other != null)
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
-                ~, thread.deferredEvent, other.deferredEvent~
-                                                              }
-                ~)~                                              }
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
+                ~, thread.deferredEvent, other.deferredEvent~   }
+                ~)~                                           }
                                                               else
                                                               {
 ~
       while (! threads.isEmpty) {
         val other = threads.dequeue()
         thread = if (thread.e0 < other.e0) other else resolve(thread, other)
-      }~                                              }
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -239,7 +243,7 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                                               if (hasCustomCode)
                                                               {
 ~
-      thread.executeDeferredCode~                           }
+      thread.executeDeferredCode~                             }
 ~
       return thread
     }
@@ -248,25 +252,25 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
                                                               {
 ~    if (! threads.isEmpty) {
       if (threads.head == thread)
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
-         ~, thread.deferredEvent, threads.head.deferredEvent~ }
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
+         ~, thread.deferredEvent, threads.head.deferredEvent~   }
          ~)
-    }~                                                      }
+    }~                                                        }
                                                               else
                                                               {
 ~    while (! threads.isEmpty && threads.head == thread)
-      thread = resolve(thread, threads.dequeue())~                              }
+      thread = resolve(thread, threads.dequeue())~            }
                                                               if (tree || hasCustomCode)
                                                               {
                                                                 if (rejectsAmbiguity())
                                                                 {
 ~
-    else {~                                                          }
+    else {~                                                     }
                                                                 else
                                                                 {
 ~
-    if (threads.isEmpty) {~                                                 }
+    if (threads.isEmpty) {~                                     }
                                                                 if (tree)
                                                                 {
 ~
@@ -316,15 +320,15 @@ private def parse(target: Int, initialState: Int, ~           if (tree)
 ~                                                             if (rejectsAmbiguity())
                                                               {
 ~
-def rejectAmbiguity(begin: Int, end: Int~                     if (tree)
-                                                              {
-          ~, first: ~                                           print(className.c_str());
-                    ~.DeferredEvent, second: ~                  print(className.c_str());
-                                             ~.DeferredEvent~ }
-          ~): Unit = {~                                       if (tree)
-                                                              {
+def rejectAmbiguity(begin: Int, end: Int~                       if (tree)
+                                                                {
+          ~, first: ~                                             print(className.c_str());
+                    ~.DeferredEvent, second: ~                    print(className.c_str());
+                                             ~.DeferredEvent~   }
+          ~): Unit = {~                                         if (tree)
+                                                                {
 ~
-  val treeBuilder = new ~                                       print(className.c_str());
+  val treeBuilder = new ~                                         print(className.c_str());
                         ~.ParseTreeBuilder
   treeBuilder.reset(input)
   second.show(treeBuilder)
@@ -334,24 +338,25 @@ def rejectAmbiguity(begin: Int, end: Int~                     if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
   treeBuilder.push(secondTree)
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)~
-                                                              }
+                                                                }
 ~
-  val exception = new ~                                       print(className.c_str());
+  val exception = new ~                                         print(className.c_str());
                       ~.ParseException(begin, end, -1, -1, -1)
-  exception.setAmbiguousInput(~                               if (tree)
-                                                              {
-                              ~treeBuilder~                   }
+  exception.setAmbiguousInput(~                                 if (tree)
+                                                                {
+                              ~treeBuilder~                     }
                               ~)
   throw exception
 }~                                                            }
                                                               else
                                                               {
 ~
-def resolve(thread: ~                                        print(className.c_str());
-                ~.ParsingThread, other: ~                              print(className.c_str());
-                                       ~.ParsingThread): ~                    print(className.c_str());
-                                                          ~.ParsingThread = {~          if (tree)
-                                                              {
+def resolve(thread: ~                                           print(className.c_str());
+                ~.ParsingThread, other: ~                       print(className.c_str());
+                                       ~.ParsingThread): ~      print(className.c_str());
+                                                          ~.ParsingThread = {~
+                                                                if (tree)
+                                                                {
 ~
   var a = thread.stack
   var b = other.stack
@@ -360,12 +365,42 @@ def resolve(thread: ~                                        print(className.c_s
     begin = a.pos
     a = a.link
     b = b.link
-  }~                                                          }
+  }~                                                            }
 ~
-  val result = if (other.eventCount < thread.eventCount) other else thread~                    if (tree)
-                                                              {
+~                                                               if (shiftAmbiguity)
+                                                                {
 ~
-  result.addAmbiguity(begin, result.e0)~                                        }
+  var ea = thread.deferredEvent
+  var eb = other.deferredEvent
+  var ua: ~                                                       print(className.c_str());
+~.DeferredEvent = null
+  var ub: ~                                                       print(className.c_str());
+~.DeferredEvent = null
+  while (ea != eb) {
+    if ((if (ea == null) 0 else ea.depth) >= (if (eb == null) 0 else eb.depth)) {
+      ua = ea
+      ea = ea.link
+    }
+    else {
+      ub = eb
+      eb = eb.link
+    }
+  }
+  val sa = ua != null && ua.isInstanceOf[~                        print(className.c_str());
+~.TerminalEvent]
+  val sb = ub != null && ub.isInstanceOf[~                        print(className.c_str());
+~.TerminalEvent]
+  val result = if (sa != sb) (if (sb) other else thread) else if (other.eventCount < thread.eventCount) other else thread~
+                                                                }
+                                                                else
+                                                                {
+~
+  val result = if (other.eventCount < thread.eventCount) other else thread~
+                                                                }
+                                                                if (tree)
+                                                                {
+~
+  result.addAmbiguity(begin, result.e0)~                        }
 ~
   result
 }~                                                            }
@@ -391,21 +426,20 @@ class ParsingThread extends Ordered[ParsingThread] {
 ~
   var deferredCode: DeferredCode = null~                      }
 ~
-  var id = 0~                                                     if (minimalAmbiguity)
+  var id = 0~                                                 if (resolvesAmbiguity)
                                                               {
 ~
-  var eventCount = 0~                                                     }
+  var eventCount = 0~                                         }
 ~
 
   def open(initialState: Int~                                 if (tree)
                                                               {
-                            ~, eh: BottomUpEventHandler~
-                                                              }
+                            ~, eh: BottomUpEventHandler~      }
                             ~, t: Int): PriorityQueue[ParsingThread] = {
-    accepted = false~                                                  if (minimalAmbiguity)
+    accepted = false~                                         if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = 0~                                                  }
+    eventCount = 0~                                           }
                                                               if (tree)
                                                               {
 ~
@@ -420,8 +454,7 @@ class ParsingThread extends Ordered[ParsingThread] {
 ~
     deferredCode = null~                                      }
 ~
-    stack = new StackNode(-1, ~
-                                                              if (grammar->states->hasLookback)
+    stack = new StackNode(-1, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~0, ~                           }
                               ~e0, null)
@@ -441,10 +474,10 @@ class ParsingThread extends Ordered[ParsingThread] {
   def copy(other: ParsingThread, action: Int): ParsingThread = {
     this.action = action
     accepted = other.accepted
-    parser = other.parser~                                                  if (minimalAmbiguity)
+    parser = other.parser~                                    if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = other.eventCount~                                                  }
+    eventCount = other.eventCount~                            }
                                                               if (tree)
                                                               {
 ~
@@ -496,7 +529,7 @@ class ParsingThread extends Ordered[ParsingThread] {
     comp
   }
 
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~
   def addAmbiguity(begin: Int, end: Int): Unit = {
@@ -580,7 +613,7 @@ class ParsingThread extends Ordered[ParsingThread] {
                                                                 {
                                                                   decreaseIndent();
 ~
-      }~                                                       }
+      }~                                                        }
 ~
     }
     result
@@ -700,8 +733,7 @@ class ParsingThread extends Ordered[ParsingThread] {
                                     ~, s~                       }
                                                               }
                                     ~)
-        try {~
-                                                              if (trace)
+        try {~                                                if (trace)
                                                               {
 ~
           parser.writeTrace("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">\n<trace>\n")~
@@ -755,8 +787,7 @@ class ParsingThread extends Ordered[ParsingThread] {
       }
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintScala::printFileProcessor()
                                                             {
@@ -919,8 +950,7 @@ class ParsingThread extends Ordered[ParsingThread] {
       }
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintScala::printReadMethod()
                                                             {
@@ -936,8 +966,7 @@ class ParsingThread extends Ordered[ParsingThread] {
       if (content(0) == '\ufeff') content.substring(1) else content
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintScala::printInterface()
                                                             {
@@ -960,9 +989,10 @@ import java.io.Writer;
 public interface ~                                            print(className.c_str());
 ~
 {
-  def initialize(CharSequence input~                  if (tree)
+  def initialize(CharSequence input~                          if (tree)
                                                               {
-                                           ~, EventHandler eh~}
+                                           ~, EventHandler eh~
+                                                              }
                                            ~): Unit
   def parse: Unit
   def reset: Unit
@@ -995,27 +1025,26 @@ public interface ~                                            print(className.c_
       this.ambiguityDescriptor = ambiguityDescriptor~           }
 ~
     }
-~
-                                                              }
+~                                                             }
 ~
     override def getMessage = {
       ~                                                       if (rejectsAmbiguity())
                                                               {
       ~if (ambiguousInput) "ambiguous input" else ~           }
       ~if (offending < 0) "lexical analysis failed" else "syntax error"
-    }~                                                  if (useGlr)
+    }~                                                        if (useGlr)
                                                               {
 ~
 
     def isAmbiguousInput: Boolean =
-      ~                                                  if (rejectsAmbiguity())
-                                                              {
-      ~ambiguousInput~                                        }
-                                                              else
-                                                              {
-      ~false~                                        }
-                                                              if (rejectsAmbiguity() && tree)
-                                                              {
+      ~                                                         if (rejectsAmbiguity())
+                                                                {
+      ~ambiguousInput~                                          }
+                                                                else
+                                                                {
+      ~false~                                                   }
+                                                                if (rejectsAmbiguity() && tree)
+                                                                {
 ~
 
     def serialize(eventHandler: EventHandler): Unit = {
@@ -1024,8 +1053,7 @@ public interface ~                                            print(className.c_
                                                               }
 ~
   }
-~
-                                                              if (useGlr)
+~                                                             if (useGlr)
                                                               {
                                                                 openStackNode();
                                                                 printCountMethod();
@@ -1142,10 +1170,10 @@ public interface ~                                            print(className.c_
   trait BottomUpEventHandler {
     def reset(string: String): Unit
     def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit~                  if (minimalAmbiguity)
-                                                              {
+    def terminal(name: String, begin: Int, end: Int): Unit~       if (resolvesAmbiguity)
+                                                                  {
 ~
-    def ambiguity(begin: Int, end: Int): Unit~                  }
+    def ambiguity(begin: Int, end: Int): Unit~                    }
 ~
   }
 ~                                                               }
@@ -1278,12 +1306,12 @@ public interface ~                                            print(className.c_
     override def terminal(name: String, begin: Int, end: Int): Unit = {
       push(new Terminal(name, begin, end))
     }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                                 if (resolvesAmbiguity)
+                                                                  {
 ~
     override def ambiguity(begin: Int, end: Int): Unit = {
     }
-~                                                             }
+~                                                                 }
 ~
     def serialize(e: EventHandler): Unit = {
       e.reset(input)
@@ -1314,7 +1342,6 @@ public interface ~                                            print(className.c_
     def terminal(name: String, begin: Int, end: Int): Unit = {length += end - begin}
     def whitespace(begin: Int, end: Int): Unit = {length += end - begin}
   }
-~
-                                                                }
+~                                                               }
                                                               }
                                                             }

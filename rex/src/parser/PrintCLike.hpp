@@ -90,7 +90,8 @@ public:
     codepoints(false),
     isLrParser(false),
     useGlr(false),
-    minimalAmbiguity(false)
+    resolvesAmbiguity(false),
+    shiftAmbiguity(false)
   {
     wFileName = aClassName;
     className = aClassName;
@@ -238,7 +239,7 @@ public:
   void setCodepoints(bool c) {codepoints = c;}
   void setLrParser(bool l) {isLrParser = l;}
   void setUseGlr(bool l) {useGlr = l;}
-  bool rejectsAmbiguity() const {return useGlr && ! minimalAmbiguity;}
+  bool rejectsAmbiguity() const {return useGlr && ! resolvesAmbiguity;}
 
 protected:
   void printCase(const CompressedTokenSet *lookahead, size_t k, Node *c, int backtrackedCaseId);
@@ -304,7 +305,8 @@ protected:
     grammar = node;
     isLrParser = grammar->states != 0;
     useGlr = grammar->useGlr;
-    minimalAmbiguity = grammar->minimalAmbiguity;
+    resolvesAmbiguity = grammar->resolvesAmbiguity;
+    shiftAmbiguity = grammar->shiftAmbiguity;
     hasCustomCode = ! grammar->distinctCodeAnnotations.empty();
 
     setNoLexer(grammar->noLexer);
@@ -454,7 +456,8 @@ protected:
   bool codepoints;
   bool isLrParser;
   bool useGlr;
-  bool minimalAmbiguity;
+  bool resolvesAmbiguity;
+  bool shiftAmbiguity;
 };
 
 #endif

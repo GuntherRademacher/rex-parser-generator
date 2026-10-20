@@ -86,8 +86,7 @@ public class ~                                                  print(variable("
   private TextWriter err = Console.Error;~                      }
                                                               }
 ~
-~
-                                                              if (! variable("embedded").boolean())
+~                                                             if (! variable("embedded").boolean())
                                                               {
                                                                 if (codepoints)
                                                                 {
@@ -143,8 +142,7 @@ public class ~                                                  print(variable("
   ~ int predict(int dpi)~                                         predict();
                                                                 }
 ~
-  private~
-                                                              }
+  private~                                                    }
          ~ int match(int tokenSetId)
   {~                                                          if (variable("nolexer").boolean())
                                                               {
@@ -172,8 +170,7 @@ public class ~                                                  print(variable("
     ~                                                             if (variable("useGlr").boolean() && targetLanguage != JAVA)
                                                                   {
     ~parser.~                                                     }
-    ~writeTrace("  <tokenize ~
-                                                                  if (variable("useGlr").boolean())
+    ~writeTrace("  <tokenize ~                                    if (variable("useGlr").boolean())
                                                                   {
                              ~thread=\"" + id + "\" ~             }
                              ~tokenset=\"" + tokenSetId + "\">\n");
@@ -211,7 +208,7 @@ public class ~                                                  print(variable("
     {
       int charclass;
       int c0 = current < ~                                      print(prefix);
-                         ~size ? ~                                      print(prefix);
+                         ~size ? ~                              print(prefix);
                                  ~input~                        if (targetLanguage == JAVA && ! codepoints)
                                                                 {
                                        ~.charAt(current)~       }
@@ -229,8 +226,7 @@ public class ~                                                  print(variable("
       ++current;
       if (c0 < 0x~                                              print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
                  ~)
-      {~
-                                                                if (variable("trace").boolean())
+      {~                                                        if (variable("trace").boolean())
                                                                 {
 ~
         if (c0 >= 32 && c0 <= 126)
@@ -333,7 +329,7 @@ public class ~                                                  print(variable("
         ~                                                         if (variable("useGlr").boolean() && targetLanguage != JAVA)
                                                                   {
         ~parser.~                                                 }
-        ~writeTrace(" result=\"" + xmlEscape(TOKEN[((result >> ~   print(variable("stateCodeBits").integer());
+        ~writeTrace(" result=\"" + xmlEscape(TOKEN[((result >> ~  print(variable("stateCodeBits").integer());
                                                                   ~) & ~
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                                   ~) - 1]) + "\"");~
@@ -668,8 +664,7 @@ public class ~                                                  print(variable("
                                                                 {
                           ~Length~                              }
                           ~; ++i)
-    {~
-                                                                if (targetLanguage == JAVA)
+    {~                                                          if (targetLanguage == JAVA)
                                                                 {
 ~
       char c = s.charAt(i);~                                    }
@@ -685,8 +680,7 @@ public class ~                                                  print(variable("
       case '"': sb.~                                            print(targetLanguage == JAVA ? "a" : "A");
                    ~ppend("&quot;"); break;
       case '&': sb.~                                            print(targetLanguage == JAVA ? "a" : "A");
-                   ~ppend("&amp;"); break;~
-                                                                if (targetLanguage == JAVA)
+                   ~ppend("&amp;"); break;~                     if (targetLanguage == JAVA)
                                                                 {
 ~
       default : sb.append(c); break;~                           }
@@ -696,8 +690,7 @@ public class ~                                                  print(variable("
       default : sb.Append(c.ToString()); break;~                }
 ~
       }
-    }~
-                                                                if (targetLanguage == JAVA)
+    }~                                                          if (targetLanguage == JAVA)
                                                                 {
 ~
     return sb.toString();~                                      }
@@ -781,8 +774,7 @@ public class ~                                                  print(variable("
 ~
   private static String[] getTokenSet(int tokenSetId)~        }
 ~
-  {~
-                                                              if (targetLanguage == JAVA)
+  {~                                                          if (targetLanguage == JAVA)
                                                               {
 ~
     java.util.ArrayList<String> expected = new java.util.ArrayList<>();~
@@ -796,7 +788,7 @@ public class ~                                                  print(variable("
                                                               {
 ~
     int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & ~
-                                                              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                                print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                                   ~;~
                                                               }
 ~
@@ -863,8 +855,7 @@ public class ~                                                  print(variable("
     ~ */ ~                                                        print(token.string(i));
                                                                 }
     ~
-  };~
-                                                              }
+  };~                                                         }
                                                               if (variable("selfTest").boolean())
                                                               {
 ~
@@ -884,8 +875,7 @@ public class ~                                                  print(variable("
       {
         int result = match(set, tokenString + " ");
         int resultSize = getSize();
-        if (result != tokenId || resultSize != tokenString.~
-                                                                if (codepoints)
+        if (result != tokenId || resultSize != tokenString.~    if (codepoints)
                                                                 {
                                                            ~codePointCount(0, tokenString.length())~
                                                                 }
@@ -911,21 +901,21 @@ public class ~                                                  print(variable("
 
   public static void main(String[] args)
   {
-    ~                                                         print(variable("classname").string());
-    ~ testee = new ~                                          print(variable("classname").string());
+    ~                                                           print(variable("classname").string());
+    ~ testee = new ~                                            print(variable("classname").string());
                    ~();
-    for (int e = 0; e < ~                                     print(variable("a0").size);
+    for (int e = 0; e < ~                                       print(variable("a0").size);
                         ~; ++e)
     {
-      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      int s = INITIAL[e] & ~                                    print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                            ~;
-      for (int i = 0; i < ~                                   print(variable("t1").size);
+      for (int i = 0; i < ~                                     print(variable("t1").size);
                           ~; i += 32)
       {
         int j = i;
-        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+        int i0 = (i >> 5) * ~                                   print(variable("transitionStateCount").integer());
                             ~ + s - 1;
-~                                                             compressedMapAccessor(8, "i", "int f = ", "EXPECTED", &variable("t0bits").integer());
+~                                                               compressedMapAccessor(8, "i", "int f = ", "EXPECTED", &variable("t0bits").integer());
 ~
         for ( ; f != 0; f >>>= 1, ++j)
         {
@@ -954,8 +944,7 @@ public class ~                                                print(variable("cl
   {
     if (i0 < 0 || i0 >= ~                                     print(variable("size").integer());
                         ~)
-      return 0;~
-                                                              size_t i = 4;
+      return 0;~                                              size_t i = 4;
                                                               if (variable("rm").size > 0)
                                                               {
                                                                 i += 2;

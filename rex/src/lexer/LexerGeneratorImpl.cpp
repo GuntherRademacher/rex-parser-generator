@@ -2746,7 +2746,8 @@ void LexerGeneratorImpl::dfaConstruction(const GrammarCharClasses &gcc, DfaState
         if (! embedded)
         {
           cg->bind(CGVariable("useGlr", false));
-          cg->bind(CGVariable("minimalAmbiguity", false));
+          cg->bind(CGVariable("resolvesAmbiguity", false));
+          cg->bind(CGVariable("shiftAmbiguity", false));
         }
         cg->bind(CGVariable("package", packageName.c_str()));
         cg->bind(CGVariable("selfTest", selfTest));

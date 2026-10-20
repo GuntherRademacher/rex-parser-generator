@@ -10,12 +10,11 @@
                                                               print(indent, " ");
 ~<xsl:variable name="~                                        print(index);
                      ~0" select="~                            print(format.toString<char>(xCount));
-                                 ~ * ~                                              print(y);
-                                     ~ + ~                                          print(x);
+                                 ~ * ~                        print(y);
+                                     ~ + ~                    print(x);
                                          ~"/>
 ~                                                             compressedMapAccessor(indent, index, result, map, bits);
-~"/>~
-                                                            }
+~"/>~                                                       }
 
                                                             void CodeGeneratorXSLT::compressedMapAccessor(size_t indent, const char *index, const char *result, const char *map, const int *bits)
                                                             {
@@ -104,8 +103,7 @@
                                                                   if (j)
                                                                   {
   ~,
-  ~
-                                                                  }
+  ~                                                               }
                                                                   const char *s = a->string(j);
                                                                   bool literal = *s == '\'';
                                                                   if (literal)
@@ -224,8 +222,7 @@
                                                                   if (variable("useGlr").boolean())
                                                                   {
                                                    ~, $id~        }
-                                                   ~)"/>~
-                                                                }
+                                                   ~)"/>~       }
 ~
   <xsl:choose>
     <xsl:when test="$state[$p:l1] lt 0">
@@ -249,8 +246,7 @@
 ~
       "/>
     </xsl:when>
-    <xsl:otherwise>~
-                                                                indent += 2;
+    <xsl:otherwise>~                                            indent += 2;
 ~
 ~                                                               int k = variable("k").integer();
                                                                 const char *action = "<xsl:variable name=\"action\" select=\"";
@@ -430,12 +426,12 @@
                                                               {
 ~
       <xsl:variable name="end" select="
-        if ($result idiv ~                                        print(Math::powerof(2, variable("tokencodeBits").integer()));
+        if ($result idiv ~                                      print(Math::powerof(2, variable("tokencodeBits").integer()));
                          ~ mod 2 eq 1) then
-          $begin + $result idiv ~                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
+          $begin + $result idiv ~                               print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
                                 ~
         else
-          $end - $result idiv ~                                   print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
+          $end - $result idiv ~                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
 ~
       "/>~                                                    }
 ~
@@ -452,8 +448,7 @@
               ~ mod ~                                             print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                                 }
               ~]), '&quot; begin=&quot;', $begin, '&quot; end=&quot;', $end, '&quot;/&gt;')),
-          p:trace('  &lt;/tokenize&gt;'),~
-                                                              }
+          p:trace('  &lt;/tokenize&gt;'),~                    }
                                                               if (0 == variable("maxcontextlength").integer() && ! variable("hasfixedtokenlength").boolean())
                                                               {
 ~
@@ -472,8 +467,7 @@
                                                               {
 ~
           p:trace(concat('    &lt;fail begin=&quot;', $begin, '&quot; end=&quot;', $current - 1, '&quot; state=&quot;', $previous-state, '&quot;/&gt;')),
-          p:trace('  &lt;/tokenize&gt;'),~
-                                                              }
+          p:trace('  &lt;/tokenize&gt;'),~                    }
 ~
           - $previous-state,
           $begin,
@@ -490,7 +484,7 @@
             <xsl:sequence select="$p:MAP0[1 + $c0]"/>
           </xsl:when>
           <xsl:when test="$c0 &lt; ~                          print(variable("uncompressedMapSize").integer());
-                                   ~">~                                 const int *m1bits = &variable("m1bits").integer();
+                                   ~">~                       const int *m1bits = &variable("m1bits").integer();
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
                             ~
