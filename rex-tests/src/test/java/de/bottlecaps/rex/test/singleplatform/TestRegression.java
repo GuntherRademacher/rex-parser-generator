@@ -911,6 +911,143 @@ public class TestRegression extends AbstractSinglePlatformTest
     });
   }
 
+  private static final NamedFile END_RECORDER = new NamedFile
+  (
+    "EndRecorder.java",
+    "public class EndRecorder",
+    "{",
+    "  public static void main(String[] args)",
+    "  {",
+    "    S.BottomUpEventHandler handler = new S.BottomUpEventHandler()",
+    "    {",
+    "      public void reset(CharSequence input) {}",
+    "      public void terminal(String name, int begin, int end)",
+    "      {",
+    "        System.out.println(\"terminal \" + name + \" \" + begin + \" \" + end);",
+    "      }",
+    "      public void nonterminal(String name, int begin, int end, int count)",
+    "      {",
+    "        System.out.println(\"nonterminal \" + name + \" \" + begin + \" \" + end + \" \" + count);",
+    "      }",
+    "    };",
+    "    new S(args[0], handler).parse_S();",
+    "  }",
+    "}"
+  );
+
+  private static final NamedFile TOP_DOWN_END_RECORDER = new NamedFile
+  (
+    "EndRecorder.java",
+    "public class EndRecorder",
+    "{",
+    "  public static void main(String[] args)",
+    "  {",
+    "    S.EventHandler handler = new S.EventHandler()",
+    "    {",
+    "      public void reset(CharSequence input) {}",
+    "      public void startNonterminal(String name, int begin) {}",
+    "      public void whitespace(int begin, int end) {}",
+    "      public void terminal(String name, int begin, int end)",
+    "      {",
+    "        System.out.println(\"terminal \" + name + \" \" + begin + \" \" + end);",
+    "      }",
+    "      public void endNonterminal(String name, int end)",
+    "      {",
+    "        System.out.println(\"end \" + name + \" \" + end);",
+    "      }",
+    "    };",
+    "    new S(args[0], handler).parse_S();",
+    "  }",
+    "}"
+  );
+
+  /**
+   * Without an explicit EOF token, the end offset of the start nonterminal was the begin offset of
+   * its last token instead of that token's end, because no lookahead token had been read when
+   * the start symbol was reduced.
+   */
+  private void checkRootEnd(NamedFile recorder, String rexOptions, String input, String... expectedEvents)
+  {
+    checkRootEnd(new NamedFile("S.ebnf", "S ::= 'a' 'b'"), recorder, rexOptions, input, expectedEvents);
+  }
+
+  private void checkRootEnd(NamedFile grammar, NamedFile recorder, String rexOptions, String input,
+      String... expectedEvents)
+  {
+    Pass.expectPass(() ->
+    {
+      String commandLine = commandLine("-java", rexOptions + " -tree", grammar);
+      Runner runner = new Runner();
+      if (0 != runner.run(REX, commandLine, grammar, recorder))
+        throw new RuntimeException(runner.summary("rex generation failed"));
+
+      String className = className(runner.getArgs(), JAVAC);
+      runner.compile(className + ".java");
+      runner.expectSuccess("Java compilation", JAVAC, "-encoding UTF-8 EndRecorder.java");
+
+      assertEquals(0, runner.run(JAVA, "EndRecorder " + input), runner.summary());
+      assertEquals(String.join("\n", expectedEvents),
+          runner.getStdout().replace("\r\n", "\n").trim(), runner.summary());
+      Pass.passNormally(runner);
+    });
+  }
+
+  @Test
+  public void testRootEndWithoutEofLalr()
+  {
+    checkRootEnd(END_RECORDER, "-lalr 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2", "nonterminal S 0 2 2");
+  }
+
+  @Test
+  public void testRootEndWithoutEofLr()
+  {
+    checkRootEnd(END_RECORDER, "-lr 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2", "nonterminal S 0 2 2");
+  }
+
+  @Test
+  public void testRootEndWithoutEofGlalr()
+  {
+    checkRootEnd(END_RECORDER, "-glalr 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2", "nonterminal S 0 2 2");
+  }
+
+  @Test
+  public void testRootEndWithoutEofLl()
+  {
+    checkRootEnd(TOP_DOWN_END_RECORDER, "-ll 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2", "end S 2");
+  }
+
+  @Test
+  public void testRootEndWithEmptyLastChild()
+  {
+    checkRootEnd(new NamedFile("S.ebnf", "S ::= 'a' 'b' A", "A ::="),
+        END_RECORDER, "-lalr 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2",
+        "nonterminal A 2 2 0", "nonterminal S 0 2 3");
+  }
+
+  @Test
+  public void testRootEndWithExplicitEof()
+  {
+    checkRootEnd(new NamedFile("S.ebnf", "S ::= 'a' 'b' EOF", "<?TOKENS?>", "EOF ::= $"),
+        END_RECORDER, "-lalr 1", "ab", "terminal 'a' 0 1", "terminal 'b' 1 2",
+        "terminal EOF 2 2", "nonterminal S 0 2 3");
+  }
+
+  @Test
+  public void testRootEndWithoutEofGlrConflict()
+  {
+    checkRootEnd(new NamedFile("S.ebnf", "S ::= A 'b' 'c' | 'a' 'b' 'd'", "A ::= 'a'"),
+        END_RECORDER, "-glr 1", "abc", "terminal 'a' 0 1", "nonterminal A 0 1 1",
+        "terminal 'b' 1 2", "terminal 'c' 2 3", "nonterminal S 0 3 3");
+  }
+
+  @Test
+  public void testRootEndWithoutEofGlalrConflict()
+  {
+    checkRootEnd(new NamedFile("S.ebnf", "S ::= A 'b' 'c' | 'a' 'b' 'd'", "A ::= 'a'"),
+        END_RECORDER, "-glalr 1", "abd", "terminal 'a' 0 1", "terminal 'b' 1 2",
+        "terminal 'd' 2 3", "nonterminal S 0 3 3");
+  }
+
   /** Generates a GLALR(1) parser, checks the conflict count, compiles it (using the cache), then
    *  parses every valid input, compares its tree, and verifies that every invalid one is rejected.
    *  Does not return normally: the test passes by throwing {@link Pass}.

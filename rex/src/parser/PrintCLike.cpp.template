@@ -4005,6 +4005,18 @@ if ~                                                            print(ifLeftPare
                                                                 {
 ~
   if ~                                                            print(ifLeftParen());
+                                                                  print(thiz());
+     ~l1 == 0~                                                    print(ifRightParen());
+                                                                  printIndented(1, leftBrace());
+~
+    ~                                                             print(thiz());
+    ~b1 = ~                                                       print(thiz());
+          ~e0~                                                    print(semicolon());
+                                                                  increaseIndent();
+                                                                  print(rightBrace());
+                                                                  decreaseIndent();
+~
+  if ~                                                            print(ifLeftParen());
      ~symbols > 0~                                                print(ifRightParen());
                                                                   printIndented(1, leftBrace());
                                                                   if (useGlr)
