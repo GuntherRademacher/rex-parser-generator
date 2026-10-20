@@ -39,14 +39,13 @@
     return match(tokenSetId);
   }
 
-~
-                                                              }
+~                                                             }
                                                               if (! variable("useGlr").boolean())
                                                               {
 ~  private input!: string;~                                     if (! variable("nolexer").boolean())
                                                                 {
 ~
-  private size!: number;~                                     }
+  private size!: number;~                                       }
                                                               }
 ~
   private begin!: number;
@@ -88,8 +87,7 @@
                                                                   {
                              ~thread=\"" + this.id + "\" ~        }
                              ~tokenset=\"" + tokenSetId + "\">\n");
-~
-                                                                }
+~                                                               }
                                                                 int lookahead = variable("maxcontextlength").integer();
                                                                 bool hasFixedTokenLength = variable("hasfixedtokenlength").boolean();
                                                                 if (lookahead)
@@ -205,7 +203,7 @@
         ~                                                         print(instancePrefix);
         ~writeTrace(" result=\"" + Parser.xmlEscape(Parser.TOKEN[((result >> ~
                                                                   print(variable("stateCodeBits").integer());
-                      ~) & ~ print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                      ~) & ~                                      print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                       ~) - 1]) + "\"");~                          if (lookahead || hasFixedTokenLength)
                                                                   {
                                                                     int contextOffset = variable("stateCodeBits").integer()
@@ -246,7 +244,7 @@
       ~writeTrace("/>\n");
       if (code != 0)
       {
-        ~                                                        print(instancePrefix);
+        ~                                                         print(instancePrefix);
         ~writeTrace("    <next state=\"" + code + "\"");
       }~                                                        }
 ~
@@ -360,7 +358,8 @@
                                                                 {
 ~
     ~                                                             print(instancePrefix);
-    ~writeTrace("    <done result=\"" + Parser.xmlEscape(Parser.TOKEN[(result & ~   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+    ~writeTrace("    <done result=\"" + Parser.xmlEscape(Parser.TOKEN[(result & ~
+                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                    ~) - 1]) + "\" begin=\"" + this.begin + "\" end=\"" + this.end + "\"/>\n");
     ~                                                             print(instancePrefix);
     ~writeTrace("  </tokenize>\n");~                            }
@@ -369,8 +368,7 @@
                      ~) - 1;~                                 }
 ~
   }
-~
-                                                            }
+~                                                           }
 
                                                             void CodeGeneratorTypescript::generateStaticCode()
                                                             {
@@ -473,8 +471,7 @@
     }
     return set;
   }
-~
-                                                              for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
+~                                                             for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::INTEGER) && strlen(a->name) == 2)
                                                               {
@@ -562,7 +559,7 @@
                                                                   if (i)
                                                                   {
     ~,
-    ~                                                               }
+    ~                                                             }
                                                                   print(token.string(i));
     ~:~                                                           print(format.toString<char>(i, 10, w));
                                                                 }

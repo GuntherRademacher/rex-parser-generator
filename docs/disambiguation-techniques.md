@@ -143,6 +143,8 @@ The effect will be that during parser construction, the first alternative, `Rela
 
 By default, GLR and GLALR parsers reject ambiguous input. With `-ambiguity minimal`, they instead select the alternative that results in the fewest parse events, i.e. the fewest terminals and nonterminals in the parse tree, whether or not `-tree` is given. The selection is reported to the application by the [`ambiguity(begin, end)`](parse-tree-generation.md#ambiguitybegin-end) event. Parsers generated in XQuery or XSLT have no event interface and make the same selection without notification.
 
+Sometimes the smallest parse is not the right one. A typical case is a keyword that can also be a name: in BaseX XQuery, `element update {()}` is either a computed element constructor with the name `update`, or the name `element` updated by `{()}`, and the second one has fewer nodes. With `-ambiguity shift`, the alternative that shifts a terminal at the point where the alternatives first diverge is preferred over the one that reduces; here this selects the constructor. If this does not decide, the choice is made as for `minimal`. Only actual ambiguities are affected. Other than a static preference for shifting, which would reject such input, the option still accepts input that can only be parsed by reducing, such as `element and 5`. It requires `-tree`.
+
 &nbsp;
 ---
 [⇦ Previous page](parse-tree-generation.md) &nbsp;&nbsp;│&nbsp;&nbsp; [⇧ Back to index](../README.md#-rex-parser-generator) &nbsp;&nbsp;│&nbsp;&nbsp; [Next page ⇨ ](parser-debugging.md)

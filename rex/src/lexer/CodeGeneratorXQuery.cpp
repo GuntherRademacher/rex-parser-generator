@@ -1,4 +1,4 @@
-// This file was generated on Sat Oct 17, 2026 11:26 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorXQuery.cpp.template
                                                             #line 1 "CodeGeneratorXQuery.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -197,11 +197,11 @@
                                                             #line 198 "CodeGeneratorXQuery.cpp"
   append(L",\n");
   append(L"  ");
-                                                            #line 108 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 107 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                             #line 203 "CodeGeneratorXQuery.cpp"
   append(L"\"");
-                                                            #line 109 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 108 "CodeGeneratorXQuery.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -222,16 +222,16 @@
                                                                   if (c != s) print(s, c - s);
                                                             #line 224 "CodeGeneratorXQuery.cpp"
   append(L"\"");
-                                                            #line 127 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 126 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                             #line 228 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L");");
-                                                            #line 129 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 128 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 233 "CodeGeneratorXQuery.cpp"
   append(L"\n");
-                                                            #line 131 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 130 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 238 "CodeGeneratorXQuery.cpp"
@@ -268,7 +268,7 @@
   append(L"              \"<\", \"&amp;lt;\"),\n");
   append(L"              '\"', \"&amp;quot;\")\n");
   append(L"};\n");
-                                                            #line 162 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 161 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                               if (   variable("embedded").boolean()
                                                                   && variable("tables").boolean())
@@ -284,13 +284,13 @@
   append(L" : @param $input the input string.\n");
   append(L" : @param $state the parser state.\n");
   append(L" : @param $dpi the decision point index.");
-                                                            #line 173 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 172 "CodeGeneratorXQuery.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 291 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L" : @param $id the parsing thread id.");
-                                                            #line 176 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 175 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                             #line 296 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -299,43 +299,43 @@
   append(L"declare function p:predict($input as xs:string,\n");
   append(L"                           $state as item()+,\n");
   append(L"                           $dpi as xs:integer");
-                                                            #line 182 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 181 "CodeGeneratorXQuery.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 306 "CodeGeneratorXQuery.cpp"
   append(L",\n");
   append(L"                           $id as xs:integer");
-                                                            #line 185 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 184 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                             #line 311 "CodeGeneratorXQuery.cpp"
   append(L") as item()+\n");
   append(L"{");
-                                                            #line 187 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 186 "CodeGeneratorXQuery.cpp.template"
                                                                 if (variable("lrparser").boolean())
                                                                 {
                                                             #line 317 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"  let $state := p:lookahead1");
-                                                            #line 190 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 189 "CodeGeneratorXQuery.cpp.template"
                                                                   if (variable("anyWhitespace").boolean())
                                                                   {
                                                             #line 323 "CodeGeneratorXQuery.cpp"
   append(L"W");
-                                                            #line 192 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 191 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                             #line 327 "CodeGeneratorXQuery.cpp"
   append(L"($p:TOKENSET[$dpi + 1], $input, $state");
-                                                            #line 194 "CodeGeneratorXQuery.cpp.template"
-                                                                if (variable("useGlr").boolean())
-                                                                {
+                                                            #line 193 "CodeGeneratorXQuery.cpp.template"
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
                                                             #line 332 "CodeGeneratorXQuery.cpp"
   append(L", $id");
-                                                            #line 196 "CodeGeneratorXQuery.cpp.template"
-                                                                }
+                                                            #line 195 "CodeGeneratorXQuery.cpp.template"
+                                                                  }
                                                             #line 336 "CodeGeneratorXQuery.cpp"
   append(L")\n");
   append(L"  return");
-                                                            #line 198 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 197 "CodeGeneratorXQuery.cpp.template"
                                                                   indent += 1;
                                                                 }
                                                             #line 342 "CodeGeneratorXQuery.cpp"
@@ -344,12 +344,12 @@
   append(L"  (\n");
   append(L"    0,\n");
   append(L"    subsequence($state, $p:lk + 1");
-                                                            #line 204 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 203 "CodeGeneratorXQuery.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 351 "CodeGeneratorXQuery.cpp"
   append(L")");
-                                                            #line 206 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 205 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                                 else
                                                                 {
@@ -362,17 +362,17 @@
   append(L"      attribute s {- $state[$p:l1]}\n");
   append(L"    },\n");
   append(L"    subsequence($state, $p:error + 1)");
-                                                            #line 216 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 215 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                             #line 368 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"  )\n");
   append(L"  else");
-                                                            #line 219 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 218 "CodeGeneratorXQuery.cpp.template"
                                                                 indent += 1;
                                                             #line 374 "CodeGeneratorXQuery.cpp"
   append(L"\n");
-                                                            #line 221 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 220 "CodeGeneratorXQuery.cpp.template"
                                                                 int k = variable("k").integer();
                                                                 const char *action = "let $action := ";
                                                                 compressedMap2dAccessor("$state[$p:l1]", "$dpi", variable("cicols").integer(),
@@ -387,38 +387,38 @@
   append(L"      ($action idiv 2, subsequence($state, $p:lk + 1))\n");
   append(L"    else\n");
   append(L"      let $state := p:lookahead");
-                                                            #line 233 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 232 "CodeGeneratorXQuery.cpp.template"
                                                                   print(format.toString<char>(i));
                                                                   if (variable("anyWhitespace").boolean())
                                                                   {
                                                             #line 395 "CodeGeneratorXQuery.cpp"
   append(L"W");
-                                                            #line 236 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 235 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                             #line 399 "CodeGeneratorXQuery.cpp"
   append(L"(");
-                                                            #line 237 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 236 "CodeGeneratorXQuery.cpp.template"
                                                                   if (variable("unlimitedLookahead").boolean())
                                                                   {
                                                             #line 404 "CodeGeneratorXQuery.cpp"
   append(L"0, ");
-                                                            #line 239 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 238 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                             #line 408 "CodeGeneratorXQuery.cpp"
   append(L"$action idiv 2, $input, $state)\n");
   append(L"      return\n");
   append(L"        if ($state[$p:l");
-                                                            #line 242 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 241 "CodeGeneratorXQuery.cpp.template"
                                                                   print(format.toString<char>(i));
                                                             #line 414 "CodeGeneratorXQuery.cpp"
   append(L"] lt 0) then\n");
   append(L"          (0, subsequence($state, $p:lk + 1))\n");
   append(L"        else");
-                                                            #line 245 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 244 "CodeGeneratorXQuery.cpp.template"
                                                                   indent += 2;
                                                             #line 420 "CodeGeneratorXQuery.cpp"
   append(L"\n");
-                                                            #line 247 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 246 "CodeGeneratorXQuery.cpp.template"
                                                                   CString li("$state[$p:l");
                                                                   li += format.toString<char>(i);
                                                                   li += "]";
@@ -430,29 +430,29 @@
   append(L"\n");
   append(L"      return\n");
   append(L"        if ($lk eq 0) then");
-                                                            #line 256 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 255 "CodeGeneratorXQuery.cpp.template"
                                                                   if (loop)
                                                                   {
                                                             #line 437 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"          p:predict($input, $state, $dpi + 1)");
-                                                            #line 259 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 258 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                                   else
                                                                   {
                                                             #line 444 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"          (0, subsequence($state, $p:lk + 1))");
-                                                            #line 263 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 262 "CodeGeneratorXQuery.cpp.template"
                                                                   }
                                                             #line 449 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        else");
-                                                            #line 265 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 264 "CodeGeneratorXQuery.cpp.template"
                                                                   indent += 1;
                                                             #line 454 "CodeGeneratorXQuery.cpp"
   append(L"\n");
-                                                            #line 267 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 266 "CodeGeneratorXQuery.cpp.template"
                                                                   CString ji("$j");
                                                                   ji += format.toString<char>(i);
                                                                   compressedMap2dAccessor("$lk", "$dpi", variable("cicols").integer(),
@@ -468,20 +468,20 @@
   append(L"      ($action idiv 2, subsequence($state, $p:lk + 1))\n");
   append(L"    else\n");
   append(L"      p:predict($input, $state, $dpi + 1)");
-                                                            #line 280 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 279 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                                 else
                                                                 {
                                                             #line 476 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"  return ($action idiv 2, subsequence($state, $p:lk + 1))");
-                                                            #line 284 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 283 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                                 indent = 0;
                                                             #line 482 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 288 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 287 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 487 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -495,14 +495,14 @@
   append(L" : @param $input the input string.\n");
   append(L" : @param $begin the index where to start in input string.\n");
   append(L" : @param $token-set the expected token set id.");
-                                                            #line 297 "CodeGeneratorXQuery.cpp.template"
-                                                                if (variable("useGlr").boolean())
-                                                                {
+                                                            #line 296 "CodeGeneratorXQuery.cpp.template"
+                                                              if (variable("useGlr").boolean())
+                                                              {
                                                             #line 502 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L" : @param $id the parsing thread id.");
-                                                            #line 300 "CodeGeneratorXQuery.cpp.template"
-                                                                }
+                                                            #line 299 "CodeGeneratorXQuery.cpp.template"
+                                                              }
                                                             #line 507 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L" : @return a sequence of three: the token code of the result token,\n");
@@ -513,33 +513,33 @@
   append(L"declare function p:match($input as xs:string,\n");
   append(L"                         $begin as xs:integer,\n");
   append(L"                         $token-set as xs:integer");
-                                                            #line 309 "CodeGeneratorXQuery.cpp.template"
-                                                                if (variable("useGlr").boolean())
-                                                                {
+                                                            #line 308 "CodeGeneratorXQuery.cpp.template"
+                                                              if (variable("useGlr").boolean())
+                                                              {
                                                             #line 520 "CodeGeneratorXQuery.cpp"
   append(L",\n");
   append(L"                         $id as xs:integer");
-                                                            #line 312 "CodeGeneratorXQuery.cpp.template"
-                                                                }
+                                                            #line 311 "CodeGeneratorXQuery.cpp.template"
+                                                              }
                                                             #line 525 "CodeGeneratorXQuery.cpp"
   append(L") as xs:integer+\n");
   append(L"{");
-                                                            #line 314 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 313 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 531 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"  p:trace(concat(\"  <tokenize ");
-                                                            #line 317 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 316 "CodeGeneratorXQuery.cpp.template"
                                                                 if (variable("useGlr").boolean())
                                                                 {
                                                             #line 537 "CodeGeneratorXQuery.cpp"
   append(L"thread=\"\"\", $id, \"\"\" ");
-                                                            #line 319 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 318 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                             #line 541 "CodeGeneratorXQuery.cpp"
   append(L"tokenset=\"\"\", $token-set, \"\"\">\")),");
-                                                            #line 321 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 320 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 545 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -550,8 +550,8 @@
   append(L"                      $begin,\n");
   append(L"                      $result,\n");
   append(L"                      $result mod ");
-                                                            #line 329 "CodeGeneratorXQuery.cpp.template"
-                                                          print(Math::powerof(2, variable("stateCodeBits").integer()));
+                                                            #line 328 "CodeGeneratorXQuery.cpp.template"
+                                                              print(Math::powerof(2, variable("stateCodeBits").integer()));
                                                             #line 556 "CodeGeneratorXQuery.cpp"
   append(L",\n");
   append(L"                      0)\n");
@@ -587,7 +587,7 @@
   append(L"{\n");
   append(L"  if ($current-state eq 0) then\n");
   append(L"    let $result := $result idiv ");
-                                                            #line 361 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 360 "CodeGeneratorXQuery.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
                                                               if (0 == variable("maxcontextlength").integer())
                                                               {
@@ -596,11 +596,11 @@
                                                             #line 597 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    let $end := if ($result idiv ");
-                                                            #line 367 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 366 "CodeGeneratorXQuery.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                             #line 602 "CodeGeneratorXQuery.cpp"
   append(L" ne 0) then $begin else $end");
-                                                            #line 369 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 367 "CodeGeneratorXQuery.cpp.template"
                                                                 }
                                                               }
                                                               else if (! variable("hasfixedtokenlength").boolean())
@@ -608,7 +608,7 @@
                                                             #line 609 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    let $end := $end - $result idiv ");
-                                                            #line 374 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 372 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                               }
                                                               else
@@ -617,18 +617,18 @@
   append(L"\n");
   append(L"    let $end :=\n");
   append(L"      if ($result idiv ");
-                                                            #line 380 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 378 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                             #line 623 "CodeGeneratorXQuery.cpp"
   append(L" mod 2 eq 1) then\n");
   append(L"        $begin + $result idiv ");
-                                                            #line 382 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 380 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
                                                             #line 628 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"      else\n");
   append(L"        $end - $result idiv ");
-                                                            #line 385 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 383 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
                                                               }
                                                             #line 635 "CodeGeneratorXQuery.cpp"
@@ -637,43 +637,43 @@
   append(L"    return\n");
   append(L"      if ($result ne 0) then\n");
   append(L"      (");
-                                                            #line 391 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 389 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 644 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        p:trace(concat(\"    <done result=\"\"\", p:xml-escape($p:TOKEN[$result");
-                                                            #line 395 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 393 "CodeGeneratorXQuery.cpp.template"
                                                                 if (   0 != variable("maxcontextlength").integer()
                                                                     || variable("hasfixedtokenlength").boolean())
                                                                 {
                                                             #line 651 "CodeGeneratorXQuery.cpp"
   append(L" mod ");
-                                                            #line 398 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 396 "CodeGeneratorXQuery.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                                 }
                                                             #line 656 "CodeGeneratorXQuery.cpp"
   append(L"]), \"\"\" begin=\"\"\", $begin, \"\"\" end=\"\"\", $end, \"\"\"/>\")),\n");
   append(L"        p:trace(\"  </tokenize>\"),");
-                                                            #line 402 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 399 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                               if (0 == variable("maxcontextlength").integer() && ! variable("hasfixedtokenlength").boolean())
                                                               {
                                                             #line 663 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        $result - 1,");
-                                                            #line 406 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 403 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                               else
                                                               {
                                                             #line 670 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        $result mod ");
-                                                            #line 410 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 407 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                             #line 675 "CodeGeneratorXQuery.cpp"
   append(L" - 1,");
-                                                            #line 411 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 408 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 679 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -682,14 +682,14 @@
   append(L"      )\n");
   append(L"      else\n");
   append(L"      (");
-                                                            #line 417 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 414 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 689 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        p:trace(concat(\"    <fail begin=\"\"\", $begin, \"\"\" end=\"\"\", $current - 1, \"\"\" state=\"\"\", $previous-state, \"\"\"/>\")),\n");
   append(L"        p:trace(\"  </tokenize>\"),");
-                                                            #line 421 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 418 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 695 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -702,88 +702,88 @@
   append(L"    let $c0 := (string-to-codepoints(substring($input, $current, 1)), 0)[1]\n");
   append(L"    let $c1 :=\n");
   append(L"      if ($c0 < ");
-                                                            #line 431 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 428 "CodeGeneratorXQuery.cpp.template"
                                                               print(variable("simplifiedCodeMap").integer());
                                                             #line 708 "CodeGeneratorXQuery.cpp"
   append(L") then\n");
   append(L"        $p:MAP0[1 + $c0]\n");
   append(L"      else if ($c0 < ");
-                                                            #line 434 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 431 "CodeGeneratorXQuery.cpp.template"
                                                               print(variable("uncompressedMapSize").integer());
                                                             #line 714 "CodeGeneratorXQuery.cpp"
   append(L") then");
-                                                            #line 435 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 432 "CodeGeneratorXQuery.cpp.template"
                                                               const int *m1bits = &variable("m1bits").integer();
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
                                                             #line 720 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        let $c");
-                                                            #line 439 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 436 "CodeGeneratorXQuery.cpp.template"
                                                                 print(i + 1);
                                                             #line 725 "CodeGeneratorXQuery.cpp"
   append(L" := $c");
-                                                            #line 440 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 437 "CodeGeneratorXQuery.cpp.template"
                                                                 print(i);
                                                             #line 729 "CodeGeneratorXQuery.cpp"
   append(L" idiv ");
-                                                            #line 441 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 438 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, m1bits[i]));
                                                               }
                                                             #line 734 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        return $p:MAP1[1 + $c0");
-                                                            #line 444 "CodeGeneratorXQuery.cpp.template"
-                                                         for (size_t i = 0; m1bits[i]; ++i)
+                                                            #line 441 "CodeGeneratorXQuery.cpp.template"
+                                                              for (size_t i = 0; m1bits[i]; ++i)
                                                               {
                                                             #line 740 "CodeGeneratorXQuery.cpp"
   append(L" mod ");
-                                                            #line 446 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 443 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, m1bits[i]));
                                                             #line 744 "CodeGeneratorXQuery.cpp"
   append(L" + $p:MAP1[1 + $c");
-                                                            #line 447 "CodeGeneratorXQuery.cpp.template"
-                                                           print(i + 1);
+                                                            #line 444 "CodeGeneratorXQuery.cpp.template"
+                                                                print(i + 1);
                                                               }
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
                                                             #line 751 "CodeGeneratorXQuery.cpp"
   append(L"]");
-                                                            #line 452 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 448 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 755 "CodeGeneratorXQuery.cpp"
   append(L"]\n");
   append(L"      else");
-                                                            #line 454 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 450 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("m2").size == 0)
                                                               {
                                                             #line 761 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        0");
-                                                            #line 457 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 453 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                               else
                                                               {
                                                             #line 768 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"        p:map2($c0, 1, ");
-                                                            #line 461 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 457 "CodeGeneratorXQuery.cpp.template"
                                                                 print(variable("m2").size / 3);
                                                             #line 773 "CodeGeneratorXQuery.cpp"
   append(L")");
-                                                            #line 462 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 458 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 777 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    let $current := $current + 1\n");
-                                                            #line 465 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 461 "CodeGeneratorXQuery.cpp.template"
                                                               const int *a1bits = &variable("a1bits").integer();
                                                               compressedMap2dAccessor("$current-state - 1", "$c1", variable("a1cols").integer(),
                                                                                             4, "$i", "let $next-state := ", "$p:TRANSITION", a1bits);
                                                             #line 784 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    return");
-                                                            #line 469 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 465 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 790 "CodeGeneratorXQuery.cpp"
@@ -803,7 +803,7 @@
   append(L"            \" codepoint=\"\"\", string($c0), \"\"\"\",\n");
   append(L"            \" class=\"\"\", string($c1), \"\"\"\",\n");
   append(L"            if ($next-state lt ");
-                                                            #line 486 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 482 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()));
                                                             #line 809 "CodeGeneratorXQuery.cpp"
   append(L") then\n");
@@ -812,16 +812,16 @@
   append(L"            (\n");
   append(L"              \" result=\"\"\",\n");
   append(L"              p:xml-escape($p:TOKEN[$next-state idiv ");
-                                                            #line 492 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 488 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()));
                                                             #line 818 "CodeGeneratorXQuery.cpp"
   append(L" mod ");
-                                                            #line 493 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 489 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                             #line 822 "CodeGeneratorXQuery.cpp"
   append(L"]),\n");
   append(L"              if ($next-state lt ");
-                                                            #line 495 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 491 "CodeGeneratorXQuery.cpp.template"
                                                                 int contextOffset = variable("stateCodeBits").integer()
                                                                                   + variable("tokencodeBits").integer();
                                                                 int sizeOffset = contextOffset
@@ -832,7 +832,7 @@
   append(L"                ()\n");
   append(L"              else\n");
   append(L"                (\"\"\" trailing-context-size=\"\"\", string($next-state idiv ");
-                                                            #line 504 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 500 "CodeGeneratorXQuery.cpp.template"
                                                                 print(Math::powerof(2, sizeOffset));
                                                             #line 838 "CodeGeneratorXQuery.cpp"
   append(L")),\n");
@@ -843,29 +843,29 @@
   append(L"          \"\"\n");
   append(L"        )\n");
   append(L"      ),");
-                                                            #line 512 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 508 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 849 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"      if ($next-state > ");
-                                                            #line 514 "CodeGeneratorXQuery.cpp.template"
-                                                                   print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+                                                            #line 510 "CodeGeneratorXQuery.cpp.template"
+                                                              print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                                                             #line 854 "CodeGeneratorXQuery.cpp"
   append(L") then\n");
   append(L"        p:transition($input, $begin, $current, $current, $next-state, $next-state mod ");
-                                                            #line 517 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 513 "CodeGeneratorXQuery.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
                                                             #line 859 "CodeGeneratorXQuery.cpp"
   append(L", $current-state)\n");
   append(L"      else\n");
   append(L"        p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)");
-                                                            #line 521 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 517 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
                                                             #line 866 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    )");
-                                                            #line 524 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 520 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 871 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -896,7 +896,7 @@
   append(L"      $base-token-code + 1\n");
   append(L"    )\n");
   append(L"};\n");
-                                                            #line 551 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 547 "CodeGeneratorXQuery.cpp.template"
                                                               if (defined("gtbits"))
                                                               {
                                                             #line 903 "CodeGeneratorXQuery.cpp"
@@ -912,7 +912,7 @@
   append(L" :)\n");
   append(L"declare function p:goto($nonterminal as xs:integer, $state as xs:integer) as xs:integer\n");
   append(L"{\n");
-                                                            #line 563 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 559 "CodeGeneratorXQuery.cpp.template"
                                                                 compressedMap2dAccessor("$nonterminal",
                                                                                               "$state",
                                                                                               variable("gtcols").integer(),
@@ -924,7 +924,7 @@
                                                             #line 925 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 573 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 569 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             #line 930 "CodeGeneratorXQuery.cpp"
   append(L"\n");
@@ -941,23 +941,23 @@
   append(L"{\n");
   append(L"  if ($state > 0) then\n");
   append(L"    for $t in 0 to ");
-                                                            #line 585 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 581 "CodeGeneratorXQuery.cpp.template"
                                                               print((variable("t1").size - 1) / 32);
                                                             #line 947 "CodeGeneratorXQuery.cpp"
   append(L"\n");
   append(L"    let $i0 := $t * ");
-                                                            #line 587 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 583 "CodeGeneratorXQuery.cpp.template"
                                                               print(variable("transitionStateCount").integer());
                                                             #line 952 "CodeGeneratorXQuery.cpp"
   append(L" + $state - 1\n");
-                                                            #line 589 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 585 "CodeGeneratorXQuery.cpp.template"
                                                               compressedMapAccessor(4, "$i", "return p:token((), ", "$p:EXPECTED", &variable("t0bits").integer());
                                                             #line 956 "CodeGeneratorXQuery.cpp"
   append(L", $t * 32 + 1)\n");
   append(L"  else\n");
   append(L"    ()\n");
   append(L"};\n");
-                                                            #line 594 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 590 "CodeGeneratorXQuery.cpp.template"
                                                               if (variable("m2").size != 0)
                                                               {
                                                             #line 964 "CodeGeneratorXQuery.cpp"
@@ -984,19 +984,19 @@
   append(L"      if ($p:MAP2[$m] > $c) then\n");
   append(L"        p:map2($c, $lo, $m - 1)\n");
   append(L"      else if ($p:MAP2[");
-                                                            #line 616 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 612 "CodeGeneratorXQuery.cpp.template"
                                                                 print(variable("m2").size / 3);
                                                             #line 990 "CodeGeneratorXQuery.cpp"
   append(L" + $m] < $c) then\n");
   append(L"        p:map2($c, $m + 1, $hi)\n");
   append(L"      else\n");
   append(L"        $p:MAP2[");
-                                                            #line 620 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 616 "CodeGeneratorXQuery.cpp.template"
                                                                 print(variable("m2").size / 3 * 2);
                                                             #line 997 "CodeGeneratorXQuery.cpp"
   append(L" + $m]\n");
   append(L"};\n");
-                                                            #line 623 "CodeGeneratorXQuery.cpp.template"
+                                                            #line 619 "CodeGeneratorXQuery.cpp.template"
                                                               }
                                                             }
 

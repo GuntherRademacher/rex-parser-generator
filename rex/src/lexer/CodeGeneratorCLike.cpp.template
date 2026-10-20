@@ -397,7 +397,7 @@ d += 1~                                                           print(semicolo
      ~ := ~                                                       }
                                                                   else
                                                                   {
-     ~ = ~                                                       }
+     ~ = ~                                                        }
                                                                   print(index);
                                                                   print(i - 1);
          ~ >> ~                                                   print(bits[i - 1]);

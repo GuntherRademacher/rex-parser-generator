@@ -24,8 +24,7 @@ package ~                                                       if (packageName.
 
 import (
   "strconv"
-  "unicode/utf8"~
-                                                                if (main || performanceTest)
+  "unicode/utf8"~                                               if (main || performanceTest)
                                                                 {
 ~
   "io/ioutil"
@@ -89,7 +88,7 @@ func ~                                                          if (packageName.
       s.indent = indent~                                          if (isLrParser)
                                                                   {
 ~
-      b := &ParseTreeBuilder{}~                                 }
+      b := &ParseTreeBuilder{}~                                   }
                                                                 }
 ~
       input := read(arg)
@@ -99,7 +98,7 @@ func ~                                                          if (packageName.
                                       ~Lexer()~                 }
                                                                 if (tree)
                                                                 {
-                               ~, ~                             if (isLrParser)
+                               ~, ~                               if (isLrParser)
                                                                   {
                                   ~b~                             }
                                                                   else
@@ -282,7 +281,15 @@ func release(this DeferredEvent, eventHandler BottomUpEventHandler) {
     predecessor = next
   }
   for {
-    current.execute(eventHandler)
+    ~                                                           if (shiftAmbiguity)
+                                                                {
+~if eventHandler != nil {
+      ~                                                         }
+~current.execute(eventHandler)~                                 if (shiftAmbiguity)
+                                                                {
+~
+    }~                                                          }
+~
     current = current.getLink()
     if current == nil {
       break
@@ -324,8 +331,8 @@ func (this *NonterminalEvent) execute(eventHandler BottomUpEventHandler) {
 func (this *NonterminalEvent) toString() string {
   return "nonterminal(" + this.name + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ", " + strconv.Itoa(this.count) + ")"
 }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                               if (resolvesAmbiguity)
+                                                                {
 ~
 
 type AmbiguityEvent struct {
@@ -339,7 +346,7 @@ func (this *AmbiguityEvent) execute(eventHandler BottomUpEventHandler) {
 func (this *AmbiguityEvent) toString() string {
   return "ambiguity(" + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ")"
 }
-~                                                             }
+~                                                               }
                                                               }
 ~
 const (
@@ -360,7 +367,7 @@ func (this *~                                                 print(className.c_
                                      ~, target)
   for {
     thread = heap.Pop(threads).(*ParsingThread)
-    if (thread.accepted) {~                                                  if (rejectsAmbiguity())
+    if (thread.accepted) {~                                   if (rejectsAmbiguity())
                                                               {
 ~
       var other *ParsingThread = nil
@@ -372,12 +379,12 @@ func (this *~                                                 print(className.c_
         }
       }
       if other != nil {
-        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
-                                                              {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~       if (tree)
+                                                                {
                         ~, thread.deferredEvent, other.deferredEvent~
-                                                              }
+                                                                }
                         ~)
-      }~                                                  }
+      }~                                                      }
                                                               else
                                                               {
 ~
@@ -388,7 +395,7 @@ func (this *~                                                 print(className.c_
         } else {
           thread = this.resolve(thread, other)
         }
-      }~                                                  }
+      }~                                                      }
                                                               if (tree)
                                                               {
 ~
@@ -408,24 +415,24 @@ func (this *~                                                 print(className.c_
                                                               {
 ~    if ! threads.isEmpty() {
       if threads.peek().equals(thread) {
-        this.rejectAmbiguity(thread.stack.pos, thread.e0~     if (tree)
-                                                              {
+        this.rejectAmbiguity(thread.stack.pos, thread.e0~       if (tree)
+                                                                {
                         ~, thread.deferredEvent, threads.peek().deferredEvent~
-                                                              }
+                                                                }
                         ~)
-      }~                                                  }
+      }~                                                      }
                                                               else
                                                               {
 ~    for ! threads.isEmpty() && threads.peek().equals(thread) {
       thread = this.resolve(thread, heap.Pop(threads).(*ParsingThread))
     }
-    if threads.isEmpty() {~                              }
+    if threads.isEmpty() {~                                   }
                                                               if (tree || hasCustomCode)
                                                               {
                                                                 if (rejectsAmbiguity())
                                                                 {
 ~
-    } else {~                                        }
+    } else {~                                                   }
                                                                 if (tree)
                                                                 {
 ~
@@ -459,13 +466,13 @@ func (this *~                                                 print(className.c_
                         thread.e1,
                         tokenset[thread.state] + 1,
                         thread.l1,
-                        -1~                                  if (rejectsAmbiguity())
+                        -1~                                   if (rejectsAmbiguity())
                                                               {
                              ~,
-                        false~                              if (tree)
-                                                              {
+                        false~                                  if (tree)
+                                                                {
                              ~,
-                        nil~                                  }
+                        nil~                                    }
                                                               }
                            ~})
     }
@@ -475,13 +482,13 @@ func (this *~                                                 print(className.c_
 ~                                                             if (rejectsAmbiguity())
                                                               {
 ~
-func (this *~                                                 print(className.c_str());
-            ~) rejectAmbiguity(begin int, end int~            if (tree)
-                                                              {
+func (this *~                                                   print(className.c_str());
+            ~) rejectAmbiguity(begin int, end int~              if (tree)
+                                                                {
                              ~, first DeferredEvent, second DeferredEvent~
-                                                              }
-                             ~) {~                            if (tree)
-                                                              {
+                                                                }
+                             ~) {~                              if (tree)
+                                                                {
 ~
   treeBuilder := new(ParseTreeBuilder)
   treeBuilder.Reset(this.input)
@@ -492,19 +499,20 @@ func (this *~                                                 print(className.c_
   treeBuilder.Nonterminal("ALTERNATIVE", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
   treeBuilder.push(secondTree)
   treeBuilder.Nonterminal("AMBIGUOUS", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)~
-                                                              }
+                                                                }
 ~
-  panic(&ParseError{begin, end, 1, -1, -1, true~              if (tree)
-                                                              {
-                                     ~, treeBuilder~          }
+  panic(&ParseError{begin, end, 1, -1, -1, true~                if (tree)
+                                                                {
+                                     ~, treeBuilder~            }
                                      ~})
 }~                                                            }
                                                               else
                                                               {
 ~
-func (this *~                                        print(className.c_str());
-            ~) resolve(thread *ParsingThread, other *ParsingThread) *ParsingThread {~          if (tree)
-                                                              {
+func (this *~                                                   print(className.c_str());
+            ~) resolve(thread *ParsingThread, other *ParsingThread) *ParsingThread {~
+                                                                if (tree)
+                                                                {
 ~
   a := thread.stack
   b := other.stack
@@ -513,18 +521,57 @@ func (this *~                                        print(className.c_str());
     begin = a.pos
     a = a.link
     b = b.link
-  }~                              }
+  }~                                                            }
+~
+~                                                               if (shiftAmbiguity)
+                                                                {
+~
+  ea := thread.deferredEvent
+  eb := other.deferredEvent
+  lengthA := 0
+  for e := ea; e != nil; e = e.getLink() {
+    lengthA++
+  }
+  lengthB := 0
+  for e := eb; e != nil; e = e.getLink() {
+    lengthB++
+  }
+  var ua DeferredEvent
+  var ub DeferredEvent
+  for ea != eb {
+    if lengthA >= lengthB {
+      ua = ea
+      ea = ea.getLink()
+      lengthA--
+    } else {
+      ub = eb
+      eb = eb.getLink()
+      lengthB--
+    }
+  }
+  _, sa := ua.(*TerminalEvent)
+  _, sb := ub.(*TerminalEvent)
+  if sa != sb {
+    if sb {
+      thread = other
+    }
+  } else if other.eventCount < thread.eventCount {
+    thread = other
+  }~                                                            }
+                                                                else
+                                                                {
 ~
   if other.eventCount < thread.eventCount {
     thread = other
-  }~                              if (tree)
-                                                              {
+  }~                                                            }
+                                                                if (tree)
+                                                                {
 ~
-  thread.addAmbiguity(begin, thread.e0)~                              }
+  thread.addAmbiguity(begin, thread.e0)~                        }
 ~
   return thread
 }~                                                            }
-                                                              }
+                                                            }
 
                                                             void PrintGo::openThread()
                                                             {
@@ -583,10 +630,10 @@ type ParsingThread struct {
 ~
   deferredCode *DeferredCode~                                 }
 ~
-  id int~                                                  if (minimalAmbiguity)
+  id int~                                                     if (resolvesAmbiguity)
                                                               {
 ~
-  eventCount int~                                                  }
+  eventCount int~                                             }
                                                               printTokenVars();
 ~
   begin int
@@ -598,10 +645,10 @@ func (this *ParsingThread) open(initialState int~             if (tree)
                          ~, eh BottomUpEventHandler~          }
                          ~, t int) *PriorityQueue {
   this.accepted = false
-  this.target = t~                                                  if (minimalAmbiguity)
+  this.target = t~                                            if (resolvesAmbiguity)
                                                               {
 ~
-  this.eventCount = 0~                                                  }
+  this.eventCount = 0~                                        }
                                                               if (tree)
                                                               {
 ~
@@ -636,10 +683,10 @@ func (this *ParsingThread) copy(other *ParsingThread, action int) *ParsingThread
   this.action = action
   this.accepted = other.accepted
   this.target = other.target
-  this.parser = other.parser~                                                  if (minimalAmbiguity)
+  this.parser = other.parser~                                 if (resolvesAmbiguity)
                                                               {
 ~
-  this.eventCount = other.eventCount~                                                  }
+  this.eventCount = other.eventCount~                         }
                                                               if (tree)
                                                               {
 ~
@@ -677,7 +724,7 @@ func (this *ParsingThread) copy(other *ParsingThread, action int) *ParsingThread
   return this
 }
 
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~
 func (this *ParsingThread) addAmbiguity(begin int, end int) {
@@ -934,11 +981,11 @@ func main() {
             if ! quiet {
               fmt.Print("parsing " + job.name)
             }
-            job.parser~                                           if (useGlr)
-                                                                  {
-                      ~.thread~                                   }
+            job.parser~                                       if (useGlr)
+                                                              {
+                      ~.thread~                               }
                       ~.Reset(0, 0, 0)
-            pe := job.parser.Parse_~                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+            pe := job.parser.Parse_~                          print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                                    ~()
             if pe != nil {
               errorCount++
@@ -950,16 +997,16 @@ func main() {
             }
             if ! quiet {
               fmt.Println()
-            }~                                                    if (tree)
-                                                                  {
-                                                                    if (isLrParser)
-                                                                    {
+            }~                                                if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
 ~
-            job.parseTreeBuilder.Serialize(job.contentCounter)~     }
+            job.parseTreeBuilder.Serialize(job.contentCounter)~ }
 ~
             if (job.contentCounter.getLength() != len(job.input)) {
               panic("content counter saw " + strconv.Itoa(job.contentCounter.getLength()) + ", but input length is " + strconv.Itoa(len(job.input)))
-            }~                                                    }
+            }~                                                }
 ~
             parsed += int64(len(job.input))
           }
@@ -1024,8 +1071,7 @@ func collectInput(name string, content string) {
                                                               }
                           ~})
 }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintGo::printReadMethod()
                                                             {
@@ -1075,8 +1121,7 @@ public interface ~                                            print(className.c_
                                                               {
                                            ~, ~                 if (isLrParser)
                                                                 {
-                                              ~BottomUp~
-                                                                }
+                                              ~BottomUp~        }
                                               ~EventHandler eh~
                                                               }
                                            ~);
@@ -1282,10 +1327,10 @@ func (this *Terminal) send(e EventHandler) {
 type BottomUpEventHandler interface {
   Reset(input string)
   Nonterminal(name string, begin int, end int, count int)
-  Terminal(name string, begin int, end int)~          if (minimalAmbiguity)
-                                                              {
+  Terminal(name string, begin int, end int)~                      if (resolvesAmbiguity)
+                                                                  {
 ~
-  Ambiguity(begin int, end int)~          }
+  Ambiguity(begin int, end int)~                                  }
 ~
 }
 ~                                                               }
@@ -1406,8 +1451,7 @@ func (this *ContentCounter) StartNonterminal(name string, begin int) {}
 func (this *ContentCounter) EndNonterminal(name string, end int) {}
 func (this *ContentCounter) Terminal(name string, begin, end int) {this.length += end - begin}
 func (this *ContentCounter) Whitespace(begin, end int) {this.length += end - begin}
-~
-                                                                }
+~                                                               }
                                                                 if (isLrParser)
                                                                 {
 ~
@@ -1424,8 +1468,8 @@ func (this *ParseTreeBuilder) Reset(input string) {
 }
 
 func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count int) {~
-                                                                if (rejectsAmbiguity())
-                                                                {
+                                                                  if (rejectsAmbiguity())
+                                                                  {
 ~
   if count > this.top + 1 {
     content := this.pop(this.top + 1)
@@ -1438,7 +1482,7 @@ func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count
       this.push(symbol)
     }
     count = this.top + 1
-  }~                                                        }
+  }~                                                              }
 ~
   this.push(&Nonterminal{&AbstractSymbol{name, begin, end}, this.pop(count)})
 }
@@ -1446,12 +1490,12 @@ func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count
 func (this *ParseTreeBuilder) Terminal(name string, begin int, end int) {
   this.push(&Terminal{&AbstractSymbol{name, begin, end}})
 }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                                 if (resolvesAmbiguity)
+                                                                  {
 ~
 func (this *ParseTreeBuilder) Ambiguity(begin int, end int) {
 }
-~                                                             }
+~                                                                 }
 ~
 func (this *ParseTreeBuilder) Serialize(e EventHandler) {
   e.Reset(this.input)

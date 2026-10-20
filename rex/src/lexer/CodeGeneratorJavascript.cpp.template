@@ -38,8 +38,7 @@
     init(string);
     return match(tokenSetId);
   }
-~
-                                                              }
+~                                                             }
                                                               if (variable("useGlr").boolean())
                                                               {
                                                                 ++indent;
@@ -47,7 +46,7 @@
                                                               else
                                                               {
 ~
-  var input;~                                                  if (! variable("nolexer").boolean())
+  var input;~                                                   if (! variable("nolexer").boolean())
                                                                 {
 ~
   var size;~                                                    }
@@ -87,12 +86,11 @@
                                                                 if (variable("trace").boolean())
                                                                 {
 ~
-    writeTrace("  <tokenize ~                                   if (variable("useGlr").boolean())
-                                                                {
-                            ~thread=\"" + id + "\" ~            }
+    writeTrace("  <tokenize ~                                     if (variable("useGlr").boolean())
+                                                                  {
+                            ~thread=\"" + id + "\" ~              }
                             ~tokenset=\"" + tokenSetId + "\">\n");
-~
-                                                                }
+~                                                               }
                                                                 int lookahead = variable("maxcontextlength").integer();
                                                                 bool hasFixedTokenLength = variable("hasfixedtokenlength").boolean();
                                                                 if (lookahead)
@@ -112,15 +110,13 @@
                                                                 {
 ~
     writeTrace("    <next state=\"" + (result & ~                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                ~) + "\"");~
-                                                              }
+                                                ~) + "\"");~    }
 ~
     for (var code = result & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                              ~; code != 0; )
     {
       var charclass;
-      var c0 = current < size ? input.charCodeAt(current) : 0;~
-                                                                if (variable("trace").boolean())
+      var c0 = current < size ? input.charCodeAt(current) : 0;~ if (variable("trace").boolean())
                                                                 {
 ~
       writeTrace(" offset=\"" + current + "\"");~               }
@@ -128,8 +124,7 @@
       ++current;
       if (c0 < ~                                                print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, "0x", "0123456789abcdef"));
                ~)
-      {~
-                                                                if (variable("trace").boolean())
+      {~                                                        if (variable("trace").boolean())
                                                                 {
 ~
         if (c0 >= 32 && c0 <= 126)
@@ -438,8 +433,7 @@
                                                             ~.TOKEN.length ? ~
                                                                 print(variable("classname").string());
                                                                              ~.TOKEN[code] : null;};
-~
-                                                              }
+~                                                             }
 ~
 ~                                                             print(variable("classname").string());
 ~.getTokenSet = function(tokenSetId)
@@ -489,7 +483,7 @@
   var input;
   var stack;
   var top;
-~                                                                 if (variable("useGlr").boolean() && ! variable("minimalAmbiguity").boolean())
+~                                                                 if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
                                                                   {
 ~
   this.getStack = function() {return stack;}
@@ -504,7 +498,7 @@
   };
 
   this.nonterminal = function(name, begin, end, count)
-  {~                                                              if (variable("useGlr").boolean() && ! variable("minimalAmbiguity").boolean())
+  {~                                                              if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
                                                                   {
 ~
     if (count > top + 1)
@@ -521,7 +515,7 @@
     this.push(new ~                                               print(variable("classname").string());
                   ~.Nonterminal(name, begin, end, this.pop(count)));
   };
-~                                                                 if (variable("useGlr").boolean() && variable("minimalAmbiguity").boolean())
+~                                                                 if (variable("useGlr").boolean() && variable("resolvesAmbiguity").boolean())
                                                                   {
 ~
   this.ambiguity = function(begin, end)
@@ -621,7 +615,7 @@
   };
 };
 
-~                                                              print(variable("classname").string());
+~                                                               print(variable("classname").string());
 ~.Nonterminal = function(name, begin, end, children)
 {
   this.begin = begin;
@@ -661,7 +655,7 @@
                                                                     if (j) print(",");
 ~
   /* ~                                                              print(format.toString<char>(j, 10, w));
-     ~ */ ~                                                     }
+     ~ */ ~                                                       }
                                                                   else
                                                                   {
    ~, ~                                                           }

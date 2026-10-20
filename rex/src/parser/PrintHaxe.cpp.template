@@ -15,7 +15,7 @@
                                                                 if (! packageName.empty())
                                                                 {
 ~
-package ~                                                        print(packageName.c_str());
+package ~                                                         print(packageName.c_str());
         ~;
 ~                                                               }
                                                                 if (main || performanceTest)
@@ -116,8 +116,7 @@ class ~                                                         print(className.
         {~                                                      if (trace)
                                                                 {
   ~
-          trace("<trace>");~
-                                                                }
+          trace("<trace>");~                                    }
   ~
           parser.~                                              print(methodPrefixParse);
                                                                 print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
@@ -205,14 +204,12 @@ private class StackNode
   public var pos: Int;
   public var link: StackNode;
 
-  public function new(state: Int, ~
-                                                              if (grammar->states->hasLookback)
+  public function new(state: Int, ~                           if (grammar->states->hasLookback)
                                                               {
                                   ~code: Int, ~               }
                                               ~pos: Int, link: StackNode)
   {
-    this.state = state;~
-                                                              if (grammar->states->hasLookback)
+    this.state = state;~                                      if (grammar->states->hasLookback)
                                                               {
 ~
     this.code = code;~                                        }
@@ -346,14 +343,24 @@ private class DeferredEvent
   public var link: DeferredEvent;
   public var name: String;
   public var begin: Int;
-  public var end: Int;
+  public var end: Int;~                                         if (shiftAmbiguity)
+                                                                {
+~
+  public var depth: Int;
+
+  public function isTerminal(): Bool {return false;}~           }
+~
 
   public function new(link: DeferredEvent, name: String, begin: Int, end: Int)
   {
     this.link = link;
     this.name = name;
     this.begin = begin;
-    this.end = end;
+    this.end = end;~                                            if (shiftAmbiguity)
+                                                                {
+~
+    this.depth = link == null ? 1 : link.depth + 1;~            }
+~
   }
 
   public function execute(eventHandler: BottomUpEventHandler): Void {}
@@ -372,7 +379,11 @@ private class DeferredEvent
     }
     do
     {
-      current.execute(eventHandler);
+      ~                                                         if (shiftAmbiguity)
+                                                                {
+~if (eventHandler != null)
+        ~                                                       }
+~current.execute(eventHandler);
       current = current.link;
     }
     while (current != null);
@@ -404,7 +415,12 @@ private class TerminalEvent extends DeferredEvent
   public override function execute(eventHandler: BottomUpEventHandler): Void
   {
     eventHandler.terminal(name, begin, end);
-  }
+  }~                                                            if (shiftAmbiguity)
+                                                                {
+~
+
+  public override function isTerminal(): Bool {return true;}~   }
+~
 }
 
 private class NonterminalEvent extends DeferredEvent
@@ -422,8 +438,8 @@ private class NonterminalEvent extends DeferredEvent
     eventHandler.nonterminal(name, begin, end, count);
   }
 }
-~                                                             if (minimalAmbiguity)
-                                                              {
+~                                                               if (resolvesAmbiguity)
+                                                                {
 ~
 private class AmbiguityEvent extends DeferredEvent
 {
@@ -437,7 +453,7 @@ private class AmbiguityEvent extends DeferredEvent
     eventHandler.ambiguity(begin, end);
   }
 }
-~                                                             }
+~                                                               }
                                                               }
                                                             }
 
@@ -462,10 +478,10 @@ private class ParsingThread
 ~
   public var deferredCode: DeferredCode;~                     }
 ~
-  public var id: Int;~                                        if (minimalAmbiguity)
+  public var id: Int;~                                        if (resolvesAmbiguity)
                                                               {
 ~
-  public var eventCount: Int;~                                        }
+  public var eventCount: Int;~                                }
 ~
 
   public function new()
@@ -478,10 +494,10 @@ private class ParsingThread
                          ~, t: Int): Heap
   {
     accepted = false;
-    target = t;~                                                  if (minimalAmbiguity)
+    target = t;~                                              if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = 0;~                                                  }
+    eventCount = 0;~                                          }
                                                               if (tree)
                                                               {
 ~
@@ -496,8 +512,7 @@ private class ParsingThread
 ~
     deferredCode = null;~                                     }
 ~
-    stack = new StackNode(-1, ~
-                                                              if (grammar->states->hasLookback)
+    stack = new StackNode(-1, ~                               if (grammar->states->hasLookback)
                                                               {
                               ~0, ~                           }
                               ~e0, null);
@@ -521,10 +536,10 @@ private class ParsingThread
     this.action = action;
     target = other.target;
     bs = other.bs;
-    bw = other.bw;~                                                  if (minimalAmbiguity)
+    bw = other.bw;~                                           if (resolvesAmbiguity)
                                                               {
 ~
-    eventCount = other.eventCount;~                                                  }
+    eventCount = other.eventCount;~                           }
                                                               if (tree)
                                                               {
 ~
@@ -578,7 +593,7 @@ private class ParsingThread
     if (! stack.equals(other.stack)) return false;
     return true;
   }
-~                                                             if (minimalAmbiguity && tree)
+~                                                             if (resolvesAmbiguity && tree)
                                                               {
 ~
   public function addAmbiguity(begin: Int, end: Int): Void
@@ -606,8 +621,7 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
                                                               }
                                                       ~thread: ParsingThread): ParsingThread
 {
-  var threads: Heap = thread.open(initialState~
-                                                              if (tree)
+  var threads: Heap = thread.open(initialState~               if (tree)
                                                               {
                                               ~, eventHandler~
                                                               }
@@ -616,7 +630,7 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
   {
     thread = threads.poll();
     if (thread.accepted)
-    {~                                                      if (rejectsAmbiguity())
+    {~                                                        if (rejectsAmbiguity())
                                                               {
 ~
       var other: ParsingThread = null;
@@ -631,9 +645,9 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
       }
       if (other != null)
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~                                                      if (tree)
-                                                              {
-                ~, thread.deferredEvent, other.deferredEvent~ }
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
+                ~, thread.deferredEvent, other.deferredEvent~   }
                 ~);
       }~                                                      }
                                                               else
@@ -666,18 +680,18 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
     {
       if (threads.peek().equals(thread))
       {
-        rejectAmbiguity(thread.stack.pos, thread.e0~          if (tree)
-                                                              {
-       ~, thread.deferredEvent, threads.peek().deferredEvent~ }
+        rejectAmbiguity(thread.stack.pos, thread.e0~            if (tree)
+                                                                {
+       ~, thread.deferredEvent, threads.peek().deferredEvent~   }
        ~);
       }
-    }~                                                      }
+    }~                                                        }
                                                               else
                                                               {
 ~    while (! threads.isEmpty() && threads.peek().equals(thread))
     {
       thread = resolve(thread, threads.poll());
-    }~                                                      }
+    }~                                                        }
                                                               if (tree || hasCustomCode)
                                                               {
                                                                 if (rejectsAmbiguity())
@@ -731,12 +745,12 @@ public function parse(target: Int, initialState: Int, ~       if (tree)
 ~                                                             if (rejectsAmbiguity())
                                                               {
 ~
-private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
-                                                              {
-              ~, first: DeferredEvent, second: DeferredEvent~ }
+private function rejectAmbiguity(begin: Int, end: Int~          if (tree)
+                                                                {
+              ~, first: DeferredEvent, second: DeferredEvent~   }
               ~): Void
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   var treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(input);
@@ -747,12 +761,12 @@ private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
   treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
   treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
-                                                              }
+                                                                }
 ~
   var exception = new ParseException(begin, end, -1, -1, -1);
-  exception.setAmbiguousInput(~                               if (tree)
-                                                              {
-                              ~treeBuilder~                   }
+  exception.setAmbiguousInput(~                                 if (tree)
+                                                                {
+                              ~treeBuilder~                     }
                               ~);
   throw exception;
 }~                                                            }
@@ -760,8 +774,8 @@ private function rejectAmbiguity(begin: Int, end: Int~        if (tree)
                                                               {
 ~
 private function resolve(thread: ParsingThread, other: ParsingThread): ParsingThread
-{~                                                            if (tree)
-                                                              {
+{~                                                              if (tree)
+                                                                {
 ~
   var a = thread.stack;
   var b = other.stack;
@@ -771,13 +785,46 @@ private function resolve(thread: ParsingThread, other: ParsingThread): ParsingTh
     begin = a.pos;
     a = a.link;
     b = b.link;
-  }~                                                          }
+  }~                                                            }
+~
+~                                                               if (shiftAmbiguity)
+                                                                {
+~
+  var ea = thread.deferredEvent;
+  var eb = other.deferredEvent;
+  var ua: DeferredEvent = null;
+  var ub: DeferredEvent = null;
+  while (ea != eb)
+  {
+    if ((ea == null ? 0 : ea.depth) >= (eb == null ? 0 : eb.depth))
+    {
+      ua = ea;
+      ea = ea.link;
+    }
+    else
+    {
+      ub = eb;
+      eb = eb.link;
+    }
+  }
+  var sa = ua != null && ua.isTerminal();
+  var sb = ub != null && ub.isTerminal();
+  if (sa != sb)
+  {
+    if (sb)
+      thread = other;
+  }
+  else if (other.eventCount < thread.eventCount)
+    thread = other;~                                            }
+                                                                else
+                                                                {
 ~
   if (other.eventCount < thread.eventCount)
-    thread = other;~                                               if (tree)
-                                                              {
+    thread = other;~                                            }
+                                                                if (tree)
+                                                                {
 ~
-  thread.addAmbiguity(begin, thread.e0);~                                             }
+  thread.addAmbiguity(begin, thread.e0);~                       }
 ~
   return thread;
 }~                                                            }
@@ -939,8 +986,7 @@ public var maxId = 0;~                                        setIndent(1);
                                                               if (memoization)
                                                               {
 ~
-  private var memo: Map<Int, Int>  = new Map();~
-                                                                if (grammar->noThrow)
+  private var memo: Map<Int, Int>  = new Map();~                if (grammar->noThrow)
                                                                 {
 ~
   private var viable: Bool;~                                    }
@@ -1024,25 +1070,25 @@ public var maxId = 0;~                                        setIndent(1);
               try
               {
                 if (! quiet) Sys.print("parsing " + job.name);
-                job.parser~                                       if (useGlr)
-                                                                  {
-                          ~.thread~                               }
+                job.parser~                                   if (useGlr)
+                                                              {
+                          ~.thread~                           }
                           ~.reset(0, 0, 0);
-                job.parser.~                                      print(methodPrefixParse);
-                                                                  print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
+                job.parser.~                                  print(methodPrefixParse);
+                                                              print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                            ~();
-                if (! quiet) Sys.println("");~                    if (tree)
-                                                                  {
-                                                                    if (isLrParser)
-                                                                    {
+                if (! quiet) Sys.println("");~                if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
 ~
                 job.parseTreeBuilder.serialize(job.contentCounter);~
-                                                                    }
+                                                                }
 ~
                 if (job.contentCounter.getLength() != job.input.length)
                 {
                   throw "content counter saw " + job.contentCounter.getLength() + ", but input length is " + job.input.length;
-                }~                                                }
+                }~                                            }
 ~
                 parsed += job.input.length;
               }
@@ -1099,8 +1145,7 @@ public var maxId = 0;~                                        setIndent(1);
       collectInput(f, read(f));
     }
   }
-~
-                                                            }
+~                                                           }
 
                                                             void PrintHaxe::printReadMethod()
                                                             {
@@ -1122,12 +1167,11 @@ public var maxId = 0;~                                        setIndent(1);
            : content;
     }
   }
-~
-//      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
-//      {
-//        content = content.substring(1);
-//      }
-//      return content.replace("\r\n", "\n");
+~                                                               //      if (content.length() > 0 && content.charAt(0) == '\uFEFF')
+                                                                //      {
+                                                                //        content = content.substring(1);
+                                                                //      }
+                                                                //      return content.replace("\r\n", "\n");
                                                               }
                                                             }
 
@@ -1154,7 +1198,8 @@ public interface ~                                            print(className.c_
 {
   public void initialize(CharSequence input~                  if (tree)
                                                               {
-                                           ~, EventHandler eh~}
+                                           ~, EventHandler eh~
+                                                              }
                                            ~);
   public void parse();
   public void reset();
@@ -1216,8 +1261,7 @@ class ParseException
                                              ~ambiguousInput~ }
                                                               else
                                                               {
-                                             ~false~
-                                                              }
+                                             ~false~          }
                                              ~;}
 
   public function getMessage()
@@ -1267,18 +1311,18 @@ interface EventHandler
   public function terminal(tag: String, begin: Int, end: Int): Void;
   public function whitespace(begin: Int, end: Int): Void;
 }
-~
-                                                                if (isLrParser)
+~                                                               if (isLrParser)
                                                                 {
 ~
 interface BottomUpEventHandler
 {
   public function reset(input: Bytes): Void;
   public function nonterminal(name: String, begin: Int, end: Int, count: Int): Void;
-  public function terminal(name: String , begin: Int, end: Int): Void;~                           if (minimalAmbiguity)
-                                                              {
+  public function terminal(name: String , begin: Int, end: Int): Void;~
+                                                                  if (resolvesAmbiguity)
+                                                                  {
 ~
-  public function ambiguity(begin: Int, end: Int): Void;~       }
+  public function ambiguity(begin: Int, end: Int): Void;~         }
 ~
 }
 ~                                                               }
@@ -1332,8 +1376,7 @@ class XmlTreeBuilder implements EventHandler
     node.addChild(Xml.createPCData(input.getString(begin, end - begin)));
   }
 }
-~
-                                                                #endif
+~                                                               #endif
                                                                 if (main)
                                                                 {
                                                                 }
@@ -1384,8 +1427,7 @@ class ParseJob
                         ~);
   }
 }
-~
-                                                              }
+~                                                             }
                                                             }
 
                                                             void PrintHaxe::printEventHandlerImplementation()
@@ -1500,8 +1542,7 @@ class XmlSerializer implements EventHandler
     }
   }
 }
-~
-                                                                }
+~                                                               }
                                                                 if (performanceTest)
                                                                 {
 ~
@@ -1661,8 +1702,7 @@ class ParseTreeBuilder implements BottomUpEventHandler
         push(symbol);
       }
       count = top + 1;
-    }~
-                                                                  }
+    }~                                                            }
 ~
     push(new Nonterminal(name, begin, end, pop(count)));
   }
@@ -1670,13 +1710,13 @@ class ParseTreeBuilder implements BottomUpEventHandler
   public function terminal(name: String, begin: Int, end: Int)
   {
     push(new Terminal(name, begin, end));
-  }~                                        if (minimalAmbiguity)
-                                                              {
+  }~                                                              if (resolvesAmbiguity)
+                                                                  {
 ~
 
   public function ambiguity(begin: Int, end: Int)
   {
-  }~                                        }
+  }~                                                              }
 ~
 
   public function serialize(e: EventHandler)

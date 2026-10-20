@@ -40,8 +40,7 @@
 ~
   private var state = 0;~                                     }
 ~
-~
-                                                              if (! variable("embedded").boolean())
+~                                                             if (! variable("embedded").boolean())
                                                               {
 ~
   public void init(String string)
@@ -71,8 +70,7 @@
   private function predict(dpi: Int): Int~                        predict();
                                                                 }
 ~
-  private~
-                                                              }
+  private~                                                    }
          ~ function match(tokenSetId: Int): Int
   {~                                                          if (variable("nolexer").boolean())
                                                               {
@@ -136,8 +134,7 @@
                                  ~input.get(current) : 0;~      if (variable("trace").boolean())
                                                                 {
 ~
-      traceLine += " offset=\"" + current + "\"";~
-                                                                }
+      traceLine += " offset=\"" + current + "\"";~              }
 ~
       ++current;
       if (c0 < 0x~                                              print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
@@ -393,8 +390,8 @@
       while(i > 0)
       {
         --end;
-        var c1 = end < ~                                           print(instancePrefix.c_str());
-                       ~size ? ~                                   print(instancePrefix.c_str());
+        var c1 = end < ~                                            print(instancePrefix.c_str());
+                       ~size ? ~                                    print(instancePrefix.c_str());
                                ~input.get(end) : 0;
         if (c1  & 0xc0 == 0x80)
         {
@@ -420,8 +417,7 @@
                                   ~xmlEscape(~                    print(classNamePrefix.c_str());
                                              ~TOKEN[(result & ~   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
                                                               ~) - 1]) + "\" begin=\"" + begin + "\" end=\"" + end + "\"/>");
-    trace("  </tokenize>");~
-                                        }
+    trace("  </tokenize>");~                                    }
                                                                 const char *flags = getenv("FLAGS");
                                                                 bool hack = flags && strchr(flags, 'H');
                                                                 if (hack)
@@ -646,8 +642,7 @@
     ~ */ ~                                                        print(token.string(i));
                                                                 }
     ~
-  };~
-                                                              }
+  };~                                                         }
                                                               if (variable("selfTest").boolean())
                                                               {
 ~
@@ -685,21 +680,21 @@
 
   public static void main(String[] args)
   {
-    ~                                                         print(variable("classname").string());
-    ~ testee = new ~                                          print(variable("classname").string());
+    ~                                                           print(variable("classname").string());
+    ~ testee = new ~                                            print(variable("classname").string());
                    ~();
-    for (int e = 0; e < ~                                     print(variable("a0").size);
+    for (int e = 0; e < ~                                       print(variable("a0").size);
                         ~; ++e)
     {
-      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      int s = INITIAL[e] & ~                                    print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                            ~;
-      for (int i = 0; i < ~                                   print(variable("t1").size);
+      for (int i = 0; i < ~                                     print(variable("t1").size);
                           ~; i += 32)
       {
         int j = i;
-        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+        int i0 = (i >> 5) * ~                                   print(variable("transitionStateCount").integer());
                             ~ + s - 1;
-~                                                             compressedMapAccessor(8, "i", "var f = ", "EXPECTED", &variable("t0bits").integer());
+~                                                               compressedMapAccessor(8, "i", "var f = ", "EXPECTED", &variable("t0bits").integer());
 ~
         for ( ; f != 0; f >>>= 1, ++j)
         {

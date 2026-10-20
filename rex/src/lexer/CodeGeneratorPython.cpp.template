@@ -72,8 +72,7 @@ def match(self, tokenSetId):~                                 if (variable("nole
   return token.code >= 0
        ? token.code
        : error(begin, end, - tokenSetId, -1, -1)
-~
-                                                              }
+~                                                             }
                                                               else
                                                               {
                                                                 int lookahead = variable("maxcontextlength").integer();
@@ -86,8 +85,7 @@ def match(self, tokenSetId):~                                 if (variable("nole
                                                                 {
 ~
   ~                                                               print(variable("classname").string());
-  ~.writeTrace("  <tokenize ~
-                                                                  if (variable("useGlr").boolean())
+  ~.writeTrace("  <tokenize ~                                     if (variable("useGlr").boolean())
                                                                   {
                             ~thread=\"" + str(self.id) + "\" ~    }
                             ~tokenset=\"" + str(tokenSetId) + "\">\n")
@@ -125,8 +123,7 @@ def match(self, tokenSetId):~                                 if (variable("nole
     current += 1~
 ~
     if c0 < 0x~                                                 print(format.toString<char>(variable("simplifiedCodeMap").integer(), 16, 0, 0, 0, "0123456789abcdef"));
-              ~:~
-                                                                if (variable("trace").boolean())
+              ~:~                                               if (variable("trace").boolean())
                                                                 {
 ~
       if c0 >= 32 and c0 <= 126:
@@ -297,7 +294,7 @@ def match(self, tokenSetId):~                                 if (variable("nole
                                                    ~.TOKEN[(result & ~
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
              ~) - 1]) + "\" begin=\"" + str(self.begin) + "\" end=\"" + str(self.end) + "\"/>\n")
-  ~                                                         print(variable("classname").string());
+  ~                                                               print(variable("classname").string());
   ~.writeTrace("  </tokenize>\n")~                              }
                                                                 if (hack)
                                                                 {
@@ -435,8 +432,7 @@ def getTokenSet(tokenSetId):~                                 }
     ~ */ ~                                                        print(token.string(i));
                                                                 }
     ~
-  };~
-                                                              }
+  };~                                                         }
                                                               if (variable("selfTest").boolean())
                                                               {
 ~
@@ -475,21 +471,21 @@ def getTokenSet(tokenSetId):~                                 }
 
   public static void main(String[] args)
   {
-    ~                                                         print(variable("classname").string());
-    ~ testee = new ~                                          print(variable("classname").string());
+    ~                                                           print(variable("classname").string());
+    ~ testee = new ~                                            print(variable("classname").string());
                    ~();
-    for (int e = 0; e < ~                                     print(variable("a0").size);
+    for (int e = 0; e < ~                                       print(variable("a0").size);
                         ~; ++e)
     {
-      int s = INITIAL[e] & ~                                  print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      int s = INITIAL[e] & ~                                    print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                            ~;
-      for (int i = 0; i < ~                                   print(variable("t1").size);
+      for (int i = 0; i < ~                                     print(variable("t1").size);
                           ~; i += 32)
       {
         int j = i;
-        int i0 = (i >> 5) * ~                                 print(variable("transitionStateCount").integer());
+        int i0 = (i >> 5) * ~                                   print(variable("transitionStateCount").integer());
                             ~ + s - 1;
-~                                                             compressedMapAccessor(8, "i", "f = ", "EXPECTED", &variable("t0bits").integer());
+~                                                               compressedMapAccessor(8, "i", "f = ", "EXPECTED", &variable("t0bits").integer());
 ~
         for ( ; f != 0; f >>>= 1, ++j)
         {

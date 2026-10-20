@@ -104,8 +104,7 @@ declare variable $p:~                                           print(a->getLong
                                                                   if (j)
                                                                   {
   ~,
-  ~
-                                                                  }
+  ~                                                               }
   ~"~                                                             const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -191,9 +190,9 @@ declare function p:predict($input as xs:string,
                                                                   {
                             ~W~                                   }
                             ~($p:TOKENSET[$dpi + 1], $input, $state~
-                                                                if (variable("useGlr").boolean())
-                                                                {
-                                             ~, $id~            }
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                                             ~, $id~              }
                                              ~)
   return~                                                         indent += 1;
                                                                 }
@@ -294,10 +293,10 @@ declare function p:predict($input as xs:string,
  :
  : @param $input the input string.
  : @param $begin the index where to start in input string.
- : @param $token-set the expected token set id.~                if (variable("useGlr").boolean())
-                                                                {
+ : @param $token-set the expected token set id.~              if (variable("useGlr").boolean())
+                                                              {
 ~
- : @param $id the parsing thread id.~                           }
+ : @param $id the parsing thread id.~                         }
 ~
  : @return a sequence of three: the token code of the result token,
  : with input string begin and end positions. If there is no valid
@@ -306,10 +305,10 @@ declare function p:predict($input as xs:string,
  :)
 declare function p:match($input as xs:string,
                          $begin as xs:integer,
-                         $token-set as xs:integer~              if (variable("useGlr").boolean())
-                                                                {
+                         $token-set as xs:integer~            if (variable("useGlr").boolean())
+                                                              {
                                                  ~,
-                         $id as xs:integer~                     }
+                         $id as xs:integer~                   }
                                                  ~) as xs:integer+
 {~                                                            if (variable("trace").boolean())
                                                               {
@@ -326,7 +325,7 @@ declare function p:match($input as xs:string,
                       $begin,
                       $begin,
                       $result,
-                      $result mod ~                       print(Math::powerof(2, variable("stateCodeBits").integer()));
+                      $result mod ~                           print(Math::powerof(2, variable("stateCodeBits").integer()));
                                       ~,
                       0)
 };
@@ -365,8 +364,7 @@ declare function p:transition($input as xs:string,
                                                                 {
 ~
     let $end := if ($result idiv ~                                print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                 ~ ne 0) then $begin else $end~
-                                                                }
+                                 ~ ne 0) then $begin else $end~ }
                                                               }
                                                               else if (! variable("hasfixedtokenlength").boolean())
                                                               {
@@ -398,8 +396,7 @@ declare function p:transition($input as xs:string,
             ~ mod ~                                               print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                                 }
             ~]), """ begin=""", $begin, """ end=""", $end, """/>")),
-        p:trace("  </tokenize>"),~
-                                                              }
+        p:trace("  </tokenize>"),~                            }
                                                               if (0 == variable("maxcontextlength").integer() && ! variable("hasfixedtokenlength").boolean())
                                                               {
 ~
@@ -441,15 +438,14 @@ declare function p:transition($input as xs:string,
                      ~ idiv ~                                   print(Math::powerof(2, m1bits[i]));
                                                               }
                             ~
-        return $p:MAP1[1 + $c0~                          for (size_t i = 0; m1bits[i]; ++i)
+        return $p:MAP1[1 + $c0~                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
                                  ~ mod ~                        print(Math::powerof(2, m1bits[i]));
-                                 ~ + $p:MAP1[1 + $c~       print(i + 1);
+                                 ~ + $p:MAP1[1 + $c~            print(i + 1);
                                                               }
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
-                                ~]~
-                                                              }
+                                ~]~                           }
                                 ~]
       else~                                                   if (variable("m2").size == 0)
                                                               {
@@ -511,7 +507,7 @@ declare function p:transition($input as xs:string,
         )
       ),~                                                     }
 ~
-      if ($next-state > ~                                          print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
+      if ($next-state > ~                                     print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
                    ~) then
         p:transition($input, $begin, $current, $current, $next-state, $next-state mod ~
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
