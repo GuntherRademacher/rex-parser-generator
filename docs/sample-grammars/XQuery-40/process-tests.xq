@@ -65,12 +65,6 @@ declare variable $basex-known-failures as xs:string* :=
 
   (: BaseX allows any NCName as a computed constructor name :)
 
-  "K2-ComputeConAttr-65",
-  "K2-ComputeConAttr-72",
-  "K2-ComputeConElem-20",
-  "K2-ComputeConElem-26",
-  "nscons-047",
-  "K2-ComputeConPI-16",
   "K2-ForExprWithout-42a",
   "K2-ForExprWithout-43a",
   "K2-ForExprWithout-44a",
@@ -156,7 +150,7 @@ declare function local:parse($path, $name, $query as fn() as xs:string, $expect-
     }
   let $msg := fn() {local:msg(0, "...processing " || $path || (", test-case: " || $name || ", expect-error: " || $expect-error)[exists($name)])}
   return
-    if (empty($error)) then
+    if (not($error/self::ERROR)) then
       if ($expect-error) then
         if ($name = $known-failures) then
           (if ($verbose) {$msg()}, $expected-fail)

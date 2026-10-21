@@ -59,6 +59,8 @@ set "HTML=%1"
 set "EBNF=%2"
 set "ALGORITHM=%3"
 set "LOOKAHEAD=%4"
+set "AMBIGUITY="
+if "%ALGORITHM% %LOOKAHEAD%"=="-glalr 1" set "AMBIGUITY=-ambiguity shift -tree"
 set "WITH_UPDATE=%5"
 set "WITH_FULL_TEXT=%6"
 set "WITH_BASEX=%7"
@@ -69,9 +71,9 @@ echo ...RExifying %HTML% into %EBNF%
 java %BASEX_JVM% org.basex.BaseX -bwith-update="%WITH_UPDATE%" -bwith-full-text="%WITH_FULL_TEXT%" -bwith-basex="%WITH_BASEX%" -bspecification-url="%HTML%" -smethod=text ../%~n0.xq > "%EBNF%" || exit /b
 
 echo ...generating parser for %EBNF% in XQuery
-rex %ALGORITHM% %LOOKAHEAD% -xquery -name de/bottlecaps/rex/%NAME% %EBNF% || exit /b
+rex %ALGORITHM% %LOOKAHEAD% %AMBIGUITY% -xquery -name de/bottlecaps/rex/%NAME% %EBNF% || exit /b
 echo ...generating parser for %EBNF% in Java
-rex %ALGORITHM% %LOOKAHEAD% -java -basex -name de.bottlecaps.rex.%CLASS% %EBNF% || exit /b
+rex %ALGORITHM% %LOOKAHEAD% %AMBIGUITY% -java -basex -name de.bottlecaps.rex.%CLASS% %EBNF% || exit /b
 echo ...compiling %CLASS%
 javac -d . %CLASS%.java
 

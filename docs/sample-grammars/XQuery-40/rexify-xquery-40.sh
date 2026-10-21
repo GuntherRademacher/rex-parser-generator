@@ -58,6 +58,10 @@ rexify() {
     local ebnf="$2"
     local algorithm="$3"
     local lookahead="$4"
+    local ambiguity=()
+    if [[ "$algorithm" == "-glalr" && "$lookahead" == "1" ]]; then
+        ambiguity=(-ambiguity shift -tree)
+    fi
     local with_update="$5"
     local with_full_text="$6"
     local with_basex="$7"
@@ -68,9 +72,9 @@ rexify() {
     java $BASEX_JVM org.basex.BaseX -bwith-update="$with_update" -bwith-full-text="$with_full_text" -bwith-basex="$with_basex" -bspecification-url="$html" -smethod=text "../$(basename "$0" .sh).xq" > "$ebnf"
 
     echo "...generating parser for $ebnf in XQuery"
-    rex $algorithm $lookahead -xquery -name "de/bottlecaps/rex/$name" "$ebnf"
+    rex $algorithm $lookahead "${ambiguity[@]}" -xquery -name "de/bottlecaps/rex/$name" "$ebnf"
     echo "...generating parser for $ebnf in Java"
-    rex $algorithm $lookahead -java -basex -name "de.bottlecaps.rex.$class" "$ebnf"
+    rex $algorithm $lookahead "${ambiguity[@]}" -java -basex -name "de.bottlecaps.rex.$class" "$ebnf"
     echo "...compiling $class"
     javac -d . "$class.java"
 }

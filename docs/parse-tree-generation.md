@@ -123,7 +123,7 @@ The `BottomUpEventHandler` interface defines the communication between an LALR, 
 ---
 
 ### `ambiguity(begin, end)`
-**Description:** Only present for parsers generated with `-ambiguity minimal` or `-ambiguity shift` (see [Disambiguation Techniques](disambiguation-techniques.md#resolving-ambiguity-in-glr-parsers)). Reports that an ambiguity has been resolved by selecting one of the alternatives. The range from `begin` to `end` is an over-approximation of the ambiguous input: it contains the ambiguous part, but may start earlier, and it includes the lookahead token that had been read when the alternatives were merged.
+**Description:** Only present for parsers generated with `-tree` and `-ambiguity minimal` or `-ambiguity shift` (see [Disambiguation Techniques](disambiguation-techniques.md#resolving-ambiguity-in-glr-parsers)). Reports that an ambiguity has been resolved by selecting one of the alternatives. The range from `begin` to `end` is an over-approximation of the ambiguous input: it contains the ambiguous part, but may start earlier, and it includes the lookahead token that had been read when the alternatives were merged.
 - The notification is delivered after the events of the selected alternative, and possibly after further events: the lookahead terminal, or, if the ambiguity is only detected at the end of the input, the enclosing nonterminals.
 - The events of the discarded alternatives are never delivered.
 - For more than two alternatives, more than one notification may be delivered.
