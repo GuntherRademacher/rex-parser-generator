@@ -91,14 +91,23 @@ public abstract class RExExecutionWithTrace extends RExExecutionWithResult
     }
     try
     {
-      if (trace.startsWith("trace: \""))
+      if (trace.startsWith("trace: "))
       {
-        trace = trace
-          .replaceAll("^trace: \"", "")
-          .replaceAll("\"$", "")
-          .replaceAll("\"\ntrace: \"", "\n")
-          .replaceAll("\"\"", "\"")
-          .replaceAll("&amp;", "&");
+        if (trace.startsWith("trace: \""))
+        {
+          trace = trace
+            .replaceAll("^trace: \"", "")
+            .replaceAll("\"$", "")
+            .replaceAll("\"\ntrace: \"", "\n")
+            .replaceAll("\"\"", "\"")
+            .replaceAll("&amp;", "&");
+        }
+        else
+        {
+          trace = trace
+              .replaceAll("^trace: ", "")
+              .replaceAll("\ntrace: ", "\n");
+        }
       }
       XQueryEvaluator evaluator = normalizeTrace.load();
       evaluator.setContextItem(documentBuilder.build(new StreamSource(new StringReader("<trace>\n" + trace + "</trace>"))));
