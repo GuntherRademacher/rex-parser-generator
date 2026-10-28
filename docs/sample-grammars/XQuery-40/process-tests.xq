@@ -25,7 +25,12 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
-  "itemTypeDecl-077"                    (: expects XPST0003 that is not motivated by the syntax :)
+  (: tests expecting XPST0003 that is not motivated by the syntax           :)
+  "itemTypeDecl-077",
+  "recordTypeDecl-002",
+  "recordTypeDecl-023",
+  "recordTypeDecl-024",
+  "recordTypeDecl-025"
 );
 
 declare variable $xpath-known-failures as xs:string* :=
