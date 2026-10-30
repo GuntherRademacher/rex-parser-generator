@@ -257,6 +257,8 @@ protected:
                   const wchar_t *prefix);
   void printCodeSequenceAnnotation(const TokenSequenceSet &t);
   void printCountMethod();
+  void printStackAllocation();
+  void printStackPop();
   void printThreadBody1();
 
   virtual void printProlog();

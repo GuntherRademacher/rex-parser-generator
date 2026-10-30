@@ -1,4 +1,4 @@
-// This file was generated on Sat Oct 17, 2026 19:45 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 09:20 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q -haxe -tree -main -glalr 1 LL2_but_not_strongLL2.ebnf
 
 import haxe.io.Bytes;
@@ -277,6 +277,7 @@ private class ParsingThread
       var shift = -1;
       var reduce = -1;
       var symbols = -1;
+      var pos = -1;
       switch (action & 7)
       {
       case 1: // SHIFT
@@ -321,18 +322,19 @@ private class ParsingThread
             }
           }
           es = e1;
-          stack = new StackNode(state, b1, stack);
+          pos = b1;
           consume(l1);
         }
         else
         {
-          stack = new StackNode(state, bs, stack);
+          pos = bs;
         }
-        state = shift;
       }
 
       if (reduce < 0)
       {
+        stack = new StackNode(state, pos, stack);
+        state = shift;
         action = predict(state);
         return LL2_but_not_strongLL2.PARSING;
       }
@@ -345,13 +347,25 @@ private class ParsingThread
         }
         if (symbols > 0)
         {
-          for (i in 1...symbols)
+          var n = symbols;
+          if (shift >= 0)
           {
+            n -= 1;
+          }
+          if (n > 0)
+          {
+            for (i in 1...n)
+            {
+              stack = stack.link;
+            }
+            state = stack.state;
+            bs = stack.pos;
             stack = stack.link;
           }
-          state = stack.state;
-          bs = stack.pos;
-          stack = stack.link;
+          else
+          {
+            bs = pos;
+          }
         }
         else
         {
