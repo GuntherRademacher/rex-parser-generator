@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:32 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryV10_u.ebnf -java -u
 
 @SuppressWarnings("all")
@@ -6714,6 +6714,35 @@ public class XQueryV10_u
     return expected.toArray(new String[]{});
   }
 
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }
+
   private static final int[] MAP0 = new int[128];
   static
   {
@@ -6725,8 +6754,7 @@ public class XQueryV10_u
       /*  86 */ "30, 30, 30, 30, 30, 32, 6, 33, 6, 30, 6, 34, 35, 36, 37, 38, 39, 40, 41, 42, 30, 30, 43, 44, 45, 46",
       /* 112 */ "47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 30, 57, 58, 59, 6, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 128; ++i) {MAP0[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP0);
   }
 
   private static final int[] MAP1 = new int[1445];
@@ -6807,8 +6835,7 @@ public class XQueryV10_u
       /* 1400 */ "60, 60, 60, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 30, 6, 30, 6, 30, 6, 30, 6, 6, 6, 30, 6, 6, 6, 6, 6, 6, 6",
       /* 1431 */ "60, 60, 6, 30, 30, 30, 6, 60, 60, 60, 6, 30, 30, 30"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 1445; ++i) {MAP1[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP1);
   }
 
   private static final int[] MAP2 = new int[6];
@@ -6818,8 +6845,7 @@ public class XQueryV10_u
     {
       /* 0 */ "57344, 65536, 65533, 1114111, 6, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 6; ++i) {MAP2[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP2);
   }
 
   private static final int[] INITIAL = new int[145];
@@ -6835,8 +6861,7 @@ public class XQueryV10_u
       /* 121 */ "122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141",
       /* 141 */ "142, 143, 144, 145"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 145; ++i) {INITIAL[i] = Integer.parseInt(s2[i]);}
+    decode(s1, INITIAL);
   }
 
   private static final int[] TRANSITION = new int[23121];
@@ -8097,8 +8122,7 @@ public class XQueryV10_u
       /* 23094 */ "700416, 561152, 561152, 561152, 839680, 0, 0, 0, 784384, 0, 0, 561152, 561152, 561152, 561152",
       /* 23109 */ "561152, 561152, 690176, 696320, 698368, 561152, 561152, 712704, 561152, 561152, 561152, 561152"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 23121; ++i) {TRANSITION[i] = Integer.parseInt(s2[i]);}
+    decode(s1, TRANSITION);
   }
 
   private static final int[] EXPECTED = new int[2774];
@@ -8280,8 +8304,7 @@ public class XQueryV10_u
       /* 2747 */ "24, 24, 26, 26, 26, 1, 1, 16385, 1, 3, 3, 1, 1, -1889134377, -1889101609, -1889134377, 526844139",
       /* 2764 */ "-1889134377, 0, 0, 1, 1, 0, 17, 27, 27, 25"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 2774; ++i) {EXPECTED[i] = Integer.parseInt(s2[i]);}
+    decode(s1, EXPECTED);
   }
 
   private static final String[] TOKEN =

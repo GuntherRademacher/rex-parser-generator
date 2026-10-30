@@ -1,4 +1,4 @@
-// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:34 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorJava.cpp.template
                                                             #line 1 "CodeGeneratorJava.cpp.template"
                                                             // generate CodeGeneratorJava.cpp using this command:
@@ -1650,6 +1650,41 @@
                                                               size_t limit = total <= 99821
                                                                            ? 119
                                                                            : 4095;
+                                                              if (asString)
+                                                              {
+                                                            #line 1656 "CodeGeneratorJava.cpp"
+  append(L"\n");
+  append(L"\n");
+  append(L"  private static void decode(String[] chunks, int[] target)\n");
+  append(L"  {\n");
+  append(L"    int n = 0;\n");
+  append(L"    for (String chunk : chunks)\n");
+  append(L"    {\n");
+  append(L"      int value = 0;\n");
+  append(L"      boolean negative = false;\n");
+  append(L"      for (int i = 0, length = chunk.length(); i < length; ++i)\n");
+  append(L"      {\n");
+  append(L"        char c = chunk.charAt(i);\n");
+  append(L"        if (c >= '0' && c <= '9')\n");
+  append(L"        {\n");
+  append(L"          value = value * 10 + (c - '0');\n");
+  append(L"        }\n");
+  append(L"        else if (c == '-')\n");
+  append(L"        {\n");
+  append(L"          negative = true;\n");
+  append(L"        }\n");
+  append(L"        else if (c == ',')\n");
+  append(L"        {\n");
+  append(L"          target[n++] = negative ? - value : value;\n");
+  append(L"          value = 0;\n");
+  append(L"          negative = false;\n");
+  append(L"        }\n");
+  append(L"      }\n");
+  append(L"      target[n++] = negative ? - value : value;\n");
+  append(L"    }\n");
+  append(L"  }");
+                                                            #line 1019 "CodeGeneratorJava.cpp.template"
+                                                              }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (   a->isArray()
@@ -1657,59 +1692,59 @@
                                                                     && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
                                                                     && strlen(a->name) == 2)
                                                               {
-                                                            #line 1661 "CodeGeneratorJava.cpp"
+                                                            #line 1696 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private static ");
-                                                            #line 997 "CodeGeneratorJava.cpp.template"
+                                                            #line 1029 "CodeGeneratorJava.cpp.template"
                                                                 if (targetLanguage == JAVA)
                                                                 {
-                                                            #line 1668 "CodeGeneratorJava.cpp"
+                                                            #line 1703 "CodeGeneratorJava.cpp"
   append(L"final");
-                                                            #line 999 "CodeGeneratorJava.cpp.template"
+                                                            #line 1031 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1674 "CodeGeneratorJava.cpp"
+                                                            #line 1709 "CodeGeneratorJava.cpp"
   append(L"readonly");
-                                                            #line 1002 "CodeGeneratorJava.cpp.template"
+                                                            #line 1034 "CodeGeneratorJava.cpp.template"
                                                                 }
-                                                            #line 1678 "CodeGeneratorJava.cpp"
+                                                            #line 1713 "CodeGeneratorJava.cpp"
   append(L" ");
-                                                            #line 1003 "CodeGeneratorJava.cpp.template"
+                                                            #line 1035 "CodeGeneratorJava.cpp.template"
                                                                 if (a->hasType(CGVariable::UNSIGNED))
                                                                 {
-                                                            #line 1683 "CodeGeneratorJava.cpp"
+                                                            #line 1718 "CodeGeneratorJava.cpp"
   append(L"u");
-                                                            #line 1005 "CodeGeneratorJava.cpp.template"
+                                                            #line 1037 "CodeGeneratorJava.cpp.template"
                                                                 }
-                                                            #line 1687 "CodeGeneratorJava.cpp"
+                                                            #line 1722 "CodeGeneratorJava.cpp"
   append(L"int[] ");
-                                                            #line 1006 "CodeGeneratorJava.cpp.template"
+                                                            #line 1038 "CodeGeneratorJava.cpp.template"
                                                                 print(a->longName);
-                                                            #line 1691 "CodeGeneratorJava.cpp"
+                                                            #line 1726 "CodeGeneratorJava.cpp"
   append(L" =");
-                                                            #line 1007 "CodeGeneratorJava.cpp.template"
+                                                            #line 1039 "CodeGeneratorJava.cpp.template"
                                                                 if (asString)
                                                                 {
-                                                            #line 1696 "CodeGeneratorJava.cpp"
+                                                            #line 1731 "CodeGeneratorJava.cpp"
   append(L" new int[");
-                                                            #line 1009 "CodeGeneratorJava.cpp.template"
+                                                            #line 1041 "CodeGeneratorJava.cpp.template"
                                                                   print(a->size);
-                                                            #line 1700 "CodeGeneratorJava.cpp"
+                                                            #line 1735 "CodeGeneratorJava.cpp"
   append(L"];\n");
   append(L"  static\n");
   append(L"  {\n");
   append(L"    final String s1[] =\n");
   append(L"    {");
-                                                            #line 1014 "CodeGeneratorJava.cpp.template"
+                                                            #line 1046 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1710 "CodeGeneratorJava.cpp"
+                                                            #line 1745 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"  {");
-                                                            #line 1018 "CodeGeneratorJava.cpp.template"
+                                                            #line 1050 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                                 int w = (int) Format::width(a->size);
                                                                 for (size_t j = 0; j < a->size; ++j)
@@ -1717,24 +1752,24 @@
                                                                   if (j == 0 || lineLength() + Format::width(a->integer(j)) + (asString ? 3 : 2) > limit)
                                                                   {
                                                                     if (j) print(asString ? "\"," : ",");
-                                                            #line 1721 "CodeGeneratorJava.cpp"
+                                                            #line 1756 "CodeGeneratorJava.cpp"
   append(L"\n");
-                                                            #line 1026 "CodeGeneratorJava.cpp.template"
+                                                            #line 1058 "CodeGeneratorJava.cpp.template"
                                                                     if (asString) print("  ");
-                                                            #line 1725 "CodeGeneratorJava.cpp"
+                                                            #line 1760 "CodeGeneratorJava.cpp"
   append(L"    /* ");
-                                                            #line 1027 "CodeGeneratorJava.cpp.template"
+                                                            #line 1059 "CodeGeneratorJava.cpp.template"
                                                                     print(format.toString<char>(j, 10, w));
-                                                            #line 1729 "CodeGeneratorJava.cpp"
+                                                            #line 1764 "CodeGeneratorJava.cpp"
   append(L" */ ");
-                                                            #line 1028 "CodeGeneratorJava.cpp.template"
+                                                            #line 1060 "CodeGeneratorJava.cpp.template"
                                                                     if (asString) print("\"");
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 1736 "CodeGeneratorJava.cpp"
+                                                            #line 1771 "CodeGeneratorJava.cpp"
   append(L", ");
-                                                            #line 1032 "CodeGeneratorJava.cpp.template"
+                                                            #line 1064 "CodeGeneratorJava.cpp.template"
                                                                   }
                                                                   if (a->hasType(CGVariable::UNSIGNED))
                                                                   {
@@ -1747,70 +1782,65 @@
                                                                 }
                                                                 if (asString)
                                                                 {
-                                                            #line 1751 "CodeGeneratorJava.cpp"
+                                                            #line 1786 "CodeGeneratorJava.cpp"
   append(L"\"\n");
   append(L"    };\n");
-  append(L"    String[] s2 = java.util.Arrays.toString(s1).replaceAll(\"[ \\\\[\\\\]]\", \"\").split(\",\");\n");
-  append(L"    for (int i = 0; i < ");
-                                                            #line 1047 "CodeGeneratorJava.cpp.template"
-                                                                  print(a->size);
-                                                            #line 1758 "CodeGeneratorJava.cpp"
-  append(L"; ++i) {");
-                                                            #line 1048 "CodeGeneratorJava.cpp.template"
+  append(L"    decode(s1, ");
+                                                            #line 1078 "CodeGeneratorJava.cpp.template"
                                                                   print(a->longName);
-                                                            #line 1762 "CodeGeneratorJava.cpp"
-  append(L"[i] = Integer.parseInt(s2[i]);}\n");
+                                                            #line 1792 "CodeGeneratorJava.cpp"
+  append(L");\n");
   append(L"  }");
-                                                            #line 1050 "CodeGeneratorJava.cpp.template"
+                                                            #line 1080 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1769 "CodeGeneratorJava.cpp"
+                                                            #line 1799 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 1054 "CodeGeneratorJava.cpp.template"
+                                                            #line 1084 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1779 "CodeGeneratorJava.cpp"
+                                                            #line 1809 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private static ");
-                                                            #line 1062 "CodeGeneratorJava.cpp.template"
+                                                            #line 1092 "CodeGeneratorJava.cpp.template"
                                                                 if (targetLanguage == JAVA)
                                                                 {
-                                                            #line 1786 "CodeGeneratorJava.cpp"
+                                                            #line 1816 "CodeGeneratorJava.cpp"
   append(L"final");
-                                                            #line 1064 "CodeGeneratorJava.cpp.template"
+                                                            #line 1094 "CodeGeneratorJava.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1792 "CodeGeneratorJava.cpp"
+                                                            #line 1822 "CodeGeneratorJava.cpp"
   append(L"readonly");
-                                                            #line 1067 "CodeGeneratorJava.cpp.template"
+                                                            #line 1097 "CodeGeneratorJava.cpp.template"
                                                                 }
-                                                            #line 1796 "CodeGeneratorJava.cpp"
+                                                            #line 1826 "CodeGeneratorJava.cpp"
   append(L" String[] ");
-                                                            #line 1068 "CodeGeneratorJava.cpp.template"
+                                                            #line 1098 "CodeGeneratorJava.cpp.template"
                                                                 print(a->longName);
-                                                            #line 1800 "CodeGeneratorJava.cpp"
+                                                            #line 1830 "CodeGeneratorJava.cpp"
   append(L" =\n");
   append(L"  {\n");
-                                                            #line 1071 "CodeGeneratorJava.cpp.template"
+                                                            #line 1101 "CodeGeneratorJava.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 1808 "CodeGeneratorJava.cpp"
+                                                            #line 1838 "CodeGeneratorJava.cpp"
   append(L",\n");
-                                                            #line 1076 "CodeGeneratorJava.cpp.template"
+                                                            #line 1106 "CodeGeneratorJava.cpp.template"
                                                                   }
-                                                            #line 1812 "CodeGeneratorJava.cpp"
+                                                            #line 1842 "CodeGeneratorJava.cpp"
   append(L"    \"");
-                                                            #line 1077 "CodeGeneratorJava.cpp.template"
+                                                            #line 1107 "CodeGeneratorJava.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1823,79 +1853,79 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 1827 "CodeGeneratorJava.cpp"
+                                                            #line 1857 "CodeGeneratorJava.cpp"
   append(L"\"");
-                                                            #line 1089 "CodeGeneratorJava.cpp.template"
+                                                            #line 1119 "CodeGeneratorJava.cpp.template"
                                                                 }
-                                                            #line 1831 "CodeGeneratorJava.cpp"
+                                                            #line 1861 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 1091 "CodeGeneratorJava.cpp.template"
+                                                            #line 1121 "CodeGeneratorJava.cpp.template"
                                                               }
                                                             }
 
                                                             void CodeGeneratorJava::generateBinarySearch(const char *input, const char *outputPrefix, const char *outputSuffix, const char *map, size_t size)
                                                             {
-                                                            #line 1840 "CodeGeneratorJava.cpp"
+                                                            #line 1870 "CodeGeneratorJava.cpp"
   append(L"\n");
   append(L"int lo = 0, hi = ");
-                                                            #line 1097 "CodeGeneratorJava.cpp.template"
+                                                            #line 1127 "CodeGeneratorJava.cpp.template"
                                                               print(size / 3 - 1);
-                                                            #line 1845 "CodeGeneratorJava.cpp"
+                                                            #line 1875 "CodeGeneratorJava.cpp"
   append(L";\n");
   append(L"for (int m = ");
-                                                            #line 1099 "CodeGeneratorJava.cpp.template"
+                                                            #line 1129 "CodeGeneratorJava.cpp.template"
                                                               print((size / 3) >> 1);
-                                                            #line 1850 "CodeGeneratorJava.cpp"
+                                                            #line 1880 "CodeGeneratorJava.cpp"
   append(L"; ; m = (hi + lo) >> 1)\n");
   append(L"{\n");
   append(L"  if (");
-                                                            #line 1102 "CodeGeneratorJava.cpp.template"
+                                                            #line 1132 "CodeGeneratorJava.cpp.template"
                                                               print(map);
-                                                            #line 1856 "CodeGeneratorJava.cpp"
+                                                            #line 1886 "CodeGeneratorJava.cpp"
   append(L"[m] > ");
-                                                            #line 1103 "CodeGeneratorJava.cpp.template"
+                                                            #line 1133 "CodeGeneratorJava.cpp.template"
                                                               print(input);
-                                                            #line 1860 "CodeGeneratorJava.cpp"
+                                                            #line 1890 "CodeGeneratorJava.cpp"
   append(L") {hi = m - 1;}\n");
   append(L"  else if (");
-                                                            #line 1105 "CodeGeneratorJava.cpp.template"
+                                                            #line 1135 "CodeGeneratorJava.cpp.template"
                                                               print(map);
-                                                            #line 1865 "CodeGeneratorJava.cpp"
+                                                            #line 1895 "CodeGeneratorJava.cpp"
   append(L"[");
-                                                            #line 1106 "CodeGeneratorJava.cpp.template"
+                                                            #line 1136 "CodeGeneratorJava.cpp.template"
                                                               print(size / 3);
-                                                            #line 1869 "CodeGeneratorJava.cpp"
+                                                            #line 1899 "CodeGeneratorJava.cpp"
   append(L" + m] < ");
-                                                            #line 1107 "CodeGeneratorJava.cpp.template"
+                                                            #line 1137 "CodeGeneratorJava.cpp.template"
                                                               print(input);
-                                                            #line 1873 "CodeGeneratorJava.cpp"
+                                                            #line 1903 "CodeGeneratorJava.cpp"
   append(L") {lo = m + 1;}\n");
   append(L"  else {");
-                                                            #line 1109 "CodeGeneratorJava.cpp.template"
+                                                            #line 1139 "CodeGeneratorJava.cpp.template"
                                                               print(outputPrefix);
                                                               print(map);
-                                                            #line 1879 "CodeGeneratorJava.cpp"
+                                                            #line 1909 "CodeGeneratorJava.cpp"
   append(L"[");
-                                                            #line 1111 "CodeGeneratorJava.cpp.template"
+                                                            #line 1141 "CodeGeneratorJava.cpp.template"
                                                               print(size / 3 * 2);
-                                                            #line 1883 "CodeGeneratorJava.cpp"
+                                                            #line 1913 "CodeGeneratorJava.cpp"
   append(L" + m]");
-                                                            #line 1112 "CodeGeneratorJava.cpp.template"
+                                                            #line 1142 "CodeGeneratorJava.cpp.template"
                                                               print(outputSuffix);
-                                                            #line 1887 "CodeGeneratorJava.cpp"
+                                                            #line 1917 "CodeGeneratorJava.cpp"
   append(L";}\n");
   append(L"  if (lo > hi) {");
-                                                            #line 1114 "CodeGeneratorJava.cpp.template"
+                                                            #line 1144 "CodeGeneratorJava.cpp.template"
                                                               print(outputPrefix);
-                                                            #line 1892 "CodeGeneratorJava.cpp"
+                                                            #line 1922 "CodeGeneratorJava.cpp"
   append(L"0");
-                                                            #line 1115 "CodeGeneratorJava.cpp.template"
+                                                            #line 1145 "CodeGeneratorJava.cpp.template"
                                                               print(outputSuffix);
-                                                            #line 1896 "CodeGeneratorJava.cpp"
+                                                            #line 1926 "CodeGeneratorJava.cpp"
   append(L";}\n");
   append(L"}");
-                                                            #line 1117 "CodeGeneratorJava.cpp.template"
+                                                            #line 1147 "CodeGeneratorJava.cpp.template"
                                                             }
 
 // End

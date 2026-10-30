@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:31 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -java
 
 import java.io.IOException;
@@ -10182,6 +10182,35 @@ public class Java
     return expected.toArray(new String[]{});
   }
 
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }
+
   private static final int[] MAP0 = new int[128];
   static
   {
@@ -10193,8 +10222,7 @@ public class Java
       /*  90 */ "8, 36, 37, 38, 39, 8, 7, 40, 41, 42, 43, 44, 45, 46, 47, 48, 8, 49, 50, 51, 52, 53, 54, 8, 55, 56, 57",
       /* 117 */ "58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 7"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 128; ++i) {MAP0[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP0);
   }
 
   private static final int[] MAP1 = new int[406];
@@ -10221,8 +10249,7 @@ public class Java
       /* 360 */ "54, 8, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7",
       /* 389 */ "7, 7, 40, 41, 42, 43, 44, 45, 46, 47, 48, 8, 49, 50, 51, 52, 53"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 406; ++i) {MAP1[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP1);
   }
 
   private static final int[] MAP2 = new int[12];
@@ -10232,8 +10259,7 @@ public class Java
     {
       /*  0 */ "57344, 63744, 64256, 65536, 63743, 64255, 65533, 1114111, 7, 8, 7, 7"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 12; ++i) {MAP2[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP2);
   }
 
   private static final int[] INITIAL = new int[121];
@@ -10247,8 +10273,7 @@ public class Java
       /*  78 */ "79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102",
       /* 102 */ "103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 121; ++i) {INITIAL[i] = Integer.parseInt(s2[i]);}
+    decode(s1, INITIAL);
   }
 
   private static final int[] TRANSITION = new int[14174];
@@ -10990,8 +11015,7 @@ public class Java
       /* 14146 */ "141312, 141312, 141312, 141312, 14336, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33792, 0, 0, 0",
       /* 14170 */ "0, 33792, 0, 0"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 14174; ++i) {TRANSITION[i] = Integer.parseInt(s2[i]);}
+    decode(s1, TRANSITION);
   }
 
   private static final int[] EXPECTED = new int[1459];
@@ -11091,8 +11115,7 @@ public class Java
       /* 1431 */ "16977, 16465, 25169, 15872, 7168, 7168, 7168, 17267, 17, 0, 0, 8, 512, 32768, 131072, 67108864, 3",
       /* 1448 */ "48, 256, 0, 51, 256, 0, 128, 4194304, 8388608, 268435456, 2097152"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 1459; ++i) {EXPECTED[i] = Integer.parseInt(s2[i]);}
+    decode(s1, EXPECTED);
   }
 
   private static final String[] TOKEN =

@@ -1,4 +1,4 @@
-// This file was generated on Fri Dec 9, 2022 21:19 (UTC+01) by REx v5.55 which is Copyright (c) 1979-2022 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: XQueryV10rex.rex
 
 public class XQueryV10rex
@@ -140,6 +140,35 @@ public class XQueryV10rex
     return expected.toArray(new String[]{});
   }
 
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }
+
   private static final int[] MAP0 = new int[128];
   static
   {
@@ -151,8 +180,7 @@ public class XQueryV10rex
       /*  86 */ "30, 30, 30, 30, 30, 32, 6, 33, 6, 30, 6, 34, 35, 36, 37, 38, 39, 40, 41, 42, 30, 30, 43, 44, 45, 46",
       /* 112 */ "47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 30, 57, 58, 59, 6, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 128; ++i) {MAP0[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP0);
   }
 
   private static final int[] MAP1 = new int[1445];
@@ -233,8 +261,7 @@ public class XQueryV10rex
       /* 1400 */ "60, 60, 60, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 30, 6, 30, 6, 30, 6, 30, 6, 6, 6, 30, 6, 6, 6, 6, 6, 6, 6",
       /* 1431 */ "60, 60, 6, 30, 30, 30, 6, 60, 60, 60, 6, 30, 30, 30"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 1445; ++i) {MAP1[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP1);
   }
 
   private static final int[] MAP2 = new int[6];
@@ -244,8 +271,7 @@ public class XQueryV10rex
     {
       /* 0 */ "57344, 65536, 65533, 1114111, 6, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 6; ++i) {MAP2[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP2);
   }
 
   private static final int[] INITIAL = new int[177];
@@ -262,8 +288,7 @@ public class XQueryV10rex
       /* 141 */ "141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160",
       /* 161 */ "161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 177; ++i) {INITIAL[i] = Integer.parseInt(s2[i]);}
+    decode(s1, INITIAL);
   }
 
   private static final int[] TRANSITION = new int[23261];
@@ -1530,8 +1555,7 @@ public class XQueryV10rex
       /* 23219 */ "563200, 815104, 563200, 563200, 563200, 845824, 784384, 0, 0, 0, 0, 0, 706560, 0, 0, 189, 0, 0, 0",
       /* 23238 */ "0, 0, 0, 0, 0, 232, 238, 0, 0, 0, 0, 716800, 0, 0, 0, 0, 0, 0, 0, 0, 835584, 0, 0"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 23261; ++i) {TRANSITION[i] = Integer.parseInt(s2[i]);}
+    decode(s1, TRANSITION);
   }
 
   private static final int[] EXPECTED = new int[3062];
@@ -1732,8 +1756,7 @@ public class XQueryV10rex
       /* 3037 */ "1048576, 524288, 16777216, 8, 128, 2816, 4, 32, 268435456, -1073741824, 5, 1, 48, 49, 16, 24576, 49",
       /* 3054 */ "49, 3, 53, 53, 3, 35, 55, 51"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 3062; ++i) {EXPECTED[i] = Integer.parseInt(s2[i]);}
+    decode(s1, EXPECTED);
   }
 
   private static final String[] TOKEN =

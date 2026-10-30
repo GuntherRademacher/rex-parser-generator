@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:30 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q EcmaScript.ebnf -ll 1 -backtrack -asi -java -performance -saxon -tree
 
 import java.util.Arrays;
@@ -5777,6 +5777,35 @@ public class EcmaScript
     return expected.toArray(new String[]{});
   }
 
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }
+
   private static final int[] MAP0 = new int[128];
   static
   {
@@ -5788,8 +5817,7 @@ public class EcmaScript
       /*  90 */ "8, 33, 34, 35, 36, 8, 29, 37, 38, 39, 40, 41, 42, 43, 44, 45, 8, 46, 47, 48, 49, 50, 51, 8, 52, 53",
       /* 116 */ "54, 55, 56, 57, 58, 59, 8, 60, 61, 62, 63, 29"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 128; ++i) {MAP0[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP0);
   }
 
   private static final int[] MAP1 = new int[1536];
@@ -5875,8 +5903,7 @@ public class EcmaScript
       /* 1495 */ "29, 29, 8, 8, 29, 29, 8, 29, 8, 8, 29, 8, 8, 8, 1, 29, 29, 29, 29, 64, 29, 8, 8, 8, 8, 29, 8, 29, 8",
       /* 1524 */ "8, 8, 8, 8, 29, 64, 64, 64, 29, 8, 8, 8"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 1536; ++i) {MAP1[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP1);
   }
 
   private static final int[] MAP2 = new int[12];
@@ -5886,8 +5913,7 @@ public class EcmaScript
     {
       /*  0 */ "57344, 65279, 65280, 65536, 65278, 65279, 65533, 1114111, 29, 1, 29, 29"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 12; ++i) {MAP2[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP2);
   }
 
   private static final int[] INITIAL = new int[37];
@@ -5898,8 +5924,7 @@ public class EcmaScript
       /*  0 */ "1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1040, 17, 1042, 1043, 20, 21, 22, 23, 24, 25, 26",
       /* 26 */ "1051, 1052, 29, 30, 31, 32, 33, 34, 35, 36, 1061"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 37; ++i) {INITIAL[i] = Integer.parseInt(s2[i]);}
+    decode(s1, INITIAL);
   }
 
   private static final int[] TRANSITION = new int[7456];
@@ -6299,8 +6324,7 @@ public class EcmaScript
       /* 7413 */ "0, 2048, 2048, 0, 0, 0, 0, 0, 0, 68096, 68608, 0, 0, 2048, 2048, 2048, 0, 68096, 0, 0, 0, 27136, 0",
       /* 7436 */ "0, 0, 0, 0, 44032, 44032, 44032, 69632, 69632, 0, 0, 102400, 0, 0, 0, 39, 0, 39, 366, 39"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 7456; ++i) {TRANSITION[i] = Integer.parseInt(s2[i]);}
+    decode(s1, TRANSITION);
   }
 
   private static final int[] EXPECTED = new int[625];
@@ -6345,8 +6369,7 @@ public class EcmaScript
       /* 583 */ "4096, 16384, 8192, 0, 0, 65536, 262144, 0, 262144, 256, 0, 0, 0, 2, 4, 0, 0, 16, 512, 65536, 256, 0",
       /* 605 */ "0, 16384, 0, 0, 1, 8, 1024, 4096, 0, 4, 0, 0, 32, 4, 0, 16, 256, 512, 16, 48"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 625; ++i) {EXPECTED[i] = Integer.parseInt(s2[i]);}
+    decode(s1, EXPECTED);
   }
 
   private static final String[] TOKEN =

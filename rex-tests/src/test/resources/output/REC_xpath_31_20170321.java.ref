@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:31 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q REC-xpath-31-20170321.ebnf -java -main -tree
 
 import java.io.IOException;
@@ -4066,6 +4066,35 @@ public class REC_xpath_31_20170321
     return expected.toArray(new String[]{});
   }
 
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }
+
   private static final int[] MAP0 = new int[128];
   static
   {
@@ -4077,8 +4106,7 @@ public class REC_xpath_31_20170321
       /*  87 */ "23, 23, 23, 23, 26, 6, 27, 6, 23, 6, 28, 29, 30, 31, 32, 33, 34, 35, 36, 23, 23, 37, 38, 39, 40, 41",
       /* 113 */ "42, 43, 44, 45, 46, 47, 48, 49, 50, 23, 51, 52, 53, 6, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 128; ++i) {MAP0[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP0);
   }
 
   private static final int[] MAP1 = new int[455];
@@ -4107,8 +4135,7 @@ public class REC_xpath_31_20170321
       /* 403 */ "6, 6, 6, 6, 6, 6, 6, 6, 6, 23, 23, 6, 6, 6, 6, 6, 6, 6, 54, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6",
       /* 436 */ "6, 6, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 455; ++i) {MAP1[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP1);
   }
 
   private static final int[] MAP2 = new int[18];
@@ -4119,8 +4146,7 @@ public class REC_xpath_31_20170321
       /*  0 */ "57344, 63744, 64976, 65008, 65536, 983040, 63743, 64975, 65007, 65533, 983039, 1114111, 6, 23, 6, 23",
       /* 16 */ "23, 6"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 18; ++i) {MAP2[i] = Integer.parseInt(s2[i]);}
+    decode(s1, MAP2);
   }
 
   private static final int[] INITIAL = new int[58];
@@ -4132,8 +4158,7 @@ public class REC_xpath_31_20170321
       /* 28 */ "29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54",
       /* 54 */ "55, 56, 57, 58"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 58; ++i) {INITIAL[i] = Integer.parseInt(s2[i]);}
+    decode(s1, INITIAL);
   }
 
   private static final int[] TRANSITION = new int[12112];
@@ -4778,8 +4803,7 @@ public class REC_xpath_31_20170321
       /* 12082 */ "217088, 220160, 0, 0, 234496, 0, 0, 0, 0, 0, 0, 285, 139264, 139264, 139264, 139264, 139264, 182272",
       /* 12100 */ "139264, 139264, 139264, 139264, 139264, 191488, 139264, 139264, 139264, 139264, 139264, 202752"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 12112; ++i) {TRANSITION[i] = Integer.parseInt(s2[i]);}
+    decode(s1, TRANSITION);
   }
 
   private static final int[] EXPECTED = new int[1277];
@@ -4865,8 +4889,7 @@ public class REC_xpath_31_20170321
       /* 1246 */ "128, 16, 32, 64, 128, 1024, 1152, 1056, 0, 128, 0, 32, 512, 134217728, 268435456, 1610612736, 0, 0",
       /* 1264 */ "0, 262144, 6144, 2, 32, 64, 128, 0, 2, 64, 0, 0, 8192"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < 1277; ++i) {EXPECTED[i] = Integer.parseInt(s2[i]);}
+    decode(s1, EXPECTED);
   }
 
   private static final String[] TOKEN =

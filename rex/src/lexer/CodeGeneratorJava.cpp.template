@@ -985,6 +985,38 @@ public class ~                                                print(variable("cl
                                                               size_t limit = total <= 99821
                                                                            ? 119
                                                                            : 4095;
+                                                              if (asString)
+                                                              {
+~
+
+  private static void decode(String[] chunks, int[] target)
+  {
+    int n = 0;
+    for (String chunk : chunks)
+    {
+      int value = 0;
+      boolean negative = false;
+      for (int i = 0, length = chunk.length(); i < length; ++i)
+      {
+        char c = chunk.charAt(i);
+        if (c >= '0' && c <= '9')
+        {
+          value = value * 10 + (c - '0');
+        }
+        else if (c == '-')
+        {
+          negative = true;
+        }
+        else if (c == ',')
+        {
+          target[n++] = negative ? - value : value;
+          value = 0;
+          negative = false;
+        }
+      }
+      target[n++] = negative ? - value : value;
+    }
+  }~                                                          }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (   a->isArray()
@@ -1043,10 +1075,8 @@ public class ~                                                print(variable("cl
                                                                 {
    ~"
     };
-    String[] s2 = java.util.Arrays.toString(s1).replaceAll("[ \\[\\]]", "").split(",");
-    for (int i = 0; i < ~                                         print(a->size);
-                        ~; ++i) {~                                print(a->longName);
-                                 ~[i] = Integer.parseInt(s2[i]);}
+    decode(s1, ~                                                  print(a->longName);
+               ~);
   }~                                                            }
                                                                 else
                                                                 {
