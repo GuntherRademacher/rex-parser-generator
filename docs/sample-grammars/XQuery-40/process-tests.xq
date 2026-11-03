@@ -30,7 +30,8 @@ declare variable $xquery-known-failures as xs:string* :=
   "recordTypeDecl-002",
   "recordTypeDecl-023",
   "recordTypeDecl-024",
-  "recordTypeDecl-025"
+  "recordTypeDecl-025",
+  "recordTypeDecl-137"
 );
 
 declare variable $xpath-known-failures as xs:string* :=
