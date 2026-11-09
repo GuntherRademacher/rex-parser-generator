@@ -237,8 +237,8 @@ type DeferredCode struct {
 type DeferredEvent interface {
   getLink() DeferredEvent
   setLink(d DeferredEvent)
-  getName() string
-  setName(s string)
+  getId() int
+  setId(i int)
   getBegin() int
   setBegin(i int)
   getEnd() int
@@ -248,7 +248,7 @@ type DeferredEvent interface {
 
 type AbstractDeferredEvent struct {
   link DeferredEvent
-  name string
+  id int
   begin int
   end int
 }
@@ -263,8 +263,8 @@ func (this *AbstractDeferredEvent) getLink() DeferredEvent {
 }
 
 func (this *AbstractDeferredEvent) setLink(d DeferredEvent) {this.link = d}
-func (this *AbstractDeferredEvent) getName() string {return this.name}
-func (this *AbstractDeferredEvent) setName(s string) {this.name = s}
+func (this *AbstractDeferredEvent) getId() int {return this.id}
+func (this *AbstractDeferredEvent) setId(i int) {this.id = i}
 func (this *AbstractDeferredEvent) getBegin() int {return this.begin}
 func (this *AbstractDeferredEvent) setBegin(i int) {this.begin = i}
 func (this *AbstractDeferredEvent) getEnd() int {return this.end}
@@ -312,11 +312,11 @@ type TerminalEvent struct {
 }
 
 func (this *TerminalEvent) execute(eventHandler BottomUpEventHandler) {
-  eventHandler.Terminal(this.name, this.begin, this.end)
+  eventHandler.Terminal(this.id, this.begin, this.end)
 }
 
 func (this *TerminalEvent) toString() string {
-  return "terminal(" + this.name + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ")"
+  return "terminal(" + TOKEN[this.id] + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ")"
 }
 
 type NonterminalEvent struct {
@@ -325,11 +325,11 @@ type NonterminalEvent struct {
 }
 
 func (this *NonterminalEvent) execute(eventHandler BottomUpEventHandler) {
-  eventHandler.Nonterminal(this.name, this.begin, this.end, this.count)
+  eventHandler.Nonterminal(this.id, this.begin, this.end, this.count)
 }
 
 func (this *NonterminalEvent) toString() string {
-  return "nonterminal(" + this.name + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ", " + strconv.Itoa(this.count) + ")"
+  return "nonterminal(" + GetNonterminalName(this.id) + ", " + strconv.Itoa(this.begin) + ", " + strconv.Itoa(this.end) + ", " + strconv.Itoa(this.count) + ")"
 }
 ~                                                               if (resolvesAmbiguity)
                                                                 {
@@ -493,12 +493,15 @@ func (this *~                                                   print(className.
   treeBuilder := new(ParseTreeBuilder)
   treeBuilder.Reset(this.input)
   show(second, treeBuilder)
-  treeBuilder.Nonterminal("ALTERNATIVE", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
+  treeBuilder.Nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
   secondTree := treeBuilder.pop(1)[0]
   show(first, treeBuilder)
-  treeBuilder.Nonterminal("ALTERNATIVE", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
+  treeBuilder.Nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)
   treeBuilder.push(secondTree)
-  treeBuilder.Nonterminal("AMBIGUOUS", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)~
+  treeBuilder.Nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)~
                                                                 }
 ~
   panic(&ParseError{begin, end, 1, -1, -1, true~                if (tree)
@@ -729,7 +732,7 @@ func (this *ParsingThread) copy(other *ParsingThread, action int) *ParsingThread
 ~
 func (this *ParsingThread) addAmbiguity(begin int, end int) {
   if this.eventHandler != nil {
-    this.deferredEvent = &AmbiguityEvent{&AbstractDeferredEvent{this.deferredEvent, "", begin, end}}
+    this.deferredEvent = &AmbiguityEvent{&AbstractDeferredEvent{this.deferredEvent, -1, begin, end}}
   }
 }
 
@@ -822,8 +825,9 @@ func (this *~                                                   print(useGlr ? L
     result += ~                                                   if (i != 1)
                                                                   {
               ~" " + ~                                            }
-                     ~token[this.l~                               print(format.toString<wchar_t>(i));
-                                  ~]~                             increaseIndent();
+                                                                  print(tokenTableName());
+                     ~[this.l~                                    print(format.toString<wchar_t>(i));
+                             ~]~                                  increaseIndent();
                                                                 }
                                                                 for (size_t i = 1; i <= grammar->k; ++i)
                                                                 {
@@ -1210,9 +1214,9 @@ func (this *ParseError) IsAmbiguousInput() bool {return ~     if (rejectsAmbigui
 ~
 type EventHandler interface {
   Reset(input string)
-  StartNonterminal(name string, begin int)
-  EndNonterminal(name string, end int)
-  Terminal(name string, begin, end int)
+  StartNonterminal(id int, begin int)
+  EndNonterminal(id int, end int)
+  Terminal(id int, begin, end int)
   Whitespace(begin, end int)
 }
 
@@ -1228,8 +1232,8 @@ func (this *TopDownTreeBuilder) Reset(input string) {
   this.top = -1
 }
 
-func (this *TopDownTreeBuilder) StartNonterminal(name string, begin int) {
-  nonterminal := &Nonterminal{&AbstractSymbol{name, begin, begin}, []Symbol{}}
+func (this *TopDownTreeBuilder) StartNonterminal(id int, begin int) {
+  nonterminal := &Nonterminal{&AbstractSymbol{id, begin, begin}, []Symbol{}}
   if this.top >= 0 {
     this.addChild(nonterminal)
   }
@@ -1240,15 +1244,15 @@ func (this *TopDownTreeBuilder) StartNonterminal(name string, begin int) {
   this.stack[this.top] = nonterminal
 }
 
-func (this *TopDownTreeBuilder) EndNonterminal(name string, end int) {
+func (this *TopDownTreeBuilder) EndNonterminal(id int, end int) {
   this.stack[this.top].end = end
   if this.top > 0 {
     this.top--
   }
 }
 
-func (this *TopDownTreeBuilder) Terminal(name string, begin, end int) {
-  this.addChild(&Terminal{&AbstractSymbol{name, begin, end}})
+func (this *TopDownTreeBuilder) Terminal(id int, begin, end int) {
+  this.addChild(&Terminal{&AbstractSymbol{id, begin, end}})
 }
 
 func (this *TopDownTreeBuilder) Whitespace(begin, end int) {
@@ -1265,6 +1269,7 @@ func (this *TopDownTreeBuilder) Serialize(e EventHandler) {
 }
 
 type Symbol interface {
+  GetId() int
   GetName() string
   GetBegin() int
   GetEnd() int
@@ -1272,13 +1277,13 @@ type Symbol interface {
 }
 
 type AbstractSymbol struct {
-  name string
+  id int
   begin int
   end int
 }
 
-func (this *AbstractSymbol) GetName() string {
-  return this.name
+func (this *AbstractSymbol) GetId() int {
+  return this.id
 }
 
 func (this *AbstractSymbol) GetBegin() int {
@@ -1298,8 +1303,12 @@ func (this *Nonterminal) addChild(s Symbol) {
   this.children = append(this.children, s)
 }
 
+func (this *Nonterminal) GetName() string {
+  return GetNonterminalName(this.id)
+}
+
 func (this *Nonterminal) send(e EventHandler) {
-  e.StartNonterminal(this.GetName(), this.GetBegin())
+  e.StartNonterminal(this.id, this.GetBegin())
   pos := this.GetBegin()
   for _, c := range this.children {
     if pos < c.GetBegin() {
@@ -1311,23 +1320,27 @@ func (this *Nonterminal) send(e EventHandler) {
   if pos < this.GetEnd() {
     e.Whitespace(pos, this.GetEnd())
   }
-  e.EndNonterminal(this.GetName(), this.GetEnd())
+  e.EndNonterminal(this.id, this.GetEnd())
 }
 
 type Terminal struct {
   *AbstractSymbol
 }
 
+func (this *Terminal) GetName() string {
+  return TOKEN[this.id]
+}
+
 func (this *Terminal) send(e EventHandler) {
-  e.Terminal(this.GetName(), this.GetBegin(), this.GetEnd())
+  e.Terminal(this.id, this.GetBegin(), this.GetEnd())
 }
 ~                                                               if (isLrParser)
                                                                 {
 ~
 type BottomUpEventHandler interface {
   Reset(input string)
-  Nonterminal(name string, begin int, end int, count int)
-  Terminal(name string, begin int, end int)~                      if (resolvesAmbiguity)
+  Nonterminal(id int, begin int, end int, count int)
+  Terminal(id int, begin int, end int)~                           if (resolvesAmbiguity)
                                                                   {
 ~
   Ambiguity(begin int, end int)~                                  }
@@ -1361,7 +1374,11 @@ func (this *XmlSerializer) Reset(input string) {
   this.depth = 0
 }
 
-func (this *XmlSerializer) StartNonterminal(tag string, b int) {
+func (this *XmlSerializer) StartNonterminal(id int, b int) {
+  this.startElement(GetNonterminalName(id))
+}
+
+func (this *XmlSerializer) startElement(tag string) {
   if this.delayedTag != "" {
     fmt.Print("<")
     fmt.Print(this.delayedTag)
@@ -1378,7 +1395,11 @@ func (this *XmlSerializer) StartNonterminal(tag string, b int) {
   this.depth++
 }
 
-func (this *XmlSerializer) EndNonterminal(tag string, e int) {
+func (this *XmlSerializer) EndNonterminal(id int, e int) {
+  this.endElement(GetNonterminalName(id))
+}
+
+func (this *XmlSerializer) endElement(tag string) {
   this.depth--
   if this.delayedTag != "" {
     this.delayedTag = ""
@@ -1426,13 +1447,14 @@ func (this *XmlSerializer) characters(b, e int) {
   }
 }
 
-func (this *XmlSerializer) Terminal(tag string, b, e int) {
+func (this *XmlSerializer) Terminal(id int, b, e int) {
+  tag := GetTerminalName(id)
   if tag[0] == '\'' {
     tag = "TOKEN"
   }
-  this.StartNonterminal(tag, b)
+  this.startElement(tag)
   this.characters(b, e)
-  this.EndNonterminal(tag, e)
+  this.endElement(tag)
 }
 ~                                                               }
                                                                 if (performanceTest)
@@ -1447,9 +1469,9 @@ func (this *ContentCounter) getLength() int {
 }
 
 func (this *ContentCounter) Reset(input string) {this.length = 0}
-func (this *ContentCounter) StartNonterminal(name string, begin int) {}
-func (this *ContentCounter) EndNonterminal(name string, end int) {}
-func (this *ContentCounter) Terminal(name string, begin, end int) {this.length += end - begin}
+func (this *ContentCounter) StartNonterminal(id int, begin int) {}
+func (this *ContentCounter) EndNonterminal(id int, end int) {}
+func (this *ContentCounter) Terminal(id int, begin, end int) {this.length += end - begin}
 func (this *ContentCounter) Whitespace(begin, end int) {this.length += end - begin}
 ~                                                               }
                                                                 if (isLrParser)
@@ -1467,7 +1489,7 @@ func (this *ParseTreeBuilder) Reset(input string) {
   this.top = -1
 }
 
-func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count int) {~
+func (this *ParseTreeBuilder) Nonterminal(id int, begin int, end int, count int) {~
                                                                   if (rejectsAmbiguity())
                                                                   {
 ~
@@ -1477,18 +1499,19 @@ func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count
     if len(content) != 0 {
        e = content[0].GetBegin()
     }
-    this.Nonterminal("UNAMBIGUOUS", begin, e, 0)
+    this.Nonterminal(~                                              print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                     ~, begin, e, 0)
     for _, symbol := range content {
       this.push(symbol)
     }
     count = this.top + 1
   }~                                                              }
 ~
-  this.push(&Nonterminal{&AbstractSymbol{name, begin, end}, this.pop(count)})
+  this.push(&Nonterminal{&AbstractSymbol{id, begin, end}, this.pop(count)})
 }
 
-func (this *ParseTreeBuilder) Terminal(name string, begin int, end int) {
-  this.push(&Terminal{&AbstractSymbol{name, begin, end}})
+func (this *ParseTreeBuilder) Terminal(id int, begin int, end int) {
+  this.push(&Terminal{&AbstractSymbol{id, begin, end}})
 }
 ~                                                                 if (resolvesAmbiguity)
                                                                   {

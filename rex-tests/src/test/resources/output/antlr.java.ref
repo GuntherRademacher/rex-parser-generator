@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:30 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q antlr.ebnf -backtrack -ll 2 -java -main -tree
 
 import java.io.IOException;
@@ -87,9 +87,9 @@ public class antlr
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -107,25 +107,25 @@ public class antlr
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -149,31 +149,39 @@ public class antlr
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -181,16 +189,22 @@ public class antlr
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -199,7 +213,7 @@ public class antlr
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -231,7 +245,12 @@ public class antlr
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -253,7 +272,12 @@ public class antlr
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -284,15 +308,16 @@ public class antlr
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     @Override
@@ -401,6 +426,16 @@ public class antlr
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -437,7 +472,7 @@ public class antlr
 
   public void parse_grammar()
   {
-    eventHandler.startNonterminal("grammar", e0);
+    eventHandler.startNonterminal(0, e0);
     for (;;)
     {
       lookahead1W(48);              // WS | COMMENT^WS | EOF | DOC_COMMENT | OPTIONS | 'class' | 'header' | 'lexclass' |
@@ -472,12 +507,12 @@ public class antlr
       parse_classDef();
     }
     consume(31);                    // EOF
-    eventHandler.endNonterminal("grammar", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_classDef()
   {
-    eventHandler.startNonterminal("classDef", e0);
+    eventHandler.startNonterminal(1, e0);
     if (l1 == 55)                   // '{'
     {
       whitespace();
@@ -549,12 +584,12 @@ public class antlr
                                     // 'public'
     whitespace();
     parse_rules();
-    eventHandler.endNonterminal("classDef", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void parse_fileOptionsSpec()
   {
-    eventHandler.startNonterminal("fileOptionsSpec", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -574,12 +609,12 @@ public class antlr
       consume(16);                  // SEMI
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("fileOptionsSpec", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void parse_parserOptionsSpec()
   {
-    eventHandler.startNonterminal("parserOptionsSpec", e0);
+    eventHandler.startNonterminal(3, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -599,12 +634,12 @@ public class antlr
       consume(16);                  // SEMI
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("parserOptionsSpec", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void parse_treeParserOptionsSpec()
   {
-    eventHandler.startNonterminal("treeParserOptionsSpec", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -624,7 +659,7 @@ public class antlr
       consume(16);                  // SEMI
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("treeParserOptionsSpec", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void try_treeParserOptionsSpec()
@@ -650,7 +685,7 @@ public class antlr
 
   private void parse_lexerOptionsSpec()
   {
-    eventHandler.startNonterminal("lexerOptionsSpec", e0);
+    eventHandler.startNonterminal(5, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -683,7 +718,7 @@ public class antlr
       }
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("lexerOptionsSpec", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void try_lexerOptionsSpec()
@@ -721,7 +756,7 @@ public class antlr
 
   private void parse_subruleOptionsSpec()
   {
-    eventHandler.startNonterminal("subruleOptionsSpec", e0);
+    eventHandler.startNonterminal(6, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -741,7 +776,7 @@ public class antlr
       consume(16);                  // SEMI
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("subruleOptionsSpec", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void try_subruleOptionsSpec()
@@ -767,7 +802,7 @@ public class antlr
 
   private void parse_optionValue()
   {
-    eventHandler.startNonterminal("optionValue", e0);
+    eventHandler.startNonterminal(7, e0);
     switch (l1)
     {
     case 25:                        // STRING_LITERAL
@@ -782,7 +817,7 @@ public class antlr
     default:
       parse_qualifiedID();
     }
-    eventHandler.endNonterminal("optionValue", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void try_optionValue()
@@ -805,7 +840,7 @@ public class antlr
 
   private void parse_charSet()
   {
-    eventHandler.startNonterminal("charSet", e0);
+    eventHandler.startNonterminal(8, e0);
     parse_setBlockElement();
     for (;;)
     {
@@ -819,7 +854,7 @@ public class antlr
       whitespace();
       parse_setBlockElement();
     }
-    eventHandler.endNonterminal("charSet", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void try_charSet()
@@ -840,7 +875,7 @@ public class antlr
 
   private void parse_setBlockElement()
   {
-    eventHandler.startNonterminal("setBlockElement", e0);
+    eventHandler.startNonterminal(9, e0);
     consume(24);                    // CHAR_LITERAL
     lookahead1W(26);                // WS | COMMENT^WS | SEMI | OR | RANGE
     if (l1 == 21)                   // RANGE
@@ -849,7 +884,7 @@ public class antlr
       lookahead1W(5);               // WS | COMMENT^WS | CHAR_LITERAL
       consume(24);                  // CHAR_LITERAL
     }
-    eventHandler.endNonterminal("setBlockElement", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void try_setBlockElement()
@@ -866,7 +901,7 @@ public class antlr
 
   private void parse_tokensSpec()
   {
-    eventHandler.startNonterminal("tokensSpec", e0);
+    eventHandler.startNonterminal(10, e0);
     consume(34);                    // TOKENS
     for (;;)
     {
@@ -907,7 +942,7 @@ public class antlr
       }
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("tokensSpec", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void try_tokensSpec()
@@ -954,7 +989,7 @@ public class antlr
 
   private void parse_tokensSpecOptions()
   {
-    eventHandler.startNonterminal("tokensSpecOptions", e0);
+    eventHandler.startNonterminal(11, e0);
     consume(4);                     // OPEN_ELEMENT_OPTION
     lookahead1W(21);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF
     whitespace();
@@ -982,7 +1017,7 @@ public class antlr
       parse_optionValue();
     }
     consume(5);                     // CLOSE_ELEMENT_OPTION
-    eventHandler.endNonterminal("tokensSpecOptions", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void try_tokensSpecOptions()
@@ -1014,13 +1049,13 @@ public class antlr
 
   private void parse_superClass()
   {
-    eventHandler.startNonterminal("superClass", e0);
+    eventHandler.startNonterminal(12, e0);
     consume(9);                     // LPAREN
     lookahead1W(6);                 // WS | COMMENT^WS | STRING_LITERAL
     consume(25);                    // STRING_LITERAL
     lookahead1W(0);                 // WS | COMMENT^WS | RPAREN
     consume(10);                    // RPAREN
-    eventHandler.endNonterminal("superClass", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   private void try_superClass()
@@ -1034,7 +1069,7 @@ public class antlr
 
   private void parse_parserSpec()
   {
-    eventHandler.startNonterminal("parserSpec", e0);
+    eventHandler.startNonterminal(13, e0);
     consume(45);                    // 'class'
     lookahead1W(21);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF
     whitespace();
@@ -1079,12 +1114,12 @@ public class antlr
       whitespace();
       parse_ACTION();
     }
-    eventHandler.endNonterminal("parserSpec", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   private void parse_lexerSpec()
   {
-    eventHandler.startNonterminal("lexerSpec", e0);
+    eventHandler.startNonterminal(14, e0);
     switch (l1)
     {
     case 49:                        // 'lexclass'
@@ -1132,7 +1167,7 @@ public class antlr
       whitespace();
       parse_ACTION();
     }
-    eventHandler.endNonterminal("lexerSpec", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   private void try_lexerSpec()
@@ -1182,7 +1217,7 @@ public class antlr
 
   private void parse_treeParserSpec()
   {
-    eventHandler.startNonterminal("treeParserSpec", e0);
+    eventHandler.startNonterminal(15, e0);
     consume(45);                    // 'class'
     lookahead1W(21);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF
     whitespace();
@@ -1220,7 +1255,7 @@ public class antlr
       whitespace();
       parse_ACTION();
     }
-    eventHandler.endNonterminal("treeParserSpec", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   private void try_treeParserSpec()
@@ -1261,7 +1296,7 @@ public class antlr
 
   private void parse_rules()
   {
-    eventHandler.startNonterminal("rules", e0);
+    eventHandler.startNonterminal(16, e0);
     for (;;)
     {
       whitespace();
@@ -1285,12 +1320,12 @@ public class antlr
         break;
       }
     }
-    eventHandler.endNonterminal("rules", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   private void parse_rule()
   {
-    eventHandler.startNonterminal("rule", e0);
+    eventHandler.startNonterminal(17, e0);
     if (l1 == 32)                   // DOC_COMMENT
     {
       consume(32);                  // DOC_COMMENT
@@ -1364,12 +1399,12 @@ public class antlr
       whitespace();
       parse_exceptionGroup();
     }
-    eventHandler.endNonterminal("rule", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   private void parse_ruleOptionsSpec()
   {
-    eventHandler.startNonterminal("ruleOptionsSpec", e0);
+    eventHandler.startNonterminal(18, e0);
     consume(33);                    // OPTIONS
     for (;;)
     {
@@ -1389,12 +1424,12 @@ public class antlr
       consume(16);                  // SEMI
     }
     consume(23);                    // RCURLY
-    eventHandler.endNonterminal("ruleOptionsSpec", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   private void parse_throwsSpec()
   {
-    eventHandler.startNonterminal("throwsSpec", e0);
+    eventHandler.startNonterminal(19, e0);
     consume(54);                    // 'throws'
     lookahead1W(21);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF
     whitespace();
@@ -1411,12 +1446,12 @@ public class antlr
       whitespace();
       parse_id();
     }
-    eventHandler.endNonterminal("throwsSpec", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   private void parse_block()
   {
-    eventHandler.startNonterminal("block", e0);
+    eventHandler.startNonterminal(20, e0);
     parse_alternative();
     for (;;)
     {
@@ -1430,12 +1465,12 @@ public class antlr
       whitespace();
       parse_alternative();
     }
-    eventHandler.endNonterminal("block", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   private void parse_alternative()
   {
-    eventHandler.startNonterminal("alternative", e0);
+    eventHandler.startNonterminal(21, e0);
     if (l1 == 18)                   // BANG
     {
       consume(18);                  // BANG
@@ -1459,12 +1494,12 @@ public class antlr
       whitespace();
       parse_exceptionSpecNoLabel();
     }
-    eventHandler.endNonterminal("alternative", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   private void parse_exceptionGroup()
   {
-    eventHandler.startNonterminal("exceptionGroup", e0);
+    eventHandler.startNonterminal(22, e0);
     for (;;)
     {
       whitespace();
@@ -1474,12 +1509,12 @@ public class antlr
         break;
       }
     }
-    eventHandler.endNonterminal("exceptionGroup", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   private void parse_exceptionSpec()
   {
-    eventHandler.startNonterminal("exceptionSpec", e0);
+    eventHandler.startNonterminal(23, e0);
     consume(46);                    // 'exception'
     lookahead1W(59);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF | EOF | DOC_COMMENT | '[' | 'catch' |
                                     // 'class' | 'exception' | 'lexclass' | 'private' | 'protected' | 'public' | '{'
@@ -1499,12 +1534,12 @@ public class antlr
       whitespace();
       parse_exceptionHandler();
     }
-    eventHandler.endNonterminal("exceptionSpec", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   private void parse_exceptionSpecNoLabel()
   {
-    eventHandler.startNonterminal("exceptionSpecNoLabel", e0);
+    eventHandler.startNonterminal(24, e0);
     consume(46);                    // 'exception'
     for (;;)
     {
@@ -1516,12 +1551,12 @@ public class antlr
       whitespace();
       parse_exceptionHandler();
     }
-    eventHandler.endNonterminal("exceptionSpecNoLabel", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   private void parse_exceptionHandler()
   {
-    eventHandler.startNonterminal("exceptionHandler", e0);
+    eventHandler.startNonterminal(25, e0);
     consume(43);                    // 'catch'
     lookahead1W(10);                // WS | COMMENT^WS | '['
     whitespace();
@@ -1529,12 +1564,12 @@ public class antlr
     lookahead1W(12);                // WS | COMMENT^WS | '{'
     whitespace();
     parse_ACTION();
-    eventHandler.endNonterminal("exceptionHandler", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   private void parse_element()
   {
-    eventHandler.startNonterminal("element", e0);
+    eventHandler.startNonterminal(26, e0);
     parse_elementNoOptionSpec();
     lookahead1W(60);                // WS | COMMENT^WS | OPEN_ELEMENT_OPTION | TREE_BEGIN | LPAREN | RPAREN | SEMI |
                                     // OR | WILDCARD | NOT_OP | CHAR_LITERAL | STRING_LITERAL | TOKEN_REF | RULE_REF |
@@ -1544,12 +1579,12 @@ public class antlr
       whitespace();
       parse_elementOptionSpec();
     }
-    eventHandler.endNonterminal("element", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   private void parse_elementOptionSpec()
   {
-    eventHandler.startNonterminal("elementOptionSpec", e0);
+    eventHandler.startNonterminal(27, e0);
     consume(4);                     // OPEN_ELEMENT_OPTION
     lookahead1W(21);                // WS | COMMENT^WS | TOKEN_REF | RULE_REF
     whitespace();
@@ -1577,12 +1612,12 @@ public class antlr
       parse_optionValue();
     }
     consume(5);                     // CLOSE_ELEMENT_OPTION
-    eventHandler.endNonterminal("elementOptionSpec", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   private void parse_elementNoOptionSpec()
   {
-    eventHandler.startNonterminal("elementNoOptionSpec", e0);
+    eventHandler.startNonterminal(28, e0);
     switch (l1)
     {
     case 29:                        // TOKEN_REF
@@ -1763,12 +1798,12 @@ public class antlr
         parse_terminal();
       }
     }
-    eventHandler.endNonterminal("elementNoOptionSpec", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   private void parse_tree()
   {
-    eventHandler.startNonterminal("tree", e0);
+    eventHandler.startNonterminal(29, e0);
     consume(8);                     // TREE_BEGIN
     lookahead1W(36);                // WS | COMMENT^WS | WILDCARD | CHAR_LITERAL | STRING_LITERAL | TOKEN_REF | RULE_REF
     whitespace();
@@ -1787,12 +1822,12 @@ public class antlr
       }
     }
     consume(10);                    // RPAREN
-    eventHandler.endNonterminal("tree", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   private void parse_rootNode()
   {
-    eventHandler.startNonterminal("rootNode", e0);
+    eventHandler.startNonterminal(30, e0);
     switch (l1)
     {
     case 29:                        // TOKEN_REF
@@ -1813,12 +1848,12 @@ public class antlr
     lookahead1W(33);                // WS | COMMENT^WS | WILDCARD | CHAR_LITERAL | STRING_LITERAL | TOKEN_REF
     whitespace();
     parse_terminal();
-    eventHandler.endNonterminal("rootNode", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   private void parse_ebnf()
   {
-    eventHandler.startNonterminal("ebnf", e0);
+    eventHandler.startNonterminal(31, e0);
     consume(9);                     // LPAREN
     lookahead1W(62);                // WS | COMMENT^WS | TREE_BEGIN | LPAREN | RPAREN | BANG | OR | WILDCARD | NOT_OP |
                                     // CHAR_LITERAL | STRING_LITERAL | TOKEN_REF | RULE_REF | OPTIONS | 'exception' |
@@ -1939,12 +1974,12 @@ public class antlr
         consume(18);                // BANG
       }
     }
-    eventHandler.endNonterminal("ebnf", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   private void parse_ast_type_spec()
   {
-    eventHandler.startNonterminal("ast_type_spec", e0);
+    eventHandler.startNonterminal(32, e0);
     if (l1 == 17                    // CARET
      || l1 == 18)                   // BANG
     {
@@ -1957,12 +1992,12 @@ public class antlr
         consume(18);                // BANG
       }
     }
-    eventHandler.endNonterminal("ast_type_spec", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   private void parse_range()
   {
-    eventHandler.startNonterminal("range", e0);
+    eventHandler.startNonterminal(33, e0);
     switch (l1)
     {
     case 24:                        // CHAR_LITERAL
@@ -2005,12 +2040,12 @@ public class antlr
       whitespace();
       parse_ast_type_spec();
     }
-    eventHandler.endNonterminal("range", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   private void parse_terminal()
   {
-    eventHandler.startNonterminal("terminal", e0);
+    eventHandler.startNonterminal(34, e0);
     switch (l1)
     {
     case 24:                        // CHAR_LITERAL
@@ -2055,12 +2090,12 @@ public class antlr
       whitespace();
       parse_ast_type_spec();
     }
-    eventHandler.endNonterminal("terminal", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   private void parse_notTerminal()
   {
-    eventHandler.startNonterminal("notTerminal", e0);
+    eventHandler.startNonterminal(35, e0);
     switch (l1)
     {
     case 24:                        // CHAR_LITERAL
@@ -2081,12 +2116,12 @@ public class antlr
       whitespace();
       parse_ast_type_spec();
     }
-    eventHandler.endNonterminal("notTerminal", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   private void parse_qualifiedID()
   {
-    eventHandler.startNonterminal("qualifiedID", e0);
+    eventHandler.startNonterminal(36, e0);
     parse_id();
     for (;;)
     {
@@ -2100,7 +2135,7 @@ public class antlr
       whitespace();
       parse_id();
     }
-    eventHandler.endNonterminal("qualifiedID", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   private void try_qualifiedID()
@@ -2121,7 +2156,7 @@ public class antlr
 
   private void parse_id()
   {
-    eventHandler.startNonterminal("id", e0);
+    eventHandler.startNonterminal(37, e0);
     switch (l1)
     {
     case 29:                        // TOKEN_REF
@@ -2130,7 +2165,7 @@ public class antlr
     default:
       consume(30);                  // RULE_REF
     }
-    eventHandler.endNonterminal("id", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   private void try_id()
@@ -2147,9 +2182,9 @@ public class antlr
 
   private void parse_ACTION()
   {
-    eventHandler.startNonterminal("ACTION", e0);
+    eventHandler.startNonterminal(38, e0);
     parse_NESTED_ACTION();
-    eventHandler.endNonterminal("ACTION", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   private void try_ACTION()
@@ -2159,7 +2194,7 @@ public class antlr
 
   private void parse_NESTED_ACTION()
   {
-    eventHandler.startNonterminal("NESTED_ACTION", e0);
+    eventHandler.startNonterminal(39, e0);
     consume(55);                    // '{'
     for (;;)
     {
@@ -2193,7 +2228,7 @@ public class antlr
       }
     }
     consume(56);                    // '}'
-    eventHandler.endNonterminal("NESTED_ACTION", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   private void try_NESTED_ACTION()
@@ -2235,14 +2270,14 @@ public class antlr
 
   private void parse_ARG_ACTION()
   {
-    eventHandler.startNonterminal("ARG_ACTION", e0);
+    eventHandler.startNonterminal(40, e0);
     parse_NESTED_ARG_ACTION();
-    eventHandler.endNonterminal("ARG_ACTION", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   private void parse_NESTED_ARG_ACTION()
   {
-    eventHandler.startNonterminal("NESTED_ARG_ACTION", e0);
+    eventHandler.startNonterminal(41, e0);
     consume(41);                    // '['
     for (;;)
     {
@@ -2273,12 +2308,12 @@ public class antlr
       }
     }
     consume(42);                    // ']'
-    eventHandler.endNonterminal("NESTED_ARG_ACTION", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   private void parse_ACTION_OR_SEMPRED()
   {
-    eventHandler.startNonterminal("ACTION_OR_SEMPRED", e0);
+    eventHandler.startNonterminal(42, e0);
     parse_ACTION();
     lookahead1W(64);                // WS | COMMENT^WS | OPEN_ELEMENT_OPTION | TREE_BEGIN | LPAREN | RPAREN | SEMI |
                                     // OR | WILDCARD | NOT_OP | CHAR_LITERAL | STRING_LITERAL | TOKEN_REF | RULE_REF |
@@ -2287,7 +2322,7 @@ public class antlr
     {
       consume(37);                  // '?'
     }
-    eventHandler.endNonterminal("ACTION_OR_SEMPRED", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   private void consume(int t)
@@ -2295,7 +2330,7 @@ public class antlr
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -2785,7 +2820,7 @@ public class antlr
     /* 401 */ 4096
   };
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "WS",
@@ -2844,6 +2879,54 @@ public class antlr
     "'throws'",
     "'{'",
     "'}'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "grammar",
+    "classDef",
+    "fileOptionsSpec",
+    "parserOptionsSpec",
+    "treeParserOptionsSpec",
+    "lexerOptionsSpec",
+    "subruleOptionsSpec",
+    "optionValue",
+    "charSet",
+    "setBlockElement",
+    "tokensSpec",
+    "tokensSpecOptions",
+    "superClass",
+    "parserSpec",
+    "lexerSpec",
+    "treeParserSpec",
+    "rules",
+    "rule",
+    "ruleOptionsSpec",
+    "throwsSpec",
+    "block",
+    "alternative",
+    "exceptionGroup",
+    "exceptionSpec",
+    "exceptionSpecNoLabel",
+    "exceptionHandler",
+    "element",
+    "elementOptionSpec",
+    "elementNoOptionSpec",
+    "tree",
+    "rootNode",
+    "ebnf",
+    "ast_type_spec",
+    "range",
+    "terminal",
+    "notTerminal",
+    "qualifiedID",
+    "id",
+    "ACTION",
+    "NESTED_ACTION",
+    "ARG_ACTION",
+    "NESTED_ARG_ACTION",
+    "ACTION_OR_SEMPRED",
+    "Whitespace"
   };
 }
 

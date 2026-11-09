@@ -1,4 +1,4 @@
-// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q EcmaScript.ebnf -ll 1 -backtrack -asi -java -performance -saxon -tree
 
 import java.util.Arrays;
@@ -66,9 +66,9 @@ public class EcmaScript
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -86,25 +86,25 @@ public class EcmaScript
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -128,31 +128,39 @@ public class EcmaScript
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -160,16 +168,22 @@ public class EcmaScript
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -178,7 +192,7 @@ public class EcmaScript
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -189,11 +203,11 @@ public class EcmaScript
     @Override
     public void reset(CharSequence string) {length = 0;}
     @Override
-    public void startNonterminal(String name, int begin) {}
+    public void startNonterminal(int id, int begin) {}
     @Override
-    public void endNonterminal(String name, int end) {}
+    public void endNonterminal(int id, int end) {}
     @Override
-    public void terminal(String name, int begin, int end) {length += end - begin;}
+    public void terminal(int id, int begin, int end) {length += end - begin;}
     @Override
     public void whitespace(int begin, int end) {length += end - begin;}
   }
@@ -218,7 +232,12 @@ public class EcmaScript
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       try
       {
@@ -231,7 +250,12 @@ public class EcmaScript
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement();
+    }
+
+    private void endElement()
     {
       try
       {
@@ -244,15 +268,16 @@ public class EcmaScript
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement();
     }
 
     @Override
@@ -585,6 +610,16 @@ public class EcmaScript
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -621,7 +656,7 @@ public class EcmaScript
 
   public void parse_Program()
   {
-    eventHandler.startNonterminal("Program", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1W(31);                // Shebang | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | '!' | '(' | '+' | '++' | '-' |
@@ -648,14 +683,14 @@ public class EcmaScript
       parse_SourceElement();
     }
     consume(3);                     // EOF
-    eventHandler.endNonterminal("Program", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_SourceElement()
   {
-    eventHandler.startNonterminal("SourceElement", e0);
+    eventHandler.startNonterminal(1, e0);
     parse_Statement();
-    eventHandler.endNonterminal("SourceElement", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void try_SourceElement()
@@ -665,7 +700,7 @@ public class EcmaScript
 
   private void parse_Statement()
   {
-    eventHandler.startNonterminal("Statement", e0);
+    eventHandler.startNonterminal(2, e0);
     if (l1 == 4                     // Identifier
      || l1 == 68                    // 'function'
      || l1 == 85)                   // '{'
@@ -765,7 +800,7 @@ public class EcmaScript
     default:
       parse_ExpressionStatement();
     }
-    eventHandler.endNonterminal("Statement", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void try_Statement()
@@ -878,7 +913,7 @@ public class EcmaScript
 
   private void parse_Block()
   {
-    eventHandler.startNonterminal("Block", e0);
+    eventHandler.startNonterminal(3, e0);
     consume(85);                    // '{'
     for (;;)
     {
@@ -896,7 +931,7 @@ public class EcmaScript
       parse_Statement();
     }
     consume(89);                    // '}'
-    eventHandler.endNonterminal("Block", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void try_Block()
@@ -921,14 +956,14 @@ public class EcmaScript
 
   private void parse_VariableStatement()
   {
-    eventHandler.startNonterminal("VariableStatement", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(81);                    // 'var'
     lookahead1W(0);                 // Identifier | WhiteSpace | Comment
     whitespace();
     parse_VariableDeclarationList();
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("VariableStatement", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void try_VariableStatement()
@@ -941,7 +976,7 @@ public class EcmaScript
 
   private void parse_VariableDeclarationList()
   {
-    eventHandler.startNonterminal("VariableDeclarationList", e0);
+    eventHandler.startNonterminal(5, e0);
     parse_VariableDeclaration();
     for (;;)
     {
@@ -954,7 +989,7 @@ public class EcmaScript
       whitespace();
       parse_VariableDeclaration();
     }
-    eventHandler.endNonterminal("VariableDeclarationList", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void try_VariableDeclarationList()
@@ -974,7 +1009,7 @@ public class EcmaScript
 
   private void parse_VariableDeclaration()
   {
-    eventHandler.startNonterminal("VariableDeclaration", e0);
+    eventHandler.startNonterminal(6, e0);
     consume(4);                     // Identifier
     lookahead1W(18);                // %OTHER | EOF | WhiteSpace | Comment | ',' | ';' | '=' | '}'
     if (l1 == 43)                   // '='
@@ -982,7 +1017,7 @@ public class EcmaScript
       whitespace();
       parse_Initialiser();
     }
-    eventHandler.endNonterminal("VariableDeclaration", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void try_VariableDeclaration()
@@ -997,7 +1032,7 @@ public class EcmaScript
 
   private void parse_Initialiser()
   {
-    eventHandler.startNonterminal("Initialiser", e0);
+    eventHandler.startNonterminal(7, e0);
     consume(43);                    // '='
     lookahead1W(22);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -1006,7 +1041,7 @@ public class EcmaScript
                                     // '~'
     whitespace();
     parse_AssignmentExpression();
-    eventHandler.endNonterminal("Initialiser", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void try_Initialiser()
@@ -1022,7 +1057,7 @@ public class EcmaScript
 
   private void parse_AssignmentExpression()
   {
-    eventHandler.startNonterminal("AssignmentExpression", e0);
+    eventHandler.startNonterminal(8, e0);
     if (l1 != 15                    // '!'
      && l1 != 27                    // '+'
      && l1 != 28                    // '++'
@@ -1080,7 +1115,7 @@ public class EcmaScript
     default:
       parse_ConditionalExpression();
     }
-    eventHandler.endNonterminal("AssignmentExpression", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void try_AssignmentExpression()
@@ -1147,7 +1182,7 @@ public class EcmaScript
 
   private void parse_ConditionalExpression()
   {
-    eventHandler.startNonterminal("ConditionalExpression", e0);
+    eventHandler.startNonterminal(9, e0);
     parse_LogicalORExpression();
     if (l1 == 52)                   // '?'
     {
@@ -1168,7 +1203,7 @@ public class EcmaScript
       whitespace();
       parse_AssignmentExpression();
     }
-    eventHandler.endNonterminal("ConditionalExpression", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void try_ConditionalExpression()
@@ -1195,7 +1230,7 @@ public class EcmaScript
 
   private void parse_LogicalORExpression()
   {
-    eventHandler.startNonterminal("LogicalORExpression", e0);
+    eventHandler.startNonterminal(10, e0);
     parse_LogicalANDExpression();
     for (;;)
     {
@@ -1212,7 +1247,7 @@ public class EcmaScript
       whitespace();
       parse_LogicalANDExpression();
     }
-    eventHandler.endNonterminal("LogicalORExpression", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void try_LogicalORExpression()
@@ -1236,7 +1271,7 @@ public class EcmaScript
 
   private void parse_LogicalANDExpression()
   {
-    eventHandler.startNonterminal("LogicalANDExpression", e0);
+    eventHandler.startNonterminal(11, e0);
     parse_BitwiseORExpression();
     for (;;)
     {
@@ -1253,7 +1288,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseORExpression();
     }
-    eventHandler.endNonterminal("LogicalANDExpression", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void try_LogicalANDExpression()
@@ -1277,7 +1312,7 @@ public class EcmaScript
 
   private void parse_BitwiseORExpression()
   {
-    eventHandler.startNonterminal("BitwiseORExpression", e0);
+    eventHandler.startNonterminal(12, e0);
     parse_BitwiseXORExpression();
     for (;;)
     {
@@ -1294,7 +1329,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseXORExpression();
     }
-    eventHandler.endNonterminal("BitwiseORExpression", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   private void try_BitwiseORExpression()
@@ -1318,7 +1353,7 @@ public class EcmaScript
 
   private void parse_BitwiseXORExpression()
   {
-    eventHandler.startNonterminal("BitwiseXORExpression", e0);
+    eventHandler.startNonterminal(13, e0);
     parse_BitwiseANDExpression();
     for (;;)
     {
@@ -1335,7 +1370,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseANDExpression();
     }
-    eventHandler.endNonterminal("BitwiseXORExpression", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   private void try_BitwiseXORExpression()
@@ -1359,7 +1394,7 @@ public class EcmaScript
 
   private void parse_BitwiseANDExpression()
   {
-    eventHandler.startNonterminal("BitwiseANDExpression", e0);
+    eventHandler.startNonterminal(14, e0);
     parse_EqualityExpression();
     for (;;)
     {
@@ -1376,7 +1411,7 @@ public class EcmaScript
       whitespace();
       parse_EqualityExpression();
     }
-    eventHandler.endNonterminal("BitwiseANDExpression", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   private void try_BitwiseANDExpression()
@@ -1400,7 +1435,7 @@ public class EcmaScript
 
   private void parse_EqualityExpression()
   {
-    eventHandler.startNonterminal("EqualityExpression", e0);
+    eventHandler.startNonterminal(15, e0);
     parse_RelationalExpression();
     for (;;)
     {
@@ -1433,7 +1468,7 @@ public class EcmaScript
       whitespace();
       parse_RelationalExpression();
     }
-    eventHandler.endNonterminal("EqualityExpression", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   private void try_EqualityExpression()
@@ -1473,7 +1508,7 @@ public class EcmaScript
 
   private void parse_RelationalExpression()
   {
-    eventHandler.startNonterminal("RelationalExpression", e0);
+    eventHandler.startNonterminal(16, e0);
     parse_ShiftExpression();
     for (;;)
     {
@@ -1514,7 +1549,7 @@ public class EcmaScript
       whitespace();
       parse_ShiftExpression();
     }
-    eventHandler.endNonterminal("RelationalExpression", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   private void try_RelationalExpression()
@@ -1562,7 +1597,7 @@ public class EcmaScript
 
   private void parse_ShiftExpression()
   {
-    eventHandler.startNonterminal("ShiftExpression", e0);
+    eventHandler.startNonterminal(17, e0);
     parse_AdditiveExpression();
     for (;;)
     {
@@ -1591,7 +1626,7 @@ public class EcmaScript
       whitespace();
       parse_AdditiveExpression();
     }
-    eventHandler.endNonterminal("ShiftExpression", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   private void try_ShiftExpression()
@@ -1627,7 +1662,7 @@ public class EcmaScript
 
   private void parse_AdditiveExpression()
   {
-    eventHandler.startNonterminal("AdditiveExpression", e0);
+    eventHandler.startNonterminal(18, e0);
     parse_MultiplicativeExpression();
     for (;;)
     {
@@ -1652,7 +1687,7 @@ public class EcmaScript
       whitespace();
       parse_MultiplicativeExpression();
     }
-    eventHandler.endNonterminal("AdditiveExpression", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   private void try_AdditiveExpression()
@@ -1684,7 +1719,7 @@ public class EcmaScript
 
   private void parse_MultiplicativeExpression()
   {
-    eventHandler.startNonterminal("MultiplicativeExpression", e0);
+    eventHandler.startNonterminal(19, e0);
     parse_UnaryExpression();
     for (;;)
     {
@@ -1717,7 +1752,7 @@ public class EcmaScript
       whitespace();
       parse_UnaryExpression();
     }
-    eventHandler.endNonterminal("MultiplicativeExpression", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   private void try_MultiplicativeExpression()
@@ -1757,7 +1792,7 @@ public class EcmaScript
 
   private void parse_UnaryExpression()
   {
-    eventHandler.startNonterminal("UnaryExpression", e0);
+    eventHandler.startNonterminal(20, e0);
     switch (l1)
     {
     case 63:                        // 'delete'
@@ -1853,7 +1888,7 @@ public class EcmaScript
     default:
       parse_PostfixExpression();
     }
-    eventHandler.endNonterminal("UnaryExpression", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   private void try_UnaryExpression()
@@ -1948,7 +1983,7 @@ public class EcmaScript
 
   private void parse_PostfixExpression()
   {
-    eventHandler.startNonterminal("PostfixExpression", e0);
+    eventHandler.startNonterminal(21, e0);
     parse_LeftHandSideExpression();
     if ((l1 == 28 || l1 == 32) && followsLineTerminator())  // '++' | '--'
     {
@@ -1968,7 +2003,7 @@ public class EcmaScript
         consume(32);                // '--'
       }
     }
-    eventHandler.endNonterminal("PostfixExpression", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   private void try_PostfixExpression()
@@ -1996,7 +2031,7 @@ public class EcmaScript
 
   private void parse_LeftHandSideExpression()
   {
-    eventHandler.startNonterminal("LeftHandSideExpression", e0);
+    eventHandler.startNonterminal(22, e0);
     lk = memoized(2, e0);
     if (lk == 0)
     {
@@ -2023,7 +2058,7 @@ public class EcmaScript
     default:
       parse_NewExpression();
     }
-    eventHandler.endNonterminal("LeftHandSideExpression", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   private void try_LeftHandSideExpression()
@@ -2061,7 +2096,7 @@ public class EcmaScript
 
   private void parse_NewExpression()
   {
-    eventHandler.startNonterminal("NewExpression", e0);
+    eventHandler.startNonterminal(23, e0);
     if (l1 == 73)                   // 'new'
     {
       lk = memoized(3, e0);
@@ -2101,7 +2136,7 @@ public class EcmaScript
     default:
       parse_MemberExpression();
     }
-    eventHandler.endNonterminal("NewExpression", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   private void try_NewExpression()
@@ -2151,7 +2186,7 @@ public class EcmaScript
 
   private void parse_MemberExpression()
   {
-    eventHandler.startNonterminal("MemberExpression", e0);
+    eventHandler.startNonterminal(24, e0);
     switch (l1)
     {
     case 68:                        // 'function'
@@ -2203,7 +2238,7 @@ public class EcmaScript
         parse_IdentifierName();
       }
     }
-    eventHandler.endNonterminal("MemberExpression", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   private void try_MemberExpression()
@@ -2259,7 +2294,7 @@ public class EcmaScript
 
   private void parse_PrimaryExpression()
   {
-    eventHandler.startNonterminal("PrimaryExpression", e0);
+    eventHandler.startNonterminal(25, e0);
     switch (l1)
     {
     case 77:                        // 'this'
@@ -2288,7 +2323,7 @@ public class EcmaScript
     default:
       parse_Literal();
     }
-    eventHandler.endNonterminal("PrimaryExpression", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   private void try_PrimaryExpression()
@@ -2324,7 +2359,7 @@ public class EcmaScript
 
   private void parse_Literal()
   {
-    eventHandler.startNonterminal("Literal", e0);
+    eventHandler.startNonterminal(26, e0);
     switch (l1)
     {
     case 5:                         // NullLiteral
@@ -2342,7 +2377,7 @@ public class EcmaScript
     default:
       parse_NumericLiteral();
     }
-    eventHandler.endNonterminal("Literal", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   private void try_Literal()
@@ -2368,7 +2403,7 @@ public class EcmaScript
 
   private void parse_NumericLiteral()
   {
-    eventHandler.startNonterminal("NumericLiteral", e0);
+    eventHandler.startNonterminal(27, e0);
     switch (l1)
     {
     case 10:                        // DecimalLiteral
@@ -2380,7 +2415,7 @@ public class EcmaScript
     default:
       consume(12);                  // OctalIntegerLiteral
     }
-    eventHandler.endNonterminal("NumericLiteral", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   private void try_NumericLiteral()
@@ -2400,7 +2435,7 @@ public class EcmaScript
 
   private void parse_ArrayLiteral()
   {
-    eventHandler.startNonterminal("ArrayLiteral", e0);
+    eventHandler.startNonterminal(28, e0);
     consume(53);                    // '['
     lookahead1W(25);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -2433,7 +2468,7 @@ public class EcmaScript
       }
     }
     consume(54);                    // ']'
-    eventHandler.endNonterminal("ArrayLiteral", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   private void try_ArrayLiteral()
@@ -2472,7 +2507,7 @@ public class EcmaScript
 
   private void parse_ObjectLiteral()
   {
-    eventHandler.startNonterminal("ObjectLiteral", e0);
+    eventHandler.startNonterminal(29, e0);
     consume(85);                    // '{'
     lookahead1W(20);                // IdentifierName^Token | StringLiteral | DecimalLiteral | HexIntegerLiteral |
                                     // OctalIntegerLiteral | WhiteSpace | Comment | 'get' | 'set' | '}'
@@ -2528,7 +2563,7 @@ public class EcmaScript
     }
     lookahead1W(7);                 // WhiteSpace | Comment | '}'
     consume(89);                    // '}'
-    eventHandler.endNonterminal("ObjectLiteral", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   private void try_ObjectLiteral()
@@ -2591,7 +2626,7 @@ public class EcmaScript
 
   private void parse_PropertyAssignment()
   {
-    eventHandler.startNonterminal("PropertyAssignment", e0);
+    eventHandler.startNonterminal(30, e0);
     if (l1 == 69                    // 'get'
      || l1 == 75)                   // 'set'
     {
@@ -2714,7 +2749,7 @@ public class EcmaScript
       whitespace();
       parse_AssignmentExpression();
     }
-    eventHandler.endNonterminal("PropertyAssignment", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   private void try_PropertyAssignment()
@@ -2843,7 +2878,7 @@ public class EcmaScript
 
   private void parse_PropertyName()
   {
-    eventHandler.startNonterminal("PropertyName", e0);
+    eventHandler.startNonterminal(31, e0);
     switch (l1)
     {
     case 7:                         // IdentifierName^Token
@@ -2857,7 +2892,7 @@ public class EcmaScript
     default:
       parse_NumericLiteral();
     }
-    eventHandler.endNonterminal("PropertyName", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   private void try_PropertyName()
@@ -2879,7 +2914,7 @@ public class EcmaScript
 
   private void parse_FunctionBody()
   {
-    eventHandler.startNonterminal("FunctionBody", e0);
+    eventHandler.startNonterminal(32, e0);
     for (;;)
     {
       lookahead1W(30);              // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
@@ -2895,7 +2930,7 @@ public class EcmaScript
       whitespace();
       parse_SourceElement();
     }
-    eventHandler.endNonterminal("FunctionBody", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   private void try_FunctionBody()
@@ -2918,9 +2953,9 @@ public class EcmaScript
 
   private void parse_PropertySetParameterList()
   {
-    eventHandler.startNonterminal("PropertySetParameterList", e0);
+    eventHandler.startNonterminal(33, e0);
     consume(4);                     // Identifier
-    eventHandler.endNonterminal("PropertySetParameterList", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   private void try_PropertySetParameterList()
@@ -2930,7 +2965,7 @@ public class EcmaScript
 
   private void parse_Expression()
   {
-    eventHandler.startNonterminal("Expression", e0);
+    eventHandler.startNonterminal(34, e0);
     parse_AssignmentExpression();
     for (;;)
     {
@@ -2947,7 +2982,7 @@ public class EcmaScript
       whitespace();
       parse_AssignmentExpression();
     }
-    eventHandler.endNonterminal("Expression", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   private void try_Expression()
@@ -2971,7 +3006,7 @@ public class EcmaScript
 
   private void parse_FunctionExpression()
   {
-    eventHandler.startNonterminal("FunctionExpression", e0);
+    eventHandler.startNonterminal(35, e0);
     consume(68);                    // 'function'
     lookahead1W(8);                 // Identifier | WhiteSpace | Comment | '('
     if (l1 == 4)                    // Identifier
@@ -2998,7 +3033,7 @@ public class EcmaScript
     whitespace();
     parse_FunctionBody();
     consume(89);                    // '}'
-    eventHandler.endNonterminal("FunctionExpression", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   private void try_FunctionExpression()
@@ -3031,7 +3066,7 @@ public class EcmaScript
 
   private void parse_FormalParameterList()
   {
-    eventHandler.startNonterminal("FormalParameterList", e0);
+    eventHandler.startNonterminal(36, e0);
     consume(4);                     // Identifier
     for (;;)
     {
@@ -3044,7 +3079,7 @@ public class EcmaScript
       lookahead1W(0);               // Identifier | WhiteSpace | Comment
       consume(4);                   // Identifier
     }
-    eventHandler.endNonterminal("FormalParameterList", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   private void try_FormalParameterList()
@@ -3065,7 +3100,7 @@ public class EcmaScript
 
   private void parse_Arguments()
   {
-    eventHandler.startNonterminal("Arguments", e0);
+    eventHandler.startNonterminal(37, e0);
     consume(23);                    // '('
     lookahead1W(23);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -3093,7 +3128,7 @@ public class EcmaScript
       }
     }
     consume(24);                    // ')'
-    eventHandler.endNonterminal("Arguments", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   private void try_Arguments()
@@ -3127,7 +3162,7 @@ public class EcmaScript
 
   private void parse_CallExpression()
   {
-    eventHandler.startNonterminal("CallExpression", e0);
+    eventHandler.startNonterminal(38, e0);
     parse_MemberExpression();
     whitespace();
     parse_Arguments();
@@ -3168,7 +3203,7 @@ public class EcmaScript
         parse_IdentifierName();
       }
     }
-    eventHandler.endNonterminal("CallExpression", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   private void try_CallExpression()
@@ -3213,9 +3248,9 @@ public class EcmaScript
 
   private void parse_EmptyStatement()
   {
-    eventHandler.startNonterminal("EmptyStatement", e0);
+    eventHandler.startNonterminal(39, e0);
     consume(38);                    // ';'
-    eventHandler.endNonterminal("EmptyStatement", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   private void try_EmptyStatement()
@@ -3225,7 +3260,7 @@ public class EcmaScript
 
   private void parse_AssignmentOperator()
   {
-    eventHandler.startNonterminal("AssignmentOperator", e0);
+    eventHandler.startNonterminal(40, e0);
     switch (l1)
     {
     case 43:                        // '='
@@ -3264,7 +3299,7 @@ public class EcmaScript
     default:
       consume(87);                  // '|='
     }
-    eventHandler.endNonterminal("AssignmentOperator", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   private void try_AssignmentOperator()
@@ -3311,11 +3346,11 @@ public class EcmaScript
 
   private void parse_ExpressionStatement()
   {
-    eventHandler.startNonterminal("ExpressionStatement", e0);
+    eventHandler.startNonterminal(41, e0);
     parse_Expression();
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("ExpressionStatement", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   private void try_ExpressionStatement()
@@ -3326,7 +3361,7 @@ public class EcmaScript
 
   private void parse_IfStatement()
   {
-    eventHandler.startNonterminal("IfStatement", e0);
+    eventHandler.startNonterminal(42, e0);
     consume(70);                    // 'if'
     lookahead1W(1);                 // WhiteSpace | Comment | '('
     consume(23);                    // '('
@@ -3397,7 +3432,7 @@ public class EcmaScript
       whitespace();
       parse_Statement();
     }
-    eventHandler.endNonterminal("IfStatement", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   private void try_IfStatement()
@@ -3473,7 +3508,7 @@ public class EcmaScript
 
   private void parse_IterationStatement()
   {
-    eventHandler.startNonterminal("IterationStatement", e0);
+    eventHandler.startNonterminal(43, e0);
     if (l1 == 67)                   // 'for'
     {
       lk = memoized(7, e0);
@@ -3805,7 +3840,7 @@ public class EcmaScript
       whitespace();
       parse_Statement();
     }
-    eventHandler.endNonterminal("IterationStatement", e0);
+    eventHandler.endNonterminal(43, e0);
   }
 
   private void try_IterationStatement()
@@ -4131,7 +4166,7 @@ public class EcmaScript
 
   private void parse_ExpressionNoIn()
   {
-    eventHandler.startNonterminal("ExpressionNoIn", e0);
+    eventHandler.startNonterminal(44, e0);
     parse_AssignmentExpressionNoIn();
     for (;;)
     {
@@ -4148,7 +4183,7 @@ public class EcmaScript
       whitespace();
       parse_AssignmentExpressionNoIn();
     }
-    eventHandler.endNonterminal("ExpressionNoIn", e0);
+    eventHandler.endNonterminal(44, e0);
   }
 
   private void try_ExpressionNoIn()
@@ -4172,7 +4207,7 @@ public class EcmaScript
 
   private void parse_AssignmentExpressionNoIn()
   {
-    eventHandler.startNonterminal("AssignmentExpressionNoIn", e0);
+    eventHandler.startNonterminal(45, e0);
     if (l1 != 15                    // '!'
      && l1 != 27                    // '+'
      && l1 != 28                    // '++'
@@ -4230,7 +4265,7 @@ public class EcmaScript
     default:
       parse_ConditionalExpressionNoIn();
     }
-    eventHandler.endNonterminal("AssignmentExpressionNoIn", e0);
+    eventHandler.endNonterminal(45, e0);
   }
 
   private void try_AssignmentExpressionNoIn()
@@ -4297,7 +4332,7 @@ public class EcmaScript
 
   private void parse_ConditionalExpressionNoIn()
   {
-    eventHandler.startNonterminal("ConditionalExpressionNoIn", e0);
+    eventHandler.startNonterminal(46, e0);
     parse_LogicalORExpressionNoIn();
     for (;;)
     {
@@ -4360,7 +4395,7 @@ public class EcmaScript
       whitespace();
       parse_AssignmentExpressionNoIn();
     }
-    eventHandler.endNonterminal("ConditionalExpressionNoIn", e0);
+    eventHandler.endNonterminal(46, e0);
   }
 
   private void try_ConditionalExpressionNoIn()
@@ -4430,7 +4465,7 @@ public class EcmaScript
 
   private void parse_LogicalORExpressionNoIn()
   {
-    eventHandler.startNonterminal("LogicalORExpressionNoIn", e0);
+    eventHandler.startNonterminal(47, e0);
     parse_LogicalANDExpressionNoIn();
     for (;;)
     {
@@ -4447,7 +4482,7 @@ public class EcmaScript
       whitespace();
       parse_LogicalANDExpressionNoIn();
     }
-    eventHandler.endNonterminal("LogicalORExpressionNoIn", e0);
+    eventHandler.endNonterminal(47, e0);
   }
 
   private void try_LogicalORExpressionNoIn()
@@ -4471,7 +4506,7 @@ public class EcmaScript
 
   private void parse_LogicalANDExpressionNoIn()
   {
-    eventHandler.startNonterminal("LogicalANDExpressionNoIn", e0);
+    eventHandler.startNonterminal(48, e0);
     parse_BitwiseORExpressionNoIn();
     for (;;)
     {
@@ -4488,7 +4523,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseORExpressionNoIn();
     }
-    eventHandler.endNonterminal("LogicalANDExpressionNoIn", e0);
+    eventHandler.endNonterminal(48, e0);
   }
 
   private void try_LogicalANDExpressionNoIn()
@@ -4512,7 +4547,7 @@ public class EcmaScript
 
   private void parse_BitwiseORExpressionNoIn()
   {
-    eventHandler.startNonterminal("BitwiseORExpressionNoIn", e0);
+    eventHandler.startNonterminal(49, e0);
     parse_BitwiseXORExpressionNoIn();
     for (;;)
     {
@@ -4529,7 +4564,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseXORExpressionNoIn();
     }
-    eventHandler.endNonterminal("BitwiseORExpressionNoIn", e0);
+    eventHandler.endNonterminal(49, e0);
   }
 
   private void try_BitwiseORExpressionNoIn()
@@ -4553,7 +4588,7 @@ public class EcmaScript
 
   private void parse_BitwiseXORExpressionNoIn()
   {
-    eventHandler.startNonterminal("BitwiseXORExpressionNoIn", e0);
+    eventHandler.startNonterminal(50, e0);
     parse_BitwiseANDExpressionNoIn();
     for (;;)
     {
@@ -4570,7 +4605,7 @@ public class EcmaScript
       whitespace();
       parse_BitwiseANDExpressionNoIn();
     }
-    eventHandler.endNonterminal("BitwiseXORExpressionNoIn", e0);
+    eventHandler.endNonterminal(50, e0);
   }
 
   private void try_BitwiseXORExpressionNoIn()
@@ -4594,7 +4629,7 @@ public class EcmaScript
 
   private void parse_BitwiseANDExpressionNoIn()
   {
-    eventHandler.startNonterminal("BitwiseANDExpressionNoIn", e0);
+    eventHandler.startNonterminal(51, e0);
     parse_EqualityExpressionNoIn();
     for (;;)
     {
@@ -4611,7 +4646,7 @@ public class EcmaScript
       whitespace();
       parse_EqualityExpressionNoIn();
     }
-    eventHandler.endNonterminal("BitwiseANDExpressionNoIn", e0);
+    eventHandler.endNonterminal(51, e0);
   }
 
   private void try_BitwiseANDExpressionNoIn()
@@ -4635,7 +4670,7 @@ public class EcmaScript
 
   private void parse_EqualityExpressionNoIn()
   {
-    eventHandler.startNonterminal("EqualityExpressionNoIn", e0);
+    eventHandler.startNonterminal(52, e0);
     parse_RelationalExpressionNoIn();
     for (;;)
     {
@@ -4668,7 +4703,7 @@ public class EcmaScript
       whitespace();
       parse_RelationalExpressionNoIn();
     }
-    eventHandler.endNonterminal("EqualityExpressionNoIn", e0);
+    eventHandler.endNonterminal(52, e0);
   }
 
   private void try_EqualityExpressionNoIn()
@@ -4708,7 +4743,7 @@ public class EcmaScript
 
   private void parse_RelationalExpressionNoIn()
   {
-    eventHandler.startNonterminal("RelationalExpressionNoIn", e0);
+    eventHandler.startNonterminal(53, e0);
     parse_ShiftExpression();
     for (;;)
     {
@@ -4745,7 +4780,7 @@ public class EcmaScript
       whitespace();
       parse_ShiftExpression();
     }
-    eventHandler.endNonterminal("RelationalExpressionNoIn", e0);
+    eventHandler.endNonterminal(53, e0);
   }
 
   private void try_RelationalExpressionNoIn()
@@ -4789,7 +4824,7 @@ public class EcmaScript
 
   private void parse_VariableDeclarationListNoIn()
   {
-    eventHandler.startNonterminal("VariableDeclarationListNoIn", e0);
+    eventHandler.startNonterminal(54, e0);
     parse_VariableDeclarationNoIn();
     for (;;)
     {
@@ -4802,7 +4837,7 @@ public class EcmaScript
       whitespace();
       parse_VariableDeclarationNoIn();
     }
-    eventHandler.endNonterminal("VariableDeclarationListNoIn", e0);
+    eventHandler.endNonterminal(54, e0);
   }
 
   private void try_VariableDeclarationListNoIn()
@@ -4822,7 +4857,7 @@ public class EcmaScript
 
   private void parse_VariableDeclarationNoIn()
   {
-    eventHandler.startNonterminal("VariableDeclarationNoIn", e0);
+    eventHandler.startNonterminal(55, e0);
     consume(4);                     // Identifier
     lookahead1W(16);                // WhiteSpace | Comment | ',' | ';' | '=' | 'in'
     if (l1 == 43)                   // '='
@@ -4830,7 +4865,7 @@ public class EcmaScript
       whitespace();
       parse_InitialiserNoIn();
     }
-    eventHandler.endNonterminal("VariableDeclarationNoIn", e0);
+    eventHandler.endNonterminal(55, e0);
   }
 
   private void try_VariableDeclarationNoIn()
@@ -4845,7 +4880,7 @@ public class EcmaScript
 
   private void parse_InitialiserNoIn()
   {
-    eventHandler.startNonterminal("InitialiserNoIn", e0);
+    eventHandler.startNonterminal(56, e0);
     consume(43);                    // '='
     lookahead1W(22);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -4854,7 +4889,7 @@ public class EcmaScript
                                     // '~'
     whitespace();
     parse_AssignmentExpressionNoIn();
-    eventHandler.endNonterminal("InitialiserNoIn", e0);
+    eventHandler.endNonterminal(56, e0);
   }
 
   private void try_InitialiserNoIn()
@@ -4870,7 +4905,7 @@ public class EcmaScript
 
   private void parse_ContinueStatement()
   {
-    eventHandler.startNonterminal("ContinueStatement", e0);
+    eventHandler.startNonterminal(57, e0);
     consume(60);                    // 'continue'
     lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
@@ -4886,7 +4921,7 @@ public class EcmaScript
     lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("ContinueStatement", e0);
+    eventHandler.endNonterminal(57, e0);
   }
 
   private void try_ContinueStatement()
@@ -4909,7 +4944,7 @@ public class EcmaScript
 
   private void parse_BreakStatement()
   {
-    eventHandler.startNonterminal("BreakStatement", e0);
+    eventHandler.startNonterminal(58, e0);
     consume(57);                    // 'break'
     lookahead1W(17);                // %OTHER | EOF | Identifier | WhiteSpace | Comment | ';' | '}'
     if (l1 != 38 && l1 >= 0 && followsLineTerminator()) // ';'
@@ -4925,7 +4960,7 @@ public class EcmaScript
     lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("BreakStatement", e0);
+    eventHandler.endNonterminal(58, e0);
   }
 
   private void try_BreakStatement()
@@ -4948,7 +4983,7 @@ public class EcmaScript
 
   private void parse_ReturnStatement()
   {
-    eventHandler.startNonterminal("ReturnStatement", e0);
+    eventHandler.startNonterminal(59, e0);
     consume(74);                    // 'return'
     lookahead1W(26);                // %OTHER | EOF | Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -4971,7 +5006,7 @@ public class EcmaScript
     }
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("ReturnStatement", e0);
+    eventHandler.endNonterminal(59, e0);
   }
 
   private void try_ReturnStatement()
@@ -5000,7 +5035,7 @@ public class EcmaScript
 
   private void parse_WithStatement()
   {
-    eventHandler.startNonterminal("WithStatement", e0);
+    eventHandler.startNonterminal(60, e0);
     consume(84);                    // 'with'
     lookahead1W(1);                 // WhiteSpace | Comment | '('
     consume(23);                    // '('
@@ -5020,7 +5055,7 @@ public class EcmaScript
                                     // 'typeof' | 'var' | 'void' | 'while' | 'with' | '{' | '~'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("WithStatement", e0);
+    eventHandler.endNonterminal(60, e0);
   }
 
   private void try_WithStatement()
@@ -5046,7 +5081,7 @@ public class EcmaScript
 
   private void parse_LabelledStatement()
   {
-    eventHandler.startNonterminal("LabelledStatement", e0);
+    eventHandler.startNonterminal(61, e0);
     consume(4);                     // Identifier
     lookahead1W(3);                 // WhiteSpace | Comment | ':'
     consume(37);                    // ':'
@@ -5058,7 +5093,7 @@ public class EcmaScript
                                     // 'typeof' | 'var' | 'void' | 'while' | 'with' | '{' | '~'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("LabelledStatement", e0);
+    eventHandler.endNonterminal(61, e0);
   }
 
   private void try_LabelledStatement()
@@ -5077,7 +5112,7 @@ public class EcmaScript
 
   private void parse_SwitchStatement()
   {
-    eventHandler.startNonterminal("SwitchStatement", e0);
+    eventHandler.startNonterminal(62, e0);
     consume(76);                    // 'switch'
     lookahead1W(1);                 // WhiteSpace | Comment | '('
     consume(23);                    // '('
@@ -5092,7 +5127,7 @@ public class EcmaScript
     lookahead1W(6);                 // WhiteSpace | Comment | '{'
     whitespace();
     parse_CaseBlock();
-    eventHandler.endNonterminal("SwitchStatement", e0);
+    eventHandler.endNonterminal(62, e0);
   }
 
   private void try_SwitchStatement()
@@ -5113,7 +5148,7 @@ public class EcmaScript
 
   private void parse_CaseBlock()
   {
-    eventHandler.startNonterminal("CaseBlock", e0);
+    eventHandler.startNonterminal(63, e0);
     consume(85);                    // '{'
     for (;;)
     {
@@ -5140,7 +5175,7 @@ public class EcmaScript
       }
     }
     consume(89);                    // '}'
-    eventHandler.endNonterminal("CaseBlock", e0);
+    eventHandler.endNonterminal(63, e0);
   }
 
   private void try_CaseBlock()
@@ -5172,7 +5207,7 @@ public class EcmaScript
 
   private void parse_CaseClause()
   {
-    eventHandler.startNonterminal("CaseClause", e0);
+    eventHandler.startNonterminal(64, e0);
     consume(58);                    // 'case'
     lookahead1W(22);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -5200,7 +5235,7 @@ public class EcmaScript
       whitespace();
       parse_Statement();
     }
-    eventHandler.endNonterminal("CaseClause", e0);
+    eventHandler.endNonterminal(64, e0);
   }
 
   private void try_CaseClause()
@@ -5234,7 +5269,7 @@ public class EcmaScript
 
   private void parse_DefaultClause()
   {
-    eventHandler.startNonterminal("DefaultClause", e0);
+    eventHandler.startNonterminal(65, e0);
     consume(62);                    // 'default'
     lookahead1W(3);                 // WhiteSpace | Comment | ':'
     consume(37);                    // ':'
@@ -5254,7 +5289,7 @@ public class EcmaScript
       whitespace();
       parse_Statement();
     }
-    eventHandler.endNonterminal("DefaultClause", e0);
+    eventHandler.endNonterminal(65, e0);
   }
 
   private void try_DefaultClause()
@@ -5281,7 +5316,7 @@ public class EcmaScript
 
   private void parse_ThrowStatement()
   {
-    eventHandler.startNonterminal("ThrowStatement", e0);
+    eventHandler.startNonterminal(66, e0);
     consume(78);                    // 'throw'
     lookahead1W(22);                // Identifier | NullLiteral | BooleanLiteral | StringLiteral |
                                     // RegularExpressionLiteral | DecimalLiteral | HexIntegerLiteral |
@@ -5298,7 +5333,7 @@ public class EcmaScript
     parse_Expression();
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("ThrowStatement", e0);
+    eventHandler.endNonterminal(66, e0);
   }
 
   private void try_ThrowStatement()
@@ -5321,7 +5356,7 @@ public class EcmaScript
 
   private void parse_TryStatement()
   {
-    eventHandler.startNonterminal("TryStatement", e0);
+    eventHandler.startNonterminal(67, e0);
     consume(79);                    // 'try'
     lookahead1W(6);                 // WhiteSpace | Comment | '{'
     whitespace();
@@ -5349,7 +5384,7 @@ public class EcmaScript
       whitespace();
       parse_Finally();
     }
-    eventHandler.endNonterminal("TryStatement", e0);
+    eventHandler.endNonterminal(67, e0);
   }
 
   private void try_TryStatement()
@@ -5381,7 +5416,7 @@ public class EcmaScript
 
   private void parse_Catch()
   {
-    eventHandler.startNonterminal("Catch", e0);
+    eventHandler.startNonterminal(68, e0);
     consume(59);                    // 'catch'
     lookahead1W(1);                 // WhiteSpace | Comment | '('
     consume(23);                    // '('
@@ -5392,7 +5427,7 @@ public class EcmaScript
     lookahead1W(6);                 // WhiteSpace | Comment | '{'
     whitespace();
     parse_Block();
-    eventHandler.endNonterminal("Catch", e0);
+    eventHandler.endNonterminal(68, e0);
   }
 
   private void try_Catch()
@@ -5410,12 +5445,12 @@ public class EcmaScript
 
   private void parse_Finally()
   {
-    eventHandler.startNonterminal("Finally", e0);
+    eventHandler.startNonterminal(69, e0);
     consume(66);                    // 'finally'
     lookahead1W(6);                 // WhiteSpace | Comment | '{'
     whitespace();
     parse_Block();
-    eventHandler.endNonterminal("Finally", e0);
+    eventHandler.endNonterminal(69, e0);
   }
 
   private void try_Finally()
@@ -5427,12 +5462,12 @@ public class EcmaScript
 
   private void parse_DebuggerStatement()
   {
-    eventHandler.startNonterminal("DebuggerStatement", e0);
+    eventHandler.startNonterminal(70, e0);
     consume(61);                    // 'debugger'
     lookahead1W(15);                // %OTHER | EOF | WhiteSpace | Comment | ';' | '}'
     whitespace();
     parse_Semicolon();
-    eventHandler.endNonterminal("DebuggerStatement", e0);
+    eventHandler.endNonterminal(70, e0);
   }
 
   private void try_DebuggerStatement()
@@ -5444,7 +5479,7 @@ public class EcmaScript
 
   private void parse_FunctionDeclaration()
   {
-    eventHandler.startNonterminal("FunctionDeclaration", e0);
+    eventHandler.startNonterminal(71, e0);
     consume(68);                    // 'function'
     lookahead1W(0);                 // Identifier | WhiteSpace | Comment
     consume(4);                     // Identifier
@@ -5468,7 +5503,7 @@ public class EcmaScript
     whitespace();
     parse_FunctionBody();
     consume(89);                    // '}'
-    eventHandler.endNonterminal("FunctionDeclaration", e0);
+    eventHandler.endNonterminal(71, e0);
   }
 
   private void try_FunctionDeclaration()
@@ -5498,7 +5533,7 @@ public class EcmaScript
 
   private void parse_Semicolon()
   {
-    eventHandler.startNonterminal("Semicolon", e0);
+    eventHandler.startNonterminal(72, e0);
     if (l1 == 89                    // '}'
      || l1 == 3                     // EOF
      || l1 != 38 && l1 >= 0 && followsLineTerminator())
@@ -5508,7 +5543,7 @@ public class EcmaScript
       end = e1;
     }
     consume(38);                    // ';'
-    eventHandler.endNonterminal("Semicolon", e0);
+    eventHandler.endNonterminal(72, e0);
   }
 
   private void try_Semicolon()
@@ -5526,7 +5561,7 @@ public class EcmaScript
 
   private void parse_IdentifierName()
   {
-    eventHandler.startNonterminal("IdentifierName", e0);
+    eventHandler.startNonterminal(73, e0);
     switch (l1)
     {
     case 7:                         // IdentifierName^Token
@@ -5538,7 +5573,7 @@ public class EcmaScript
     default:
       consume(75);                  // 'set'
     }
-    eventHandler.endNonterminal("IdentifierName", e0);
+    eventHandler.endNonterminal(73, e0);
   }
 
   private void try_IdentifierName()
@@ -5579,7 +5614,7 @@ public class EcmaScript
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = 0;
     }
     else
@@ -6372,7 +6407,7 @@ public class EcmaScript
     decode(s1, EXPECTED);
   }
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "%OTHER",
@@ -6465,6 +6500,85 @@ public class EcmaScript
     "'||'",
     "'}'",
     "'~'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "Program",
+    "SourceElement",
+    "Statement",
+    "Block",
+    "VariableStatement",
+    "VariableDeclarationList",
+    "VariableDeclaration",
+    "Initialiser",
+    "AssignmentExpression",
+    "ConditionalExpression",
+    "LogicalORExpression",
+    "LogicalANDExpression",
+    "BitwiseORExpression",
+    "BitwiseXORExpression",
+    "BitwiseANDExpression",
+    "EqualityExpression",
+    "RelationalExpression",
+    "ShiftExpression",
+    "AdditiveExpression",
+    "MultiplicativeExpression",
+    "UnaryExpression",
+    "PostfixExpression",
+    "LeftHandSideExpression",
+    "NewExpression",
+    "MemberExpression",
+    "PrimaryExpression",
+    "Literal",
+    "NumericLiteral",
+    "ArrayLiteral",
+    "ObjectLiteral",
+    "PropertyAssignment",
+    "PropertyName",
+    "FunctionBody",
+    "PropertySetParameterList",
+    "Expression",
+    "FunctionExpression",
+    "FormalParameterList",
+    "Arguments",
+    "CallExpression",
+    "EmptyStatement",
+    "AssignmentOperator",
+    "ExpressionStatement",
+    "IfStatement",
+    "IterationStatement",
+    "ExpressionNoIn",
+    "AssignmentExpressionNoIn",
+    "ConditionalExpressionNoIn",
+    "LogicalORExpressionNoIn",
+    "LogicalANDExpressionNoIn",
+    "BitwiseORExpressionNoIn",
+    "BitwiseXORExpressionNoIn",
+    "BitwiseANDExpressionNoIn",
+    "EqualityExpressionNoIn",
+    "RelationalExpressionNoIn",
+    "VariableDeclarationListNoIn",
+    "VariableDeclarationNoIn",
+    "InitialiserNoIn",
+    "ContinueStatement",
+    "BreakStatement",
+    "ReturnStatement",
+    "WithStatement",
+    "LabelledStatement",
+    "SwitchStatement",
+    "CaseBlock",
+    "CaseClause",
+    "DefaultClause",
+    "ThrowStatement",
+    "TryStatement",
+    "Catch",
+    "Finally",
+    "DebuggerStatement",
+    "FunctionDeclaration",
+    "Semicolon",
+    "IdentifierName",
+    "Ignore"
   };
 }
 

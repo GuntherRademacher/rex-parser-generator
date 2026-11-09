@@ -180,12 +180,9 @@ public:~                                                      }
 
     virtual void reset(~                                        print(stringType());
                        ~string) = 0;
-    virtual void startNonterminal(~                             print(stringType());
-                                  ~name, int begin) = 0;
-    virtual void endNonterminal(~                               print(stringType());
-                                ~name, int end) = 0;
-    virtual void terminal(~                                     print(stringType());
-                          ~name, int begin, int end) = 0;
+    virtual void startNonterminal(int id, int begin) = 0;
+    virtual void endNonterminal(int id, int end) = 0;
+    virtual void terminal(int id, int begin, int end) = 0;
     virtual void whitespace(int begin, int end) = 0;
   };
 ~                                                               if (isLrParser)
@@ -198,10 +195,8 @@ public:~                                                      }
 
     virtual void reset(~                                          print(stringType());
                        ~string) = 0;
-    virtual void nonterminal(~                                    print(stringType());
-                             ~name, int begin, int end, int count) = 0;
-    virtual void terminal(~                                       print(stringType());
-                          ~name, int begin, int end) = 0;~        if (resolvesAmbiguity)
+    virtual void nonterminal(int id, int begin, int end, int count) = 0;
+    virtual void terminal(int id, int begin, int end) = 0;~       if (resolvesAmbiguity)
                                                                   {
 ~
     virtual void ambiguity(int begin, int end) = 0;~              }
@@ -235,8 +230,30 @@ public:~                                                      }
       depth = 0;
     }
 
-    void startNonterminal(~                                     print(stringType());
-                          ~tag, int b)
+    void startNonterminal(int id, int b)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    void endNonterminal(int id, int e)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    void terminal(int id, int b, int e)
+    {
+      ~                                                         print(stringType());
+      ~tag = getTerminalName(id);
+      if (tag[0] == ~                                           print(stringIntroducer());
+                    ~'\'') tag = ~                              print(stringIntroducer());
+                                 ~"TOKEN";
+      startElement(tag);
+      characters(b, e);
+      endElement(tag);
+    }
+
+    void startElement(~                                         print(stringType());
+                      ~tag)
     {
       if (delayedTag != 0)
       {
@@ -263,8 +280,8 @@ public:~                                                      }
       ++depth;
     }
 
-    void endNonterminal(~                                       print(stringType());
-                        ~tag, int e)
+    void endElement(~                                           print(stringType());
+                    ~tag)
     {
       --depth;
       if (delayedTag != 0)
@@ -348,17 +365,6 @@ public:~                                                      }
       }
     }
 
-    void terminal(~                                             print(stringType());
-                  ~tag, int b, int e)
-    {
-      if (tag[0] == ~                                           print(stringIntroducer());
-                    ~'\'') tag = ~                              print(stringIntroducer());
-                                 ~"TOKEN";
-      startNonterminal(tag, b);
-      characters(b, e);
-      endNonterminal(tag, e);
-    }
-
   private:
     ~                                                           print(stringType());
     ~input;
@@ -377,18 +383,18 @@ public:~                                                      }
   public:
     virtual ~~Symbol() {}
 
-    ~                                                           print(stringType());
-    ~name;
+    int id;
     int begin;
     int end;
 
+    virtual ~                                                   print(stringType());
+            ~getName() const = 0;
     virtual void send(EventHandler *e) = 0;
 
   protected:
-    Symbol(~                                                    print(stringType());
-           ~name, int begin, int end)
+    Symbol(int id, int begin, int end)
     {
-      this->name = name;
+      this->id = id;
       this->begin = begin;
       this->end = end;
     }
@@ -397,14 +403,19 @@ public:~                                                      }
   class Terminal : public Symbol
   {
   public:
-    Terminal(~                                                  print(stringType());
-             ~name, int begin, int end)
-    : Symbol(name, begin, end)
+    Terminal(int id, int begin, int end)
+    : Symbol(id, begin, end)
     {}
+
+    ~                                                           print(stringType());
+    ~getName() const
+    {
+      return TOKEN[id];
+    }
 
     void send(EventHandler *e)
     {
-      e->terminal(name, begin, end);
+      e->terminal(id, begin, end);
     }
   };
 
@@ -413,9 +424,8 @@ public:~                                                      }
   public:
     std::vector<Symbol *> *children;
 
-    Nonterminal(~                                               print(stringType());
-                ~name, int begin, int end, std::vector<Symbol *> *children)
-    : Symbol(name, begin, end)
+    Nonterminal(int id, int begin, int end, std::vector<Symbol *> *children)
+    : Symbol(id, begin, end)
     {
       this->children = children;
     }
@@ -427,9 +437,17 @@ public:~                                                      }
       delete children;
     }
 
+    ~                                                           print(stringType());
+    ~getName() const
+    {
+      return ~                                                  printSyntheticNamePrefix();
+             ~NONTERMINAL[id]~                                  printSyntheticNameSuffix();
+                             ~;
+    }
+
     void send(EventHandler *e)
     {
-      e->startNonterminal(name, begin);
+      e->startNonterminal(id, begin);
       int pos = begin;
       for (std::vector<Symbol *>::iterator i = children->begin(); i != children->end(); ++i)
       {
@@ -439,7 +457,7 @@ public:~                                                      }
         pos = c->end;
       }
       if (pos < end) e->whitespace(pos, end);
-      e->endNonterminal(name, end);
+      e->endNonterminal(id, end);
     }
   };
 
@@ -460,27 +478,24 @@ public:~                                                      }
       top = -1;
     }
 
-    void startNonterminal(~                                     print(stringType());
-                          ~name, int begin)
+    void startNonterminal(int id, int begin)
     {
-      Nonterminal *nonterminal = new Nonterminal(name, begin, begin, new std::vector<Symbol *>());
+      Nonterminal *nonterminal = new Nonterminal(id, begin, begin, new std::vector<Symbol *>());
       if (top++ >= 0) addChild(nonterminal);
       if ((size_t) top >= stack.size())
         stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
       stack[top] = nonterminal;
     }
 
-    void endNonterminal(~                                       print(stringType());
-                        ~name, int end)
+    void endNonterminal(int id, int end)
     {
       stack[top]->end = end;
       if (top > 0) --top;
     }
 
-    void terminal(~                                             print(stringType());
-                  ~name, int begin, int end)
+    void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     void whitespace(int begin, int end)
@@ -531,16 +546,15 @@ public:~                                                      }
       this->input = input;
     }
 
-    void nonterminal(~                                            print(stringType());
-                     ~name, int begin, int end, int count)
+    void nonterminal(int id, int begin, int end, int count)
     {~                                                            if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > top + 1)
       {
         std::vector<Symbol *> *content = pop(top + 1);
-        nonterminal(~                                               print(stringIntroducer());
-                    ~"UNAMBIGUOUS", begin, content->size() == 0 ? end : (*content)[0]->begin, 0);
+        nonterminal(~                                               print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                    ~, begin, content->size() == 0 ? end : (*content)[0]->begin, 0);
         for (size_t i = 0; i < content->size(); ++i)
         {
           push((*content)[i]);
@@ -549,13 +563,12 @@ public:~                                                      }
         count = top + 1;
       }~                                                          }
 ~
-      push(new Nonterminal(name, begin, end, pop(count)));
+      push(new Nonterminal(id, begin, end, pop(count)));
     }
 
-    void terminal(~                                               print(stringType());
-                  ~name, int begin, int end)
+    void terminal(int id, int begin, int end)
     {
-      push(new Terminal(name, begin, end));
+      push(new Terminal(id, begin, end));
     }~                                                            if (resolvesAmbiguity)
                                                                   {
 ~
@@ -866,8 +879,7 @@ public:
 class DeferredEvent : public TreeStructuredStack<DeferredEvent>
 {
 public:
-  ~                                                             print(stringType());
-  ~name;
+  int id;
   int begin;
   int end;~                                                     if (shiftAmbiguity)
                                                                 {
@@ -877,10 +889,8 @@ public:
   virtual bool isTerminal() const {return false;}~              }
 ~
 
-  DeferredEvent(DeferredEvent *link, ~                          print(stringType());
-                                     ~name, int begin, int end)
-  : TreeStructuredStack(link), name(name), begin(begin), end(end)~
-                                                                if (shiftAmbiguity)
+  DeferredEvent(DeferredEvent *link, int id, int begin, int end)
+  : TreeStructuredStack(link), id(id), begin(begin), end(end)~  if (shiftAmbiguity)
                                                                 {
 ~
   , depth(link == 0 ? 1 : link->depth + 1)~                     }
@@ -933,14 +943,13 @@ public:
 class TerminalEvent : public DeferredEvent
 {
 public:
-  TerminalEvent(DeferredEvent *link, ~                          print(stringType());
-                                     ~name, int begin, int end)
-  : DeferredEvent(link, name, begin, end)
+  TerminalEvent(DeferredEvent *link, int id, int begin, int end)
+  : DeferredEvent(link, id, begin, end)
   {}
 
   void execute(BottomUpEventHandler *eventHandler)
   {
-    eventHandler->terminal(name, begin, end);
+    eventHandler->terminal(id, begin, end);
   }~                                                            if (shiftAmbiguity)
                                                                 {
 ~
@@ -954,14 +963,13 @@ class NonterminalEvent : public DeferredEvent
 public:
   int count;
 
-  NonterminalEvent(DeferredEvent *link, ~                       print(stringType());
-                                        ~name, int begin, int end, int count)
-  : DeferredEvent(link, name, begin, end), count(count)
+  NonterminalEvent(DeferredEvent *link, int id, int begin, int end, int count)
+  : DeferredEvent(link, id, begin, end), count(count)
   {}
 
   void execute(BottomUpEventHandler *eventHandler)
   {
-    eventHandler->nonterminal(name, begin, end, count);
+    eventHandler->nonterminal(id, begin, end, count);
   }
 };
 ~                                                               if (resolvesAmbiguity)
@@ -972,7 +980,7 @@ class AmbiguityEvent : public DeferredEvent
 {
 public:
   AmbiguityEvent(DeferredEvent *link, int begin, int end)
-  : DeferredEvent(link, 0, begin, end)
+  : DeferredEvent(link, -1, begin, end)
   {}
 
   void execute(BottomUpEventHandler *eventHandler)
@@ -1170,16 +1178,16 @@ void rejectAmbiguity(ParsingThread *&thread~                    if (tree)
   ParseTreeBuilder *treeBuilder = new ParseTreeBuilder();
   treeBuilder->reset(input);
   second->show(treeBuilder);
-  treeBuilder->nonterminal(~                                      print(stringIntroducer());
-                           ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
+  treeBuilder->nonterminal(~                                      print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                           ~, treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
   std::vector<Symbol *> *secondTree = treeBuilder->pop(1);
   first->show(treeBuilder);
-  treeBuilder->nonterminal(~                                      print(stringIntroducer());
-                           ~"ALTERNATIVE", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
+  treeBuilder->nonterminal(~                                      print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                           ~, treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, treeBuilder->getTop() + 1);
   treeBuilder->push((*secondTree)[0]);
   delete secondTree;
-  treeBuilder->nonterminal(~                                      print(stringIntroducer());
-                           ~"AMBIGUOUS", treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, 2);~
+  treeBuilder->nonterminal(~                                      print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                           ~, treeBuilder->getStack()[0]->begin, treeBuilder->getStack()[treeBuilder->getTop()]->end, 2);~
                                                                 }
 ~
   int begin = thread->stack->pos;
@@ -2084,12 +2092,9 @@ static std::~                                                   if (! parseChars
 
     void reset(~                                                print(stringType());
                ~string) {length = 0;}
-    void startNonterminal(~                                     print(stringType());
-                          ~name, int begin)  {}
-    void endNonterminal(~                                       print(stringType());
-                        ~name, int end)  {}
-    void terminal(~                                             print(stringType());
-                  ~name, int begin, int end)  {length += end - begin;}
+    void startNonterminal(int id, int begin)  {}
+    void endNonterminal(int id, int end)  {}
+    void terminal(int id, int begin, int end)  {length += end - begin;}
     void whitespace(int begin, int end) {length += end - begin;}
 
   private:

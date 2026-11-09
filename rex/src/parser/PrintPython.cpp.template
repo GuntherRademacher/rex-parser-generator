@@ -127,9 +127,9 @@ class DeferredCode:
 ~
 class DeferredEvent:
 
-  def __init__(self, link, name, begin, end):
+  def __init__(self, link, id, begin, end):
     self.link = link
-    self.name = name
+    self.id = id
     self.begin = begin
     self.end = end~                                             if (shiftAmbiguity)
                                                                 {
@@ -170,11 +170,11 @@ class DeferredEvent:
 
 class TerminalEvent(DeferredEvent):
 
-  def __init__(self, link, name, begin, end):
-    super().__init__(link, name, begin, end)
+  def __init__(self, link, id, begin, end):
+    super().__init__(link, id, begin, end)
 
   def execute(self, eventHandler):
-    eventHandler.terminal(self.name, self.begin, self.end)~     if (shiftAmbiguity)
+    eventHandler.terminal(self.id, self.begin, self.end)~       if (shiftAmbiguity)
                                                                 {
 ~
 
@@ -183,19 +183,23 @@ class TerminalEvent(DeferredEvent):
 ~
 
   def toString(self):
-    return "terminal(" + self.name + ", " + str(self.begin) + ", " + str(self.end) + ")"
+    return "terminal(" + ~                                      print(className.c_str());
+                         ~.TOKEN[self.id] + ", " + str(self.begin) + ", " + str(self.end) + ")"
 
 class NonterminalEvent(DeferredEvent):
 
-  def __init__(self, link, name, begin, end, count):
-    super().__init__(link, name, begin, end)
+  def __init__(self, link, id, begin, end, count):
+    super().__init__(link, id, begin, end)
     self.count = count
 
   def execute(self, eventHandler):
-    eventHandler.nonterminal(self.name, self.begin, self.end, self.count)
+    eventHandler.nonterminal(self.id, self.begin, self.end, self.count)
 
   def toString(self):
-    return "nonterminal(" + self.name + ", " + str(self.begin) + ", " + str(self.end) + ", " + str(self.count) + ")"
+    return "nonterminal(" + ~                                   printSyntheticNamePrefix(true, L"self.id");
+                                                                print(className.c_str());
+                            ~.NONTERMINAL[self.id]~             printSyntheticNameSuffix(true, L"self.id");
+                                                  ~ + ", " + str(self.begin) + ", " + str(self.end) + ", " + str(self.count) + ")"
 ~                                                               if (resolvesAmbiguity)
                                                                 {
 ~
@@ -203,7 +207,7 @@ class NonterminalEvent(DeferredEvent):
 class AmbiguityEvent(DeferredEvent):
 
   def __init__(self, link, begin, end):
-    super().__init__(link, None, begin, end)
+    super().__init__(link, -1, begin, end)
 
   def execute(self, eventHandler):
     eventHandler.ambiguity(self.begin, self.end)
@@ -337,12 +341,15 @@ def rejectAmbiguity(self, begin, end~                           if (tree)
                 ~.ParseTreeBuilder()
   treeBuilder.reset(self.input)
   second.show(treeBuilder)
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
   secondTree = treeBuilder.pop(1)[0]
   first.show(treeBuilder)
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))
   treeBuilder.push(secondTree)
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, 2)~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, 2)~
                                                                 }
 ~
   raise ~                                                       print(className.c_str());
@@ -598,13 +605,13 @@ class ContentCounter:
   def reset(self, _):
     self.length = 0
 
-  def startNonterminal(self, name, begin):
+  def startNonterminal(self, id, begin):
     pass
 
-  def endNonterminal(self, name, end):
+  def endNonterminal(self, id, end):
     pass
 
-  def terminal(self, _, begin, end):
+  def terminal(self, id, begin, end):
     self.length += end - begin
 
   def whitespace(self, begin, end):
@@ -942,9 +949,9 @@ def reset(self, inputString):
   self.stack = []
   self.top = -1
 
-def startNonterminal(self, name, begin):
+def startNonterminal(self, id, begin):
   nonterminal = ~                                               print(className.c_str());
-                ~.Nonterminal(name, begin, begin)
+                ~.Nonterminal(id, begin, begin)
   if self.top >= 0:
     self.addChild(nonterminal)
   self.top += 1
@@ -955,9 +962,9 @@ def endNonterminal(self, _, end):
   if self.top > 0:
     self.top -= 1
 
-def terminal(self, name, begin, end):
+def terminal(self, id, begin, end):
   self.addChild(~                                               print(className.c_str());
-                ~.Terminal(name, begin, end))
+                ~.Terminal(id, begin, end))
 
 def whitespace(self, begin, end):
   pass
@@ -974,13 +981,13 @@ def serialize(self, e):
 class Symbol:
 ~                                                               increaseIndent();
 ~
-def __init__(self, name, begin, end):
-  self.name = name
+def __init__(self, id, begin, end):
+  self.id = id
   self.begin = begin
   self.end = end
 
-def getName(self):
-  return self.name
+def getId(self):
+  return self.id
 
 def getBegin(self):
   return self.begin
@@ -992,15 +999,21 @@ def getEnd(self):
 class Nonterminal(Symbol):
 ~                                                               increaseIndent();
 ~
-def __init__(self, name, begin, end, children):
-  super().__init__(name, begin, end)
+def __init__(self, id, begin, end, children):
+  super().__init__(id, begin, end)
   self.children = children
+
+def getName(self):
+  return ~                                                      printSyntheticNamePrefix(false, L"self.id");
+                                                                print(className.c_str());
+         ~.NONTERMINAL[self.id]~                                printSyntheticNameSuffix(false, L"self.id");
+                               ~
 
 def addChild(self, s):
   self.children = self.children.append(s)
 
 def send(self, e):
-  e.startNonterminal(self.getName(), self.getBegin())
+  e.startNonterminal(self.id, self.getBegin())
   pos = self.getBegin()
   for c in self.children:
     if pos < c.getBegin():
@@ -1009,17 +1022,21 @@ def send(self, e):
     pos = c.getEnd()
   if pos < self.getEnd():
     e.whitespace(pos, self.getEnd())
-  e.endNonterminal(self.getName(), self.getEnd())
+  e.endNonterminal(self.id, self.getEnd())
 ~                                                               decreaseIndent();
 ~
 class Terminal(Symbol):
 ~                                                               increaseIndent();
 ~
-def __init__(self, name, begin, end):
-  super().__init__(name, begin, end)
+def __init__(self, id, begin, end):
+  super().__init__(id, begin, end)
+
+def getName(self):
+  return ~                                                      print(className.c_str());
+         ~.TOKEN[self.id]
 
 def send(self, e):
-  e.terminal(self.getName(), self.getBegin(), self.getEnd())
+  e.terminal(self.id, self.getBegin(), self.getEnd())
 ~                                                               decreaseIndent();
                                                               }
                                                             }
@@ -1042,7 +1059,11 @@ def reset(self, inputString):
   self.hasChildElement = False
   self.depth = 0
 
-def startNonterminal(self, tag, _):
+def startNonterminal(self, id, _):
+  self.startElement(~                                             print(className.c_str());
+                    ~.getNonterminalName(id))
+
+def startElement(self, tag):
   if self.delayedTag != None:
     print("<", end="")
     print(self.delayedTag, end="")
@@ -1055,7 +1076,11 @@ def startNonterminal(self, tag, _):
   self.hasChildElement = False
   self.depth += 1
 
-def endNonterminal(self, tag, _):
+def endNonterminal(self, id, _):
+  self.endElement(~                                               print(className.c_str());
+                  ~.getNonterminalName(id))
+
+def endElement(self, tag):
   self.depth -= 1
   if self.delayedTag != None:
     self.delayedTag = None
@@ -1096,12 +1121,14 @@ def characters(self, b, e):
       else:
         print(str(c), end="")
 
-def terminal(self, tag, b, e):
+def terminal(self, id, b, e):
+  tag = ~                                                         print(className.c_str());
+        ~.getTerminalName(id)
   if tag[0] == '\'':
     tag = "TOKEN"
-  self.startNonterminal(tag, b)
+  self.startElement(tag)
   self.characters(b, e)
-  self.endNonterminal(tag, e)
+  self.endElement(tag)
 ~                                                                 decreaseIndent();
                                                                 }
                                                                 if (isLrParser)
@@ -1114,7 +1141,7 @@ def reset(self, inputString):
   self.input = inputString
   self.stack = []
 
-def nonterminal(self, name, begin, end, count):~                  if (rejectsAmbiguity())
+def nonterminal(self, id, begin, end, count):~                    if (rejectsAmbiguity())
                                                                   {
 ~
   if count > len(self.stack):
@@ -1122,17 +1149,18 @@ def nonterminal(self, name, begin, end, count):~                  if (rejectsAmb
     e = end
     if len(content) != 0:
       e = content[0].getBegin()
-    self.nonterminal("UNAMBIGUOUS", begin, e, 0)
+    self.nonterminal(~                                              print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                     ~, begin, e, 0)
     for symbol in content:
       self.push(symbol)
     count = len(self.stack)~                                      }
 ~
   self.push(~                                                     print(className.c_str());
-            ~.Nonterminal(name, begin, end, self.pop(count)))
+            ~.Nonterminal(id, begin, end, self.pop(count)))
 
-def terminal(self, name, begin, end):
+def terminal(self, id, begin, end):
   self.push(~                                                     print(className.c_str());
-            ~.Terminal(name, begin, end))
+            ~.Terminal(id, begin, end))
 ~                                                                 if (resolvesAmbiguity)
                                                                   {
 ~

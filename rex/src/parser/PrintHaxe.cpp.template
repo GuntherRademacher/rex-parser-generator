@@ -341,7 +341,7 @@ private class DeferredCode
 private class DeferredEvent
 {
   public var link: DeferredEvent;
-  public var name: String;
+  public var id: Int;
   public var begin: Int;
   public var end: Int;~                                         if (shiftAmbiguity)
                                                                 {
@@ -351,10 +351,10 @@ private class DeferredEvent
   public function isTerminal(): Bool {return false;}~           }
 ~
 
-  public function new(link: DeferredEvent, name: String, begin: Int, end: Int)
+  public function new(link: DeferredEvent, id: Int, begin: Int, end: Int)
   {
     this.link = link;
-    this.name = name;
+    this.id = id;
     this.begin = begin;
     this.end = end;~                                            if (shiftAmbiguity)
                                                                 {
@@ -407,14 +407,14 @@ private class DeferredEvent
 
 private class TerminalEvent extends DeferredEvent
 {
-  public function new(link: DeferredEvent, name: String , begin: Int, end: Int)
+  public function new(link: DeferredEvent, id: Int, begin: Int, end: Int)
   {
-    super(link, name, begin, end);
+    super(link, id, begin, end);
   }
 
   public override function execute(eventHandler: BottomUpEventHandler): Void
   {
-    eventHandler.terminal(name, begin, end);
+    eventHandler.terminal(id, begin, end);
   }~                                                            if (shiftAmbiguity)
                                                                 {
 ~
@@ -427,15 +427,15 @@ private class NonterminalEvent extends DeferredEvent
 {
   public var count: Int;
 
-  public function new(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int)
+  public function new(link: DeferredEvent, id: Int, begin: Int, end: Int, count: Int)
   {
-    super(link, name, begin, end);
+    super(link, id, begin, end);
     this.count = count;
   }
 
   public override function execute(eventHandler: BottomUpEventHandler): Void
   {
-    eventHandler.nonterminal(name, begin, end, count);
+    eventHandler.nonterminal(id, begin, end, count);
   }
 }
 ~                                                               if (resolvesAmbiguity)
@@ -445,7 +445,7 @@ private class AmbiguityEvent extends DeferredEvent
 {
   public function new(link: DeferredEvent, begin: Int, end: Int)
   {
-    super(link, null, begin, end);
+    super(link, -1, begin, end);
   }
 
   public override function execute(eventHandler: BottomUpEventHandler): Void
@@ -755,12 +755,15 @@ private function rejectAmbiguity(begin: Int, end: Int~          if (tree)
   var treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(input);
   second.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   var secondTree = treeBuilder.pop(1)[0];
   first.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
                                                                 }
 ~
   var exception = new ParseException(begin, end, -1, -1, -1);
@@ -1306,9 +1309,9 @@ class ParseException
 interface EventHandler
 {
   public function reset(input: Bytes): Void;
-  public function startNonterminal(tag: String, begin: Int): Void;
-  public function endNonterminal(tag: String, end: Int): Void;
-  public function terminal(tag: String, begin: Int, end: Int): Void;
+  public function startNonterminal(id: Int, begin: Int): Void;
+  public function endNonterminal(id: Int, end: Int): Void;
+  public function terminal(id: Int, begin: Int, end: Int): Void;
   public function whitespace(begin: Int, end: Int): Void;
 }
 ~                                                               if (isLrParser)
@@ -1317,9 +1320,8 @@ interface EventHandler
 interface BottomUpEventHandler
 {
   public function reset(input: Bytes): Void;
-  public function nonterminal(name: String, begin: Int, end: Int, count: Int): Void;
-  public function terminal(name: String , begin: Int, end: Int): Void;~
-                                                                  if (resolvesAmbiguity)
+  public function nonterminal(id: Int, begin: Int, end: Int, count: Int): Void;
+  public function terminal(id: Int, begin: Int, end: Int): Void;~ if (resolvesAmbiguity)
                                                                   {
 ~
   public function ambiguity(begin: Int, end: Int): Void;~         }
@@ -1346,24 +1348,37 @@ class XmlTreeBuilder implements EventHandler
     node = Xml.createDocument();
   }
 
-  public function startNonterminal(tag, begin)
+  public function startNonterminal(id, begin)
+  {
+    startElement(~                                              print(className.c_str());
+                 ~.getNonterminalName(id));
+  }
+
+  private function startElement(tag: String): Void
   {
     var element = Xml.createElement(tag);
     node.addChild(element);
     node = element;
   }
 
-  public function endNonterminal(tag: String, end: Int): Void
+  public function endNonterminal(id: Int, end: Int): Void
+  {
+    endElement();
+  }
+
+  private function endElement(): Void
   {
     node = node.parent;
   }
 
-  public function terminal(tag: String, begin: Int, end: Int): Void
+  public function terminal(id: Int, begin: Int, end: Int): Void
   {
+    var tag = ~                                                 print(className.c_str());
+              ~.getTerminalName(id);
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    startNonterminal(tag, begin);
+    startElement(tag);
     characters(begin, end);
-    endNonterminal(tag, end);
+    endElement();
   }
 
   public function whitespace(begin: Int, end: Int): Void
@@ -1459,7 +1474,13 @@ class XmlSerializer implements EventHandler
     depth = 0;
   }
 
-  public function startNonterminal(tag, begin)
+  public function startNonterminal(id, begin)
+  {
+    startElement(~                                                print(className.c_str());
+                 ~.getNonterminalName(id));
+  }
+
+  private function startElement(tag: String): Void
   {
     if (delayedTag != null)
     {
@@ -1480,7 +1501,13 @@ class XmlSerializer implements EventHandler
     ++depth;
   }
 
-  public function endNonterminal(tag, end)
+  public function endNonterminal(id, end)
+  {
+    endElement(~                                                  print(className.c_str());
+               ~.getNonterminalName(id));
+  }
+
+  private function endElement(tag: String): Void
   {
     --depth;
     if (delayedTag != null)
@@ -1510,12 +1537,14 @@ class XmlSerializer implements EventHandler
     hasChildElement = true;
   }
 
-  public function terminal(tag: String, begin, end)
+  public function terminal(id, begin, end)
   {
+    var tag = ~                                                   print(className.c_str());
+              ~.getTerminalName(id);
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    startNonterminal(tag, begin);
+    startElement(tag);
     characters(begin, end);
-    endNonterminal(tag, end);
+    endElement(tag);
   }
 
   public function whitespace(begin, end)
@@ -1552,9 +1581,9 @@ class ContentCounter implements EventHandler
   public function new() {}
   public function getLength() {return length;}
   public function reset(string) {length = 0;}
-  public function startNonterminal(name, begin) {}
-  public function endNonterminal(name, end) {}
-  public function terminal(name, begin, end) {length += end - begin;}
+  public function startNonterminal(id, begin) {}
+  public function endNonterminal(id, end) {}
+  public function terminal(id, begin, end) {length += end - begin;}
   public function whitespace(begin, end) {length += end - begin;}
 }
 ~                                                               }
@@ -1576,22 +1605,22 @@ class TopDownTreeBuilder implements EventHandler
     stack = [];
   };
 
-  public function startNonterminal(name, begin)
+  public function startNonterminal(id, begin)
   {
-    var nonterminal = new Nonterminal(name, begin, begin, new Array<Symbol>());
+    var nonterminal = new Nonterminal(id, begin, begin, new Array<Symbol>());
     if (stack.length > 0) addChild(nonterminal);
     stack.push(nonterminal);
   }
 
-  public function endNonterminal(name, end)
+  public function endNonterminal(id, end)
   {
     stack[stack.length - 1].end = end;
     if (stack.length > 1) stack.pop();
   }
 
-  public function terminal(name, begin, end)
+  public function terminal(id, begin, end)
   {
-    addChild(new Terminal(name, begin, end));
+    addChild(new Terminal(id, begin, end));
   }
 
   public function whitespace(begin, end)
@@ -1613,31 +1642,40 @@ class TopDownTreeBuilder implements EventHandler
 
 class Symbol
 {
-  public var name: String;
+  public var id: Int;
   public var begin: Int;
   public var end: Int;
 
-  private function new(name, begin, end)
+  private function new(id, begin, end)
   {
-    this.name = name;
+    this.id = id;
     this.begin = begin;
     this.end = end;
   }
+
+  public function getName(): String {return null;}
 
   public function send(e: EventHandler) {}
 }
 
 class Terminal extends Symbol
 {
-  public function new(name, begin, end)
+  public function new(id, begin, end)
   {
-    super(name, begin, end);
+    super(id, begin, end);
+  }
+
+  override
+  public function getName(): String
+  {
+    return ~                                                    print(className.c_str());
+           ~.TOKEN[id];
   }
 
   override
   public function send(e: EventHandler)
   {
-    e.terminal(name, begin, end);
+    e.terminal(id, begin, end);
   }
 }
 
@@ -1645,16 +1683,25 @@ class Nonterminal extends Symbol
 {
   public var children: Array<Symbol>;
 
-  public function new(name, begin, end, children)
+  public function new(id, begin, end, children)
   {
-    super(name, begin, end);
+    super(id, begin, end);
     this.children = children;
+  }
+
+  override
+  public function getName(): String
+  {
+    return ~                                                    printSyntheticNamePrefix();
+                                                                print(className.c_str());
+           ~.NONTERMINAL[id]~                                   printSyntheticNameSuffix();
+                            ~;
   }
 
   override
   public function send(e: EventHandler)
   {
-    e.startNonterminal(name, begin);
+    e.startNonterminal(id, begin);
     var pos = begin;
     for (c in children)
     {
@@ -1663,7 +1710,7 @@ class Nonterminal extends Symbol
       pos = c.end;
     }
     if (pos < end) e.whitespace(pos, end);
-    e.endNonterminal(name, end);
+    e.endNonterminal(id, end);
   }
 }
 ~                                                               if (isLrParser)
@@ -1689,14 +1736,15 @@ class ParseTreeBuilder implements BottomUpEventHandler
   public function getTop() {return top;}
 ~                                                                 }
 ~
-  public function nonterminal(name: String, begin: Int, end: Int, count: Int)
+  public function nonterminal(id: Int, begin: Int, end: Int, count: Int)
   {~                                                              if (rejectsAmbiguity())
                                                                   {
 ~
     if (count > top + 1)
     {
       var content = pop(top + 1);
-      nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+      nonterminal(~                                                 print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                  ~, begin, content.length == 0 ? end : content[0].begin, 0);
       for (symbol in content)
       {
         push(symbol);
@@ -1704,12 +1752,12 @@ class ParseTreeBuilder implements BottomUpEventHandler
       count = top + 1;
     }~                                                            }
 ~
-    push(new Nonterminal(name, begin, end, pop(count)));
+    push(new Nonterminal(id, begin, end, pop(count)));
   }
 
-  public function terminal(name: String, begin: Int, end: Int)
+  public function terminal(id: Int, begin: Int, end: Int)
   {
-    push(new Terminal(name, begin, end));
+    push(new Terminal(id, begin, end));
   }~                                                              if (resolvesAmbiguity)
                                                                   {
 ~

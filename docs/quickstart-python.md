@@ -157,10 +157,14 @@ However condensing the tree must be performed on behalf of the application, REx 
 When looking at the generated Python code, you will find that parsing methods communicate their operation over an "Event Handler" interface. There is no abstract base class for it, so it is not obvious in the code, but it consists of these methods:
 
  - `reset(self, string: str)`
- - `start_nonterminal(self, name: str, begin: int)`
- - `end_nonterminal(self, name: str, end: int)`
- - `terminal(self, name: str, begin: int, end: int)`
+ - `startNonterminal(self, id: int, begin: int)`
+ - `endNonterminal(self, id: int, end: int)`
+ - `terminal(self, id: int, begin: int, end: int)`
  - `whitespace(self, begin: int, end: int)`
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the class attributes `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its static methods `getNonterminalName(id)` and `getTerminalName(id)`.
 
 Applications could implement and use an "Event Handler" for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample "Event Handler" implementation doing just that:
 

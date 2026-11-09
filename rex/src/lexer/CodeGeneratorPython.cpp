@@ -1,4 +1,4 @@
-// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Nov 8, 2026 22:38 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorPython.cpp.template
                                                             #line 1 "CodeGeneratorPython.cpp.template"
                                                             // generate CodeGeneratorPython.cpp using this command:

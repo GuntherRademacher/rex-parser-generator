@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 10:11 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 22:57 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Lines.ebnf -csharp -tree -main
 
 using System;
@@ -87,9 +87,9 @@ public class Lines
   public interface EventHandler
   {
     void reset(String s);
-    void startNonterminal(String name, int begin);
-    void endNonterminal(String name, int end);
-    void terminal(String name, int begin, int end);
+    void startNonterminal(int id, int begin);
+    void endNonterminal(int id, int end);
+    void terminal(int id, int begin, int end);
     void whitespace(int begin, int end);
   }
 
@@ -105,23 +105,23 @@ public class Lines
       top = -1;
     }
 
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.Length) Array.Resize(ref stack, stack.Length << 1);
       stack[top] = nonterminal;
     }
 
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     public void whitespace(int begin, int end)
@@ -144,30 +144,37 @@ public class Lines
 
   public abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public class Terminal : Symbol
   {
-    public Terminal(String name, int begin, int end)
-    : base(name, begin, end)
+    public Terminal(int id, int begin, int end)
+    : base(id, begin, end)
     {
+    }
+
+    public override String getName()
+    {
+      return TOKEN[id];
     }
 
     public override void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -175,15 +182,20 @@ public class Lines
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
-    : base(name, begin, end)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
+    : base(id, begin, end)
     {
       this.children = children;
     }
 
+    public override String getName()
+    {
+      return NONTERMINAL[id];
+    }
+
     public override void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       foreach (Symbol c in children)
       {
@@ -192,7 +204,7 @@ public class Lines
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -221,7 +233,12 @@ public class Lines
       depth = 0;
     }
 
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -242,7 +259,12 @@ public class Lines
       ++depth;
     }
 
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -272,15 +294,16 @@ public class Lines
       hasChildElement = true;
     }
 
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name[0] == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     public void whitespace(int begin, int end)
@@ -370,6 +393,16 @@ public class Lines
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -406,7 +439,7 @@ public class Lines
 
   public void parse_File()
   {
-    eventHandler.startNonterminal("File", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1(1);                  // Line | LF | EOF
     if (l1 == 1)                    // Line
     {
@@ -427,14 +460,14 @@ public class Lines
       }
     }
     consume(3);                     // EOF
-    eventHandler.endNonterminal("File", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void consume(int t)
   {
     if (l1 == t)
     {
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = 0;
     }
     else
@@ -595,12 +628,17 @@ public class Lines
     /* 0 */ 12, 14, 4, 2
   };
 
-  private static readonly String[] TOKEN =
+  public static readonly String[] TOKEN =
   {
     "%ERROR",
     "Line",
     "LF",
     "EOF"
+  };
+
+  public static readonly String[] NONTERMINAL =
+  {
+    "File"
   };
 }
 

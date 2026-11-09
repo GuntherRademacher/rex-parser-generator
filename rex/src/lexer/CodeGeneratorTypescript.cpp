@@ -1,4 +1,4 @@
-// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Sun Nov 8, 2026 22:38 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorTypescript.cpp.template
                                                             #line 1 "CodeGeneratorTypescript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -907,45 +907,35 @@
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 911 "CodeGeneratorTypescript.cpp"
+                                                                bool isPublic = variable("tree").boolean() || variable("useGlr").boolean() || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
+                                                            #line 912 "CodeGeneratorTypescript.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 516 "CodeGeneratorTypescript.cpp.template"
-                                                                if (variable("useGlr").boolean())
-                                                                {
+                                                            #line 517 "CodeGeneratorTypescript.cpp.template"
+                                                                print(isPublic ? "public" : "private");
                                                             #line 917 "CodeGeneratorTypescript.cpp"
-  append(L"public");
-                                                            #line 518 "CodeGeneratorTypescript.cpp.template"
-                                                                }
-                                                                else
-                                                                {
-                                                            #line 923 "CodeGeneratorTypescript.cpp"
-  append(L"private");
-                                                            #line 521 "CodeGeneratorTypescript.cpp.template"
-                                                                }
-                                                            #line 927 "CodeGeneratorTypescript.cpp"
   append(L" static ");
-                                                            #line 522 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 518 "CodeGeneratorTypescript.cpp.template"
                                                                 print(a->getLongName());
-                                                            #line 931 "CodeGeneratorTypescript.cpp"
+                                                            #line 921 "CodeGeneratorTypescript.cpp"
   append(L": string [] =\n");
   append(L"  [\n");
-                                                            #line 525 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 521 "CodeGeneratorTypescript.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 939 "CodeGeneratorTypescript.cpp"
+                                                            #line 929 "CodeGeneratorTypescript.cpp"
   append(L",\n");
-                                                            #line 530 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 526 "CodeGeneratorTypescript.cpp.template"
                                                                   }
-                                                            #line 943 "CodeGeneratorTypescript.cpp"
+                                                            #line 933 "CodeGeneratorTypescript.cpp"
   append(L"    ");
-                                                            #line 531 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 527 "CodeGeneratorTypescript.cpp.template"
                                                                   print(variable("stringPrefix").string());
-                                                            #line 947 "CodeGeneratorTypescript.cpp"
+                                                            #line 937 "CodeGeneratorTypescript.cpp"
   append(L"\"");
-                                                            #line 532 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 528 "CodeGeneratorTypescript.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -958,49 +948,49 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 962 "CodeGeneratorTypescript.cpp"
+                                                            #line 952 "CodeGeneratorTypescript.cpp"
   append(L"\"");
-                                                            #line 544 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 540 "CodeGeneratorTypescript.cpp.template"
                                                                   print(variable("stringSuffix").string());
                                                                 }
-                                                            #line 967 "CodeGeneratorTypescript.cpp"
+                                                            #line 957 "CodeGeneratorTypescript.cpp"
   append(L"\n");
   append(L"  ];\n");
-                                                            #line 548 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 544 "CodeGeneratorTypescript.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 974 "CodeGeneratorTypescript.cpp"
+                                                            #line 964 "CodeGeneratorTypescript.cpp"
   append(L"\n");
   append(L"  var ");
-                                                            #line 552 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 548 "CodeGeneratorTypescript.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 979 "CodeGeneratorTypescript.cpp"
+                                                            #line 969 "CodeGeneratorTypescript.cpp"
   append(L".Token =\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 555 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 551 "CodeGeneratorTypescript.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
                                                                 {
                                                                   if (i)
                                                                   {
-                                                            #line 990 "CodeGeneratorTypescript.cpp"
+                                                            #line 980 "CodeGeneratorTypescript.cpp"
   append(L",\n");
   append(L"    ");
-                                                            #line 562 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 558 "CodeGeneratorTypescript.cpp.template"
                                                                   }
                                                                   print(token.string(i));
-                                                            #line 996 "CodeGeneratorTypescript.cpp"
+                                                            #line 986 "CodeGeneratorTypescript.cpp"
   append(L":");
-                                                            #line 564 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 560 "CodeGeneratorTypescript.cpp.template"
                                                                   print(format.toString<char>(i, 10, w));
                                                                 }
-                                                            #line 1001 "CodeGeneratorTypescript.cpp"
+                                                            #line 991 "CodeGeneratorTypescript.cpp"
   append(L"\n");
   append(L"  };\n");
-                                                            #line 568 "CodeGeneratorTypescript.cpp.template"
+                                                            #line 564 "CodeGeneratorTypescript.cpp.template"
                                                               }
                                                             }
 

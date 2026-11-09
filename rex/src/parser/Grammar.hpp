@@ -826,6 +826,11 @@ public:
   int maxNonterminalCode;
   int maxImplicitNonterminalCode;
 
+  // Codes of the nonterminals that are used in ambiguity serialization: ALTERNATIVE, AMBIGUOUS, and
+  // UNAMBIGUOUS, for i = 0, 1, 2, respectively. They are fixed and negative, so they are not entries
+  // of the nonterminal name table, and do not depend on the grammar.
+  static int syntheticNonterminalCode(int i) {return -2 - i;}
+
   size_t currentPass;
   size_t cyclicSetSize;
 

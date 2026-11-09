@@ -166,12 +166,16 @@ When looking at the generated Scala code, you will find this trait, that is used
 ```scala
   trait EventHandler {
     def reset(string: String): Unit
-    def startNonterminal(name: String, begin: Int): Unit
-    def endNonterminal(name: String, end: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit
+    def startNonterminal(id: Int, begin: Int): Unit
+    def endNonterminal(id: Int, end: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit
     def whitespace(begin: Int, end: Int): Unit
   }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the public arrays `NONTERMINAL` and `TOKEN` of the companion object of the generated 
+parser class, or by calling its `getNonterminalName(Int)` and `getTerminalName(Int)` methods.
 
 Applications could extend and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

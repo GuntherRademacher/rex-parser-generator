@@ -1,4 +1,4 @@
-// This file was generated on Sat Oct 17, 2026 19:45 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q exprBNF.ebnf -lalr 1 -java -tree -main
 
 import java.io.IOException;
@@ -89,9 +89,9 @@ public class exprBNF
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -109,25 +109,25 @@ public class exprBNF
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -151,31 +151,39 @@ public class exprBNF
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -183,16 +191,22 @@ public class exprBNF
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -201,15 +215,15 @@ public class exprBNF
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
   public interface BottomUpEventHandler
   {
     public void reset(CharSequence string);
-    public void nonterminal(String name, int begin, int end, int count);
-    public void terminal(String name, int begin, int end);
+    public void nonterminal(int id, int begin, int end, int count);
+    public void terminal(int id, int begin, int end);
   }
 
   public static class XmlSerializer implements EventHandler
@@ -240,7 +254,12 @@ public class exprBNF
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -262,7 +281,12 @@ public class exprBNF
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -293,15 +317,16 @@ public class exprBNF
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     @Override
@@ -356,15 +381,15 @@ public class exprBNF
     }
 
     @Override
-    public void nonterminal(String name, int begin, int end, int count)
+    public void nonterminal(int id, int begin, int end, int count)
     {
-      push(new Nonterminal(name, begin, end, pop(count)));
+      push(new Nonterminal(id, begin, end, pop(count)));
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      push(new Terminal(name, begin, end));
+      push(new Terminal(id, begin, end));
     }
 
     public void serialize(EventHandler e)
@@ -455,6 +480,16 @@ public class exprBNF
   public static String getOffendingToken(ParseException e)
   {
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
   }
 
   public static String[] getExpectedTokenSet(ParseException e)
@@ -555,7 +590,7 @@ public class exprBNF
         {
           if (eventHandler != null)
           {
-            eventHandler.terminal(TOKEN[l1], b1, e1);
+            eventHandler.terminal(l1, b1, e1);
           }
           es = e1;
           push(state, lookback, b1);
@@ -599,7 +634,7 @@ public class exprBNF
         }
         if (eventHandler != null)
         {
-          eventHandler.nonterminal(NONTERMINAL[nonterminalId], bs, es, symbols);
+          eventHandler.nonterminal(nonterminalId, bs, es, symbols);
         }
         action = goTo(nonterminalId, state);
       }
@@ -794,7 +829,7 @@ public class exprBNF
     /* 27 */ 585, 132
   };
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "ws",
@@ -808,7 +843,7 @@ public class exprBNF
     "'/'"
   };
 
-  private static final String[] NONTERMINAL =
+  public static final String[] NONTERMINAL =
   {
     "input",
     "expr",

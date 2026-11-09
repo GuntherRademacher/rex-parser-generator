@@ -168,12 +168,16 @@ When looking at the generated C# code, you will find this interface, that is use
   public interface EventHandler
   {
     void reset(String s);
-    void startNonterminal(String name, int begin);
-    void endNonterminal(String name, int end);
-    void terminal(String name, int begin, int end);
+    void startNonterminal(int id, int begin);
+    void endNonterminal(int id, int end);
+    void terminal(int id, int begin, int end);
     void whitespace(int begin, int end);
   }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the public static arrays `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its static `getNonterminalName(int)` and `getTerminalName(int)` methods.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

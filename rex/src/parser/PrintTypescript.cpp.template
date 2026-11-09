@@ -15,9 +15,9 @@ export namespace ~                                              print(className.
   export interface ParsingEventHandler
   {
     reset(source: string): void;
-    startNonterminal(name: string, begin: number): void;
-    endNonterminal(name: string, end: number): void;
-    terminal(name: string, begin: number, end: number): void;
+    startNonterminal(id: number, begin: number): void;
+    endNonterminal(id: number, end: number): void;
+    terminal(id: number, begin: number, end: number): void;
     whitespace(begin: number, end: number): void;
   }
 ~                                                             if (isLrParser)
@@ -26,8 +26,8 @@ export namespace ~                                              print(className.
   export interface BottomUpEventHandler
   {
     reset(input: string): void;
-    nonterminal(name: string, begin: number, end: number, count: number): void;
-    terminal(name: string, begin: number, end: number): void;~  if (resolvesAmbiguity)
+    nonterminal(id: number, begin: number, end: number, count: number): void;
+    terminal(id: number, begin: number, end: number): void;~    if (resolvesAmbiguity)
                                                                 {
 ~
     ambiguity(begin: number, end: number): void;~               }
@@ -308,12 +308,15 @@ private rejectAmbiguity(begin: number, end: number~             if (tree)
   var treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(this.input);
   second.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   var secondTree = treeBuilder.pop(1)[0];
   first.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
                                                                 }
 ~
   var exception = new ParseException(begin, end, -1, -1, -1);
@@ -470,7 +473,7 @@ class DeferredCode
 class DeferredEvent
 {
   private link: DeferredEvent | null;
-  private name: string;
+  private id: number;
   private begin: number;
   private end: number;
   private count: number;~                                       if (shiftAmbiguity)
@@ -483,10 +486,10 @@ class DeferredEvent
   isTerminal(): boolean {return this.count == -1;}~             }
 ~
 
-  constructor(link: DeferredEvent | null, name: string, begin: number, end: number, count: number)
+  constructor(link: DeferredEvent | null, id: number, begin: number, end: number, count: number)
   {
     this.link = link;
-    this.name = name;
+    this.id = id;
     this.link = link;
     this.begin = begin;
     this.end = end;
@@ -508,11 +511,11 @@ class DeferredEvent
     else ~                                                      }
          ~if (this.count < 0)
     {
-      eventHandler.terminal(this.name, this.begin, this.end);
+      eventHandler.terminal(this.id, this.begin, this.end);
     }
     else
     {
-      eventHandler.nonterminal(this.name, this.begin, this.end, this.count);
+      eventHandler.nonterminal(this.id, this.begin, this.end, this.count);
     }
   }
 
@@ -751,7 +754,7 @@ class ParsingThread
   addAmbiguity(begin: number, end: number)
   {
     if (this.eventHandler != null)
-      this.deferredEvent = new DeferredEvent(this.deferredEvent, "", begin, end, -2);
+      this.deferredEvent = new DeferredEvent(this.deferredEvent, -1, begin, end, -2);
   }
 ~                                                             }
                                                               if (tree)
@@ -973,9 +976,9 @@ class ContentCounter implements ~                               print(className.
 
   getLength() {return this.length;}
   reset(s: string) {this.length = 0}
-  startNonterminal(name: string, begin: number) {}
-  endNonterminal(name: string, end: number) {}
-  terminal(name: string, begin: number, end: number) {this.length += end - begin;}
+  startNonterminal(id: number, begin: number) {}
+  endNonterminal(id: number, end: number) {}
+  terminal(id: number, begin: number, end: number) {this.length += end - begin;}
   whitespace(begin: number, end: number) {this.length += end - begin;}
 }
 ~                                                             }
@@ -1248,22 +1251,22 @@ else
       this.stack = [];
     }
 
-    public startNonterminal(name: string, begin: number): void
+    public startNonterminal(id: number, begin: number): void
     {
-      var nonterminal = new Nonterminal(name, begin, begin, []);
+      var nonterminal = new Nonterminal(id, begin, begin, []);
       if (this.stack.length > 0) this.addChild(nonterminal);
       this.stack.push(nonterminal);
     }
 
-    public endNonterminal(name: string, end: number): void
+    public endNonterminal(id: number, end: number): void
     {
       this.stack[this.stack.length - 1].end = end;
       if (this.stack.length > 1) this.stack.pop();
     }
 
-    public terminal(name: string, begin: number, end: number): void
+    public terminal(id: number, begin: number, end: number): void
     {
-      this.addChild(new Terminal(name, begin, end));
+      this.addChild(new Terminal(id, begin, end));
     }
 
     public whitespace(begin: number, end: number): void
@@ -1285,30 +1288,37 @@ else
 
   export abstract class Symbol
   {
-    public name: string;
+    public id: number;
     public begin: number;
     public end: number;
 
-    constructor(name: string, begin: number, end: number)
+    constructor(id: number, begin: number, end: number)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract getName(): string;
 
     public abstract send(e: ParsingEventHandler): void;
   }
 
   export class Terminal extends Symbol
   {
-    constructor(name: string, begin: number, end: number)
+    constructor(id: number, begin: number, end: number)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    public getName(): string
+    {
+      return Parser.TOKEN[this.id];
     }
 
     public send(e: ParsingEventHandler): void
     {
-      e.terminal(this.name, this.begin, this.end);
+      e.terminal(this.id, this.begin, this.end);
     }
   }
 
@@ -1316,15 +1326,23 @@ else
   {
     public children: Symbol[];
 
-    constructor(name: string, begin: number, end: number, children: Symbol[])
+    constructor(id: number, begin: number, end: number, children: Symbol[])
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    public getName(): string
+    {
+      return ~                                                  printSyntheticNamePrefix(false, L"this.id");
+                                                            ~Parser.NONTERMINAL[this.id]~
+                                                                printSyntheticNameSuffix(false, L"this.id");
+                                                            ~;
     }
 
     public send(e: ParsingEventHandler): void
     {
-      e.startNonterminal(this.name, this.begin);
+      e.startNonterminal(this.id, this.begin);
       var pos = this.begin;
       this.children.forEach
       (
@@ -1336,7 +1354,7 @@ else
         }
       );
       if (pos < this.end) e.whitespace(pos, this.end);
-      e.endNonterminal(this.name, this.end);
+      e.endNonterminal(this.id, this.end);
     }
   }
 ~                                                               if (isLrParser)
@@ -1357,14 +1375,15 @@ else
     public getStack(): Symbol[] {return this.stack;}
     public getTop(): number {return this.top;}
 
-    public nonterminal(name: string, begin: number, end: number, count: number): void
+    public nonterminal(id: number, begin: number, end: number, count: number): void
     {~                                                            if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > this.top + 1)
       {
         var content = this.pop(this.top + 1);
-        this.nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+        this.nonterminal(~                                          print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                         ~, begin, content.length == 0 ? end : content[0].begin, 0);
         for (let symbol of content)
         {
           this.push(symbol);
@@ -1372,12 +1391,12 @@ else
         count = this.top + 1;
       }~                                                          }
 ~
-      this.push(new Nonterminal(name, begin, end, this.pop(count)));
+      this.push(new Nonterminal(id, begin, end, this.pop(count)));
     }
 
-    public terminal(name: string, begin: number, end: number): void
+    public terminal(id: number, begin: number, end: number): void
     {
-      this.push(new Terminal(name, begin, end));
+      this.push(new Terminal(id, begin, end));
     }~                                                            if (resolvesAmbiguity)
                                                                   {
 ~
@@ -1441,7 +1460,13 @@ class XmlSerializer implements ~                                  print(classNam
     this.depth = 0;
   }
 
-  startNonterminal(tag: string, begin: number)
+  startNonterminal(id: number, begin: number)
+  {
+    this.startElement(~                                           print(className.c_str());
+                      ~.Parser.getNonterminalName(id));
+  }
+
+  private startElement(tag: string)
   {
     if (this.delayedTag != null)
     {
@@ -1462,7 +1487,13 @@ class XmlSerializer implements ~                                  print(classNam
     ++this.depth;
   }
 
-  endNonterminal(tag: string, end: number)
+  endNonterminal(id: number, end: number)
+  {
+    this.endElement(~                                             print(className.c_str());
+                    ~.Parser.getNonterminalName(id));
+  }
+
+  private endElement(tag: string)
   {
     --this.depth;
     if (this.delayedTag != null)
@@ -1492,12 +1523,14 @@ class XmlSerializer implements ~                                  print(classNam
     this.hasChildElement = true;
   }
 
-  terminal(tag: string, begin: number, end: number)
+  terminal(id: number, begin: number, end: number)
   {
+    var tag = ~                                                   print(className.c_str());
+              ~.Parser.getTerminalName(id);
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    this.startNonterminal(tag, begin);
+    this.startElement(tag);
     this.characters(begin, end);
-    this.endNonterminal(tag, end);
+    this.endElement(tag);
   }
 
   whitespace(begin: number, end: number)

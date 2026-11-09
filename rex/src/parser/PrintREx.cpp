@@ -327,6 +327,7 @@ void PrintREx::visitGrammar(Grammar *node)
   rex->bind(CGVariable("lrparser", node->states != 0));
   rex->bind(CGVariable("useGlr", node->useGlr));
   rex->bind(CGVariable("resolvesAmbiguity", node->resolvesAmbiguity));
+  rex->bind(CGVariable("unambiguousId", Grammar::syntheticNonterminalCode(2)));
   rex->bind(CGVariable("shiftAmbiguity", node->shiftAmbiguity));
   rex->bind(CGVariable("anywhitespace", ! node->whitespaceIntroducers.empty()));
   rex->bind(CGVariable("tables", tables));
@@ -367,6 +368,8 @@ void PrintREx::visitGrammar(Grammar *node)
   char **nonterminals = 0;
   int maxNonterminal = node->maxImplicitNonterminalCode > node->maxNonterminalCode
                      ? node->maxImplicitNonterminalCode : node->maxNonterminalCode;
+  // parsers refer to nonterminals by their codes, including generated ones for reporting ambiguities
+  bool eventHandlers = tree && targetLanguage != XQUERY && targetLanguage != XSLT;
   int *reduce = 0;
 
   if (node->states && node->states->gotoTable)
@@ -392,27 +395,6 @@ void PrintREx::visitGrammar(Grammar *node)
     rex->bind(CGVariable("gtcols", node->states->gotoTable->getMaxX()));
     rex->bind(CGVariable("gtrows", node->states->gotoTable->getMaxY()));
 
-    nonterminals = ALLOCATE_ARRAY(char *, maxNonterminal + 1);
-    for (int i = 0; i <= node->maxNonterminalCode; ++i)
-    {
-      nonterminals[i] = Encoder::encode(node->nonterminalProductionByCode[i]->name);
-    }
-    if (node->maxImplicitNonterminalCode > node->maxNonterminalCode)
-    {
-      Format format;
-      for (int i = node->maxNonterminalCode + 1; i <= node->maxImplicitNonterminalCode; ++i)
-      {
-        WString implicitName(L"IMPLICIT-");
-        implicitName += format.toString<wchar_t>(i, 10);
-        nonterminals[i] = Encoder::encode(implicitName.c_str());
-      }
-    }
-    if (trace || tree)
-    {
-      rex->bind(CGVariable("nt", nonterminals, maxNonterminal + 1,
-                           "NONTERMINAL",
-                           "The nonterminal name table."));
-    }
     if (node->states && ! node->distinctCodeAnnotations.empty())
     {
       int reduceEnd = -1;
@@ -439,6 +421,28 @@ void PrintREx::visitGrammar(Grammar *node)
                            "REDUCTION",
                            "The reduction code table."));
     }
+  }
+
+  bool hasNonterminalTable = node->states && node->states->gotoTable
+                           ? trace || tree
+                           : eventHandlers;
+  if (hasNonterminalTable)
+  {
+    nonterminals = ALLOCATE_ARRAY(char *, maxNonterminal + 1);
+    for (int i = 0; i <= node->maxNonterminalCode; ++i)
+    {
+      nonterminals[i] = Encoder::encode(node->nonterminalProductionByCode[i]->name);
+    }
+    Format format;
+    for (int i = node->maxNonterminalCode + 1; i <= node->maxImplicitNonterminalCode; ++i)
+    {
+      WString implicitName(L"IMPLICIT-");
+      implicitName += format.toString<wchar_t>(i, 10);
+      nonterminals[i] = Encoder::encode(implicitName.c_str());
+    }
+    rex->bind(CGVariable("nt", nonterminals, maxNonterminal + 1,
+                         "NONTERMINAL",
+                         "The nonterminal name table."));
   }
 
   rex->run(2, argv);

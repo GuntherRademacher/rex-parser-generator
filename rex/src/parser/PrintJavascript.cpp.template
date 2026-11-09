@@ -157,14 +157,14 @@ flushTrace();~                                                }
                                                               {
 ~
 ~                                                               print(className.c_str());
-~.DeferredEvent = function(link, name, begin, end, count)
+~.DeferredEvent = function(link, id, begin, end, count)
 {
   this.link = link;~                                            if (shiftAmbiguity)
                                                                 {
 ~
   this.depth = link == null ? 1 : link.depth + 1;
 
-  this.isTerminal = function() {return name != null && count == null;};~
+  this.isTerminal = function() {return id >= 0 && count == null;};~
                                                                 }
 ~
 
@@ -172,18 +172,18 @@ flushTrace();~                                                }
   {
     ~                                                           if (resolvesAmbiguity)
                                                                 {
-    ~if (name == null)
+    ~if (id < 0)
     {
       eventHandler.ambiguity(begin, end);
     }
     else ~                                                      }
          ~if (count == null)
     {
-      eventHandler.terminal(name, begin, end);
+      eventHandler.terminal(id, begin, end);
     }
     else
     {
-      eventHandler.nonterminal(name, begin, end, count);
+      eventHandler.nonterminal(id, begin, end, count);
     }
   };
 
@@ -230,9 +230,13 @@ flushTrace();~                                                }
   this.toString = function()
   {
     if (count == null)
-      return "terminal(" + name + ", " + begin + ", " + end + ")";
+      return "terminal(" + ~                                    print(staticPrefix());
+                           ~TOKEN[id] + ", " + begin + ", " + end + ")";
     else
-      return "nonterminal(" + name + ", " + begin + ", " + end + ", " + count + ")";
+      return "nonterminal(" + ~                                 printSyntheticNamePrefix(true);
+                                                                print(staticPrefix());
+                              ~NONTERMINAL[id]~                 printSyntheticNameSuffix(true);
+                                              ~ + ", " + begin + ", " + end + ", " + count + ")";
   };
 };
 ~                                                             }
@@ -325,7 +329,15 @@ flushTrace();~                                                }
     depth = 0;
   };
 
-  this.startNonterminal = function(tag, begin)
+  this.startNonterminal = function(id, begin)
+  {
+    startElement(~                                              printSyntheticNamePrefix();
+                                                                print(className.c_str());
+                 ~.NONTERMINAL[id]~                             printSyntheticNameSuffix();
+                                  ~);
+  };
+
+  function startElement(tag)
   {
     if (delayedTag != null)
     {
@@ -344,9 +356,17 @@ flushTrace();~                                                }
     }
     hasChildElement = false;
     ++depth;
+  }
+
+  this.endNonterminal = function(id, end)
+  {
+    endElement(~                                                printSyntheticNamePrefix();
+                                                                print(className.c_str());
+               ~.NONTERMINAL[id]~                               printSyntheticNameSuffix();
+                                ~);
   };
 
-  this.endNonterminal = function(tag, end)
+  function endElement(tag)
   {
     --depth;
     if (delayedTag != null)
@@ -374,14 +394,16 @@ flushTrace();~                                                }
       log(">");
     }
     hasChildElement = true;
-  };
+  }
 
-  this.terminal = function(tag, begin, end)
+  this.terminal = function(id, begin, end)
   {
+    var tag = ~                                                 print(className.c_str());
+              ~.TOKEN[id];
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    this.startNonterminal(tag, begin);
+    startElement(tag);
     characters(begin, end);
-    this.endNonterminal(tag, end);
+    endElement(tag);
   };
 
   this.whitespace = function(begin, end)
@@ -551,12 +573,15 @@ function rejectAmbiguity(begin, end~                            if (tree)
                         ~.ParseTreeBuilder();
   treeBuilder.reset(input);
   second.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   var secondTree = treeBuilder.pop(1)[0];
   first.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);
   treeBuilder.push(secondTree);
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);~
                                                                 }
 ~
   var exception = new thisParser.ParseException(begin, end, -1, -1, -1);
@@ -715,7 +740,7 @@ function ParsingThread()
   {
     if (eventHandler != null)
       deferredEvent = new ~                                       print(className.c_str());
-~.DeferredEvent(deferredEvent, null, begin, end);
+~.DeferredEvent(deferredEvent, -1, begin, end);
   };~                                                           }
 
                                                               }
@@ -1062,9 +1087,9 @@ function main(args)
     var length = 0;
     this.getLength = function() {return length;};
     this.reset = function(string) {length = 0;};
-    this.startNonterminal = function(name, begin) {};
-    this.endNonterminal = function(name, end) {};
-    this.terminal = function(name, begin, end) {length += end - begin;};
+    this.startNonterminal = function(id, begin) {};
+    this.endNonterminal = function(id, end) {};
+    this.terminal = function(id, begin, end) {length += end - begin;};
     this.whitespace = function(begin, end) {length += end - begin;};
   }
 ~                                                             }

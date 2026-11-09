@@ -166,12 +166,16 @@ When looking at the generated Java code, you will find this interface, that is u
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the `public static` arrays `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its `getNonterminalName(int)` and `getTerminalName(int)` methods.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

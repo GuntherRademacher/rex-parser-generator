@@ -203,6 +203,7 @@ public:
   virtual const wchar_t *lineCommentPrefix() const = 0;
   virtual const wchar_t *inlineCommentIntroducer() const {return L"// ";}
   virtual const wchar_t *stringType() const = 0;
+  virtual const wchar_t *stringLiteralPrefix() const {return L"";}
   virtual const wchar_t *boolType() const = 0;
   virtual const wchar_t *intType() const = 0;
   virtual const wchar_t *voidType() const = 0;
@@ -240,6 +241,79 @@ public:
   void setLrParser(bool l) {isLrParser = l;}
   void setUseGlr(bool l) {useGlr = l;}
   bool rejectsAmbiguity() const {return useGlr && ! resolvesAmbiguity;}
+
+  // names of the token and nonterminal tables; in Go, they are only exported when they are public
+  const wchar_t *tokenTableName() {return isGo() && ! (tree || noLexer) ? L"token" : L"TOKEN";}
+  const wchar_t *nonterminalTableName() {return isGo() && ! tree ? L"nonterminal" : L"NONTERMINAL";}
+
+  // text to be printed around the lookup of a nonterminal name by its id, for mapping the
+  // ids of the synthetic nonterminals, which are negative and not in the name table
+  void printSyntheticNamePrefix(bool parenthesize = false, const wchar_t *id = L"id")
+  {
+    if (! rejectsAmbiguity()) return;
+    if (parenthesize) print(L"(");
+    if (isPython()) return;
+    if (isScala())
+    {
+      print(L"if (");
+      print(id);
+      print(L" >= 0) ");
+    }
+    else
+    {
+      print(id);
+      print(L" >= 0 ? ");
+    }
+  }
+
+  void printSyntheticNameSuffix(bool parenthesize = false, const wchar_t *id = L"id")
+  {
+    if (! rejectsAmbiguity()) return;
+    const wchar_t *names[] = {L"ALTERNATIVE", L"AMBIGUOUS", L"UNAMBIGUOUS"};
+    if (isPython())
+    {
+      print(L" if ");
+      print(id);
+      print(L" >= 0 else ");
+    }
+    for (int i = 0; i < 3; ++i)
+    {
+      WString condition(id);
+      condition += L" == ";
+      condition += format.toString<wchar_t>(Grammar::syntheticNonterminalCode(i));
+      WString literal(stringLiteralPrefix());
+      literal += L"\"";
+      literal += names[i];
+      literal += L"\"";
+      if (isPython())
+      {
+        print(literal.c_str());
+        print(L" if ");
+        print(condition.c_str());
+        print(L" else ");
+      }
+      else if (isScala())
+      {
+        print(L" else if (");
+        print(condition.c_str());
+        print(L") ");
+        print(literal.c_str());
+      }
+      else
+      {
+        print(L" : ");
+        print(condition.c_str());
+        print(L" ? ");
+        print(literal.c_str());
+      }
+    }
+    if (isScala())
+      print(L" else ");
+    else if (! isPython())
+      print(L" : ");
+    print(isTypescript() ? L"null!" : nullPtr());
+    if (parenthesize) print(L")");
+  }
 
 protected:
   void printCase(const CompressedTokenSet *lookahead, size_t k, Node *c, int backtrackedCaseId);
