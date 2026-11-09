@@ -1,4 +1,4 @@
-// This file was generated on Tue Oct 20, 2026 19:55 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Nov 9, 2026 21:16 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintTypescript.cpp.template
                                                             #line 1 "PrintTypescript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -253,17 +253,14 @@
                                                               increaseIndent(i);
                                                               if (trace)
                                                               {
-                                                            #line 257 "PrintTypescript.cpp"
-  append(L"\n");
-  append(L"parser.flushTrace();");
-                                                            #line 160 "PrintTypescript.cpp.template"
+                                                                print(withinThread && useGlr ? L"\nthis.parser.flushTrace();" : L"\nthis.flushTrace();");
                                                               }
                                                               decreaseIndent(i);
                                                             }
 
                                                             void PrintTypescript::printGlrParseMethod()
                                                             {
-                                                            #line 267 "PrintTypescript.cpp"
+                                                            #line 264 "PrintTypescript.cpp"
   append(L"\n");
   append(L"public static PARSING = 0;\n");
   append(L"public static ACCEPTED = 1;\n");
@@ -273,22 +270,22 @@
                                                             #line 171 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 277 "PrintTypescript.cpp"
+                                                            #line 274 "PrintTypescript.cpp"
   append(L"eventHandler: BottomUpEventHandler | null, ");
                                                             #line 174 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 281 "PrintTypescript.cpp"
+                                                            #line 278 "PrintTypescript.cpp"
   append(L"thread: ParsingThread): ParsingThread\n");
   append(L"{\n");
   append(L"  var threads: Heap = thread.open(initialState");
                                                             #line 177 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 288 "PrintTypescript.cpp"
+                                                            #line 285 "PrintTypescript.cpp"
   append(L", eventHandler, target");
                                                             #line 180 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 292 "PrintTypescript.cpp"
+                                                            #line 289 "PrintTypescript.cpp"
   append(L");\n");
   append(L"  while (true)\n");
   append(L"  {\n");
@@ -298,7 +295,7 @@
                                                             #line 186 "PrintTypescript.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 302 "PrintTypescript.cpp"
+                                                            #line 299 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      var other = null;\n");
   append(L"      while (! threads.isEmpty())\n");
@@ -316,18 +313,18 @@
                                                             #line 201 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 320 "PrintTypescript.cpp"
+                                                            #line 317 "PrintTypescript.cpp"
   append(L", thread.deferredEvent!, other.deferredEvent!");
                                                             #line 203 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 324 "PrintTypescript.cpp"
+                                                            #line 321 "PrintTypescript.cpp"
   append(L");\n");
   append(L"      }");
                                                             #line 205 "PrintTypescript.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 331 "PrintTypescript.cpp"
+                                                            #line 328 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      while (! threads.isEmpty())\n");
   append(L"      {\n");
@@ -338,7 +335,7 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 342 "PrintTypescript.cpp"
+                                                            #line 339 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (thread.deferredEvent != null)\n");
   append(L"      {\n");
@@ -349,12 +346,12 @@
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 353 "PrintTypescript.cpp"
+                                                            #line 350 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
                                                             #line 225 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 358 "PrintTypescript.cpp"
+                                                            #line 355 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      return thread;\n");
   append(L"    }\n");
@@ -362,7 +359,7 @@
                                                             #line 230 "PrintTypescript.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 366 "PrintTypescript.cpp"
+                                                            #line 363 "PrintTypescript.cpp"
   append(L"    if (! threads.isEmpty())\n");
   append(L"    {\n");
   append(L"      if (threads.peek().equals(thread))\n");
@@ -371,11 +368,11 @@
                                                             #line 236 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 375 "PrintTypescript.cpp"
+                                                            #line 372 "PrintTypescript.cpp"
   append(L", thread.deferredEvent!, threads.peek().deferredEvent!");
                                                             #line 238 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 379 "PrintTypescript.cpp"
+                                                            #line 376 "PrintTypescript.cpp"
   append(L");\n");
   append(L"      }\n");
   append(L"    }");
@@ -383,7 +380,7 @@
                                                               }
                                                               else
                                                               {
-                                                            #line 387 "PrintTypescript.cpp"
+                                                            #line 384 "PrintTypescript.cpp"
   append(L"    while (! threads.isEmpty() && threads.peek().equals(thread))\n");
   append(L"    {\n");
   append(L"      thread = this.resolve(thread, threads.poll());\n");
@@ -394,7 +391,7 @@
                                                               {
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 398 "PrintTypescript.cpp"
+                                                            #line 395 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    else\n");
   append(L"    {");
@@ -402,7 +399,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 406 "PrintTypescript.cpp"
+                                                            #line 403 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    if (threads.isEmpty())\n");
   append(L"    {");
@@ -410,7 +407,7 @@
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 414 "PrintTypescript.cpp"
+                                                            #line 411 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (thread.deferredEvent != null)\n");
   append(L"      {\n");
@@ -421,17 +418,17 @@
                                                                 }
                                                                 if (hasCustomCode)
                                                                 {
-                                                            #line 425 "PrintTypescript.cpp"
+                                                            #line 422 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
                                                             #line 271 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 430 "PrintTypescript.cpp"
+                                                            #line 427 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    }");
                                                             #line 273 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 435 "PrintTypescript.cpp"
+                                                            #line 432 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    var status = Parser.PARSING;\n");
@@ -459,23 +456,23 @@
                                                             #line 298 "PrintTypescript.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 463 "PrintTypescript.cpp"
+                                                            #line 460 "PrintTypescript.cpp"
   append(L"\n");
   append(L"private rejectAmbiguity(begin: number, end: number");
                                                             #line 301 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 469 "PrintTypescript.cpp"
+                                                            #line 466 "PrintTypescript.cpp"
   append(L", first: DeferredEvent, second: DeferredEvent");
                                                             #line 303 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 473 "PrintTypescript.cpp"
+                                                            #line 470 "PrintTypescript.cpp"
   append(L"): void\n");
   append(L"{");
                                                             #line 305 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 479 "PrintTypescript.cpp"
+                                                            #line 476 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var treeBuilder = new ParseTreeBuilder();\n");
   append(L"  treeBuilder.reset(this.input);\n");
@@ -488,18 +485,18 @@
   append(L"  treeBuilder.nonterminal(\"AMBIGUOUS\", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);");
                                                             #line 317 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 492 "PrintTypescript.cpp"
+                                                            #line 489 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var exception = new ParseException(begin, end, -1, -1, -1);\n");
   append(L"  exception.setAmbiguousInput(");
                                                             #line 320 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 499 "PrintTypescript.cpp"
+                                                            #line 496 "PrintTypescript.cpp"
   append(L"treeBuilder");
                                                             #line 322 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 503 "PrintTypescript.cpp"
+                                                            #line 500 "PrintTypescript.cpp"
   append(L");\n");
   append(L"  throw exception;\n");
   append(L"}");
@@ -507,14 +504,14 @@
                                                               }
                                                               else
                                                               {
-                                                            #line 511 "PrintTypescript.cpp"
+                                                            #line 508 "PrintTypescript.cpp"
   append(L"\n");
   append(L"private resolve(thread: ParsingThread, other: ParsingThread): ParsingThread\n");
   append(L"{");
                                                             #line 330 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 518 "PrintTypescript.cpp"
+                                                            #line 515 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var a: StackNode | null = thread.stack;\n");
   append(L"  var b: StackNode | null = other.stack;\n");
@@ -527,12 +524,12 @@
   append(L"  }");
                                                             #line 341 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 531 "PrintTypescript.cpp"
+                                                            #line 528 "PrintTypescript.cpp"
   append(L"\n");
                                                             #line 343 "PrintTypescript.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 536 "PrintTypescript.cpp"
+                                                            #line 533 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var ea: DeferredEvent | null = thread.deferredEvent;\n");
   append(L"  var eb: DeferredEvent | null = other.deferredEvent;\n");
@@ -564,7 +561,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 568 "PrintTypescript.cpp"
+                                                            #line 565 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  if (other.eventCount < thread.eventCount)\n");
   append(L"    thread = other;");
@@ -572,30 +569,30 @@
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 576 "PrintTypescript.cpp"
+                                                            #line 573 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  thread.addAmbiguity(begin, thread.e0);");
                                                             #line 380 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 581 "PrintTypescript.cpp"
+                                                            #line 578 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  return thread;\n");
   append(L"}");
                                                             #line 383 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 587 "PrintTypescript.cpp"
+                                                            #line 584 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"private thread!: ParsingThread;");
                                                             #line 386 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 594 "PrintTypescript.cpp"
+                                                            #line 591 "PrintTypescript.cpp"
   append(L"\n");
   append(L"private eventHandler!: BottomUpEventHandler | null;");
                                                             #line 389 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 599 "PrintTypescript.cpp"
+                                                            #line 596 "PrintTypescript.cpp"
   append(L"\n");
   append(L"public input!: string;\n");
   append(L"public size!: number;\n");
@@ -605,7 +602,7 @@
 
                                                             void PrintTypescript::openStackNode()
                                                             {
-                                                            #line 609 "PrintTypescript.cpp"
+                                                            #line 606 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class StackNode\n");
   append(L"{\n");
@@ -613,12 +610,12 @@
                                                             #line 400 "PrintTypescript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 617 "PrintTypescript.cpp"
+                                                            #line 614 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private code: number;");
                                                             #line 403 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 622 "PrintTypescript.cpp"
+                                                            #line 619 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  public pos: number;\n");
   append(L"  public link: StackNode | null;\n");
@@ -627,23 +624,23 @@
                                                             #line 408 "PrintTypescript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 631 "PrintTypescript.cpp"
+                                                            #line 628 "PrintTypescript.cpp"
   append(L"code: number, ");
                                                             #line 410 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 635 "PrintTypescript.cpp"
+                                                            #line 632 "PrintTypescript.cpp"
   append(L"pos: number, link: StackNode | null)\n");
   append(L"  {\n");
   append(L"    this.state = state;");
                                                             #line 413 "PrintTypescript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 642 "PrintTypescript.cpp"
+                                                            #line 639 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.code = code;");
                                                             #line 416 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 647 "PrintTypescript.cpp"
+                                                            #line 644 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.pos = pos;\n");
   append(L"    this.link = link;\n");
@@ -660,12 +657,12 @@
                                                             #line 429 "PrintTypescript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 664 "PrintTypescript.cpp"
+                                                            #line 661 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (lhs.code != rhs.code) return false;");
                                                             #line 432 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 669 "PrintTypescript.cpp"
+                                                            #line 666 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (lhs.pos != rhs.pos) return false;\n");
   append(L"      lhs = lhs.link;\n");
@@ -680,13 +677,13 @@
                                                             void PrintTypescript::closeStackNode()
                                                             {
                                                               decreaseIndent();
-                                                            #line 684 "PrintTypescript.cpp"
+                                                            #line 681 "PrintTypescript.cpp"
   append(L"\n");
   append(L"}\n");
                                                             #line 448 "PrintTypescript.cpp.template"
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 690 "PrintTypescript.cpp"
+                                                            #line 687 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class DeferredCode\n");
   append(L"{\n");
@@ -707,7 +704,7 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 711 "PrintTypescript.cpp"
+                                                            #line 708 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class DeferredEvent\n");
   append(L"{\n");
@@ -719,7 +716,7 @@
                                                             #line 476 "PrintTypescript.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 723 "PrintTypescript.cpp"
+                                                            #line 720 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private depth: number;\n");
   append(L"\n");
@@ -728,7 +725,7 @@
   append(L"  isTerminal(): boolean {return this.count == -1;}");
                                                             #line 483 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 732 "PrintTypescript.cpp"
+                                                            #line 729 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  constructor(link: DeferredEvent | null, name: string, begin: number, end: number, count: number)\n");
@@ -742,12 +739,12 @@
                                                             #line 493 "PrintTypescript.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 746 "PrintTypescript.cpp"
+                                                            #line 743 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.depth = link == null ? 1 : link.depth + 1;");
                                                             #line 496 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 751 "PrintTypescript.cpp"
+                                                            #line 748 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  }\n");
   append(L"\n");
@@ -757,7 +754,7 @@
                                                             #line 502 "PrintTypescript.cpp.template"
                                                                 if (resolvesAmbiguity)
                                                                 {
-                                                            #line 761 "PrintTypescript.cpp"
+                                                            #line 758 "PrintTypescript.cpp"
   append(L"if (this.count == -2)\n");
   append(L"    {\n");
   append(L"      eventHandler.ambiguity(this.begin, this.end);\n");
@@ -765,7 +762,7 @@
   append(L"    else ");
                                                             #line 508 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 769 "PrintTypescript.cpp"
+                                                            #line 766 "PrintTypescript.cpp"
   append(L"if (this.count < 0)\n");
   append(L"    {\n");
   append(L"      eventHandler.terminal(this.name, this.begin, this.end);\n");
@@ -794,12 +791,12 @@
                                                             #line 533 "PrintTypescript.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 798 "PrintTypescript.cpp"
+                                                            #line 795 "PrintTypescript.cpp"
   append(L"if (eventHandler != null)\n");
   append(L"        ");
                                                             #line 536 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 803 "PrintTypescript.cpp"
+                                                            #line 800 "PrintTypescript.cpp"
   append(L"current.execute(eventHandler);\n");
   append(L"      current = current.link;\n");
   append(L"    }\n");
@@ -821,7 +818,7 @@
   append(L"}\n");
                                                             #line 556 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 825 "PrintTypescript.cpp"
+                                                            #line 822 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class Heap\n");
   append(L"{\n");
@@ -891,7 +888,7 @@
 
                                                             void PrintTypescript::openThread()
                                                             {
-                                                            #line 895 "PrintTypescript.cpp"
+                                                            #line 892 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class ParsingThread\n");
   append(L"{\n");
@@ -905,61 +902,61 @@
                                                             #line 634 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 909 "PrintTypescript.cpp"
+                                                            #line 906 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  public deferredEvent!: DeferredEvent | null;\n");
   append(L"  private es!: number;");
                                                             #line 638 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 915 "PrintTypescript.cpp"
+                                                            #line 912 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private bw!: number;\n");
   append(L"  private bs!: number;");
                                                             #line 641 "PrintTypescript.cpp.template"
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 922 "PrintTypescript.cpp"
+                                                            #line 919 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  public deferredCode!: DeferredCode | null;");
                                                             #line 644 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 927 "PrintTypescript.cpp"
+                                                            #line 924 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private id!: number;");
                                                             #line 646 "PrintTypescript.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 933 "PrintTypescript.cpp"
+                                                            #line 930 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  public eventCount!: number;");
                                                             #line 649 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 938 "PrintTypescript.cpp"
+                                                            #line 935 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  open(initialState: number");
                                                             #line 652 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 945 "PrintTypescript.cpp"
+                                                            #line 942 "PrintTypescript.cpp"
   append(L", eventHandler: BottomUpEventHandler | null, target: number");
                                                             #line 655 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 949 "PrintTypescript.cpp"
+                                                            #line 946 "PrintTypescript.cpp"
   append(L"): Heap\n");
   append(L"  {\n");
   append(L"    this.accepted = false;");
                                                             #line 658 "PrintTypescript.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 956 "PrintTypescript.cpp"
+                                                            #line 953 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.eventCount = 0;");
                                                             #line 661 "PrintTypescript.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 963 "PrintTypescript.cpp"
+                                                            #line 960 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    if (eventHandler != null)\n");
   append(L"    {\n");
@@ -972,36 +969,36 @@
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 976 "PrintTypescript.cpp"
+                                                            #line 973 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.deferredCode = null;");
                                                             #line 675 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 981 "PrintTypescript.cpp"
+                                                            #line 978 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.stack = new StackNode(-1, ");
                                                             #line 677 "PrintTypescript.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 987 "PrintTypescript.cpp"
+                                                            #line 984 "PrintTypescript.cpp"
   append(L"0, ");
                                                             #line 679 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 991 "PrintTypescript.cpp"
+                                                            #line 988 "PrintTypescript.cpp"
   append(L"this.e0, null);\n");
   append(L"    this.state = initialState;\n");
   append(L"    this.action = this.predict(initialState);");
                                                             #line 682 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 998 "PrintTypescript.cpp"
+                                                            #line 995 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.bw = this.e0;\n");
   append(L"    this.bs = this.e0;\n");
   append(L"    this.es = this.e0;");
                                                             #line 687 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1005 "PrintTypescript.cpp"
+                                                            #line 1002 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.threads = new Heap();\n");
   append(L"    this.threads.offer(this);\n");
@@ -1020,14 +1017,14 @@
                                                             #line 702 "PrintTypescript.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 1024 "PrintTypescript.cpp"
+                                                            #line 1021 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.eventCount = other.eventCount;");
                                                             #line 705 "PrintTypescript.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1031 "PrintTypescript.cpp"
+                                                            #line 1028 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.bs = other.bs;\n");
   append(L"    this.es = other.es;\n");
@@ -1039,12 +1036,12 @@
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 1043 "PrintTypescript.cpp"
+                                                            #line 1040 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.deferredCode = other.deferredCode;");
                                                             #line 718 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1048 "PrintTypescript.cpp"
+                                                            #line 1045 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.id = ++this.parser.maxId;\n");
   append(L"    this.b0 = other.b0;\n");
@@ -1077,7 +1074,7 @@
                                                             #line 748 "PrintTypescript.cpp.template"
                                                               if (resolvesAmbiguity && tree)
                                                               {
-                                                            #line 1081 "PrintTypescript.cpp"
+                                                            #line 1078 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  addAmbiguity(begin: number, end: number)\n");
   append(L"  {\n");
@@ -1088,7 +1085,7 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1092 "PrintTypescript.cpp"
+                                                            #line 1089 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  release()\n");
   append(L"  {\n");
@@ -1100,7 +1097,7 @@
   append(L"  }\n");
                                                             #line 768 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1104 "PrintTypescript.cpp"
+                                                            #line 1101 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  parse()\n");
   append(L"  {");
@@ -1115,7 +1112,7 @@
                                                                                              bool constant,
                                                                                              const wchar_t *clazz)
                                                             {
-                                                            #line 1119 "PrintTypescript.cpp"
+                                                            #line 1116 "PrintTypescript.cpp"
   append(L"\n");
                                                             #line 782 "PrintTypescript.cpp.template"
                                                               if (isPublic)
@@ -1124,12 +1121,12 @@
                                                               }
                                                               else
                                                               {
-                                                            #line 1128 "PrintTypescript.cpp"
+                                                            #line 1125 "PrintTypescript.cpp"
   append(L"private ");
                                                             #line 788 "PrintTypescript.cpp.template"
                                                                 print(name);
                                                               }
-                                                            #line 1133 "PrintTypescript.cpp"
+                                                            #line 1130 "PrintTypescript.cpp"
   append(L"(");
                                                             #line 790 "PrintTypescript.cpp.template"
                                                               bool ignore = true;
@@ -1161,7 +1158,7 @@
                                                                       if (*t == L'|') print(L" | "); else print(*t);
                                                                 }
                                                               }
-                                                            #line 1165 "PrintTypescript.cpp"
+                                                            #line 1162 "PrintTypescript.cpp"
   append(L")");
                                                             #line 819 "PrintTypescript.cpp.template"
                                                               if (*type)
@@ -1175,7 +1172,7 @@
                                                             {
                                                               if (trace)
                                                               {
-                                                            #line 1179 "PrintTypescript.cpp"
+                                                            #line 1176 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private lookaheadString(): string\n");
   append(L"  {\n");
@@ -1183,45 +1180,45 @@
   append(L"    if (");
                                                             #line 834 "PrintTypescript.cpp.template"
                                                                 print(thiz());
-                                                            #line 1187 "PrintTypescript.cpp"
+                                                            #line 1184 "PrintTypescript.cpp"
   append(L"l1 > 0)\n");
   append(L"    {\n");
   append(L"      result += ");
                                                             #line 837 "PrintTypescript.cpp.template"
                                                                 print(staticPrefix());
-                                                            #line 1193 "PrintTypescript.cpp"
+                                                            #line 1190 "PrintTypescript.cpp"
   append(L"TOKEN[");
                                                             #line 838 "PrintTypescript.cpp.template"
                                                                 print(thiz());
-                                                            #line 1197 "PrintTypescript.cpp"
+                                                            #line 1194 "PrintTypescript.cpp"
   append(L"l1];");
                                                             #line 839 "PrintTypescript.cpp.template"
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 1202 "PrintTypescript.cpp"
+                                                            #line 1199 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (");
                                                             #line 842 "PrintTypescript.cpp.template"
                                                                   print(thiz());
-                                                            #line 1207 "PrintTypescript.cpp"
+                                                            #line 1204 "PrintTypescript.cpp"
   append(L"l");
                                                             #line 843 "PrintTypescript.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1211 "PrintTypescript.cpp"
+                                                            #line 1208 "PrintTypescript.cpp"
   append(L" > 0)\n");
   append(L"      {\n");
   append(L"        result += \" \" + ");
                                                             #line 846 "PrintTypescript.cpp.template"
                                                                   print(staticPrefix());
-                                                            #line 1217 "PrintTypescript.cpp"
+                                                            #line 1214 "PrintTypescript.cpp"
   append(L"TOKEN[");
                                                             #line 847 "PrintTypescript.cpp.template"
                                                                   print(thiz());
-                                                            #line 1221 "PrintTypescript.cpp"
+                                                            #line 1218 "PrintTypescript.cpp"
   append(L"l");
                                                             #line 848 "PrintTypescript.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1225 "PrintTypescript.cpp"
+                                                            #line 1222 "PrintTypescript.cpp"
   append(L"];");
                                                             #line 849 "PrintTypescript.cpp.template"
                                                                   increaseIndent();
@@ -1229,12 +1226,12 @@
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 1233 "PrintTypescript.cpp"
+                                                            #line 1230 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      }");
                                                             #line 855 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 1238 "PrintTypescript.cpp"
+                                                            #line 1235 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    return result;\n");
@@ -1243,7 +1240,7 @@
                                                               }
                                                               if (needTokenFunction)
                                                               {
-                                                            #line 1247 "PrintTypescript.cpp"
+                                                            #line 1244 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private token(): number\n");
   append(L"  {\n");
@@ -1253,7 +1250,7 @@
                                                               }
                                                               if (needTokenSequenceFunction)
                                                               {
-                                                            #line 1257 "PrintTypescript.cpp"
+                                                            #line 1254 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private tokenSequence(): number\n");
   append(L"  {\n");
@@ -1262,74 +1259,74 @@
                                                             #line 876 "PrintTypescript.cpp.template"
                                                               }
                                                               const wchar_t *visibility = useGlr ? L"public" : L"private";
-                                                            #line 1266 "PrintTypescript.cpp"
+                                                            #line 1263 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  ");
                                                             #line 879 "PrintTypescript.cpp.template"
                                                               if (! isLrParser && (grammar->k > 1 || memoization || ! grammar->decisionPoints.empty()))
                                                               {
-                                                            #line 1272 "PrintTypescript.cpp"
+                                                            #line 1269 "PrintTypescript.cpp"
   append(L"private lk!: number; ");
                                                             #line 881 "PrintTypescript.cpp.template"
                                                               }
                                                               else
                                                               {
                                                                 print(wcslen(visibility), L" ");
-                                                            #line 1279 "PrintTypescript.cpp"
+                                                            #line 1276 "PrintTypescript.cpp"
   append(L"              ");
                                                             #line 885 "PrintTypescript.cpp.template"
                                                               }
                                                               print(visibility);
-                                                            #line 1284 "PrintTypescript.cpp"
+                                                            #line 1281 "PrintTypescript.cpp"
   append(L" b0!: number; ");
                                                             #line 887 "PrintTypescript.cpp.template"
                                                               print(visibility);
-                                                            #line 1288 "PrintTypescript.cpp"
+                                                            #line 1285 "PrintTypescript.cpp"
   append(L" e0!: number;");
                                                             #line 888 "PrintTypescript.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 1295 "PrintTypescript.cpp"
+                                                            #line 1292 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  ");
                                                             #line 893 "PrintTypescript.cpp.template"
                                                                 print(visibility);
-                                                            #line 1300 "PrintTypescript.cpp"
+                                                            #line 1297 "PrintTypescript.cpp"
   append(L" l");
                                                             #line 894 "PrintTypescript.cpp.template"
                                                                 print(asString);
-                                                            #line 1304 "PrintTypescript.cpp"
+                                                            #line 1301 "PrintTypescript.cpp"
   append(L"!: number; ");
                                                             #line 895 "PrintTypescript.cpp.template"
                                                                 print(visibility);
-                                                            #line 1308 "PrintTypescript.cpp"
+                                                            #line 1305 "PrintTypescript.cpp"
   append(L" b");
                                                             #line 896 "PrintTypescript.cpp.template"
                                                                 print(asString);
-                                                            #line 1312 "PrintTypescript.cpp"
+                                                            #line 1309 "PrintTypescript.cpp"
   append(L"!: number; ");
                                                             #line 897 "PrintTypescript.cpp.template"
                                                                 print(visibility);
-                                                            #line 1316 "PrintTypescript.cpp"
+                                                            #line 1313 "PrintTypescript.cpp"
   append(L" e");
                                                             #line 898 "PrintTypescript.cpp.template"
                                                                 print(asString);
-                                                            #line 1320 "PrintTypescript.cpp"
+                                                            #line 1317 "PrintTypescript.cpp"
   append(L"!: number;");
                                                             #line 899 "PrintTypescript.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 1326 "PrintTypescript.cpp"
+                                                            #line 1323 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private bx!: number; private ex!: number; private sx!: number; private lx!: number; private tx!: number;");
                                                             #line 904 "PrintTypescript.cpp.template"
                                                               }
                                                               if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 1333 "PrintTypescript.cpp"
+                                                            #line 1330 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private iStack: number[] = [];\n");
   append(L"  private top: number = -1;");
@@ -1338,19 +1335,19 @@
 
                                                               if (tree)
                                                               {
-                                                            #line 1342 "PrintTypescript.cpp"
+                                                            #line 1339 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private eventHandler!: ");
                                                             #line 914 "PrintTypescript.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1348 "PrintTypescript.cpp"
+                                                            #line 1345 "PrintTypescript.cpp"
   append(L"BottomUpEventHandler | null;");
                                                             #line 916 "PrintTypescript.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1354 "PrintTypescript.cpp"
+                                                            #line 1351 "PrintTypescript.cpp"
   append(L"ParsingEventHandler;");
                                                             #line 919 "PrintTypescript.cpp.template"
                                                                 }
@@ -1358,18 +1355,18 @@
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 1362 "PrintTypescript.cpp"
+                                                            #line 1359 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private memo!: Memoizer;");
                                                             #line 925 "PrintTypescript.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1368 "PrintTypescript.cpp"
+                                                            #line 1365 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  private viable!: boolean;");
                                                             #line 928 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 1373 "PrintTypescript.cpp"
+                                                            #line 1370 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private memoize(i: number, e: number, v: number)\n");
@@ -1377,11 +1374,11 @@
   append(L"    ");
                                                             #line 933 "PrintTypescript.cpp.template"
                                                                 print(thiz());
-                                                            #line 1381 "PrintTypescript.cpp"
+                                                            #line 1378 "PrintTypescript.cpp"
   append(L"memo[(e << ");
                                                             #line 934 "PrintTypescript.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1385 "PrintTypescript.cpp"
+                                                            #line 1382 "PrintTypescript.cpp"
   append(L") + i] = v;\n");
   append(L"  }\n");
   append(L"\n");
@@ -1390,24 +1387,24 @@
   append(L"    var v = ");
                                                             #line 940 "PrintTypescript.cpp.template"
                                                                 print(thiz());
-                                                            #line 1394 "PrintTypescript.cpp"
+                                                            #line 1391 "PrintTypescript.cpp"
   append(L"memo[(e << ");
                                                             #line 941 "PrintTypescript.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1398 "PrintTypescript.cpp"
+                                                            #line 1395 "PrintTypescript.cpp"
   append(L") + i];\n");
   append(L"    return typeof v != \"undefined\" ? v : 0;\n");
   append(L"  }");
                                                             #line 944 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1404 "PrintTypescript.cpp"
+                                                            #line 1401 "PrintTypescript.cpp"
   append(L"\n");
                                                             #line 946 "PrintTypescript.cpp.template"
                                                             }
 
                                                             void PrintTypescript::printPlatformSpecific()
                                                             {
-                                                            #line 1411 "PrintTypescript.cpp"
+                                                            #line 1408 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var command = \"node\";\n");
   append(L"  var log = function(string) {proc.stdout.write(string);};\n");
@@ -1416,13 +1413,13 @@
                                                             #line 954 "PrintTypescript.cpp.template"
                                                               if (performanceTest)
                                                               {
-                                                            #line 1420 "PrintTypescript.cpp"
+                                                            #line 1417 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  var readDir = fs.readdirSync;\n");
   append(L"  var isDirectory = function(filename) {return fs.statSync(filename).isDirectory();};");
                                                             #line 959 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1426 "PrintTypescript.cpp"
+                                                            #line 1423 "PrintTypescript.cpp"
   append(L"\n");
                                                             #line 961 "PrintTypescript.cpp.template"
                                                             }
@@ -1431,12 +1428,12 @@
                                                             {
                                                               if (tree)
                                                               {
-                                                            #line 1435 "PrintTypescript.cpp"
+                                                            #line 1432 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class ContentCounter implements ");
                                                             #line 969 "PrintTypescript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1440 "PrintTypescript.cpp"
+                                                            #line 1437 "PrintTypescript.cpp"
   append(L".ParsingEventHandler\n");
   append(L"{\n");
   append(L"  private length = 0;\n");
@@ -1450,7 +1447,7 @@
   append(L"}\n");
                                                             #line 981 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1454 "PrintTypescript.cpp"
+                                                            #line 1451 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class ParseJob\n");
   append(L"{\n");
@@ -1459,28 +1456,28 @@
                                                             #line 986 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1463 "PrintTypescript.cpp"
+                                                            #line 1460 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  contentCounter: ContentCounter;");
                                                             #line 989 "PrintTypescript.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1469 "PrintTypescript.cpp"
+                                                            #line 1466 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  parseTreeBuilder: ");
                                                             #line 992 "PrintTypescript.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1474 "PrintTypescript.cpp"
+                                                            #line 1471 "PrintTypescript.cpp"
   append(L".ParseTreeBuilder;");
                                                             #line 993 "PrintTypescript.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1479 "PrintTypescript.cpp"
+                                                            #line 1476 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  parser: ");
                                                             #line 996 "PrintTypescript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1484 "PrintTypescript.cpp"
+                                                            #line 1481 "PrintTypescript.cpp"
   append(L".Parser | null;\n");
   append(L"\n");
   append(L"  constructor(s: string, i: string)\n");
@@ -1490,33 +1487,33 @@
                                                             #line 1002 "PrintTypescript.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1494 "PrintTypescript.cpp"
+                                                            #line 1491 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.contentCounter = new ContentCounter();");
                                                             #line 1005 "PrintTypescript.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1500 "PrintTypescript.cpp"
+                                                            #line 1497 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.parseTreeBuilder = new ");
                                                             #line 1008 "PrintTypescript.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1505 "PrintTypescript.cpp"
+                                                            #line 1502 "PrintTypescript.cpp"
   append(L".ParseTreeBuilder();");
                                                             #line 1009 "PrintTypescript.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1510 "PrintTypescript.cpp"
+                                                            #line 1507 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    this.parser = new ");
                                                             #line 1012 "PrintTypescript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1515 "PrintTypescript.cpp"
+                                                            #line 1512 "PrintTypescript.cpp"
   append(L".Parser(i");
                                                             #line 1013 "PrintTypescript.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1520 "PrintTypescript.cpp"
+                                                            #line 1517 "PrintTypescript.cpp"
   append(L", null");
                                                             #line 1015 "PrintTypescript.cpp.template"
                                                               }
@@ -1524,18 +1521,18 @@
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1528 "PrintTypescript.cpp"
+                                                            #line 1525 "PrintTypescript.cpp"
   append(L", this.parseTreeBuilder");
                                                             #line 1020 "PrintTypescript.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1534 "PrintTypescript.cpp"
+                                                            #line 1531 "PrintTypescript.cpp"
   append(L", this.contentCounter");
                                                             #line 1023 "PrintTypescript.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1539 "PrintTypescript.cpp"
+                                                            #line 1536 "PrintTypescript.cpp"
   append(L");\n");
   append(L"  }\n");
   append(L"}\n");
@@ -1577,7 +1574,7 @@
   append(L"  proc.stderr.write(\"Usage: node ");
                                                             #line 1063 "PrintTypescript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1581 "PrintTypescript.cpp"
+                                                            #line 1578 "PrintTypescript.cpp"
   append(L".js [-q] [-r N] [-t N] ENDING...\\n\");\n");
   append(L"  proc.stderr.write(\"\\n\");\n");
   append(L"  proc.stderr.write(\"  parse all files that have names ending with ENDING, in current dir and below,\\n\");\n");
@@ -1654,7 +1651,7 @@
                                                             #line 1136 "PrintTypescript.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1658 "PrintTypescript.cpp"
+                                                            #line 1655 "PrintTypescript.cpp"
   append(L"();\n");
   append(L"            if (! quiet) proc.stdout.write(\"\\n\");");
                                                             #line 1139 "PrintTypescript.cpp.template"
@@ -1662,12 +1659,12 @@
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1666 "PrintTypescript.cpp"
+                                                            #line 1663 "PrintTypescript.cpp"
   append(L"\n");
   append(L"            job.parseTreeBuilder.serialize(job.contentCounter);");
                                                             #line 1145 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 1671 "PrintTypescript.cpp"
+                                                            #line 1668 "PrintTypescript.cpp"
   append(L"\n");
   append(L"            if (job.contentCounter.getLength() != job.input.length)\n");
   append(L"            {\n");
@@ -1676,7 +1673,7 @@
   append(L"            }");
                                                             #line 1151 "PrintTypescript.cpp.template"
                                                               }
-                                                            #line 1680 "PrintTypescript.cpp"
+                                                            #line 1677 "PrintTypescript.cpp"
   append(L"\n");
   append(L"            parsed += job.input.length;\n");
   append(L"          }\n");
@@ -1685,7 +1682,7 @@
   append(L"            if (pe instanceof ");
                                                             #line 1157 "PrintTypescript.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1689 "PrintTypescript.cpp"
+                                                            #line 1686 "PrintTypescript.cpp"
   append(L".ParseException)\n");
   append(L"            {\n");
   append(L"              ++errorCount;\n");
@@ -1721,7 +1718,7 @@
 
                                                             void PrintTypescript::printReadMethod()
                                                             {
-                                                            #line 1725 "PrintTypescript.cpp"
+                                                            #line 1722 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  function read(input)\n");
   append(L"  {\n");
@@ -1756,7 +1753,7 @@
                                                               print(lexerStaticCode);
 
                                                               decreaseIndent();
-                                                            #line 1760 "PrintTypescript.cpp"
+                                                            #line 1757 "PrintTypescript.cpp"
   append(L"}\n");
                                                             #line 1224 "PrintTypescript.cpp.template"
                                                               if (useGlr)
@@ -1770,13 +1767,13 @@
                                                                 printThreadBody1();
                                                                 print(lexerInstanceCode);
                                                                 decreaseIndent();
-                                                            #line 1774 "PrintTypescript.cpp"
+                                                            #line 1771 "PrintTypescript.cpp"
   append(L"}\n");
                                                             #line 1236 "PrintTypescript.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1780 "PrintTypescript.cpp"
+                                                            #line 1777 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  export class TopDownTreeBuilder implements ParsingEventHandler\n");
   append(L"  {\n");
@@ -1883,7 +1880,7 @@
                                                             #line 1342 "PrintTypescript.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1887 "PrintTypescript.cpp"
+                                                            #line 1884 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  export class ParseTreeBuilder implements BottomUpEventHandler\n");
   append(L"  {\n");
@@ -1905,7 +1902,7 @@
                                                             #line 1361 "PrintTypescript.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 1909 "PrintTypescript.cpp"
+                                                            #line 1906 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      if (count > this.top + 1)\n");
   append(L"      {\n");
@@ -1919,7 +1916,7 @@
   append(L"      }");
                                                             #line 1373 "PrintTypescript.cpp.template"
                                                                   }
-                                                            #line 1923 "PrintTypescript.cpp"
+                                                            #line 1920 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      this.push(new Nonterminal(name, begin, end, this.pop(count)));\n");
   append(L"    }\n");
@@ -1931,7 +1928,7 @@
                                                             #line 1381 "PrintTypescript.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1935 "PrintTypescript.cpp"
+                                                            #line 1932 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public ambiguity(begin: number, end: number): void\n");
@@ -1939,7 +1936,7 @@
   append(L"    }");
                                                             #line 1387 "PrintTypescript.cpp.template"
                                                                   }
-                                                            #line 1943 "PrintTypescript.cpp"
+                                                            #line 1940 "PrintTypescript.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    public serialize(e: ParsingEventHandler): void\n");
@@ -1967,7 +1964,7 @@
                                                               }
                                                               if (! visitEpilog())
                                                               {
-                                                            #line 1971 "PrintTypescript.cpp"
+                                                            #line 1968 "PrintTypescript.cpp"
   append(L"}\n");
                                                             #line 1415 "PrintTypescript.cpp.template"
                                                               }
@@ -1976,12 +1973,12 @@
                                                               {
                                                                 if (tree)
                                                                 {
-                                                            #line 1980 "PrintTypescript.cpp"
+                                                            #line 1977 "PrintTypescript.cpp"
   append(L"\n");
   append(L"class XmlSerializer implements ");
                                                             #line 1422 "PrintTypescript.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1985 "PrintTypescript.cpp"
+                                                            #line 1982 "PrintTypescript.cpp"
   append(L".ParsingEventHandler\n");
   append(L"{\n");
   append(L"  private input!: string;\n");
@@ -2087,7 +2084,7 @@
   append(L"}\n");
                                                             #line 1526 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2091 "PrintTypescript.cpp"
+                                                            #line 2088 "PrintTypescript.cpp"
   append(L"\n");
   append(L"// main program for use with node.js\n");
   append(L"\n");
@@ -2100,30 +2097,30 @@
   append(L"  proc.stderr.write(\"Usage: node ");
                                                             #line 1536 "PrintTypescript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2104 "PrintTypescript.cpp"
+                                                            #line 2101 "PrintTypescript.cpp"
   append(L".js ");
                                                             #line 1537 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2109 "PrintTypescript.cpp"
+                                                            #line 2106 "PrintTypescript.cpp"
   append(L"[-i] ");
                                                             #line 1539 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2113 "PrintTypescript.cpp"
+                                                            #line 2110 "PrintTypescript.cpp"
   append(L"INPUT...\\n\");\n");
   append(L"  proc.stderr.write(\"\\n\");\n");
   append(L"  proc.stderr.write(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\");");
                                                             #line 1543 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2120 "PrintTypescript.cpp"
+                                                            #line 2117 "PrintTypescript.cpp"
   append(L"\n");
   append(L"  proc.stderr.write(\"\\n\");\n");
   append(L"  proc.stderr.write(\"  Option:\\n\");\n");
   append(L"  proc.stderr.write(\"    -i     indented parse tree\\n\");");
                                                             #line 1548 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2127 "PrintTypescript.cpp"
+                                                            #line 2124 "PrintTypescript.cpp"
   append(L"\n");
   append(L"}\n");
   append(L"else\n");
@@ -2135,7 +2132,7 @@
                                                             #line 1556 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2139 "PrintTypescript.cpp"
+                                                            #line 2136 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    if (arg === \"-i\")\n");
   append(L"    {\n");
@@ -2144,7 +2141,7 @@
   append(L"    }");
                                                             #line 1563 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2148 "PrintTypescript.cpp"
+                                                            #line 2145 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    var input: string;\n");
   append(L"    if (/");
@@ -2163,69 +2160,69 @@
                                                             #line 1576 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2167 "PrintTypescript.cpp"
+                                                            #line 2164 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    var s = new XmlSerializer(indent);");
                                                             #line 1579 "PrintTypescript.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 2173 "PrintTypescript.cpp"
+                                                            #line 2170 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    var t = new ");
                                                             #line 1582 "PrintTypescript.cpp.template"
                                                                     print(className.c_str());
-                                                            #line 2178 "PrintTypescript.cpp"
+                                                            #line 2175 "PrintTypescript.cpp"
   append(L".ParseTreeBuilder();");
                                                             #line 1583 "PrintTypescript.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 2183 "PrintTypescript.cpp"
+                                                            #line 2180 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    var parser = new ");
                                                             #line 1586 "PrintTypescript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2188 "PrintTypescript.cpp"
+                                                            #line 2185 "PrintTypescript.cpp"
   append(L".Parser(input");
                                                             #line 1587 "PrintTypescript.cpp.template"
                                                                 if (tree)
                                                                 {
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 2195 "PrintTypescript.cpp"
+                                                            #line 2192 "PrintTypescript.cpp"
   append(L", t");
                                                             #line 1591 "PrintTypescript.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 2201 "PrintTypescript.cpp"
+                                                            #line 2198 "PrintTypescript.cpp"
   append(L", s");
                                                             #line 1594 "PrintTypescript.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 2206 "PrintTypescript.cpp"
+                                                            #line 2203 "PrintTypescript.cpp"
   append(L");\n");
   append(L"    try\n");
   append(L"    {");
                                                             #line 1598 "PrintTypescript.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 2213 "PrintTypescript.cpp"
+                                                            #line 2210 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      parser.writeTrace(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?\" + \">\\n<trace>\\n\");");
                                                             #line 1602 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2218 "PrintTypescript.cpp"
+                                                            #line 2215 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      parser.");
                                                             #line 1604 "PrintTypescript.cpp.template"
                                                                 print(methodPrefixParse);
                                                                 print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 2224 "PrintTypescript.cpp"
+                                                            #line 2221 "PrintTypescript.cpp"
   append(L"();");
                                                             #line 1606 "PrintTypescript.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 2229 "PrintTypescript.cpp"
+                                                            #line 2226 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      parser.writeTrace(\"</trace>\\n\");\n");
   append(L"      parser.flushTrace();");
@@ -2233,12 +2230,12 @@
                                                                 }
                                                                 if (tree && isLrParser)
                                                                 {
-                                                            #line 2237 "PrintTypescript.cpp"
+                                                            #line 2234 "PrintTypescript.cpp"
   append(L"\n");
   append(L"      t.serialize(s);");
                                                             #line 1614 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2242 "PrintTypescript.cpp"
+                                                            #line 2239 "PrintTypescript.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    catch (pe)\n");
@@ -2246,7 +2243,7 @@
   append(L"      if (! (pe instanceof ");
                                                             #line 1619 "PrintTypescript.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2250 "PrintTypescript.cpp"
+                                                            #line 2247 "PrintTypescript.cpp"
   append(L".ParseException))\n");
   append(L"      {\n");
   append(L"        throw pe;\n");
@@ -2256,7 +2253,7 @@
                                                             #line 1625 "PrintTypescript.cpp.template"
                                                                 if (rejectsAmbiguity() && tree)
                                                                 {
-                                                            #line 2260 "PrintTypescript.cpp"
+                                                            #line 2257 "PrintTypescript.cpp"
   append(L"\n");
   append(L"        if (pe.isAmbiguousInput())\n");
   append(L"        {\n");
@@ -2265,7 +2262,7 @@
   append(L"        }");
                                                             #line 1632 "PrintTypescript.cpp.template"
                                                                 }
-                                                            #line 2269 "PrintTypescript.cpp"
+                                                            #line 2266 "PrintTypescript.cpp"
   append(L"\n");
   append(L"        throw parser.getErrorMessage(pe);\n");
   append(L"      }\n");

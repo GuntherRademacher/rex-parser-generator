@@ -418,7 +418,7 @@
 
   public writeTrace(trace: string)
   {
-    proc.stderr.write(trace);
+    (globalThis as any).process.stderr.write(trace);
   }
 ~                                                               if (variable("embedded").boolean())
                                                                 {
