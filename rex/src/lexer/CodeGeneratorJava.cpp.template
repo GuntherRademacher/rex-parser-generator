@@ -59,8 +59,11 @@ public class ~                                                  print(variable("
   private int begin = 0;
   private int end = 0;~                                       if (variable("nolexer").boolean())
                                                               {
+                                                                if (! variable("useGlr").boolean())
+                                                                {
 ~
-  private Lexer lexer = null;
+  private Lexer lexer = null;~                                  }
+~
   private Token token = new Token();~                         }
                                                               if (! variable("embedded").boolean())
                                                               {

@@ -1205,7 +1205,11 @@ private ParsingThread thread = new ParsingThread();~          if (tree)
 private BottomUpEventHandler eventHandler;~                   }
 ~
 private ~                                                     print(inputType());
-        ~ input = null;
+        ~ input = null;~                                      if (noLexer)
+                                                              {
+~
+private Lexer lexer = null;~                                  }
+~
 private int size = 0;
 private int maxId = 0;~                                       if (trace)
                                                               {
