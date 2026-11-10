@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Nov 4, 2026, 08:21 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Nov 10, 2026, 08:45 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * with productions from https://www.w3.org/TR/xquery-update-30/ added
@@ -878,7 +878,7 @@ InstanceofExpr
 TreatExpr
          ::= CoerceExpr ( 'treat' 'as' SequenceType )?
 CoerceExpr
-         ::= CastableExpr ( 'coerce' 'to' SequenceType )?
+         ::= CastableExpr ( 'coerce' 'as' SequenceType )?
 CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget )?
 CastExpr ::= TransformWithExpr ( 'cast' 'as' CastTarget )?
