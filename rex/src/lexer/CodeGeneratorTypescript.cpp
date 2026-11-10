@@ -1,4 +1,4 @@
-// This file was generated on Sun Nov 8, 2026 22:38 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Nov 9, 2026 21:32 (UTC+01) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorTypescript.cpp.template
                                                             #line 1 "CodeGeneratorTypescript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -753,7 +753,7 @@
   append(L"\n");
   append(L"  public writeTrace(trace: string)\n");
   append(L"  {\n");
-  append(L"    proc.stderr.write(trace);\n");
+  append(L"    (globalThis as any).process.stderr.write(trace);\n");
   append(L"  }\n");
                                                             #line 423 "CodeGeneratorTypescript.cpp.template"
                                                                 if (variable("embedded").boolean())

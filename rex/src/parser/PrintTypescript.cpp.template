@@ -156,8 +156,8 @@ export namespace ~                                              print(className.
                                                               increaseIndent(i);
                                                               if (trace)
                                                               {
-~
-parser.flushTrace();~                                         }
+                                                                print(withinThread && useGlr ? L"\nthis.parser.flushTrace();" : L"\nthis.flushTrace();");
+                                                              }
                                                               decreaseIndent(i);
                                                             }
 

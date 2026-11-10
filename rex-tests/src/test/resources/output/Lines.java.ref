@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:31 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Mon Nov 9, 2026 22:00 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Lines.ebnf -java -basex -tree
 
 import java.io.IOException;
@@ -52,9 +52,9 @@ public class Lines
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -72,25 +72,25 @@ public class Lines
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -114,31 +114,39 @@ public class Lines
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -146,16 +154,22 @@ public class Lines
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -164,7 +178,7 @@ public class Lines
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -243,7 +257,12 @@ public class Lines
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       try
       {
@@ -256,7 +275,12 @@ public class Lines
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement();
+    }
+
+    private void endElement()
     {
       try
       {
@@ -269,15 +293,16 @@ public class Lines
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement();
     }
 
     @Override
@@ -352,6 +377,16 @@ public class Lines
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -388,7 +423,7 @@ public class Lines
 
   public void parse_File()
   {
-    eventHandler.startNonterminal("File", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1(1);                  // Line | LF | EOF
     if (l1 == 1)                    // Line
     {
@@ -409,14 +444,14 @@ public class Lines
       }
     }
     consume(3);                     // EOF
-    eventHandler.endNonterminal("File", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void consume(int t)
   {
     if (l1 == t)
     {
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = 0;
     }
     else
@@ -577,12 +612,17 @@ public class Lines
     /* 0 */ 12, 14, 4, 2
   };
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "Line",
     "LF",
     "EOF"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "File"
   };
 }
 

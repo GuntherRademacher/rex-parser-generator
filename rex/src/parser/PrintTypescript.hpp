@@ -82,7 +82,7 @@ public:
   virtual const wchar_t *stringIntroducer() const {return L"";}
   virtual const wchar_t *thiz() const {return L"this.";}
   virtual const wchar_t *staticPrefix() const {return L"Parser.";}
-  virtual const wchar_t *writeTrace() const {return useGlr ? L"parser.writeTrace(" : L"this.writeTrace(";}
+  virtual const wchar_t *writeTrace() const {return useGlr ? L"this.parser.writeTrace(" : L"this.writeTrace(";}
 
   virtual const wchar_t *token()
   {
