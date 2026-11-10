@@ -313,7 +313,7 @@ declare function u:include-basex($nodes as node()*) as node()*
     )
     case processing-instruction(TOKENS) return
     (
-      u:ast("CoerceExpr ::= CastableExpr ( 'coerce' 'to' SequenceType )?"),
+      u:ast("CoerceExpr ::= CastableExpr ( 'coerce' 'as' SequenceType )?"),
       u:ast("FTFuzzyOption ::= 'fuzzy' ( IntegerLiteral 'errors' )?"),
       u:ast("BracedActions ::= EnclosedExpr 'else' BracedElseAction | EnclosedExpr"),
       u:ast("BracedElseAction ::= 'if' '(' Expr ')' BracedActions | EnclosedExpr"),
