@@ -1,19 +1,14 @@
 /* XPath 4.0 WG Review Draft
  * version https://qt4cg.org/specifications/xpath-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Sep 23, 2026, 16:07 (UTC+02)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xpath-40.html on Wed Nov 11, 2026, 10:31 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
  * adapted for REx by rexify-xquery-40.xq
  */
 
-XPath    ::= ( DefaultElementNamespaceDecl ';' )? ( NamespaceDecl ';' )* Expr EOF
-DefaultElementNamespaceDecl
-         ::= 'declare' 'default' 'element' 'namespace' URILiteral
-URILiteral
-         ::= StringLiteral
-NamespaceDecl
-         ::= 'declare' 'namespace' NCName '=' URILiteral
+FieldNameAndType
+         ::= NCName ( 'as' SequenceType )?
 NCName   ::= UnreservedNCName
            | 'ancestor'
            | 'ancestor-or-self'
@@ -26,6 +21,7 @@ NCName   ::= UnreservedNCName
            | 'cast'
            | 'castable'
            | 'child'
+           | 'coerce'
            | 'comment'
            | 'declare'
            | 'default'
@@ -103,119 +99,6 @@ NCName   ::= UnreservedNCName
            | 'value'
            | 'with'
            | 'xnode'
-Expr     ::= ExprSingle ( ',' ExprSingle )*
-ExprSingle
-         ::= ForExpr
-           | LetExpr
-           | QuantifiedExpr
-           | IfExpr
-           | OrExpr
-ForExpr  ::= ForClause ForLetReturn
-ForClause
-         ::= 'for' ForBinding ( ',' ForBinding )*
-ForBinding
-         ::= ForItemBinding
-           | ForMemberBinding
-           | ForEntryBinding
-ForItemBinding
-         ::= VarNameAndType PositionalVar? 'in' ExprSingle
-VarNameAndType
-         ::= '$' EQName TypeDeclaration?
-EQName   ::= QName
-           | URIQualifiedName
-QName    ::= UnreservedFunctionQName
-           | 'attribute'
-           | 'comment'
-           | 'document-node'
-           | 'element'
-           | 'namespace-node'
-           | 'node'
-           | 'processing-instruction'
-           | 'schema-attribute'
-           | 'schema-element'
-           | 'text'
-           | 'xnode'
-           | 'array'
-           | 'enum'
-           | 'fn'
-           | 'function'
-           | 'if'
-           | 'item'
-           | 'jnode'
-           | 'map'
-           | 'record'
-           | 'switch'
-           | 'type'
-           | 'typeswitch'
-UnreservedFunctionQName
-         ::= NonKeywordQName
-           | 'ancestor'
-           | 'ancestor-or-self'
-           | 'and'
-           | 'as'
-           | 'at'
-           | 'but'
-           | 'cast'
-           | 'castable'
-           | 'child'
-           | 'declare'
-           | 'default'
-           | 'descendant'
-           | 'descendant-or-self'
-           | 'div'
-           | 'document'
-           | 'else'
-           | 'empty-sequence'
-           | 'eq'
-           | 'every'
-           | 'except'
-           | 'false'
-           | 'following'
-           | 'following-or-self'
-           | 'following-sibling'
-           | 'following-sibling-or-self'
-           | 'follows'
-           | 'follows-or-is'
-           | 'for'
-           | 'ge'
-           | 'gt'
-           | 'idiv'
-           | 'in'
-           | 'instance'
-           | 'intersect'
-           | 'is'
-           | 'is-not'
-           | 'key'
-           | 'le'
-           | 'let'
-           | 'lt'
-           | 'member'
-           | 'mod'
-           | 'namespace'
-           | 'ne'
-           | 'of'
-           | 'or'
-           | 'otherwise'
-           | 'parent'
-           | 'precedes'
-           | 'precedes-or-is'
-           | 'preceding'
-           | 'preceding-or-self'
-           | 'preceding-sibling'
-           | 'preceding-sibling-or-self'
-           | 'return'
-           | 'satisfies'
-           | 'self'
-           | 'some'
-           | 'then'
-           | 'to'
-           | 'treat'
-           | 'true'
-           | 'union'
-           | 'value'
-           | 'with'
-TypeDeclaration
-         ::= 'as' SequenceType
 SequenceType
          ::= 'empty-sequence' '(' ')'
            | ItemType ( OccurrenceIndicator / )
@@ -253,6 +136,100 @@ NameTestUnion
          ::= NameTest ( '|' NameTest )*
 NameTest ::= EQName
            | Wildcard
+EQName   ::= QName
+           | URIQualifiedName
+QName    ::= UnreservedFunctionQName
+           | 'attribute'
+           | 'comment'
+           | 'document-node'
+           | 'element'
+           | 'namespace-node'
+           | 'node'
+           | 'processing-instruction'
+           | 'schema-attribute'
+           | 'schema-element'
+           | 'text'
+           | 'xnode'
+           | 'array'
+           | 'enum'
+           | 'fn'
+           | 'function'
+           | 'if'
+           | 'item'
+           | 'jnode'
+           | 'map'
+           | 'record'
+           | 'switch'
+           | 'type'
+           | 'typeswitch'
+UnreservedFunctionQName
+         ::= NonKeywordQName
+           | 'ancestor'
+           | 'ancestor-or-self'
+           | 'and'
+           | 'as'
+           | 'at'
+           | 'but'
+           | 'cast'
+           | 'castable'
+           | 'child'
+           | 'coerce'
+           | 'declare'
+           | 'default'
+           | 'descendant'
+           | 'descendant-or-self'
+           | 'div'
+           | 'document'
+           | 'else'
+           | 'empty-sequence'
+           | 'eq'
+           | 'every'
+           | 'except'
+           | 'false'
+           | 'following'
+           | 'following-or-self'
+           | 'following-sibling'
+           | 'following-sibling-or-self'
+           | 'follows'
+           | 'follows-or-is'
+           | 'for'
+           | 'ge'
+           | 'gt'
+           | 'idiv'
+           | 'in'
+           | 'instance'
+           | 'intersect'
+           | 'is'
+           | 'is-not'
+           | 'key'
+           | 'le'
+           | 'let'
+           | 'lt'
+           | 'member'
+           | 'mod'
+           | 'namespace'
+           | 'ne'
+           | 'of'
+           | 'or'
+           | 'otherwise'
+           | 'parent'
+           | 'precedes'
+           | 'precedes-or-is'
+           | 'preceding'
+           | 'preceding-or-self'
+           | 'preceding-sibling'
+           | 'preceding-sibling-or-self'
+           | 'return'
+           | 'satisfies'
+           | 'self'
+           | 'some'
+           | 'then'
+           | 'to'
+           | 'treat'
+           | 'true'
+           | 'union'
+           | 'value'
+           | 'with'
 TypeName ::= EQName
 SchemaElementNodeType
          ::= 'schema-element' '(' ElementName ')'
@@ -312,8 +289,8 @@ RecordType
 AnyRecordType
          ::= 'record' '(' '*' ')'
 TypedRecordType
-         ::= 'record' '(' ( FieldDeclaration ( ',' FieldDeclaration )* )? ')'
-FieldDeclaration
+         ::= 'record' '(' ( FieldDecl ( ',' FieldDecl )* )? ')'
+FieldDecl
          ::= FieldName ( 'as' SequenceType )?
 FieldName
          ::= NCName
@@ -335,6 +312,33 @@ OccurrenceIndicator
          ::= '?'
            | '*'
            | '+'
+XPath    ::= ( DefaultElementNamespaceDecl ';' )? ( NamespaceDecl ';' )* Expr EOF
+DefaultElementNamespaceDecl
+         ::= 'declare' 'default' 'element' 'namespace' URILiteral
+URILiteral
+         ::= StringLiteral
+NamespaceDecl
+         ::= 'declare' 'namespace' NCName '=' URILiteral
+Expr     ::= ExprSingle ( ',' ExprSingle )*
+ExprSingle
+         ::= ForExpr
+           | LetExpr
+           | QuantifiedExpr
+           | IfExpr
+           | OrExpr
+ForExpr  ::= ForClause ForLetReturn
+ForClause
+         ::= 'for' ForBinding ( ',' ForBinding )*
+ForBinding
+         ::= ForItemBinding
+           | ForMemberBinding
+           | ForEntryBinding
+ForItemBinding
+         ::= VarNameAndType PositionalVar? 'in' ExprSingle
+VarNameAndType
+         ::= '$' EQName TypeDeclaration?
+TypeDeclaration
+         ::= 'as' SequenceType
 PositionalVar
          ::= 'at' VarName
 VarName  ::= '$' EQName
@@ -400,7 +404,9 @@ ButWithExpr
 InstanceofExpr
          ::= TreatExpr ( 'instance' 'of' SequenceType )?
 TreatExpr
-         ::= CastableExpr ( 'treat' 'as' SequenceType )?
+         ::= CoerceExpr ( 'treat' 'as' SequenceType )?
+CoerceExpr
+         ::= CastableExpr ( 'coerce' 'as' SequenceType )?
 CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget )?
 CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget )?
@@ -622,23 +628,6 @@ Comment  ::= '(:' ( CommentContents | Comment )* ':)'
 
 <?TOKENS?>
 
-EOF      ::= $
-StringLiteral
-         ::= AposStringLiteral
-           | QuotStringLiteral
-          /* ws: explicit */
-AposStringLiteral
-         ::= "'" ( EscapeApos | [^'] )* "'"
-          /* ws: explicit */
-EscapeApos
-         ::= "''"
-          /* ws: explicit */
-QuotStringLiteral
-         ::= '"' ( EscapeQuot | [^"] )* '"'
-          /* ws: explicit */
-EscapeQuot
-         ::= '""'
-          /* ws: explicit */
 UnreservedNCName
          ::= NCName - Keyword
 NCName   ::= Name - ( Char* ':' Char* )
@@ -684,6 +673,7 @@ Keyword  ::= 'ancestor'
            | 'cast'
            | 'castable'
            | 'child'
+           | 'coerce'
            | 'comment'
            | 'declare'
            | 'default'
@@ -761,11 +751,16 @@ Keyword  ::= 'ancestor'
            | 'value'
            | 'with'
            | 'xnode'
-URIQualifiedName
-         ::= BracedURILiteral ( NCName ':' )? NCName
+Wildcard ::= '*'
+           | NCName ':*'
+           | '*:' NCName
+           | BracedURILiteral '*'
           /* ws: explicit */
 BracedURILiteral
          ::= 'Q' '{' [^{}]* '}'
+          /* ws: explicit */
+URIQualifiedName
+         ::= BracedURILiteral ( NCName ':' )? NCName
           /* ws: explicit */
 NonKeywordQName
          ::= QName - Keyword
@@ -778,10 +773,21 @@ LocalPart
          ::= NCName
 UnprefixedName
          ::= LocalPart
-Wildcard ::= '*'
-           | NCName ':*'
-           | '*:' NCName
-           | BracedURILiteral '*'
+StringLiteral
+         ::= AposStringLiteral
+           | QuotStringLiteral
+          /* ws: explicit */
+AposStringLiteral
+         ::= "'" ( EscapeApos | [^'] )* "'"
+          /* ws: explicit */
+EscapeApos
+         ::= "''"
+          /* ws: explicit */
+QuotStringLiteral
+         ::= '"' ( EscapeQuot | [^"] )* '"'
+          /* ws: explicit */
+EscapeQuot
+         ::= '""'
           /* ws: explicit */
 IntegerLiteral
          ::= Digits
@@ -814,6 +820,7 @@ DecimalLiteral
 DoubleLiteral
          ::= ( '.' Digits | Digits ( '.' Digits? )? ) [eE] [+#x2D]? Digits
           /* ws: explicit */
+EOF      ::= $
 StringTemplateFixedPart
          ::= ( Char - ( '{' | '}' | '`' ) | '{{' | '}}' | '``' )+
           /* ws: explicit */
@@ -835,7 +842,7 @@ NumericLiteralDelimiter
            | '-'
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'but' 'cast' 'castable' 'child' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value' 'with' 'xnode'
+          \\ NonKeywordQName 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'at' 'attribute' 'but' 'cast' 'castable' 'child' 'coerce' 'comment' 'declare' 'default' 'descendant' 'descendant-or-self' 'div' 'document' 'document-node' 'element' 'else' 'empty-sequence' 'enum' 'eq' 'every' 'except' 'false' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'gt' 'idiv' 'if' 'in' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'le' 'let' 'lt' 'map' 'member' 'mod' 'namespace' 'namespace-node' 'ne' 'node' 'of' 'or' 'otherwise' 'parent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'processing-instruction' 'record' 'return' 'satisfies' 'schema-attribute' 'schema-element' 'self' 'some' 'switch' 'text' 'then' 'to' 'treat' 'true' 'type' 'typeswitch' 'union' 'value' 'with' 'xnode'
 Char      \\ '<<' '<=' '<'
 NCNameDelimiter
           \\ UnreservedNCName

@@ -289,8 +289,6 @@ declare function u:include-basex($nodes as node()*) as node()*
         <g:ref name="EQName"/>
       else if ($node/@name eq "UnreservedNCName") then
         <g:ref name="NCName"/>
-      else if ($node/@name eq "CastableExpr" and $node/ancestor::g:production/@name eq "TreatExpr") then
-        <g:ref name="CoerceExpr"/>
       else
         $node
     )
@@ -313,7 +311,6 @@ declare function u:include-basex($nodes as node()*) as node()*
     )
     case processing-instruction(TOKENS) return
     (
-      u:ast("CoerceExpr ::= CastableExpr ( 'coerce' 'as' SequenceType )?"),
       u:ast("FTFuzzyOption ::= 'fuzzy' ( IntegerLiteral 'errors' )?"),
       u:ast("BracedActions ::= EnclosedExpr 'else' BracedElseAction | EnclosedExpr"),
       u:ast("BracedElseAction ::= 'if' '(' Expr ')' BracedActions | EnclosedExpr"),

@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Nov 4, 2026, 08:19 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Nov 11, 2026, 10:27 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -36,6 +36,7 @@ NCName   ::= UnreservedNCName
            | 'castable'
            | 'catch'
            | 'child'
+           | 'coerce'
            | 'collation'
            | 'comment'
            | 'construction'
@@ -64,6 +65,7 @@ NCName   ::= UnreservedNCName
            | 'every'
            | 'except'
            | 'exponent-separator'
+           | 'extends'
            | 'external'
            | 'false'
            | 'finally'
@@ -251,6 +253,7 @@ UnreservedFunctionQName
            | 'castable'
            | 'catch'
            | 'child'
+           | 'coerce'
            | 'collation'
            | 'construction'
            | 'context'
@@ -275,6 +278,7 @@ UnreservedFunctionQName
            | 'every'
            | 'except'
            | 'exponent-separator'
+           | 'extends'
            | 'external'
            | 'false'
            | 'finally'
@@ -486,8 +490,8 @@ RecordType
 AnyRecordType
          ::= 'record' '(' '*' ')'
 TypedRecordType
-         ::= 'record' '(' ( FieldDeclaration ( ',' FieldDeclaration )* )? ')'
-FieldDeclaration
+         ::= 'record' '(' ( FieldDecl ( ',' FieldDecl )* )? ')'
+FieldDecl
          ::= FieldName ( 'as' SequenceType )?
 FieldName
          ::= NCName
@@ -675,7 +679,9 @@ ButWithExpr
 InstanceofExpr
          ::= TreatExpr ( 'instance' 'of' SequenceType )?
 TreatExpr
-         ::= CastableExpr ( 'treat' 'as' SequenceType )?
+         ::= CoerceExpr ( 'treat' 'as' SequenceType )?
+CoerceExpr
+         ::= CastableExpr ( 'coerce' 'as' SequenceType )?
 CastableExpr
          ::= CastExpr ( 'castable' 'as' CastTarget )?
 CastExpr ::= PipelineExpr ( 'cast' 'as' CastTarget )?
@@ -835,6 +841,7 @@ CompNodeName
            | 'castable'
            | 'catch'
            | 'child'
+           | 'coerce'
            | 'collation'
            | 'comment'
            | 'construction'
@@ -859,6 +866,7 @@ CompNodeName
            | 'enum'
            | 'every'
            | 'exponent-separator'
+           | 'extends'
            | 'external'
            | 'false'
            | 'finally'
@@ -970,6 +978,7 @@ CompNodeNCName
            | 'castable'
            | 'catch'
            | 'child'
+           | 'coerce'
            | 'collation'
            | 'comment'
            | 'construction'
@@ -994,6 +1003,7 @@ CompNodeNCName
            | 'enum'
            | 'every'
            | 'exponent-separator'
+           | 'extends'
            | 'external'
            | 'false'
            | 'finally'
@@ -1217,9 +1227,12 @@ ParamWithDefault
 ItemTypeDecl
          ::= 'declare' Annotation* 'type' EQName 'as' ItemType
 LabeledRecordTypeDecl
-         ::= 'declare' Annotation* 'record' EQName '(' ( ExtendedFieldDeclaration ( ',' ExtendedFieldDeclaration )* )? ')' ( 'where' ExprSingle )?
-ExtendedFieldDeclaration
-         ::= '%static'? FieldDeclaration ( ':=' ExprSingle )?
+         ::= 'declare' Annotation* 'record' EQName ( 'extends' EQName )? '(' ( LabeledFieldDecl ( ',' LabeledFieldDecl )* )? ')' ( 'where' ExprSingle )?
+LabeledFieldDecl
+         ::= FieldNameAndType ( ':=' ExprSingle )?
+           | '%fixed' FieldNameAndType ':=' ExprSingle
+FieldNameAndType
+         ::= NCName ( 'as' SequenceType )?
 OptionDecl
          ::= 'declare' 'option' EQName StringLiteral
 MainModule
@@ -1310,6 +1323,7 @@ Keyword  ::= 'NaN'
            | 'castable'
            | 'catch'
            | 'child'
+           | 'coerce'
            | 'collation'
            | 'comment'
            | 'construction'
@@ -1338,6 +1352,7 @@ Keyword  ::= 'NaN'
            | 'every'
            | 'except'
            | 'exponent-separator'
+           | 'extends'
            | 'external'
            | 'false'
            | 'finally'
@@ -1541,7 +1556,7 @@ DirElemConstructorDelimiter
          ::= QName ( S QName S? '=' | S? [/>] )
 '*'       << Wildcard
 QNameOrKeywordDelimiter
-          \\ NonKeywordQName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'but' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'external' 'false' 'finally' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'parent' 'pattern-separator' 'per-mille' 'percent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'trace' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'variable' 'version' 'when' 'where' 'while' 'window' 'with' 'xnode' 'xquery' 'zero-digit'
+          \\ NonKeywordQName 'NaN' 'allowing' 'ancestor' 'ancestor-or-self' 'and' 'array' 'as' 'ascending' 'at' 'attribute' 'base-uri' 'boundary-space' 'but' 'by' 'case' 'cast' 'castable' 'catch' 'child' 'coerce' 'collation' 'comment' 'construction' 'context' 'copy-namespaces' 'count' 'decimal-format' 'decimal-separator' 'declare' 'default' 'descendant' 'descendant-or-self' 'descending' 'digit' 'div' 'document' 'document-node' 'element' 'else' 'empty' 'empty-sequence' 'encoding' 'end' 'enum' 'eq' 'every' 'except' 'exponent-separator' 'extends' 'external' 'false' 'finally' 'fixed' 'fn' 'following' 'following-or-self' 'following-sibling' 'following-sibling-or-self' 'follows' 'follows-or-is' 'for' 'function' 'ge' 'greatest' 'group' 'grouping-separator' 'gt' 'idiv' 'if' 'import' 'in' 'infinity' 'inherit' 'instance' 'intersect' 'is' 'is-not' 'item' 'jnode' 'key' 'lax' 'le' 'least' 'let' 'lt' 'map' 'member' 'minus-sign' 'mod' 'module' 'namespace' 'namespace-node' 'ne' 'next' 'no-inherit' 'no-preserve' 'node' 'of' 'only' 'option' 'or' 'order' 'ordered' 'ordering' 'otherwise' 'parent' 'pattern-separator' 'per-mille' 'percent' 'precedes' 'precedes-or-is' 'preceding' 'preceding-or-self' 'preceding-sibling' 'preceding-sibling-or-self' 'preserve' 'previous' 'processing-instruction' 'record' 'return' 'satisfies' 'schema' 'schema-attribute' 'schema-element' 'self' 'sliding' 'some' 'stable' 'start' 'strict' 'strip' 'switch' 'text' 'then' 'to' 'trace' 'treat' 'true' 'try' 'tumbling' 'type' 'typeswitch' 'union' 'unordered' 'validate' 'value' 'variable' 'version' 'when' 'where' 'while' 'window' 'with' 'xnode' 'xquery' 'zero-digit'
 Char      \\ '</' '<<' '<='
 NCNameDelimiter
           \\ UnreservedNCName
