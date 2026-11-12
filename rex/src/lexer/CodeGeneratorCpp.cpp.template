@@ -603,10 +603,18 @@
 ~
   static const int ~                                            print(a->longName);
                    ~[];~                                      }
+                                                              bool publicLabel = false;
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
+                                                                bool isPublic = (variable("tree").boolean() && variable("embedded").boolean())
+                                                                             || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
+                                                                if (isPublic != publicLabel)
+                                                                {
+                                                                  publicLabel = isPublic;
+                                                                  if(isPublic) print(L"\npublic:");
+                                                                }
 ~
   static const ~                                                print(variable("stringType").string());
                                                                 print(a->longName);

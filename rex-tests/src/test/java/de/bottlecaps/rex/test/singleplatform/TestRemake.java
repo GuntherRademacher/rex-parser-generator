@@ -8,6 +8,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -90,7 +93,7 @@ public class TestRemake extends AbstractSinglePlatformTest
       if (! Pass.isSameCode(expectedContent, actualContent)) {
         String summary = runner.summary(
                 "actual result does not match expected result, see\n"
-              + "    diff " + runner.getPath(fileName) + " " + expectedResult.getPath());
+              + "    diff " + runner.getPath(fileName) + " " + sourcePath(expectedResult.getPath()));
         if (runningInEclipse)
         {
           // when running in Eclipse test runner, show the complete diff
@@ -107,6 +110,25 @@ public class TestRemake extends AbstractSinglePlatformTest
     });
   }
 
+  // the resource is read from the build output folder, but the file to compare with
+  // (and possibly update) is the one in src/test/resources, so refer to that one
+  private static String sourcePath(String resourcePath)
+  {
+    Path path = Paths.get(resourcePath);
+    for (Path root = path.getParent(); root != null; root = root.getParent())
+    {
+      if (root.endsWith(Paths.get("build", "resources", "test")))
+      {
+        Path projectDir = root.getParent().getParent().getParent();
+        Path source = projectDir.resolve("src").resolve("test").resolve("resources").resolve(root.relativize(path));
+        if (Files.exists(source))
+          return source.toString();
+        break;
+      }
+    }
+    return resourcePath;
+  }
+
   private String rexCommandLine(String content) {
     String commandLineIntroducer = " REx command line: ";
     int begin = content.indexOf(commandLineIntroducer);
@@ -119,7 +141,7 @@ public class TestRemake extends AbstractSinglePlatformTest
         if (terminator.equals(content.substring(end - terminator.length(), end)))
           return content.substring(begin, end - terminator.length());
       }
-      return content.substring(begin, end);
+      return content.substring(begin, end).trim();
     }
     return "";
   }

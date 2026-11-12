@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 06:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 22:59 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -javascript -name JavaJS
 
 function JavaJS(string, parsingEventHandler)
@@ -75,6 +75,16 @@ function JavaJS(string, parsingEventHandler)
     return o >= 0 ? JavaJS.TOKEN[o] : null;
   };
 
+  this.getTerminalName = function(id)
+  {
+    return JavaJS.TOKEN[id];
+  };
+
+  this.getNonterminalName = function(id)
+  {
+    return JavaJS.NONTERMINAL[id];
+  };
+
   this.getExpectedTokenSet = function(e)
   {
     var expected;
@@ -112,7 +122,7 @@ function JavaJS(string, parsingEventHandler)
 
   this.parse_compilationUnit = function()
   {
-    eventHandler.startNonterminal("compilationUnit", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1W(80);                // ENUM | WS | COMMENT | LINE_COMMENT | EOF | ';' | '@' | 'abstract' | 'class' |
                                     // 'final' | 'import' | 'interface' | 'package' | 'private' | 'protected' |
                                     // 'public' | 'static' | 'strictfp'
@@ -271,18 +281,18 @@ function JavaJS(string, parsingEventHandler)
       }
     }
     consume(13);                    // EOF
-    eventHandler.endNonterminal("compilationUnit", e0);
+    eventHandler.endNonterminal(0, e0);
   };
 
   function parse_packageDeclaration()
   {
-    eventHandler.startNonterminal("packageDeclaration", e0);
+    eventHandler.startNonterminal(1, e0);
     consume(85);                    // 'package'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
     parse_qualifiedName();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("packageDeclaration", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   function try_packageDeclaration()
@@ -295,7 +305,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_importDeclaration()
   {
-    eventHandler.startNonterminal("importDeclaration", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(77);                    // 'import'
     lookahead1W(24);                // Identifier | WS | COMMENT | LINE_COMMENT | 'static'
     if (l1 == 91)                   // 'static'
@@ -313,7 +323,7 @@ function JavaJS(string, parsingEventHandler)
     }
     lookahead1W(6);                 // WS | COMMENT | LINE_COMMENT | ';'
     consume(37);                    // ';'
-    eventHandler.endNonterminal("importDeclaration", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   function try_importDeclaration()
@@ -338,7 +348,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeDeclaration()
   {
-    eventHandler.startNonterminal("typeDeclaration", e0);
+    eventHandler.startNonterminal(3, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -347,7 +357,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_classOrInterfaceDeclaration();
     }
-    eventHandler.endNonterminal("typeDeclaration", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   function try_typeDeclaration()
@@ -364,7 +374,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classOrInterfaceDeclaration()
   {
-    eventHandler.startNonterminal("classOrInterfaceDeclaration", e0);
+    eventHandler.startNonterminal(4, e0);
     parse_classOrInterfaceModifiers();
     switch (l1)
     {
@@ -377,7 +387,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_interfaceDeclaration();
     }
-    eventHandler.endNonterminal("classOrInterfaceDeclaration", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   function try_classOrInterfaceDeclaration()
@@ -396,7 +406,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classOrInterfaceModifiers()
   {
-    eventHandler.startNonterminal("classOrInterfaceModifiers", e0);
+    eventHandler.startNonterminal(5, e0);
     for (;;)
     {
       lookahead1W(74);              // ENUM | WS | COMMENT | LINE_COMMENT | '@' | 'abstract' | 'class' | 'final' |
@@ -419,7 +429,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_classOrInterfaceModifier();
     }
-    eventHandler.endNonterminal("classOrInterfaceModifiers", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   function try_classOrInterfaceModifiers()
@@ -449,7 +459,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classOrInterfaceModifier()
   {
-    eventHandler.startNonterminal("classOrInterfaceModifier", e0);
+    eventHandler.startNonterminal(6, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -476,7 +486,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(92);                  // 'strictfp'
     }
-    eventHandler.endNonterminal("classOrInterfaceModifier", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   function try_classOrInterfaceModifier()
@@ -511,7 +521,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_modifiers()
   {
-    eventHandler.startNonterminal("modifiers", e0);
+    eventHandler.startNonterminal(7, e0);
     for (;;)
     {
       lookahead1W(85);              // ENUM | Identifier | WS | COMMENT | LINE_COMMENT | '<' | '@' | 'abstract' |
@@ -544,7 +554,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_modifier();
     }
-    eventHandler.endNonterminal("modifiers", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   function try_modifiers()
@@ -584,7 +594,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classDeclaration()
   {
-    eventHandler.startNonterminal("classDeclaration", e0);
+    eventHandler.startNonterminal(8, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -593,7 +603,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_enumDeclaration();
     }
-    eventHandler.endNonterminal("classDeclaration", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   function try_classDeclaration()
@@ -610,7 +620,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_normalClassDeclaration()
   {
-    eventHandler.startNonterminal("normalClassDeclaration", e0);
+    eventHandler.startNonterminal(9, e0);
     consume(63);                    // 'class'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -639,7 +649,7 @@ function JavaJS(string, parsingEventHandler)
     }
     whitespace();
     parse_classBody();
-    eventHandler.endNonterminal("normalClassDeclaration", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   function try_normalClassDeclaration()
@@ -672,7 +682,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeParameters()
   {
-    eventHandler.startNonterminal("typeParameters", e0);
+    eventHandler.startNonterminal(10, e0);
     consume(38);                    // '<'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -689,7 +699,7 @@ function JavaJS(string, parsingEventHandler)
       parse_typeParameter();
     }
     consume(44);                    // '>'
-    eventHandler.endNonterminal("typeParameters", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   function try_typeParameters()
@@ -712,7 +722,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeParameter()
   {
-    eventHandler.startNonterminal("typeParameter", e0);
+    eventHandler.startNonterminal(11, e0);
     consume(9);                     // Identifier
     lookahead1W(48);                // WS | COMMENT | LINE_COMMENT | ',' | '>' | 'extends'
     if (l1 == 69)                   // 'extends'
@@ -723,7 +733,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_typeBound();
     }
-    eventHandler.endNonterminal("typeParameter", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   function try_typeParameter()
@@ -741,7 +751,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeBound()
   {
-    eventHandler.startNonterminal("typeBound", e0);
+    eventHandler.startNonterminal(12, e0);
     parse_type();
     for (;;)
     {
@@ -755,7 +765,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("typeBound", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   function try_typeBound()
@@ -776,7 +786,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumDeclaration()
   {
-    eventHandler.startNonterminal("enumDeclaration", e0);
+    eventHandler.startNonterminal(13, e0);
     consume(7);                     // ENUM
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -791,7 +801,7 @@ function JavaJS(string, parsingEventHandler)
     }
     whitespace();
     parse_enumBody();
-    eventHandler.endNonterminal("enumDeclaration", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   function try_enumDeclaration()
@@ -812,7 +822,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumBody()
   {
-    eventHandler.startNonterminal("enumBody", e0);
+    eventHandler.startNonterminal(14, e0);
     consume(105);                   // '{'
     lookahead1W(62);                // Identifier | WS | COMMENT | LINE_COMMENT | ',' | ';' | '@' | '}'
     if (l1 == 9                     // Identifier
@@ -832,7 +842,7 @@ function JavaJS(string, parsingEventHandler)
       parse_enumBodyDeclarations();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("enumBody", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   function try_enumBody()
@@ -858,7 +868,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumConstants()
   {
-    eventHandler.startNonterminal("enumConstants", e0);
+    eventHandler.startNonterminal(15, e0);
     parse_enumConstant();
     for (;;)
     {
@@ -881,7 +891,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_enumConstant();
     }
-    eventHandler.endNonterminal("enumConstants", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   function try_enumConstants()
@@ -911,7 +921,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumConstant()
   {
-    eventHandler.startNonterminal("enumConstant", e0);
+    eventHandler.startNonterminal(16, e0);
     if (l1 == 51)                   // '@'
     {
       whitespace();
@@ -930,7 +940,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_classBody();
     }
-    eventHandler.endNonterminal("enumConstant", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   function try_enumConstant()
@@ -954,7 +964,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumBodyDeclarations()
   {
-    eventHandler.startNonterminal("enumBodyDeclarations", e0);
+    eventHandler.startNonterminal(17, e0);
     consume(37);                    // ';'
     for (;;)
     {
@@ -970,7 +980,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_classBodyDeclaration();
     }
-    eventHandler.endNonterminal("enumBodyDeclarations", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   function try_enumBodyDeclarations()
@@ -993,7 +1003,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceDeclaration()
   {
-    eventHandler.startNonterminal("interfaceDeclaration", e0);
+    eventHandler.startNonterminal(18, e0);
     switch (l1)
     {
     case 80:                        // 'interface'
@@ -1002,7 +1012,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_annotationTypeDeclaration();
     }
-    eventHandler.endNonterminal("interfaceDeclaration", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   function try_interfaceDeclaration()
@@ -1019,7 +1029,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_normalInterfaceDeclaration()
   {
-    eventHandler.startNonterminal("normalInterfaceDeclaration", e0);
+    eventHandler.startNonterminal(19, e0);
     consume(80);                    // 'interface'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1040,7 +1050,7 @@ function JavaJS(string, parsingEventHandler)
     }
     whitespace();
     parse_interfaceBody();
-    eventHandler.endNonterminal("normalInterfaceDeclaration", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   function try_normalInterfaceDeclaration()
@@ -1066,7 +1076,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeList()
   {
-    eventHandler.startNonterminal("typeList", e0);
+    eventHandler.startNonterminal(20, e0);
     parse_type();
     for (;;)
     {
@@ -1080,7 +1090,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("typeList", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   function try_typeList()
@@ -1101,7 +1111,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classBody()
   {
-    eventHandler.startNonterminal("classBody", e0);
+    eventHandler.startNonterminal(21, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1118,7 +1128,7 @@ function JavaJS(string, parsingEventHandler)
       parse_classBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("classBody", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   function try_classBody()
@@ -1142,7 +1152,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceBody()
   {
-    eventHandler.startNonterminal("interfaceBody", e0);
+    eventHandler.startNonterminal(22, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1158,7 +1168,7 @@ function JavaJS(string, parsingEventHandler)
       parse_interfaceBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("interfaceBody", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   function try_interfaceBody()
@@ -1181,7 +1191,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classBodyDeclaration()
   {
-    eventHandler.startNonterminal("classBodyDeclaration", e0);
+    eventHandler.startNonterminal(23, e0);
     switch (l1)
     {
     case 91:                        // 'static'
@@ -1213,7 +1223,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_memberDecl();
     }
-    eventHandler.endNonterminal("classBodyDeclaration", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   function try_classBodyDeclaration()
@@ -1251,7 +1261,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_memberDecl()
   {
-    eventHandler.startNonterminal("memberDecl", e0);
+    eventHandler.startNonterminal(24, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1290,7 +1300,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_memberDeclaration();
     }
-    eventHandler.endNonterminal("memberDecl", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   function try_memberDecl()
@@ -1335,7 +1345,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_memberDeclaration()
   {
-    eventHandler.startNonterminal("memberDeclaration", e0);
+    eventHandler.startNonterminal(25, e0);
     parse_type();
     switch (l1)
     {
@@ -1355,7 +1365,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_fieldDeclaration();
     }
-    eventHandler.endNonterminal("memberDeclaration", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   function try_memberDeclaration()
@@ -1381,13 +1391,13 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_genericMethodOrConstructorDecl()
   {
-    eventHandler.startNonterminal("genericMethodOrConstructorDecl", e0);
+    eventHandler.startNonterminal(26, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
     whitespace();
     parse_genericMethodOrConstructorRest();
-    eventHandler.endNonterminal("genericMethodOrConstructorDecl", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   function try_genericMethodOrConstructorDecl()
@@ -1400,7 +1410,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_genericMethodOrConstructorRest()
   {
-    eventHandler.startNonterminal("genericMethodOrConstructorRest", e0);
+    eventHandler.startNonterminal(27, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1432,7 +1442,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_methodDeclaratorRest();
     }
-    eventHandler.endNonterminal("genericMethodOrConstructorRest", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   function try_genericMethodOrConstructorRest()
@@ -1470,12 +1480,12 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_methodDeclaration()
   {
-    eventHandler.startNonterminal("methodDeclaration", e0);
+    eventHandler.startNonterminal(28, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_methodDeclaratorRest();
-    eventHandler.endNonterminal("methodDeclaration", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   function try_methodDeclaration()
@@ -1487,10 +1497,10 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_fieldDeclaration()
   {
-    eventHandler.startNonterminal("fieldDeclaration", e0);
+    eventHandler.startNonterminal(29, e0);
     parse_variableDeclarators();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("fieldDeclaration", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   function try_fieldDeclaration()
@@ -1501,7 +1511,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceBodyDeclaration()
   {
-    eventHandler.startNonterminal("interfaceBodyDeclaration", e0);
+    eventHandler.startNonterminal(30, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -1512,7 +1522,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_interfaceMemberDecl();
     }
-    eventHandler.endNonterminal("interfaceBodyDeclaration", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   function try_interfaceBodyDeclaration()
@@ -1530,7 +1540,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceMemberDecl()
   {
-    eventHandler.startNonterminal("interfaceMemberDecl", e0);
+    eventHandler.startNonterminal(31, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -1555,7 +1565,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_interfaceMethodOrFieldDecl();
     }
-    eventHandler.endNonterminal("interfaceMemberDecl", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   function try_interfaceMemberDecl()
@@ -1587,13 +1597,13 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceMethodOrFieldDecl()
   {
-    eventHandler.startNonterminal("interfaceMethodOrFieldDecl", e0);
+    eventHandler.startNonterminal(32, e0);
     parse_type();
     consume(9);                     // Identifier
     lookahead1W(45);                // WS | COMMENT | LINE_COMMENT | '(' | '=' | '['
     whitespace();
     parse_interfaceMethodOrFieldRest();
-    eventHandler.endNonterminal("interfaceMethodOrFieldDecl", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   function try_interfaceMethodOrFieldDecl()
@@ -1606,7 +1616,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceMethodOrFieldRest()
   {
-    eventHandler.startNonterminal("interfaceMethodOrFieldRest", e0);
+    eventHandler.startNonterminal(33, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -1616,7 +1626,7 @@ function JavaJS(string, parsingEventHandler)
       parse_constantDeclaratorsRest();
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("interfaceMethodOrFieldRest", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   function try_interfaceMethodOrFieldRest()
@@ -1634,7 +1644,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_methodDeclaratorRest()
   {
-    eventHandler.startNonterminal("methodDeclaratorRest", e0);
+    eventHandler.startNonterminal(34, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -1663,7 +1673,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("methodDeclaratorRest", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   function try_methodDeclaratorRest()
@@ -1698,7 +1708,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_voidMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("voidMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(35, e0);
     parse_formalParameters();
     lookahead1W(50);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -1717,7 +1727,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("voidMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   function try_voidMethodDeclaratorRest()
@@ -1742,7 +1752,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("interfaceMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(36, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -1763,7 +1773,7 @@ function JavaJS(string, parsingEventHandler)
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler.endNonterminal("interfaceMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   function try_interfaceMethodDeclaratorRest()
@@ -1791,7 +1801,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_interfaceGenericMethodDecl()
   {
-    eventHandler.startNonterminal("interfaceGenericMethodDecl", e0);
+    eventHandler.startNonterminal(37, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
@@ -1809,7 +1819,7 @@ function JavaJS(string, parsingEventHandler)
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_interfaceMethodDeclaratorRest();
-    eventHandler.endNonterminal("interfaceGenericMethodDecl", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   function try_interfaceGenericMethodDecl()
@@ -1833,7 +1843,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_voidInterfaceMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(38, e0);
     parse_formalParameters();
     lookahead1W(33);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws'
     if (l1 == 98)                   // 'throws'
@@ -1844,7 +1854,7 @@ function JavaJS(string, parsingEventHandler)
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler.endNonterminal("voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   function try_voidInterfaceMethodDeclaratorRest()
@@ -1862,7 +1872,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constructorDeclaratorRest()
   {
-    eventHandler.startNonterminal("constructorDeclaratorRest", e0);
+    eventHandler.startNonterminal(39, e0);
     parse_formalParameters();
     lookahead1W(42);                // WS | COMMENT | LINE_COMMENT | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -1874,7 +1884,7 @@ function JavaJS(string, parsingEventHandler)
     }
     whitespace();
     parse_constructorBody();
-    eventHandler.endNonterminal("constructorDeclaratorRest", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   function try_constructorDeclaratorRest()
@@ -1892,12 +1902,12 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constantDeclarator()
   {
-    eventHandler.startNonterminal("constantDeclarator", e0);
+    eventHandler.startNonterminal(40, e0);
     consume(9);                     // Identifier
     lookahead1W(36);                // WS | COMMENT | LINE_COMMENT | '=' | '['
     whitespace();
     parse_constantDeclaratorRest();
-    eventHandler.endNonterminal("constantDeclarator", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   function try_constantDeclarator()
@@ -1909,7 +1919,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableDeclarators()
   {
-    eventHandler.startNonterminal("variableDeclarators", e0);
+    eventHandler.startNonterminal(41, e0);
     parse_variableDeclarator();
     for (;;)
     {
@@ -1923,7 +1933,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_variableDeclarator();
     }
-    eventHandler.endNonterminal("variableDeclarators", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   function try_variableDeclarators()
@@ -1944,7 +1954,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableDeclarator()
   {
-    eventHandler.startNonterminal("variableDeclarator", e0);
+    eventHandler.startNonterminal(42, e0);
     parse_variableDeclaratorId();
     if (l1 == 42)                   // '='
     {
@@ -1957,7 +1967,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_variableInitializer();
     }
-    eventHandler.endNonterminal("variableDeclarator", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   function try_variableDeclarator()
@@ -1977,7 +1987,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constantDeclaratorsRest()
   {
-    eventHandler.startNonterminal("constantDeclaratorsRest", e0);
+    eventHandler.startNonterminal(43, e0);
     parse_constantDeclaratorRest();
     for (;;)
     {
@@ -1991,7 +2001,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_constantDeclarator();
     }
-    eventHandler.endNonterminal("constantDeclaratorsRest", e0);
+    eventHandler.endNonterminal(43, e0);
   }
 
   function try_constantDeclaratorsRest()
@@ -2012,7 +2022,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constantDeclaratorRest()
   {
-    eventHandler.startNonterminal("constantDeclaratorRest", e0);
+    eventHandler.startNonterminal(44, e0);
     for (;;)
     {
       lookahead1W(36);              // WS | COMMENT | LINE_COMMENT | '=' | '['
@@ -2032,7 +2042,7 @@ function JavaJS(string, parsingEventHandler)
                                     // 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_variableInitializer();
-    eventHandler.endNonterminal("constantDeclaratorRest", e0);
+    eventHandler.endNonterminal(44, e0);
   }
 
   function try_constantDeclaratorRest()
@@ -2059,7 +2069,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableDeclaratorId()
   {
-    eventHandler.startNonterminal("variableDeclaratorId", e0);
+    eventHandler.startNonterminal(45, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -2072,7 +2082,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(10);              // WS | COMMENT | LINE_COMMENT | ']'
       consume(53);                  // ']'
     }
-    eventHandler.endNonterminal("variableDeclaratorId", e0);
+    eventHandler.endNonterminal(45, e0);
   }
 
   function try_variableDeclaratorId()
@@ -2093,7 +2103,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableInitializer()
   {
-    eventHandler.startNonterminal("variableInitializer", e0);
+    eventHandler.startNonterminal(46, e0);
     switch (l1)
     {
     case 105:                       // '{'
@@ -2102,7 +2112,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_expression();
     }
-    eventHandler.endNonterminal("variableInitializer", e0);
+    eventHandler.endNonterminal(46, e0);
   }
 
   function try_variableInitializer()
@@ -2119,7 +2129,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_arrayInitializer()
   {
-    eventHandler.startNonterminal("arrayInitializer", e0);
+    eventHandler.startNonterminal(47, e0);
     consume(105);                   // '{'
     lookahead1W(96);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -2166,7 +2176,7 @@ function JavaJS(string, parsingEventHandler)
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler.endNonterminal("arrayInitializer", e0);
+    eventHandler.endNonterminal(47, e0);
   }
 
   function try_arrayInitializer()
@@ -2219,7 +2229,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_modifier()
   {
-    eventHandler.startNonterminal("modifier", e0);
+    eventHandler.startNonterminal(48, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -2258,7 +2268,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(92);                  // 'strictfp'
     }
-    eventHandler.endNonterminal("modifier", e0);
+    eventHandler.endNonterminal(48, e0);
   }
 
   function try_modifier()
@@ -2305,9 +2315,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enumConstantName()
   {
-    eventHandler.startNonterminal("enumConstantName", e0);
+    eventHandler.startNonterminal(49, e0);
     consume(9);                     // Identifier
-    eventHandler.endNonterminal("enumConstantName", e0);
+    eventHandler.endNonterminal(49, e0);
   }
 
   function try_enumConstantName()
@@ -2317,7 +2327,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_type()
   {
-    eventHandler.startNonterminal("type", e0);
+    eventHandler.startNonterminal(50, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -2354,7 +2364,7 @@ function JavaJS(string, parsingEventHandler)
         consume(53);                // ']'
       }
     }
-    eventHandler.endNonterminal("type", e0);
+    eventHandler.endNonterminal(50, e0);
   }
 
   function try_type()
@@ -2399,7 +2409,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classOrInterfaceType()
   {
-    eventHandler.startNonterminal("classOrInterfaceType", e0);
+    eventHandler.startNonterminal(51, e0);
     consume(9);                     // Identifier
     lookahead1W(104);               // Identifier | WS | COMMENT | LINE_COMMENT | '!=' | '%=' | '&' | '&&' | '&=' |
                                     // '(' | ')' | '*=' | '+=' | ',' | '-=' | '.' | '...' | '/=' | ':' | ';' | '<' |
@@ -2433,7 +2443,7 @@ function JavaJS(string, parsingEventHandler)
         parse_typeArguments();
       }
     }
-    eventHandler.endNonterminal("classOrInterfaceType", e0);
+    eventHandler.endNonterminal(51, e0);
   }
 
   function try_classOrInterfaceType()
@@ -2473,7 +2483,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_primitiveType()
   {
-    eventHandler.startNonterminal("primitiveType", e0);
+    eventHandler.startNonterminal(52, e0);
     switch (l1)
     {
     case 57:                        // 'boolean'
@@ -2500,7 +2510,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(67);                  // 'double'
     }
-    eventHandler.endNonterminal("primitiveType", e0);
+    eventHandler.endNonterminal(52, e0);
   }
 
   function try_primitiveType()
@@ -2535,7 +2545,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableModifier()
   {
-    eventHandler.startNonterminal("variableModifier", e0);
+    eventHandler.startNonterminal(53, e0);
     switch (l1)
     {
     case 71:                        // 'final'
@@ -2544,7 +2554,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_annotation();
     }
-    eventHandler.endNonterminal("variableModifier", e0);
+    eventHandler.endNonterminal(53, e0);
   }
 
   function try_variableModifier()
@@ -2561,7 +2571,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeArguments()
   {
-    eventHandler.startNonterminal("typeArguments", e0);
+    eventHandler.startNonterminal(54, e0);
     consume(38);                    // '<'
     lookahead1W(72);                // Identifier | WS | COMMENT | LINE_COMMENT | '?' | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
@@ -2580,7 +2590,7 @@ function JavaJS(string, parsingEventHandler)
       parse_typeArgument();
     }
     consume(44);                    // '>'
-    eventHandler.endNonterminal("typeArguments", e0);
+    eventHandler.endNonterminal(54, e0);
   }
 
   function try_typeArguments()
@@ -2605,7 +2615,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_typeArgument()
   {
-    eventHandler.startNonterminal("typeArgument", e0);
+    eventHandler.startNonterminal(55, e0);
     switch (l1)
     {
     case 50:                        // '?'
@@ -2631,7 +2641,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_type();
     }
-    eventHandler.endNonterminal("typeArgument", e0);
+    eventHandler.endNonterminal(55, e0);
   }
 
   function try_typeArgument()
@@ -2664,7 +2674,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_qualifiedNameList()
   {
-    eventHandler.startNonterminal("qualifiedNameList", e0);
+    eventHandler.startNonterminal(56, e0);
     parse_qualifiedName();
     for (;;)
     {
@@ -2677,7 +2687,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_qualifiedName();
     }
-    eventHandler.endNonterminal("qualifiedNameList", e0);
+    eventHandler.endNonterminal(56, e0);
   }
 
   function try_qualifiedNameList()
@@ -2697,7 +2707,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_formalParameters()
   {
-    eventHandler.startNonterminal("formalParameters", e0);
+    eventHandler.startNonterminal(57, e0);
     consume(21);                    // '('
     lookahead1W(76);                // Identifier | WS | COMMENT | LINE_COMMENT | ')' | '@' | 'boolean' | 'byte' |
                                     // 'char' | 'double' | 'final' | 'float' | 'int' | 'long' | 'short'
@@ -2707,7 +2717,7 @@ function JavaJS(string, parsingEventHandler)
       parse_formalParameterDecls();
     }
     consume(22);                    // ')'
-    eventHandler.endNonterminal("formalParameters", e0);
+    eventHandler.endNonterminal(57, e0);
   }
 
   function try_formalParameters()
@@ -2724,13 +2734,13 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_formalParameterDecls()
   {
-    eventHandler.startNonterminal("formalParameterDecls", e0);
+    eventHandler.startNonterminal(58, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_formalParameterDeclsRest();
-    eventHandler.endNonterminal("formalParameterDecls", e0);
+    eventHandler.endNonterminal(58, e0);
   }
 
   function try_formalParameterDecls()
@@ -2742,7 +2752,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_formalParameterDeclsRest()
   {
-    eventHandler.startNonterminal("formalParameterDeclsRest", e0);
+    eventHandler.startNonterminal(59, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -2762,7 +2772,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_variableDeclaratorId();
     }
-    eventHandler.endNonterminal("formalParameterDeclsRest", e0);
+    eventHandler.endNonterminal(59, e0);
   }
 
   function try_formalParameterDeclsRest()
@@ -2788,9 +2798,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_methodBody()
   {
-    eventHandler.startNonterminal("methodBody", e0);
+    eventHandler.startNonterminal(60, e0);
     parse_block();
-    eventHandler.endNonterminal("methodBody", e0);
+    eventHandler.endNonterminal(60, e0);
   }
 
   function try_methodBody()
@@ -2800,7 +2810,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constructorBody()
   {
-    eventHandler.startNonterminal("constructorBody", e0);
+    eventHandler.startNonterminal(61, e0);
     consume(105);                   // '{'
     lookahead1W(117);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | COMMENT |
@@ -2989,7 +2999,7 @@ function JavaJS(string, parsingEventHandler)
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("constructorBody", e0);
+    eventHandler.endNonterminal(61, e0);
   }
 
   function try_constructorBody()
@@ -3184,7 +3194,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_explicitConstructorInvocation()
   {
-    eventHandler.startNonterminal("explicitConstructorInvocation", e0);
+    eventHandler.startNonterminal(62, e0);
     switch (l1)
     {
     case 93:                        // 'super'
@@ -3278,7 +3288,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(6);               // WS | COMMENT | LINE_COMMENT | ';'
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("explicitConstructorInvocation", e0);
+    eventHandler.endNonterminal(62, e0);
   }
 
   function try_explicitConstructorInvocation()
@@ -3379,7 +3389,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_qualifiedName()
   {
-    eventHandler.startNonterminal("qualifiedName", e0);
+    eventHandler.startNonterminal(63, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -3400,7 +3410,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler.endNonterminal("qualifiedName", e0);
+    eventHandler.endNonterminal(63, e0);
   }
 
   function try_qualifiedName()
@@ -3429,7 +3439,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_literal()
   {
-    eventHandler.startNonterminal("literal", e0);
+    eventHandler.startNonterminal(64, e0);
     switch (l1)
     {
     case 4:                         // FloatingPointLiteral
@@ -3451,7 +3461,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_integerLiteral();
     }
-    eventHandler.endNonterminal("literal", e0);
+    eventHandler.endNonterminal(64, e0);
   }
 
   function try_literal()
@@ -3481,7 +3491,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_integerLiteral()
   {
-    eventHandler.startNonterminal("integerLiteral", e0);
+    eventHandler.startNonterminal(65, e0);
     switch (l1)
     {
     case 1:                         // HexLiteral
@@ -3493,7 +3503,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(2);                   // DecimalLiteral
     }
-    eventHandler.endNonterminal("integerLiteral", e0);
+    eventHandler.endNonterminal(65, e0);
   }
 
   function try_integerLiteral()
@@ -3513,7 +3523,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_booleanLiteral()
   {
-    eventHandler.startNonterminal("booleanLiteral", e0);
+    eventHandler.startNonterminal(66, e0);
     switch (l1)
     {
     case 100:                       // 'true'
@@ -3522,7 +3532,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(70);                  // 'false'
     }
-    eventHandler.endNonterminal("booleanLiteral", e0);
+    eventHandler.endNonterminal(66, e0);
   }
 
   function try_booleanLiteral()
@@ -3539,7 +3549,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotations()
   {
-    eventHandler.startNonterminal("annotations", e0);
+    eventHandler.startNonterminal(67, e0);
     for (;;)
     {
       whitespace();
@@ -3583,7 +3593,7 @@ function JavaJS(string, parsingEventHandler)
         break;
       }
     }
-    eventHandler.endNonterminal("annotations", e0);
+    eventHandler.endNonterminal(67, e0);
   }
 
   function try_annotations()
@@ -3636,7 +3646,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotation()
   {
-    eventHandler.startNonterminal("annotation", e0);
+    eventHandler.startNonterminal(68, e0);
     consume(51);                    // '@'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -3675,7 +3685,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(2);               // WS | COMMENT | LINE_COMMENT | ')'
       consume(22);                  // ')'
     }
-    eventHandler.endNonterminal("annotation", e0);
+    eventHandler.endNonterminal(68, e0);
   }
 
   function try_annotation()
@@ -3719,7 +3729,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationName()
   {
-    eventHandler.startNonterminal("annotationName", e0);
+    eventHandler.startNonterminal(69, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -3736,7 +3746,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler.endNonterminal("annotationName", e0);
+    eventHandler.endNonterminal(69, e0);
   }
 
   function try_annotationName()
@@ -3761,7 +3771,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_elementValuePairs()
   {
-    eventHandler.startNonterminal("elementValuePairs", e0);
+    eventHandler.startNonterminal(70, e0);
     parse_elementValuePair();
     for (;;)
     {
@@ -3775,7 +3785,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_elementValuePair();
     }
-    eventHandler.endNonterminal("elementValuePairs", e0);
+    eventHandler.endNonterminal(70, e0);
   }
 
   function try_elementValuePairs()
@@ -3796,7 +3806,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_elementValuePair()
   {
-    eventHandler.startNonterminal("elementValuePair", e0);
+    eventHandler.startNonterminal(71, e0);
     consume(9);                     // Identifier
     lookahead1W(8);                 // WS | COMMENT | LINE_COMMENT | '='
     consume(42);                    // '='
@@ -3807,7 +3817,7 @@ function JavaJS(string, parsingEventHandler)
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler.endNonterminal("elementValuePair", e0);
+    eventHandler.endNonterminal(71, e0);
   }
 
   function try_elementValuePair()
@@ -3825,7 +3835,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_elementValue()
   {
-    eventHandler.startNonterminal("elementValue", e0);
+    eventHandler.startNonterminal(72, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -3837,7 +3847,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_conditionalExpression();
     }
-    eventHandler.endNonterminal("elementValue", e0);
+    eventHandler.endNonterminal(72, e0);
   }
 
   function try_elementValue()
@@ -3857,7 +3867,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_elementValueArrayInitializer()
   {
-    eventHandler.startNonterminal("elementValueArrayInitializer", e0);
+    eventHandler.startNonterminal(73, e0);
     consume(105);                   // '{'
     lookahead1W(101);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -3905,7 +3915,7 @@ function JavaJS(string, parsingEventHandler)
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler.endNonterminal("elementValueArrayInitializer", e0);
+    eventHandler.endNonterminal(73, e0);
   }
 
   function try_elementValueArrayInitializer()
@@ -3959,7 +3969,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationTypeDeclaration()
   {
-    eventHandler.startNonterminal("annotationTypeDeclaration", e0);
+    eventHandler.startNonterminal(74, e0);
     consume(51);                    // '@'
     lookahead1W(12);                // WS | COMMENT | LINE_COMMENT | 'interface'
     consume(80);                    // 'interface'
@@ -3968,7 +3978,7 @@ function JavaJS(string, parsingEventHandler)
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_annotationTypeBody();
-    eventHandler.endNonterminal("annotationTypeDeclaration", e0);
+    eventHandler.endNonterminal(74, e0);
   }
 
   function try_annotationTypeDeclaration()
@@ -3984,7 +3994,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationTypeBody()
   {
-    eventHandler.startNonterminal("annotationTypeBody", e0);
+    eventHandler.startNonterminal(75, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4000,7 +4010,7 @@ function JavaJS(string, parsingEventHandler)
       parse_annotationTypeElementDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("annotationTypeBody", e0);
+    eventHandler.endNonterminal(75, e0);
   }
 
   function try_annotationTypeBody()
@@ -4023,11 +4033,11 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationTypeElementDeclaration()
   {
-    eventHandler.startNonterminal("annotationTypeElementDeclaration", e0);
+    eventHandler.startNonterminal(76, e0);
     parse_modifiers();
     whitespace();
     parse_annotationTypeElementRest();
-    eventHandler.endNonterminal("annotationTypeElementDeclaration", e0);
+    eventHandler.endNonterminal(76, e0);
   }
 
   function try_annotationTypeElementDeclaration()
@@ -4038,7 +4048,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationTypeElementRest()
   {
-    eventHandler.startNonterminal("annotationTypeElementRest", e0);
+    eventHandler.startNonterminal(77, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -4092,7 +4102,7 @@ function JavaJS(string, parsingEventHandler)
       lookahead1W(6);               // WS | COMMENT | LINE_COMMENT | ';'
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("annotationTypeElementRest", e0);
+    eventHandler.endNonterminal(77, e0);
   }
 
   function try_annotationTypeElementRest()
@@ -4153,7 +4163,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationMethodOrConstantRest()
   {
-    eventHandler.startNonterminal("annotationMethodOrConstantRest", e0);
+    eventHandler.startNonterminal(78, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4170,7 +4180,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_annotationConstantRest();
     }
-    eventHandler.endNonterminal("annotationMethodOrConstantRest", e0);
+    eventHandler.endNonterminal(78, e0);
   }
 
   function try_annotationMethodOrConstantRest()
@@ -4195,7 +4205,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationMethodRest()
   {
-    eventHandler.startNonterminal("annotationMethodRest", e0);
+    eventHandler.startNonterminal(79, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -4207,7 +4217,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_defaultValue();
     }
-    eventHandler.endNonterminal("annotationMethodRest", e0);
+    eventHandler.endNonterminal(79, e0);
   }
 
   function try_annotationMethodRest()
@@ -4226,9 +4236,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_annotationConstantRest()
   {
-    eventHandler.startNonterminal("annotationConstantRest", e0);
+    eventHandler.startNonterminal(80, e0);
     parse_variableDeclarators();
-    eventHandler.endNonterminal("annotationConstantRest", e0);
+    eventHandler.endNonterminal(80, e0);
   }
 
   function try_annotationConstantRest()
@@ -4238,7 +4248,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_defaultValue()
   {
-    eventHandler.startNonterminal("defaultValue", e0);
+    eventHandler.startNonterminal(81, e0);
     consume(65);                    // 'default'
     lookahead1W(95);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -4247,7 +4257,7 @@ function JavaJS(string, parsingEventHandler)
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler.endNonterminal("defaultValue", e0);
+    eventHandler.endNonterminal(81, e0);
   }
 
   function try_defaultValue()
@@ -4263,7 +4273,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_block()
   {
-    eventHandler.startNonterminal("block", e0);
+    eventHandler.startNonterminal(82, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4283,7 +4293,7 @@ function JavaJS(string, parsingEventHandler)
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("block", e0);
+    eventHandler.endNonterminal(82, e0);
   }
 
   function try_block()
@@ -4310,7 +4320,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_blockStatement()
   {
-    eventHandler.startNonterminal("blockStatement", e0);
+    eventHandler.startNonterminal(83, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4436,7 +4446,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_statement();
     }
-    eventHandler.endNonterminal("blockStatement", e0);
+    eventHandler.endNonterminal(83, e0);
   }
 
   function try_blockStatement()
@@ -4574,10 +4584,10 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_localVariableDeclarationStatement()
   {
-    eventHandler.startNonterminal("localVariableDeclarationStatement", e0);
+    eventHandler.startNonterminal(84, e0);
     parse_localVariableDeclaration();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("localVariableDeclarationStatement", e0);
+    eventHandler.endNonterminal(84, e0);
   }
 
   function try_localVariableDeclarationStatement()
@@ -4588,13 +4598,13 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_localVariableDeclaration()
   {
-    eventHandler.startNonterminal("localVariableDeclaration", e0);
+    eventHandler.startNonterminal(85, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclarators();
-    eventHandler.endNonterminal("localVariableDeclaration", e0);
+    eventHandler.endNonterminal(85, e0);
   }
 
   function try_localVariableDeclaration()
@@ -4606,7 +4616,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_variableModifiers()
   {
-    eventHandler.startNonterminal("variableModifiers", e0);
+    eventHandler.startNonterminal(86, e0);
     for (;;)
     {
       lookahead1W(75);              // Identifier | WS | COMMENT | LINE_COMMENT | '@' | 'boolean' | 'byte' | 'char' |
@@ -4619,7 +4629,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_variableModifier();
     }
-    eventHandler.endNonterminal("variableModifiers", e0);
+    eventHandler.endNonterminal(86, e0);
   }
 
   function try_variableModifiers()
@@ -4639,7 +4649,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_statement()
   {
-    eventHandler.startNonterminal("statement", e0);
+    eventHandler.startNonterminal(87, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -5006,7 +5016,7 @@ function JavaJS(string, parsingEventHandler)
       parse_statementExpression();
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("statement", e0);
+    eventHandler.endNonterminal(87, e0);
   }
 
   function try_statement()
@@ -5361,7 +5371,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_catches()
   {
-    eventHandler.startNonterminal("catches", e0);
+    eventHandler.startNonterminal(88, e0);
     parse_catchClause();
     for (;;)
     {
@@ -5381,7 +5391,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_catchClause();
     }
-    eventHandler.endNonterminal("catches", e0);
+    eventHandler.endNonterminal(88, e0);
   }
 
   function try_catches()
@@ -5408,7 +5418,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_catchClause()
   {
-    eventHandler.startNonterminal("catchClause", e0);
+    eventHandler.startNonterminal(89, e0);
     consume(61);                    // 'catch'
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -5420,7 +5430,7 @@ function JavaJS(string, parsingEventHandler)
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_block();
-    eventHandler.endNonterminal("catchClause", e0);
+    eventHandler.endNonterminal(89, e0);
   }
 
   function try_catchClause()
@@ -5438,13 +5448,13 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_formalParameter()
   {
-    eventHandler.startNonterminal("formalParameter", e0);
+    eventHandler.startNonterminal(90, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclaratorId();
-    eventHandler.endNonterminal("formalParameter", e0);
+    eventHandler.endNonterminal(90, e0);
   }
 
   function try_formalParameter()
@@ -5456,7 +5466,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_switchBlockStatementGroups()
   {
-    eventHandler.startNonterminal("switchBlockStatementGroups", e0);
+    eventHandler.startNonterminal(91, e0);
     for (;;)
     {
       if (l1 == 109)                // '}'
@@ -5466,7 +5476,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_switchBlockStatementGroup();
     }
-    eventHandler.endNonterminal("switchBlockStatementGroups", e0);
+    eventHandler.endNonterminal(91, e0);
   }
 
   function try_switchBlockStatementGroups()
@@ -5483,7 +5493,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_switchBlockStatementGroup()
   {
-    eventHandler.startNonterminal("switchBlockStatementGroup", e0);
+    eventHandler.startNonterminal(92, e0);
     for (;;)
     {
       whitespace();
@@ -5589,7 +5599,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_blockStatement();
     }
-    eventHandler.endNonterminal("switchBlockStatementGroup", e0);
+    eventHandler.endNonterminal(92, e0);
   }
 
   function try_switchBlockStatementGroup()
@@ -5703,7 +5713,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_switchLabel()
   {
-    eventHandler.startNonterminal("switchLabel", e0);
+    eventHandler.startNonterminal(93, e0);
     switch (l1)
     {
     case 60:                        // 'case'
@@ -5772,7 +5782,7 @@ function JavaJS(string, parsingEventHandler)
       parse_constantExpression();
       consume(36);                  // ':'
     }
-    eventHandler.endNonterminal("switchLabel", e0);
+    eventHandler.endNonterminal(93, e0);
   }
 
   function try_switchLabel()
@@ -5850,7 +5860,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_forControl()
   {
-    eventHandler.startNonterminal("forControl", e0);
+    eventHandler.startNonterminal(94, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -5968,7 +5978,7 @@ function JavaJS(string, parsingEventHandler)
         parse_forUpdate();
       }
     }
-    eventHandler.endNonterminal("forControl", e0);
+    eventHandler.endNonterminal(94, e0);
   }
 
   function try_forControl()
@@ -6094,7 +6104,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_forInit()
   {
-    eventHandler.startNonterminal("forInit", e0);
+    eventHandler.startNonterminal(95, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -6169,7 +6179,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_expressionList();
     }
-    eventHandler.endNonterminal("forInit", e0);
+    eventHandler.endNonterminal(95, e0);
   }
 
   function try_forInit()
@@ -6255,7 +6265,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_enhancedForControl()
   {
-    eventHandler.startNonterminal("enhancedForControl", e0);
+    eventHandler.startNonterminal(96, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
@@ -6269,7 +6279,7 @@ function JavaJS(string, parsingEventHandler)
                                     // 'this' | 'true' | 'void' | '~'
     whitespace();
     parse_expression();
-    eventHandler.endNonterminal("enhancedForControl", e0);
+    eventHandler.endNonterminal(96, e0);
   }
 
   function try_enhancedForControl()
@@ -6289,9 +6299,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_forUpdate()
   {
-    eventHandler.startNonterminal("forUpdate", e0);
+    eventHandler.startNonterminal(97, e0);
     parse_expressionList();
-    eventHandler.endNonterminal("forUpdate", e0);
+    eventHandler.endNonterminal(97, e0);
   }
 
   function try_forUpdate()
@@ -6301,7 +6311,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_parExpression()
   {
-    eventHandler.startNonterminal("parExpression", e0);
+    eventHandler.startNonterminal(98, e0);
     consume(21);                    // '('
     lookahead1W(89);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -6311,7 +6321,7 @@ function JavaJS(string, parsingEventHandler)
     whitespace();
     parse_expression();
     consume(22);                    // ')'
-    eventHandler.endNonterminal("parExpression", e0);
+    eventHandler.endNonterminal(98, e0);
   }
 
   function try_parExpression()
@@ -6328,7 +6338,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_expressionList()
   {
-    eventHandler.startNonterminal("expressionList", e0);
+    eventHandler.startNonterminal(99, e0);
     parse_expression();
     for (;;)
     {
@@ -6345,7 +6355,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("expressionList", e0);
+    eventHandler.endNonterminal(99, e0);
   }
 
   function try_expressionList()
@@ -6369,9 +6379,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_statementExpression()
   {
-    eventHandler.startNonterminal("statementExpression", e0);
+    eventHandler.startNonterminal(100, e0);
     parse_expression();
-    eventHandler.endNonterminal("statementExpression", e0);
+    eventHandler.endNonterminal(100, e0);
   }
 
   function try_statementExpression()
@@ -6381,9 +6391,9 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_constantExpression()
   {
-    eventHandler.startNonterminal("constantExpression", e0);
+    eventHandler.startNonterminal(101, e0);
     parse_expression();
-    eventHandler.endNonterminal("constantExpression", e0);
+    eventHandler.endNonterminal(101, e0);
   }
 
   function try_constantExpression()
@@ -6393,7 +6403,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_expression()
   {
-    eventHandler.startNonterminal("expression", e0);
+    eventHandler.startNonterminal(102, e0);
     parse_conditionalExpression();
     switch (l1)
     {
@@ -6464,7 +6474,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("expression", e0);
+    eventHandler.endNonterminal(102, e0);
   }
 
   function try_expression()
@@ -6541,7 +6551,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_assignmentOperator()
   {
-    eventHandler.startNonterminal("assignmentOperator", e0);
+    eventHandler.startNonterminal(103, e0);
     switch (l1)
     {
     case 42:                        // '='
@@ -6580,7 +6590,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(47);                  // '>>='
     }
-    eventHandler.endNonterminal("assignmentOperator", e0);
+    eventHandler.endNonterminal(103, e0);
   }
 
   function try_assignmentOperator()
@@ -6627,7 +6637,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_conditionalExpression()
   {
-    eventHandler.startNonterminal("conditionalExpression", e0);
+    eventHandler.startNonterminal(104, e0);
     parse_conditionalOrExpression();
     if (l1 == 50)                   // '?'
     {
@@ -6648,7 +6658,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("conditionalExpression", e0);
+    eventHandler.endNonterminal(104, e0);
   }
 
   function try_conditionalExpression()
@@ -6675,7 +6685,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_conditionalOrExpression()
   {
-    eventHandler.startNonterminal("conditionalOrExpression", e0);
+    eventHandler.startNonterminal(105, e0);
     parse_conditionalAndExpression();
     for (;;)
     {
@@ -6692,7 +6702,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_conditionalAndExpression();
     }
-    eventHandler.endNonterminal("conditionalOrExpression", e0);
+    eventHandler.endNonterminal(105, e0);
   }
 
   function try_conditionalOrExpression()
@@ -6716,7 +6726,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_conditionalAndExpression()
   {
-    eventHandler.startNonterminal("conditionalAndExpression", e0);
+    eventHandler.startNonterminal(106, e0);
     parse_inclusiveOrExpression();
     for (;;)
     {
@@ -6733,7 +6743,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_inclusiveOrExpression();
     }
-    eventHandler.endNonterminal("conditionalAndExpression", e0);
+    eventHandler.endNonterminal(106, e0);
   }
 
   function try_conditionalAndExpression()
@@ -6757,7 +6767,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_inclusiveOrExpression()
   {
-    eventHandler.startNonterminal("inclusiveOrExpression", e0);
+    eventHandler.startNonterminal(107, e0);
     parse_exclusiveOrExpression();
     for (;;)
     {
@@ -6774,7 +6784,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_exclusiveOrExpression();
     }
-    eventHandler.endNonterminal("inclusiveOrExpression", e0);
+    eventHandler.endNonterminal(107, e0);
   }
 
   function try_inclusiveOrExpression()
@@ -6798,7 +6808,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_exclusiveOrExpression()
   {
-    eventHandler.startNonterminal("exclusiveOrExpression", e0);
+    eventHandler.startNonterminal(108, e0);
     parse_andExpression();
     for (;;)
     {
@@ -6815,7 +6825,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_andExpression();
     }
-    eventHandler.endNonterminal("exclusiveOrExpression", e0);
+    eventHandler.endNonterminal(108, e0);
   }
 
   function try_exclusiveOrExpression()
@@ -6839,7 +6849,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_andExpression()
   {
-    eventHandler.startNonterminal("andExpression", e0);
+    eventHandler.startNonterminal(109, e0);
     parse_equalityExpression();
     for (;;)
     {
@@ -6856,7 +6866,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_equalityExpression();
     }
-    eventHandler.endNonterminal("andExpression", e0);
+    eventHandler.endNonterminal(109, e0);
   }
 
   function try_andExpression()
@@ -6880,7 +6890,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_equalityExpression()
   {
-    eventHandler.startNonterminal("equalityExpression", e0);
+    eventHandler.startNonterminal(110, e0);
     parse_instanceOfExpression();
     for (;;)
     {
@@ -6905,7 +6915,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_instanceOfExpression();
     }
-    eventHandler.endNonterminal("equalityExpression", e0);
+    eventHandler.endNonterminal(110, e0);
   }
 
   function try_equalityExpression()
@@ -6937,7 +6947,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_instanceOfExpression()
   {
-    eventHandler.startNonterminal("instanceOfExpression", e0);
+    eventHandler.startNonterminal(111, e0);
     parse_relationalExpression();
     if (l1 == 78)                   // 'instanceof'
     {
@@ -6947,7 +6957,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("instanceOfExpression", e0);
+    eventHandler.endNonterminal(111, e0);
   }
 
   function try_instanceOfExpression()
@@ -6964,7 +6974,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_relationalExpression()
   {
-    eventHandler.startNonterminal("relationalExpression", e0);
+    eventHandler.startNonterminal(112, e0);
     parse_shiftExpression();
     for (;;)
     {
@@ -6985,7 +6995,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_shiftExpression();
     }
-    eventHandler.endNonterminal("relationalExpression", e0);
+    eventHandler.endNonterminal(112, e0);
   }
 
   function try_relationalExpression()
@@ -7012,7 +7022,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_relationalOp()
   {
-    eventHandler.startNonterminal("relationalOp", e0);
+    eventHandler.startNonterminal(113, e0);
     switch (l1)
     {
     case 41:                        // '<='
@@ -7027,7 +7037,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(44);                  // '>'
     }
-    eventHandler.endNonterminal("relationalOp", e0);
+    eventHandler.endNonterminal(113, e0);
   }
 
   function try_relationalOp()
@@ -7050,7 +7060,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_shiftExpression()
   {
-    eventHandler.startNonterminal("shiftExpression", e0);
+    eventHandler.startNonterminal(114, e0);
     parse_additiveExpression();
     for (;;)
     {
@@ -7070,7 +7080,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_additiveExpression();
     }
-    eventHandler.endNonterminal("shiftExpression", e0);
+    eventHandler.endNonterminal(114, e0);
   }
 
   function try_shiftExpression()
@@ -7096,7 +7106,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_shiftOp()
   {
-    eventHandler.startNonterminal("shiftOp", e0);
+    eventHandler.startNonterminal(115, e0);
     switch (l1)
     {
     case 39:                        // '<<'
@@ -7108,7 +7118,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       consume(46);                  // '>>'
     }
-    eventHandler.endNonterminal("shiftOp", e0);
+    eventHandler.endNonterminal(115, e0);
   }
 
   function try_shiftOp()
@@ -7128,7 +7138,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_additiveExpression()
   {
-    eventHandler.startNonterminal("additiveExpression", e0);
+    eventHandler.startNonterminal(116, e0);
     parse_multiplicativeExpression();
     for (;;)
     {
@@ -7153,7 +7163,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_multiplicativeExpression();
     }
-    eventHandler.endNonterminal("additiveExpression", e0);
+    eventHandler.endNonterminal(116, e0);
   }
 
   function try_additiveExpression()
@@ -7185,7 +7195,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_multiplicativeExpression()
   {
-    eventHandler.startNonterminal("multiplicativeExpression", e0);
+    eventHandler.startNonterminal(117, e0);
     parse_unaryExpression();
     for (;;)
     {
@@ -7218,7 +7228,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_unaryExpression();
     }
-    eventHandler.endNonterminal("multiplicativeExpression", e0);
+    eventHandler.endNonterminal(117, e0);
   }
 
   function try_multiplicativeExpression()
@@ -7258,7 +7268,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_unaryExpression()
   {
-    eventHandler.startNonterminal("unaryExpression", e0);
+    eventHandler.startNonterminal(118, e0);
     switch (l1)
     {
     case 25:                        // '+'
@@ -7304,7 +7314,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_unaryExpressionNotPlusMinus();
     }
-    eventHandler.endNonterminal("unaryExpression", e0);
+    eventHandler.endNonterminal(118, e0);
   }
 
   function try_unaryExpression()
@@ -7354,7 +7364,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_unaryExpressionNotPlusMinus()
   {
-    eventHandler.startNonterminal("unaryExpressionNotPlusMinus", e0);
+    eventHandler.startNonterminal(119, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -7468,7 +7478,7 @@ function JavaJS(string, parsingEventHandler)
         }
       }
     }
-    eventHandler.endNonterminal("unaryExpressionNotPlusMinus", e0);
+    eventHandler.endNonterminal(119, e0);
   }
 
   function try_unaryExpressionNotPlusMinus()
@@ -7590,7 +7600,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_castExpression()
   {
-    eventHandler.startNonterminal("castExpression", e0);
+    eventHandler.startNonterminal(120, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -7750,7 +7760,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_unaryExpressionNotPlusMinus();
     }
-    eventHandler.endNonterminal("castExpression", e0);
+    eventHandler.endNonterminal(120, e0);
   }
 
   function try_castExpression()
@@ -7919,7 +7929,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_primary()
   {
-    eventHandler.startNonterminal("primary", e0);
+    eventHandler.startNonterminal(121, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8234,7 +8244,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_literal();
     }
-    eventHandler.endNonterminal("primary", e0);
+    eventHandler.endNonterminal(121, e0);
   }
 
   function try_primary()
@@ -8555,7 +8565,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_identifierSuffix()
   {
-    eventHandler.startNonterminal("identifierSuffix", e0);
+    eventHandler.startNonterminal(122, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -8717,7 +8727,7 @@ function JavaJS(string, parsingEventHandler)
         }
       }
     }
-    eventHandler.endNonterminal("identifierSuffix", e0);
+    eventHandler.endNonterminal(122, e0);
   }
 
   function try_identifierSuffix()
@@ -8892,7 +8902,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_creator()
   {
-    eventHandler.startNonterminal("creator", e0);
+    eventHandler.startNonterminal(123, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -8919,7 +8929,7 @@ function JavaJS(string, parsingEventHandler)
         parse_classCreatorRest();
       }
     }
-    eventHandler.endNonterminal("creator", e0);
+    eventHandler.endNonterminal(123, e0);
   }
 
   function try_creator()
@@ -8950,7 +8960,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_createdName()
   {
-    eventHandler.startNonterminal("createdName", e0);
+    eventHandler.startNonterminal(124, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -8959,7 +8969,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_primitiveType();
     }
-    eventHandler.endNonterminal("createdName", e0);
+    eventHandler.endNonterminal(124, e0);
   }
 
   function try_createdName()
@@ -8976,7 +8986,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_innerCreator()
   {
-    eventHandler.startNonterminal("innerCreator", e0);
+    eventHandler.startNonterminal(125, e0);
     if (l1 == 38)                   // '<'
     {
       whitespace();
@@ -8993,7 +9003,7 @@ function JavaJS(string, parsingEventHandler)
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_classCreatorRest();
-    eventHandler.endNonterminal("innerCreator", e0);
+    eventHandler.endNonterminal(125, e0);
   }
 
   function try_innerCreator()
@@ -9015,7 +9025,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_nonWildcardTypeArgumentsOrDiamond()
   {
-    eventHandler.startNonterminal("nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler.startNonterminal(126, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -9035,7 +9045,7 @@ function JavaJS(string, parsingEventHandler)
     default:
       parse_nonWildcardTypeArguments();
     }
-    eventHandler.endNonterminal("nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler.endNonterminal(126, e0);
   }
 
   function try_nonWildcardTypeArgumentsOrDiamond()
@@ -9063,7 +9073,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_arrayCreatorRest()
   {
-    eventHandler.startNonterminal("arrayCreatorRest", e0);
+    eventHandler.startNonterminal(127, e0);
     consume(52);                    // '['
     lookahead1W(93);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -9211,7 +9221,7 @@ function JavaJS(string, parsingEventHandler)
         consume(53);                // ']'
       }
     }
-    eventHandler.endNonterminal("arrayCreatorRest", e0);
+    eventHandler.endNonterminal(127, e0);
   }
 
   function try_arrayCreatorRest()
@@ -9365,7 +9375,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_classCreatorRest()
   {
-    eventHandler.startNonterminal("classCreatorRest", e0);
+    eventHandler.startNonterminal(128, e0);
     parse_arguments();
     lookahead1W(115);               // WS | COMMENT | LINE_COMMENT | '!=' | '%' | '%=' | '&' | '&&' | '&=' | ')' | '*' |
                                     // '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' | '.' | '/' | '/=' | ':' |
@@ -9377,7 +9387,7 @@ function JavaJS(string, parsingEventHandler)
       whitespace();
       parse_classBody();
     }
-    eventHandler.endNonterminal("classCreatorRest", e0);
+    eventHandler.endNonterminal(128, e0);
   }
 
   function try_classCreatorRest()
@@ -9396,14 +9406,14 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_explicitGenericInvocation()
   {
-    eventHandler.startNonterminal("explicitGenericInvocation", e0);
+    eventHandler.startNonterminal(129, e0);
     parse_nonWildcardTypeArguments();
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_arguments();
-    eventHandler.endNonterminal("explicitGenericInvocation", e0);
+    eventHandler.endNonterminal(129, e0);
   }
 
   function try_explicitGenericInvocation()
@@ -9417,14 +9427,14 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_nonWildcardTypeArguments()
   {
-    eventHandler.startNonterminal("nonWildcardTypeArguments", e0);
+    eventHandler.startNonterminal(130, e0);
     consume(38);                    // '<'
     lookahead1W(69);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
     whitespace();
     parse_typeList();
     consume(44);                    // '>'
-    eventHandler.endNonterminal("nonWildcardTypeArguments", e0);
+    eventHandler.endNonterminal(130, e0);
   }
 
   function try_nonWildcardTypeArguments()
@@ -9438,7 +9448,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_selector()
   {
-    eventHandler.startNonterminal("selector", e0);
+    eventHandler.startNonterminal(131, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -9496,7 +9506,7 @@ function JavaJS(string, parsingEventHandler)
       parse_expression();
       consume(53);                  // ']'
     }
-    eventHandler.endNonterminal("selector", e0);
+    eventHandler.endNonterminal(131, e0);
   }
 
   function try_selector()
@@ -9558,7 +9568,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_superSuffix()
   {
-    eventHandler.startNonterminal("superSuffix", e0);
+    eventHandler.startNonterminal(132, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -9579,7 +9589,7 @@ function JavaJS(string, parsingEventHandler)
         parse_arguments();
       }
     }
-    eventHandler.endNonterminal("superSuffix", e0);
+    eventHandler.endNonterminal(132, e0);
   }
 
   function try_superSuffix()
@@ -9607,7 +9617,7 @@ function JavaJS(string, parsingEventHandler)
 
   function parse_arguments()
   {
-    eventHandler.startNonterminal("arguments", e0);
+    eventHandler.startNonterminal(133, e0);
     consume(21);                    // '('
     lookahead1W(91);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -9620,7 +9630,7 @@ function JavaJS(string, parsingEventHandler)
       parse_expressionList();
     }
     consume(22);                    // ')'
-    eventHandler.endNonterminal("arguments", e0);
+    eventHandler.endNonterminal(133, e0);
   }
 
   function try_arguments()
@@ -9643,7 +9653,7 @@ function JavaJS(string, parsingEventHandler)
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(JavaJS.TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -9851,7 +9861,12 @@ JavaJS.XmlSerializer = function(log, indent)
     depth = 0;
   };
 
-  this.startNonterminal = function(tag, begin)
+  this.startNonterminal = function(id, begin)
+  {
+    startElement(JavaJS.NONTERMINAL[id]);
+  };
+
+  function startElement(tag)
   {
     if (delayedTag != null)
     {
@@ -9870,9 +9885,14 @@ JavaJS.XmlSerializer = function(log, indent)
     }
     hasChildElement = false;
     ++depth;
+  }
+
+  this.endNonterminal = function(id, end)
+  {
+    endElement(JavaJS.NONTERMINAL[id]);
   };
 
-  this.endNonterminal = function(tag, end)
+  function endElement(tag)
   {
     --depth;
     if (delayedTag != null)
@@ -9900,14 +9920,15 @@ JavaJS.XmlSerializer = function(log, indent)
       log(">");
     }
     hasChildElement = true;
-  };
+  }
 
-  this.terminal = function(tag, begin, end)
+  this.terminal = function(id, begin, end)
   {
+    var tag = JavaJS.TOKEN[id];
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    this.startNonterminal(tag, begin);
+    startElement(tag);
     characters(begin, end);
-    this.endNonterminal(tag, end);
+    endElement(tag);
   };
 
   this.whitespace = function(begin, end)
@@ -9966,22 +9987,22 @@ JavaJS.TopDownTreeBuilder = function()
     stack = [];
   };
 
-  this.startNonterminal = function(name, begin)
+  this.startNonterminal = function(id, begin)
   {
-    var nonterminal = new JavaJS.Nonterminal(name, begin, begin, []);
+    var nonterminal = new JavaJS.Nonterminal(id, begin, begin, []);
     if (stack.length > 0) addChild(nonterminal);
     stack.push(nonterminal);
   };
 
-  this.endNonterminal = function(name, end)
+  this.endNonterminal = function(id, end)
   {
     stack[stack.length - 1].end = end;
     if (stack.length > 1) stack.pop();
   };
 
-  this.terminal = function(name, begin, end)
+  this.terminal = function(id, begin, end)
   {
-    addChild(new JavaJS.Terminal(name, begin, end));
+    addChild(new JavaJS.Terminal(id, begin, end));
   };
 
   this.whitespace = function(begin, end)
@@ -10001,25 +10022,37 @@ JavaJS.TopDownTreeBuilder = function()
   };
 };
 
-JavaJS.Terminal = function(name, begin, end)
+JavaJS.Terminal = function(id, begin, end)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return JavaJS.TOKEN[id];
+  };
+
   this.send = function(e)
   {
-    e.terminal(name, begin, end);
+    e.terminal(id, begin, end);
   };
 };
 
-JavaJS.Nonterminal = function(name, begin, end, children)
+JavaJS.Nonterminal = function(id, begin, end, children)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return JavaJS.NONTERMINAL[id];
+  };
+
   this.send = function(e)
   {
-    e.startNonterminal(name, begin);
+    e.startNonterminal(id, begin);
     var pos = begin;
     children.forEach
     (
@@ -10031,7 +10064,7 @@ JavaJS.Nonterminal = function(name, begin, end, children)
       }
     );
     if (pos < end) e.whitespace(pos, end);
-    e.endNonterminal(name, end);
+    e.endNonterminal(id, end);
   };
 };
 
@@ -10977,6 +11010,145 @@ JavaJS.TOKEN =
   "'||'",
   "'}'",
   "'~'"
+];
+
+JavaJS.NONTERMINAL =
+[
+  "compilationUnit",
+  "packageDeclaration",
+  "importDeclaration",
+  "typeDeclaration",
+  "classOrInterfaceDeclaration",
+  "classOrInterfaceModifiers",
+  "classOrInterfaceModifier",
+  "modifiers",
+  "classDeclaration",
+  "normalClassDeclaration",
+  "typeParameters",
+  "typeParameter",
+  "typeBound",
+  "enumDeclaration",
+  "enumBody",
+  "enumConstants",
+  "enumConstant",
+  "enumBodyDeclarations",
+  "interfaceDeclaration",
+  "normalInterfaceDeclaration",
+  "typeList",
+  "classBody",
+  "interfaceBody",
+  "classBodyDeclaration",
+  "memberDecl",
+  "memberDeclaration",
+  "genericMethodOrConstructorDecl",
+  "genericMethodOrConstructorRest",
+  "methodDeclaration",
+  "fieldDeclaration",
+  "interfaceBodyDeclaration",
+  "interfaceMemberDecl",
+  "interfaceMethodOrFieldDecl",
+  "interfaceMethodOrFieldRest",
+  "methodDeclaratorRest",
+  "voidMethodDeclaratorRest",
+  "interfaceMethodDeclaratorRest",
+  "interfaceGenericMethodDecl",
+  "voidInterfaceMethodDeclaratorRest",
+  "constructorDeclaratorRest",
+  "constantDeclarator",
+  "variableDeclarators",
+  "variableDeclarator",
+  "constantDeclaratorsRest",
+  "constantDeclaratorRest",
+  "variableDeclaratorId",
+  "variableInitializer",
+  "arrayInitializer",
+  "modifier",
+  "enumConstantName",
+  "type",
+  "classOrInterfaceType",
+  "primitiveType",
+  "variableModifier",
+  "typeArguments",
+  "typeArgument",
+  "qualifiedNameList",
+  "formalParameters",
+  "formalParameterDecls",
+  "formalParameterDeclsRest",
+  "methodBody",
+  "constructorBody",
+  "explicitConstructorInvocation",
+  "qualifiedName",
+  "literal",
+  "integerLiteral",
+  "booleanLiteral",
+  "annotations",
+  "annotation",
+  "annotationName",
+  "elementValuePairs",
+  "elementValuePair",
+  "elementValue",
+  "elementValueArrayInitializer",
+  "annotationTypeDeclaration",
+  "annotationTypeBody",
+  "annotationTypeElementDeclaration",
+  "annotationTypeElementRest",
+  "annotationMethodOrConstantRest",
+  "annotationMethodRest",
+  "annotationConstantRest",
+  "defaultValue",
+  "block",
+  "blockStatement",
+  "localVariableDeclarationStatement",
+  "localVariableDeclaration",
+  "variableModifiers",
+  "statement",
+  "catches",
+  "catchClause",
+  "formalParameter",
+  "switchBlockStatementGroups",
+  "switchBlockStatementGroup",
+  "switchLabel",
+  "forControl",
+  "forInit",
+  "enhancedForControl",
+  "forUpdate",
+  "parExpression",
+  "expressionList",
+  "statementExpression",
+  "constantExpression",
+  "expression",
+  "assignmentOperator",
+  "conditionalExpression",
+  "conditionalOrExpression",
+  "conditionalAndExpression",
+  "inclusiveOrExpression",
+  "exclusiveOrExpression",
+  "andExpression",
+  "equalityExpression",
+  "instanceOfExpression",
+  "relationalExpression",
+  "relationalOp",
+  "shiftExpression",
+  "shiftOp",
+  "additiveExpression",
+  "multiplicativeExpression",
+  "unaryExpression",
+  "unaryExpressionNotPlusMinus",
+  "castExpression",
+  "primary",
+  "identifierSuffix",
+  "creator",
+  "createdName",
+  "innerCreator",
+  "nonWildcardTypeArgumentsOrDiamond",
+  "arrayCreatorRest",
+  "classCreatorRest",
+  "explicitGenericInvocation",
+  "nonWildcardTypeArguments",
+  "selector",
+  "superSuffix",
+  "arguments",
+  "whitespace"
 ];
 
 // main program for use with node.js, rhino, or jrunscript

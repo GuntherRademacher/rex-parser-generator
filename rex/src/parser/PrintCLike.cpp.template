@@ -1551,10 +1551,9 @@ func (this *~                                                   print(className.
                                                                   else
                                                                   {
   ~s~                                                             }
-    ~tartNonterminal(~                                            print(stringIntroducer());
-                     ~"~                                          print(node->name);
-                       ~", ~                                      print(thiz());
-                           ~e0)~                                  print(semicolon());
+    ~tartNonterminal(~                                            print(format.toString<wchar_t>(node->nonterminalCode));
+                     ~, ~                                         print(thiz());
+                        ~e0)~                                     print(semicolon());
                                                                 }
                                                                 visitNodeList(node->firstChild);
 
@@ -1569,10 +1568,9 @@ func (this *~                                                   print(className.
                                                                   else
                                                                   {
   ~e~                                                             }
-    ~ndNonterminal(~                                              print(stringIntroducer());
-                   ~"~                                            print(node->name);
-                     ~", ~                                        print(thiz());
-                         ~e0)~                                    print(semicolon());
+    ~ndNonterminal(~                                              print(format.toString<wchar_t>(node->nonterminalCode));
+                   ~, ~                                           print(thiz());
+                      ~e0)~                                       print(semicolon());
                                                                 }
                                                                 if (trace)
                                                                 {
@@ -1897,7 +1895,24 @@ this.reset = function(l, b, e)
                   ~TOKEN[o] : ~                                 print(nullPtr());
                               ~;
 };
-~                                                             }
+~                                                               if (tree)
+                                                                {
+~
+this.getTerminalName = function(id)
+{
+  return ~                                                        print(staticPrefix());
+         ~TOKEN[id];
+};
+
+this.getNonterminalName = function(id)
+{
+  return ~                                                        printSyntheticNamePrefix();
+                                                                  print(staticPrefix());
+         ~NONTERMINAL[id]~                                        printSyntheticNameSuffix();
+                         ~;
+};
+~                                                               }
+                                                              }
                                                               else if (isTypescript())
                                                               {
                                                                 if (useGlr)
@@ -1916,7 +1931,22 @@ getOffendingToken(e: ParseException)
   return o >= 0 ? Parser.TOKEN[o] : ~                           print(nullPtr());
                                     ~;
 }
-~                                                             }
+~                                                               if (tree)
+                                                                {
+~
+public static getTerminalName(id: number): string
+{
+  return Parser.TOKEN[id];
+}
+
+public static getNonterminalName(id: number): string
+{
+  return ~                                                        printSyntheticNamePrefix();
+         ~Parser.NONTERMINAL[id]~                                 printSyntheticNameSuffix();
+                                ~;
+}
+~                                                               }
+                                                              }
                                                               else if (isScala())
                                                               {
                                                               }
@@ -1927,10 +1957,28 @@ func GetOffendingToken(e ParseError) string {
   if e.GetOffending() < 0 {
     return ""
   } else {
-    return token[e.GetOffending()]
+    return ~                                                    print(tokenTableName());
+           ~[e.GetOffending()]
   }
 }
-~                                                             }
+~                                                               if (tree)
+                                                                {
+~
+func GetTerminalName(id int) string {
+  return TOKEN[id]
+}
+
+func GetNonterminalName(id int) string {~                         if (rejectsAmbiguity())
+                                                                  {
+~
+  if id < 0 {
+    return [...]string{"ALTERNATIVE", "AMBIGUOUS", "UNAMBIGUOUS"}[-2 - id]
+  }~                                                              }
+~
+  return NONTERMINAL[id]
+}
+~                                                               }
+                                                              }
                                                               else if (isPython())
                                                               {
 ~
@@ -1941,7 +1989,22 @@ def getOffendingToken(e):
   else:
     return ~                                                    print(className.c_str());
            ~.TOKEN[e.getOffending()]
-~                                                             }
+~                                                               if (tree)
+                                                                {
+~
+@staticmethod
+def getTerminalName(id):
+  return ~                                                        print(className.c_str());
+         ~.TOKEN[id]
+
+@staticmethod
+def getNonterminalName(id):
+  return ~                                                        printSyntheticNamePrefix();
+                                                                  print(className.c_str());
+         ~.NONTERMINAL[id]~                                       printSyntheticNameSuffix();
+                          ~
+~                                                               }
+                                                              }
                                                               else
                                                               {
                                                                 openMethod(stringType(), L"static ", L"getOffendingToken", L"ParseException e");
@@ -1950,7 +2013,32 @@ def getOffendingToken(e):
   return e.getOffending() < 0 ? ~                               print(nullPtr());
                                 ~ : TOKEN[e.getOffending()];~   print(rightBrace());
 ~
-~                                                             }
+~                                                               if (tree)
+                                                                {
+                                                                  bool sharedNames = isJava() && ! interfaceName.empty();
+                                                                  if (sharedNames && ! (grammar->basex && ! hasProlog))
+                                                                  {
+~
+private ~                                                           print(className.c_str());
+        ~()
+{
+  // used for obtaining the names, when the parser is not instantiated yet
+}
+~                                                                 }
+                                                                  openMethod(stringType(), sharedNames ? L"" : L"static ", L"getTerminalName", L"int id");
+                                                                  print(leftBrace());
+~
+  return TOKEN[id];~                                              print(rightBrace());
+                   ~
+~                                                                 openMethod(stringType(), sharedNames ? L"" : L"static ", L"getNonterminalName", L"int id");
+                                                                  print(leftBrace());
+~
+  return ~                                                        printSyntheticNamePrefix();
+         ~NONTERMINAL[id]~                                        printSyntheticNameSuffix();
+                         ~;~                                      print(rightBrace());
+                           ~
+~                                                               }
+                                                              }
 
                                                               if (isJavascript() || isTypescript() || isHaxe())
                                                               {
@@ -1969,7 +2057,7 @@ def getOffendingToken(e):
   else
   {
     expected = [~                                               print(staticPrefix());
-                                                                print(isGo() ? L"token" : L"TOKEN");
+                                                                print(tokenTableName());
                 ~[e.getExpected()]];
   }
   return expected;
@@ -2206,7 +2294,8 @@ func GetExpectedTokenSet(e ParseError) []string {
   if e.expected < 0 {
     return getTokenSet(- e.state)
   } else {
-    singleton := [...]string {token[e.expected]}
+    singleton := [...]string {~                                 print(tokenTableName());
+                              ~[e.expected]}
     return singleton[:]
   }
 }
@@ -2383,7 +2472,7 @@ public void parse()
   }
   else if (size > 1)
   {
-    set[0] = ~                                                  print(isGo() ? L"token" : L"TOKEN");
+    set[0] = ~                                                  print(tokenTableName());
              ~[e.expected];
     set[1] = 0;
   }
@@ -2991,7 +3080,20 @@ object ~                                                        print(className.
   def getOffendingToken(e: ParseException) = {
     if (e.offending < 0) null else TOKEN(e.offending)
   }
-~                                                             }
+~                                                               if (tree)
+                                                                {
+~
+  def getTerminalName(id: Int) = {
+    TOKEN(id)
+  }
+
+  def getNonterminalName(id: Int) = {
+    ~                                                             printSyntheticNamePrefix();
+    ~NONTERMINAL(id)~                                             printSyntheticNameSuffix();
+                    ~
+  }
+~                                                               }
+                                                              }
                                                             }
 
                                                             void PrintCLike::printThreadBody1()
@@ -3045,7 +3147,7 @@ fprintf(stderr, "  <parse ~                                         if (useGlr)
   nonterminalId < 0 ? "" : ~                                        if (stringIntroducer()[0])
                                                                     {
                            ~Utf8Encoder::encode(~                   }
-                           ~xmlEscape(~                             print(isGo() ? L"nonterminal" : L"NONTERMINAL");
+                           ~xmlEscape(~                             print(nonterminalTableName());
                                       ~[nonterminalId], 0).c_str()~ if (stringIntroducer()[0])
                                                                     {
                          ~).c_str()~                                }
@@ -3114,7 +3216,7 @@ if ~                                                                print(ifLeft
   ~                                                                 print(writeTrace());
                                                                     print(staticPrefix());
   ~xmlEscape(~                                                      print(staticPrefix());
-                                                                    print(isGo() ? L"nonterminal" : L"NONTERMINAL");
+                                                                    print(nonterminalTableName());
                                                                     print(leftbracket());
              ~nonterminalId~                                        print(rightbracket());
                            ~)~                                      print(endWriteTrace());
@@ -3619,14 +3721,10 @@ if ~                                                            print(ifLeftPare
                                                                   else
                                                                   {
                    ~t~                                            }
-                     ~erminal(~                                   print(staticPrefix());
-                                                                  print(isGo() ? L"token" : L"TOKEN");
-                                                                  print(leftbracket());
-                                                                  print(thiz());
-                                    ~l1~                          print(rightbracket());
-                                       ~, ~                       print(thiz());
-                                          ~b1, ~                  print(thiz());
-                                               ~e1)~              print(semicolon());
+                     ~erminal(~                                   print(thiz());
+                              ~l1, ~                              print(thiz());
+                                   ~b1, ~                         print(thiz());
+                                        ~e1)~                     print(semicolon());
                                                                   if (! useGlr)
                                                                   {
                                                                     increaseIndent(2);
@@ -3657,17 +3755,12 @@ if ~                                                            print(ifLeftPare
                               ~TerminalEvent~                         }
                               ~(~                                   }
                                                                     print(thiz());
-                                ~deferredEvent, ~                   print(staticPrefix());
-                                                                    print(isGo() ? L"token" : L"TOKEN");
-                                                                    print(leftbracket());
-                                                                    print(thiz());
-                                                ~l1~                print(rightbracket());
-                                                   ~, ~             print(thiz());
-                                                      ~b1, ~        print(thiz());
-                                                           ~e1~     if (isTypescript())
+                                ~deferredEvent, ~                   print(thiz());
+                                                ~l1, ~              print(thiz());
+                                                     ~b1, ~         print(thiz());
+                                                          ~e1~      if (isTypescript())
                                                                     {
-                                                              ~, -1~
-                                                                    }
+                                                             ~, -1~ }
                                                                     if (isGo())
                                                                     {
                                                                      ~}}~
@@ -3921,20 +4014,19 @@ if ~                                                            print(ifLeftPare
 ~
   fprintf(stderr, "reduce\" nonterminal=\"%s\" count=\"%d\"/>\n", ~ if (stringIntroducer()[0])
                                                                     {
-                               ~Utf8Encoder::encode(~               }
-                               ~xmlEscape(~                         print(isGo() ? L"nonterminal" : L"NONTERMINAL");
-                                          ~[nonterminalId], 0).c_str()~
-                                                                    if (stringIntroducer()[0])
+            ~Utf8Encoder::encode(~                                  }
+            ~xmlEscape(~                                            print(nonterminalTableName());
+                       ~[nonterminalId], 0).c_str()~                if (stringIntroducer()[0])
                                                                     {
-                               ~).c_str()~                          }
-                               ~, symbols);~                      }
+                                                   ~).c_str()~      }
+                                                   ~, symbols);~  }
                                                                   else
                                                                   {
 ~
   ~                                                                 print(writeTrace());
   ~"reduce\" nonterminal=\"" + ~                                    print(staticPrefix());
                                ~xmlEscape(~                         print(staticPrefix());
-                                                                    print(isGo() ? L"nonterminal" : L"NONTERMINAL");
+                                                                    print(nonterminalTableName());
                                                                     print(leftbracket());
                                           ~nonterminalId~           print(rightbracket());
                                                         ~) + "\" count=\"" + ~
@@ -4091,14 +4183,9 @@ if ~                                                            print(ifLeftPare
                                                                   else
                                                                   {
                  ~n~                                              }
-                   ~onterminal(~                                  print(staticPrefix());
-                                                                  print(isGo() ? L"nonterminal" : L"NONTERMINAL");
-                                                                  print(leftbracket());
-                               ~nonterminalId~                    print(rightbracket());
-                                             ~, ~                 if (useGlr) print(thiz());
-                                                ~bs, ~            if (useGlr) print(thiz());
-                                                     ~es, symbols)~
-                                                                  print(semicolon());
+                   ~onterminal(nonterminalId, ~                   if (useGlr) print(thiz());
+                                              ~bs, ~              if (useGlr) print(thiz());
+                                                   ~es, symbols)~ print(semicolon());
                                                                   if (useGlr)
                                                                   {
                                                                     decreaseIndent();
@@ -4108,7 +4195,7 @@ if ~                                                            print(ifLeftPare
       ~                                                             if (useGlr) print(thiz());
       ~deferredEvent = ~                                            if (isGo())
                                                                     {
-                       ~&NonterminalEvent{&AbstractDeferredEvent{this.deferredEvent, nonterminal[nonterminalId], this.bs, this.es}, symbols}~
+                       ~&NonterminalEvent{&AbstractDeferredEvent{this.deferredEvent, nonterminalId, this.bs, this.es}, symbols}~
                                                                     }
                                                                     else
                                                                     {
@@ -4123,12 +4210,9 @@ if ~                                                            print(ifLeftPare
                                                                       {
                            ~NonterminalEvent~                         }
                            ~(~                                        print(thiz());
-                             ~deferredEvent, ~                        print(staticPrefix());
-                                             ~NONTERMINAL~            print(leftbracket());
-                                             ~nonterminalId~          print(rightbracket());
-                                                           ~, ~       print(thiz());
-                                                              ~bs, ~  print(thiz());
-                                                                   ~es, symbols)~
+                             ~deferredEvent, nonterminalId, ~         print(thiz());
+                                                            ~bs, ~    print(thiz());
+                                                                 ~es, symbols)~
                                                                       print(semicolon());
                                                                     }
                                                                     increaseIndent(2);
@@ -4497,36 +4581,10 @@ if ~                                                            print(ifLeftPare
                                                                   else
                                                                   {
     ~t~                                                           }
-      ~erminal(~                                                  if (isJava() || isCSharp())
-                                                                  {
-                                                                    print(staticPrefix());
-              ~TOKEN[~                                              print(thiz());
-                     ~l1]~                                        }
-                                                                  else if (isTypescript())
-                                                                  {
-                                                                    print(staticPrefix());
-              ~TOKEN[~                                              print(thiz());
-                     ~l1]~                                        }
-                                                                  else if (isJavascript() || isHaxe())
-                                                                  {
-                                                                    print(staticPrefix());
-              ~TOKEN[~                                              print(thiz());
-                      ~l1]~                                       }
-                                                                  else if (isScala())
-                                                                  {
-                                                                    print(staticPrefix());
-              ~TOKEN(l1)~                                         }
-                                                                  else if (isGo())
-                                                                  {
-              ~token[this.l1]~                                    }
-                                                                  else
-                                                                  {
-                                                                    print(staticPrefix());
-              ~TOKEN[~                                              print(thiz());
-                     ~l1]~                                        }
-              ~, ~                                                print(thiz());
-                 ~b1, ~                                           print(thiz());
-                      ~e1)~                                       print(semicolon());
+      ~erminal(~                                                  print(thiz());
+               ~l1, ~                                             print(thiz());
+                    ~b1, ~                                        print(thiz());
+                         ~e1)~                                    print(semicolon());
                                                                 }
 ~
 ~                                                               print(thiz());
@@ -4623,15 +4681,15 @@ if ~                                                            print(ifLeftPare
                                                                     }
   ~"  <parse terminal=\"" + ~                                       print(staticPrefix());
                             ~xmlEscape(~                            print(staticPrefix());
-                                                                    print(isGo() ? L"token" : L"TOKEN");
+                                                                    print(tokenTableName());
                                                                     print(leftbracket());
-                                  ~t~                               print(rightbracket());
-                                    ~) + "\"" + ~                   if (isGo())
+                                       ~t~                          print(rightbracket());
+                                         ~) + "\"" + ~              if (isGo())
                                                                     {
-                                                ~inputAttr~         }
+                                                     ~inputAttr~    }
                                                                     else
                                                                     {
-                                                ~(~                   if (isScala())
+                                                     ~(~              if (isScala())
                                                                       {
                             ~if (l1 == 0) "" else~                    }
                                                                       else if (isPython())

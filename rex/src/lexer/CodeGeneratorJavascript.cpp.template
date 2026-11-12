@@ -497,14 +497,15 @@
     top = -1;
   };
 
-  this.nonterminal = function(name, begin, end, count)
+  this.nonterminal = function(id, begin, end, count)
   {~                                                              if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
                                                                   {
 ~
     if (count > top + 1)
     {
       var content = this.pop(top + 1);
-      this.nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+      this.nonterminal(~                                            print(variable("unambiguousId").integer());
+                       ~, begin, content.length == 0 ? end : content[0].begin, 0);
       for (var i = 0; i < content.length; ++i)
       {
         this.push(content[i]);
@@ -513,7 +514,7 @@
     }~                                                            }
 ~
     this.push(new ~                                               print(variable("classname").string());
-                  ~.Nonterminal(name, begin, end, this.pop(count)));
+                  ~.Nonterminal(id, begin, end, this.pop(count)));
   };
 ~                                                                 if (variable("useGlr").boolean() && variable("resolvesAmbiguity").boolean())
                                                                   {
@@ -523,10 +524,10 @@
   };
 ~                                                                 }
 ~
-  this.terminal = function(name, begin, end)
+  this.terminal = function(id, begin, end)
   {
     this.push(new ~                                               print(variable("classname").string());
-                  ~.Terminal(name, begin, end));
+                  ~.Terminal(id, begin, end));
   };
 
   this.serialize = function(e)
@@ -565,24 +566,24 @@
     stack = [];
   };
 
-  this.startNonterminal = function(name, begin)
+  this.startNonterminal = function(id, begin)
   {
     var nonterminal = new ~                                       print(variable("classname").string());
-                          ~.Nonterminal(name, begin, begin, []);
+                          ~.Nonterminal(id, begin, begin, []);
     if (stack.length > 0) addChild(nonterminal);
     stack.push(nonterminal);
   };
 
-  this.endNonterminal = function(name, end)
+  this.endNonterminal = function(id, end)
   {
     stack[stack.length - 1].end = end;
     if (stack.length > 1) stack.pop();
   };
 
-  this.terminal = function(name, begin, end)
+  this.terminal = function(id, begin, end)
   {
     addChild(new ~                                                print(variable("classname").string());
-                 ~.Terminal(name, begin, end));
+                 ~.Terminal(id, begin, end));
   };
 
   this.whitespace = function(begin, end)
@@ -604,26 +605,48 @@
 ~                                                               }
 ~
 ~                                                               print(variable("classname").string());
-~.Terminal = function(name, begin, end)
+~.Terminal = function(id, begin, end)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return ~                                                    print(variable("classname").string());
+           ~.TOKEN[id];
+  };
+
   this.send = function(e)
   {
-    e.terminal(name, begin, end);
+    e.terminal(id, begin, end);
   };
 };
 
 ~                                                               print(variable("classname").string());
-~.Nonterminal = function(name, begin, end, children)
+~.Nonterminal = function(id, begin, end, children)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return ~                                                    if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
+                                                                {
+                                                                  print(L"id >= 0 ? ");
+                                                                }
+                                                                print(variable("classname").string());
+           ~.NONTERMINAL[id]~                                   if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
+                                                                {
+                                                                  print(L" : id == -2 ? \"ALTERNATIVE\" : id == -3 ? \"AMBIGUOUS\" : id == -4 ? \"UNAMBIGUOUS\" : null");
+                                                                }
+                            ~;
+  };
+
   this.send = function(e)
   {
-    e.startNonterminal(name, begin);
+    e.startNonterminal(id, begin);
     var pos = begin;
     children.forEach
     (
@@ -635,7 +658,7 @@
       }
     );
     if (pos < end) e.whitespace(pos, end);
-    e.endNonterminal(name, end);
+    e.endNonterminal(id, end);
   };
 };
 ~                                                             }

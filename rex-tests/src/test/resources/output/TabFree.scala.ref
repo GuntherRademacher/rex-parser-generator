@@ -1,4 +1,4 @@
-// This file was generated on Sun Apr 5, 2026 10:15 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 23:00 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q TabFree.ebnf -scala -performance -tree
 
 import java.io.File
@@ -42,7 +42,7 @@ class TabFree {
   }
 
   def parse_TabFree: Unit = {
-    eventHandler.startNonterminal("TabFree", e0)
+    eventHandler.startNonterminal(0, e0)
     lookahead1(1)                   // Line | LF | EOF
     if (l1 == 1) {                  // Line
       consume(1)                    // Line
@@ -62,7 +62,7 @@ class TabFree {
       }
     }
     consume(3)                      // EOF
-    eventHandler.endNonterminal("TabFree", e0)
+    eventHandler.endNonterminal(0, e0)
   }
 
   def getErrorMessage(e: TabFree.ParseException) = {
@@ -83,7 +83,7 @@ class TabFree {
 
   private def consume(t: Int): Unit = {
     if (l1 == t) {
-      eventHandler.terminal(TabFree.TOKEN(l1), b1, e1)
+      eventHandler.terminal(l1, b1, e1)
       b0 = b1; e0 = e1; l1 = 0
     }
     else {
@@ -186,6 +186,14 @@ object TabFree {
     if (e.offending < 0) null else TOKEN(e.offending)
   }
 
+  def getTerminalName(id: Int) = {
+    TOKEN(id)
+  }
+
+  def getNonterminalName(id: Int) = {
+    NONTERMINAL(id)
+  }
+
   class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {
 
     override def getMessage = {
@@ -204,9 +212,9 @@ object TabFree {
 
   trait EventHandler {
     def reset(string: String): Unit
-    def startNonterminal(name: String, begin: Int): Unit
-    def endNonterminal(name: String, end: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit
+    def startNonterminal(id: Int, begin: Int): Unit
+    def endNonterminal(id: Int, end: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit
     def whitespace(begin: Int, end: Int): Unit
   }
 
@@ -220,21 +228,21 @@ object TabFree {
       top = -1
     }
 
-    override def startNonterminal(name: String, begin: Int): Unit = {
-      val nonterminal = new Nonterminal(name, begin, begin, ArrayBuffer[Symbol]())
+    override def startNonterminal(id: Int, begin: Int): Unit = {
+      val nonterminal = new Nonterminal(id, begin, begin, ArrayBuffer[Symbol]())
       if (top >= 0) addChild(nonterminal)
       top += 1
       if (top == stack.length) stack += nonterminal else stack(top) = nonterminal
     }
 
-    override def endNonterminal(name: String, end: Int): Unit = {
+    override def endNonterminal(id: Int, end: Int): Unit = {
       var nonterminal = stack(top)
       nonterminal.end = end
       if (top > 0) top -= 1
     }
 
-    override def terminal(name: String, begin: Int, end: Int): Unit = {
-      addChild(new Terminal(name, begin, end))
+    override def terminal(id: Int, begin: Int, end: Int): Unit = {
+      addChild(new Terminal(id, begin, end))
     }
 
     override def whitespace(begin: Int, end: Int): Unit = {
@@ -251,25 +259,35 @@ object TabFree {
     }
   }
 
-  abstract class Symbol(n: String, b: Int, e: Int) {
-    var name = n
+  abstract class Symbol(i: Int, b: Int, e: Int) {
+    var id = i
     var begin = b
     var end = e
+
+    def getName: String
 
     def send(e: EventHandler): Unit
   }
 
-  class Terminal(name: String, begin: Int, end: Int) extends Symbol(name, begin, end) {
+  class Terminal(id: Int, begin: Int, end: Int) extends Symbol(id, begin, end) {
+    override def getName: String = {
+      TOKEN(id)
+    }
+
     override def send(e: EventHandler): Unit = {
-      e.terminal(name, begin, end)
+      e.terminal(id, begin, end)
     }
   }
 
-  class Nonterminal(name: String, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(name, begin, end) {
+  class Nonterminal(id: Int, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(id, begin, end) {
     var children = c
 
+    override def getName: String = {
+      NONTERMINAL(id)
+    }
+
     override def send(e: EventHandler): Unit = {
-      e.startNonterminal(name, begin)
+      e.startNonterminal(id, begin)
       var pos = begin
       for (c <- children) {
         if (pos < c.begin) e.whitespace(pos, c.begin)
@@ -277,16 +295,16 @@ object TabFree {
         pos = c.end
       }
       if (pos < end) e.whitespace(pos, end)
-      e.endNonterminal(name, end)
+      e.endNonterminal(id, end)
     }
   }
 
   private class ContentCounter extends EventHandler {
     var length = 0
     def reset(string: String): Unit = {length = 0}
-    def startNonterminal(name: String, begin: Int): Unit = {}
-    def endNonterminal(name: String, end: Int): Unit = {}
-    def terminal(name: String, begin: Int, end: Int): Unit = {length += end - begin}
+    def startNonterminal(id: Int, begin: Int): Unit = {}
+    def endNonterminal(id: Int, end: Int): Unit = {}
+    def terminal(id: Int, begin: Int, end: Int): Unit = {length += end - begin}
     def whitespace(begin: Int, end: Int): Unit = {length += end - begin}
   }
 
@@ -478,11 +496,15 @@ object TabFree {
     /* 0 */ 12, 14, 4, 2
   )
 
-  private final val TOKEN = Array(
+  final val TOKEN = Array(
     "%ERROR",
     "Line",
     "LF",
     "EOF"
+  )
+
+  final val NONTERMINAL = Array(
+    "TabFree"
   )
 }
 

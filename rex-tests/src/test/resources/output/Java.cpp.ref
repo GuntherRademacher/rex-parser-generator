@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 06:56 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 6, 2026 13:12 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -cpp
 
 #include <string.h>
@@ -33,9 +33,9 @@ public:
     virtual ~EventHandler() {}
 
     virtual void reset(const wchar_t *string) = 0;
-    virtual void startNonterminal(const wchar_t *name, int begin) = 0;
-    virtual void endNonterminal(const wchar_t *name, int end) = 0;
-    virtual void terminal(const wchar_t *name, int begin, int end) = 0;
+    virtual void startNonterminal(int id, int begin) = 0;
+    virtual void endNonterminal(int id, int end) = 0;
+    virtual void terminal(int id, int begin, int end) = 0;
     virtual void whitespace(int begin, int end) = 0;
   };
 
@@ -61,7 +61,26 @@ public:
       depth = 0;
     }
 
-    void startNonterminal(const wchar_t *tag, int b)
+    void startNonterminal(int id, int b)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    void endNonterminal(int id, int e)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    void terminal(int id, int b, int e)
+    {
+      const wchar_t *tag = getTerminalName(id);
+      if (tag[0] == L'\'') tag = L"TOKEN";
+      startElement(tag);
+      characters(b, e);
+      endElement(tag);
+    }
+
+    void startElement(const wchar_t *tag)
     {
       if (delayedTag != 0)
       {
@@ -82,7 +101,7 @@ public:
       ++depth;
     }
 
-    void endNonterminal(const wchar_t *tag, int e)
+    void endElement(const wchar_t *tag)
     {
       --depth;
       if (delayedTag != 0)
@@ -145,14 +164,6 @@ public:
       }
     }
 
-    void terminal(const wchar_t *tag, int b, int e)
-    {
-      if (tag[0] == L'\'') tag = L"TOKEN";
-      startNonterminal(tag, b);
-      characters(b, e);
-      endNonterminal(tag, e);
-    }
-
   private:
     const wchar_t *input;
     const wchar_t *delayedTag;
@@ -166,16 +177,17 @@ public:
   public:
     virtual ~Symbol() {}
 
-    const wchar_t *name;
+    int id;
     int begin;
     int end;
 
+    virtual const wchar_t *getName() const = 0;
     virtual void send(EventHandler *e) = 0;
 
   protected:
-    Symbol(const wchar_t *name, int begin, int end)
+    Symbol(int id, int begin, int end)
     {
-      this->name = name;
+      this->id = id;
       this->begin = begin;
       this->end = end;
     }
@@ -184,13 +196,18 @@ public:
   class Terminal : public Symbol
   {
   public:
-    Terminal(const wchar_t *name, int begin, int end)
-    : Symbol(name, begin, end)
+    Terminal(int id, int begin, int end)
+    : Symbol(id, begin, end)
     {}
+
+    const wchar_t *getName() const
+    {
+      return TOKEN[id];
+    }
 
     void send(EventHandler *e)
     {
-      e->terminal(name, begin, end);
+      e->terminal(id, begin, end);
     }
   };
 
@@ -199,8 +216,8 @@ public:
   public:
     std::vector<Symbol *> *children;
 
-    Nonterminal(const wchar_t *name, int begin, int end, std::vector<Symbol *> *children)
-    : Symbol(name, begin, end)
+    Nonterminal(int id, int begin, int end, std::vector<Symbol *> *children)
+    : Symbol(id, begin, end)
     {
       this->children = children;
     }
@@ -212,9 +229,14 @@ public:
       delete children;
     }
 
+    const wchar_t *getName() const
+    {
+      return NONTERMINAL[id];
+    }
+
     void send(EventHandler *e)
     {
-      e->startNonterminal(name, begin);
+      e->startNonterminal(id, begin);
       int pos = begin;
       for (std::vector<Symbol *>::iterator i = children->begin(); i != children->end(); ++i)
       {
@@ -224,7 +246,7 @@ public:
         pos = c->end;
       }
       if (pos < end) e->whitespace(pos, end);
-      e->endNonterminal(name, end);
+      e->endNonterminal(id, end);
     }
   };
 
@@ -244,24 +266,24 @@ public:
       top = -1;
     }
 
-    void startNonterminal(const wchar_t *name, int begin)
+    void startNonterminal(int id, int begin)
     {
-      Nonterminal *nonterminal = new Nonterminal(name, begin, begin, new std::vector<Symbol *>());
+      Nonterminal *nonterminal = new Nonterminal(id, begin, begin, new std::vector<Symbol *>());
       if (top++ >= 0) addChild(nonterminal);
       if ((size_t) top >= stack.size())
         stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
       stack[top] = nonterminal;
     }
 
-    void endNonterminal(const wchar_t *name, int end)
+    void endNonterminal(int id, int end)
     {
       stack[top]->end = end;
       if (top > 0) --top;
     }
 
-    void terminal(const wchar_t *name, int begin, int end)
+    void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     void whitespace(int begin, int end)
@@ -418,6 +440,16 @@ public:
     return e.getOffending() < 0 ? 0 : TOKEN[e.getOffending()];
   }
 
+  static const wchar_t *getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  static const wchar_t *getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   static void getExpectedTokenSet(const ParseException &e, const wchar_t **set, int size)
   {
     if (e.expected < 0)
@@ -507,7 +539,7 @@ public:
 
   void parse_compilationUnit()
   {
-    eventHandler->startNonterminal(L"compilationUnit", e0);
+    eventHandler->startNonterminal(0, e0);
     lookahead1W(80);                // ENUM | WS | COMMENT | LINE_COMMENT | EOF | ';' | '@' | 'abstract' | 'class' |
                                     // 'final' | 'import' | 'interface' | 'package' | 'private' | 'protected' |
                                     // 'public' | 'static' | 'strictfp'
@@ -670,20 +702,20 @@ public:
       break;
     }
     consume(13);                    // EOF
-    eventHandler->endNonterminal(L"compilationUnit", e0);
+    eventHandler->endNonterminal(0, e0);
   }
 
 private:
 
   void parse_packageDeclaration()
   {
-    eventHandler->startNonterminal(L"packageDeclaration", e0);
+    eventHandler->startNonterminal(1, e0);
     consume(85);                    // 'package'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
     parse_qualifiedName();
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"packageDeclaration", e0);
+    eventHandler->endNonterminal(1, e0);
   }
 
   void try_packageDeclaration()
@@ -696,7 +728,7 @@ private:
 
   void parse_importDeclaration()
   {
-    eventHandler->startNonterminal(L"importDeclaration", e0);
+    eventHandler->startNonterminal(2, e0);
     consume(77);                    // 'import'
     lookahead1W(24);                // Identifier | WS | COMMENT | LINE_COMMENT | 'static'
     if (l1 == 91)                   // 'static'
@@ -714,7 +746,7 @@ private:
     }
     lookahead1W(6);                 // WS | COMMENT | LINE_COMMENT | ';'
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"importDeclaration", e0);
+    eventHandler->endNonterminal(2, e0);
   }
 
   void try_importDeclaration()
@@ -739,7 +771,7 @@ private:
 
   void parse_typeDeclaration()
   {
-    eventHandler->startNonterminal(L"typeDeclaration", e0);
+    eventHandler->startNonterminal(3, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -749,7 +781,7 @@ private:
       parse_classOrInterfaceDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"typeDeclaration", e0);
+    eventHandler->endNonterminal(3, e0);
   }
 
   void try_typeDeclaration()
@@ -767,7 +799,7 @@ private:
 
   void parse_classOrInterfaceDeclaration()
   {
-    eventHandler->startNonterminal(L"classOrInterfaceDeclaration", e0);
+    eventHandler->startNonterminal(4, e0);
     parse_classOrInterfaceModifiers();
     switch (l1)
     {
@@ -781,7 +813,7 @@ private:
       parse_interfaceDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"classOrInterfaceDeclaration", e0);
+    eventHandler->endNonterminal(4, e0);
   }
 
   void try_classOrInterfaceDeclaration()
@@ -801,7 +833,7 @@ private:
 
   void parse_classOrInterfaceModifiers()
   {
-    eventHandler->startNonterminal(L"classOrInterfaceModifiers", e0);
+    eventHandler->startNonterminal(5, e0);
     for (;;)
     {
       lookahead1W(74);              // ENUM | WS | COMMENT | LINE_COMMENT | '@' | 'abstract' | 'class' | 'final' |
@@ -825,7 +857,7 @@ private:
       whitespace();
       parse_classOrInterfaceModifier();
     }
-    eventHandler->endNonterminal(L"classOrInterfaceModifiers", e0);
+    eventHandler->endNonterminal(5, e0);
   }
 
   void try_classOrInterfaceModifiers()
@@ -856,7 +888,7 @@ private:
 
   void parse_classOrInterfaceModifier()
   {
-    eventHandler->startNonterminal(L"classOrInterfaceModifier", e0);
+    eventHandler->startNonterminal(6, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -884,7 +916,7 @@ private:
       consume(92);                  // 'strictfp'
       break;
     }
-    eventHandler->endNonterminal(L"classOrInterfaceModifier", e0);
+    eventHandler->endNonterminal(6, e0);
   }
 
   void try_classOrInterfaceModifier()
@@ -920,7 +952,7 @@ private:
 
   void parse_modifiers()
   {
-    eventHandler->startNonterminal(L"modifiers", e0);
+    eventHandler->startNonterminal(7, e0);
     for (;;)
     {
       lookahead1W(85);              // ENUM | Identifier | WS | COMMENT | LINE_COMMENT | '<' | '@' | 'abstract' |
@@ -954,7 +986,7 @@ private:
       whitespace();
       parse_modifier();
     }
-    eventHandler->endNonterminal(L"modifiers", e0);
+    eventHandler->endNonterminal(7, e0);
   }
 
   void try_modifiers()
@@ -995,7 +1027,7 @@ private:
 
   void parse_classDeclaration()
   {
-    eventHandler->startNonterminal(L"classDeclaration", e0);
+    eventHandler->startNonterminal(8, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -1005,7 +1037,7 @@ private:
       parse_enumDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"classDeclaration", e0);
+    eventHandler->endNonterminal(8, e0);
   }
 
   void try_classDeclaration()
@@ -1023,7 +1055,7 @@ private:
 
   void parse_normalClassDeclaration()
   {
-    eventHandler->startNonterminal(L"normalClassDeclaration", e0);
+    eventHandler->startNonterminal(9, e0);
     consume(63);                    // 'class'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1052,7 +1084,7 @@ private:
     }
     whitespace();
     parse_classBody();
-    eventHandler->endNonterminal(L"normalClassDeclaration", e0);
+    eventHandler->endNonterminal(9, e0);
   }
 
   void try_normalClassDeclaration()
@@ -1085,7 +1117,7 @@ private:
 
   void parse_typeParameters()
   {
-    eventHandler->startNonterminal(L"typeParameters", e0);
+    eventHandler->startNonterminal(10, e0);
     consume(38);                    // '<'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -1102,7 +1134,7 @@ private:
       parse_typeParameter();
     }
     consume(44);                    // '>'
-    eventHandler->endNonterminal(L"typeParameters", e0);
+    eventHandler->endNonterminal(10, e0);
   }
 
   void try_typeParameters()
@@ -1125,7 +1157,7 @@ private:
 
   void parse_typeParameter()
   {
-    eventHandler->startNonterminal(L"typeParameter", e0);
+    eventHandler->startNonterminal(11, e0);
     consume(9);                     // Identifier
     lookahead1W(48);                // WS | COMMENT | LINE_COMMENT | ',' | '>' | 'extends'
     if (l1 == 69)                   // 'extends'
@@ -1136,7 +1168,7 @@ private:
       whitespace();
       parse_typeBound();
     }
-    eventHandler->endNonterminal(L"typeParameter", e0);
+    eventHandler->endNonterminal(11, e0);
   }
 
   void try_typeParameter()
@@ -1154,7 +1186,7 @@ private:
 
   void parse_typeBound()
   {
-    eventHandler->startNonterminal(L"typeBound", e0);
+    eventHandler->startNonterminal(12, e0);
     parse_type();
     for (;;)
     {
@@ -1168,7 +1200,7 @@ private:
       whitespace();
       parse_type();
     }
-    eventHandler->endNonterminal(L"typeBound", e0);
+    eventHandler->endNonterminal(12, e0);
   }
 
   void try_typeBound()
@@ -1189,7 +1221,7 @@ private:
 
   void parse_enumDeclaration()
   {
-    eventHandler->startNonterminal(L"enumDeclaration", e0);
+    eventHandler->startNonterminal(13, e0);
     consume(7);                     // ENUM
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1204,7 +1236,7 @@ private:
     }
     whitespace();
     parse_enumBody();
-    eventHandler->endNonterminal(L"enumDeclaration", e0);
+    eventHandler->endNonterminal(13, e0);
   }
 
   void try_enumDeclaration()
@@ -1225,7 +1257,7 @@ private:
 
   void parse_enumBody()
   {
-    eventHandler->startNonterminal(L"enumBody", e0);
+    eventHandler->startNonterminal(14, e0);
     consume(105);                   // '{'
     lookahead1W(62);                // Identifier | WS | COMMENT | LINE_COMMENT | ',' | ';' | '@' | '}'
     if (l1 == 9                     // Identifier
@@ -1245,7 +1277,7 @@ private:
       parse_enumBodyDeclarations();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"enumBody", e0);
+    eventHandler->endNonterminal(14, e0);
   }
 
   void try_enumBody()
@@ -1271,7 +1303,7 @@ private:
 
   void parse_enumConstants()
   {
-    eventHandler->startNonterminal(L"enumConstants", e0);
+    eventHandler->startNonterminal(15, e0);
     parse_enumConstant();
     for (;;)
     {
@@ -1295,7 +1327,7 @@ private:
       whitespace();
       parse_enumConstant();
     }
-    eventHandler->endNonterminal(L"enumConstants", e0);
+    eventHandler->endNonterminal(15, e0);
   }
 
   void try_enumConstants()
@@ -1326,7 +1358,7 @@ private:
 
   void parse_enumConstant()
   {
-    eventHandler->startNonterminal(L"enumConstant", e0);
+    eventHandler->startNonterminal(16, e0);
     if (l1 == 51)                   // '@'
     {
       whitespace();
@@ -1345,7 +1377,7 @@ private:
       whitespace();
       parse_classBody();
     }
-    eventHandler->endNonterminal(L"enumConstant", e0);
+    eventHandler->endNonterminal(16, e0);
   }
 
   void try_enumConstant()
@@ -1369,7 +1401,7 @@ private:
 
   void parse_enumBodyDeclarations()
   {
-    eventHandler->startNonterminal(L"enumBodyDeclarations", e0);
+    eventHandler->startNonterminal(17, e0);
     consume(37);                    // ';'
     for (;;)
     {
@@ -1385,7 +1417,7 @@ private:
       whitespace();
       parse_classBodyDeclaration();
     }
-    eventHandler->endNonterminal(L"enumBodyDeclarations", e0);
+    eventHandler->endNonterminal(17, e0);
   }
 
   void try_enumBodyDeclarations()
@@ -1408,7 +1440,7 @@ private:
 
   void parse_interfaceDeclaration()
   {
-    eventHandler->startNonterminal(L"interfaceDeclaration", e0);
+    eventHandler->startNonterminal(18, e0);
     switch (l1)
     {
     case 80:                        // 'interface'
@@ -1418,7 +1450,7 @@ private:
       parse_annotationTypeDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"interfaceDeclaration", e0);
+    eventHandler->endNonterminal(18, e0);
   }
 
   void try_interfaceDeclaration()
@@ -1436,7 +1468,7 @@ private:
 
   void parse_normalInterfaceDeclaration()
   {
-    eventHandler->startNonterminal(L"normalInterfaceDeclaration", e0);
+    eventHandler->startNonterminal(19, e0);
     consume(80);                    // 'interface'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1457,7 +1489,7 @@ private:
     }
     whitespace();
     parse_interfaceBody();
-    eventHandler->endNonterminal(L"normalInterfaceDeclaration", e0);
+    eventHandler->endNonterminal(19, e0);
   }
 
   void try_normalInterfaceDeclaration()
@@ -1483,7 +1515,7 @@ private:
 
   void parse_typeList()
   {
-    eventHandler->startNonterminal(L"typeList", e0);
+    eventHandler->startNonterminal(20, e0);
     parse_type();
     for (;;)
     {
@@ -1497,7 +1529,7 @@ private:
       whitespace();
       parse_type();
     }
-    eventHandler->endNonterminal(L"typeList", e0);
+    eventHandler->endNonterminal(20, e0);
   }
 
   void try_typeList()
@@ -1518,7 +1550,7 @@ private:
 
   void parse_classBody()
   {
-    eventHandler->startNonterminal(L"classBody", e0);
+    eventHandler->startNonterminal(21, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1535,7 +1567,7 @@ private:
       parse_classBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"classBody", e0);
+    eventHandler->endNonterminal(21, e0);
   }
 
   void try_classBody()
@@ -1559,7 +1591,7 @@ private:
 
   void parse_interfaceBody()
   {
-    eventHandler->startNonterminal(L"interfaceBody", e0);
+    eventHandler->startNonterminal(22, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1575,7 +1607,7 @@ private:
       parse_interfaceBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"interfaceBody", e0);
+    eventHandler->endNonterminal(22, e0);
   }
 
   void try_interfaceBody()
@@ -1598,7 +1630,7 @@ private:
 
   void parse_classBodyDeclaration()
   {
-    eventHandler->startNonterminal(L"classBodyDeclaration", e0);
+    eventHandler->startNonterminal(23, e0);
     switch (l1)
     {
     case 91:                        // 'static'
@@ -1632,7 +1664,7 @@ private:
       parse_memberDecl();
       break;
     }
-    eventHandler->endNonterminal(L"classBodyDeclaration", e0);
+    eventHandler->endNonterminal(23, e0);
   }
 
   void try_classBodyDeclaration()
@@ -1672,7 +1704,7 @@ private:
 
   void parse_memberDecl()
   {
-    eventHandler->startNonterminal(L"memberDecl", e0);
+    eventHandler->startNonterminal(24, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1713,7 +1745,7 @@ private:
       parse_memberDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"memberDecl", e0);
+    eventHandler->endNonterminal(24, e0);
   }
 
   void try_memberDecl()
@@ -1760,7 +1792,7 @@ private:
 
   void parse_memberDeclaration()
   {
-    eventHandler->startNonterminal(L"memberDeclaration", e0);
+    eventHandler->startNonterminal(25, e0);
     parse_type();
     switch (l1)
     {
@@ -1782,7 +1814,7 @@ private:
       parse_fieldDeclaration();
       break;
     }
-    eventHandler->endNonterminal(L"memberDeclaration", e0);
+    eventHandler->endNonterminal(25, e0);
   }
 
   void try_memberDeclaration()
@@ -1810,13 +1842,13 @@ private:
 
   void parse_genericMethodOrConstructorDecl()
   {
-    eventHandler->startNonterminal(L"genericMethodOrConstructorDecl", e0);
+    eventHandler->startNonterminal(26, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
     whitespace();
     parse_genericMethodOrConstructorRest();
-    eventHandler->endNonterminal(L"genericMethodOrConstructorDecl", e0);
+    eventHandler->endNonterminal(26, e0);
   }
 
   void try_genericMethodOrConstructorDecl()
@@ -1829,7 +1861,7 @@ private:
 
   void parse_genericMethodOrConstructorRest()
   {
-    eventHandler->startNonterminal(L"genericMethodOrConstructorRest", e0);
+    eventHandler->startNonterminal(27, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1864,7 +1896,7 @@ private:
       parse_methodDeclaratorRest();
       break;
     }
-    eventHandler->endNonterminal(L"genericMethodOrConstructorRest", e0);
+    eventHandler->endNonterminal(27, e0);
   }
 
   void try_genericMethodOrConstructorRest()
@@ -1905,12 +1937,12 @@ private:
 
   void parse_methodDeclaration()
   {
-    eventHandler->startNonterminal(L"methodDeclaration", e0);
+    eventHandler->startNonterminal(28, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_methodDeclaratorRest();
-    eventHandler->endNonterminal(L"methodDeclaration", e0);
+    eventHandler->endNonterminal(28, e0);
   }
 
   void try_methodDeclaration()
@@ -1922,10 +1954,10 @@ private:
 
   void parse_fieldDeclaration()
   {
-    eventHandler->startNonterminal(L"fieldDeclaration", e0);
+    eventHandler->startNonterminal(29, e0);
     parse_variableDeclarators();
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"fieldDeclaration", e0);
+    eventHandler->endNonterminal(29, e0);
   }
 
   void try_fieldDeclaration()
@@ -1936,7 +1968,7 @@ private:
 
   void parse_interfaceBodyDeclaration()
   {
-    eventHandler->startNonterminal(L"interfaceBodyDeclaration", e0);
+    eventHandler->startNonterminal(30, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -1948,7 +1980,7 @@ private:
       parse_interfaceMemberDecl();
       break;
     }
-    eventHandler->endNonterminal(L"interfaceBodyDeclaration", e0);
+    eventHandler->endNonterminal(30, e0);
   }
 
   void try_interfaceBodyDeclaration()
@@ -1967,7 +1999,7 @@ private:
 
   void parse_interfaceMemberDecl()
   {
-    eventHandler->startNonterminal(L"interfaceMemberDecl", e0);
+    eventHandler->startNonterminal(31, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -1993,7 +2025,7 @@ private:
       parse_interfaceMethodOrFieldDecl();
       break;
     }
-    eventHandler->endNonterminal(L"interfaceMemberDecl", e0);
+    eventHandler->endNonterminal(31, e0);
   }
 
   void try_interfaceMemberDecl()
@@ -2026,13 +2058,13 @@ private:
 
   void parse_interfaceMethodOrFieldDecl()
   {
-    eventHandler->startNonterminal(L"interfaceMethodOrFieldDecl", e0);
+    eventHandler->startNonterminal(32, e0);
     parse_type();
     consume(9);                     // Identifier
     lookahead1W(45);                // WS | COMMENT | LINE_COMMENT | '(' | '=' | '['
     whitespace();
     parse_interfaceMethodOrFieldRest();
-    eventHandler->endNonterminal(L"interfaceMethodOrFieldDecl", e0);
+    eventHandler->endNonterminal(32, e0);
   }
 
   void try_interfaceMethodOrFieldDecl()
@@ -2045,7 +2077,7 @@ private:
 
   void parse_interfaceMethodOrFieldRest()
   {
-    eventHandler->startNonterminal(L"interfaceMethodOrFieldRest", e0);
+    eventHandler->startNonterminal(33, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -2056,7 +2088,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"interfaceMethodOrFieldRest", e0);
+    eventHandler->endNonterminal(33, e0);
   }
 
   void try_interfaceMethodOrFieldRest()
@@ -2075,7 +2107,7 @@ private:
 
   void parse_methodDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"methodDeclaratorRest", e0);
+    eventHandler->startNonterminal(34, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -2105,7 +2137,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"methodDeclaratorRest", e0);
+    eventHandler->endNonterminal(34, e0);
   }
 
   void try_methodDeclaratorRest()
@@ -2141,7 +2173,7 @@ private:
 
   void parse_voidMethodDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"voidMethodDeclaratorRest", e0);
+    eventHandler->startNonterminal(35, e0);
     parse_formalParameters();
     lookahead1W(50);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -2161,7 +2193,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"voidMethodDeclaratorRest", e0);
+    eventHandler->endNonterminal(35, e0);
   }
 
   void try_voidMethodDeclaratorRest()
@@ -2187,7 +2219,7 @@ private:
 
   void parse_interfaceMethodDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"interfaceMethodDeclaratorRest", e0);
+    eventHandler->startNonterminal(36, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -2208,7 +2240,7 @@ private:
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"interfaceMethodDeclaratorRest", e0);
+    eventHandler->endNonterminal(36, e0);
   }
 
   void try_interfaceMethodDeclaratorRest()
@@ -2236,7 +2268,7 @@ private:
 
   void parse_interfaceGenericMethodDecl()
   {
-    eventHandler->startNonterminal(L"interfaceGenericMethodDecl", e0);
+    eventHandler->startNonterminal(37, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
@@ -2255,7 +2287,7 @@ private:
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_interfaceMethodDeclaratorRest();
-    eventHandler->endNonterminal(L"interfaceGenericMethodDecl", e0);
+    eventHandler->endNonterminal(37, e0);
   }
 
   void try_interfaceGenericMethodDecl()
@@ -2280,7 +2312,7 @@ private:
 
   void parse_voidInterfaceMethodDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler->startNonterminal(38, e0);
     parse_formalParameters();
     lookahead1W(33);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws'
     if (l1 == 98)                   // 'throws'
@@ -2291,7 +2323,7 @@ private:
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler->endNonterminal(38, e0);
   }
 
   void try_voidInterfaceMethodDeclaratorRest()
@@ -2309,7 +2341,7 @@ private:
 
   void parse_constructorDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"constructorDeclaratorRest", e0);
+    eventHandler->startNonterminal(39, e0);
     parse_formalParameters();
     lookahead1W(42);                // WS | COMMENT | LINE_COMMENT | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -2321,7 +2353,7 @@ private:
     }
     whitespace();
     parse_constructorBody();
-    eventHandler->endNonterminal(L"constructorDeclaratorRest", e0);
+    eventHandler->endNonterminal(39, e0);
   }
 
   void try_constructorDeclaratorRest()
@@ -2339,12 +2371,12 @@ private:
 
   void parse_constantDeclarator()
   {
-    eventHandler->startNonterminal(L"constantDeclarator", e0);
+    eventHandler->startNonterminal(40, e0);
     consume(9);                     // Identifier
     lookahead1W(36);                // WS | COMMENT | LINE_COMMENT | '=' | '['
     whitespace();
     parse_constantDeclaratorRest();
-    eventHandler->endNonterminal(L"constantDeclarator", e0);
+    eventHandler->endNonterminal(40, e0);
   }
 
   void try_constantDeclarator()
@@ -2356,7 +2388,7 @@ private:
 
   void parse_variableDeclarators()
   {
-    eventHandler->startNonterminal(L"variableDeclarators", e0);
+    eventHandler->startNonterminal(41, e0);
     parse_variableDeclarator();
     for (;;)
     {
@@ -2370,7 +2402,7 @@ private:
       whitespace();
       parse_variableDeclarator();
     }
-    eventHandler->endNonterminal(L"variableDeclarators", e0);
+    eventHandler->endNonterminal(41, e0);
   }
 
   void try_variableDeclarators()
@@ -2391,7 +2423,7 @@ private:
 
   void parse_variableDeclarator()
   {
-    eventHandler->startNonterminal(L"variableDeclarator", e0);
+    eventHandler->startNonterminal(42, e0);
     parse_variableDeclaratorId();
     if (l1 == 42)                   // '='
     {
@@ -2404,7 +2436,7 @@ private:
       whitespace();
       parse_variableInitializer();
     }
-    eventHandler->endNonterminal(L"variableDeclarator", e0);
+    eventHandler->endNonterminal(42, e0);
   }
 
   void try_variableDeclarator()
@@ -2424,7 +2456,7 @@ private:
 
   void parse_constantDeclaratorsRest()
   {
-    eventHandler->startNonterminal(L"constantDeclaratorsRest", e0);
+    eventHandler->startNonterminal(43, e0);
     parse_constantDeclaratorRest();
     for (;;)
     {
@@ -2438,7 +2470,7 @@ private:
       whitespace();
       parse_constantDeclarator();
     }
-    eventHandler->endNonterminal(L"constantDeclaratorsRest", e0);
+    eventHandler->endNonterminal(43, e0);
   }
 
   void try_constantDeclaratorsRest()
@@ -2459,7 +2491,7 @@ private:
 
   void parse_constantDeclaratorRest()
   {
-    eventHandler->startNonterminal(L"constantDeclaratorRest", e0);
+    eventHandler->startNonterminal(44, e0);
     for (;;)
     {
       lookahead1W(36);              // WS | COMMENT | LINE_COMMENT | '=' | '['
@@ -2479,7 +2511,7 @@ private:
                                     // 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_variableInitializer();
-    eventHandler->endNonterminal(L"constantDeclaratorRest", e0);
+    eventHandler->endNonterminal(44, e0);
   }
 
   void try_constantDeclaratorRest()
@@ -2506,7 +2538,7 @@ private:
 
   void parse_variableDeclaratorId()
   {
-    eventHandler->startNonterminal(L"variableDeclaratorId", e0);
+    eventHandler->startNonterminal(45, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -2519,7 +2551,7 @@ private:
       lookahead1W(10);              // WS | COMMENT | LINE_COMMENT | ']'
       consume(53);                  // ']'
     }
-    eventHandler->endNonterminal(L"variableDeclaratorId", e0);
+    eventHandler->endNonterminal(45, e0);
   }
 
   void try_variableDeclaratorId()
@@ -2540,7 +2572,7 @@ private:
 
   void parse_variableInitializer()
   {
-    eventHandler->startNonterminal(L"variableInitializer", e0);
+    eventHandler->startNonterminal(46, e0);
     switch (l1)
     {
     case 105:                       // '{'
@@ -2550,7 +2582,7 @@ private:
       parse_expression();
       break;
     }
-    eventHandler->endNonterminal(L"variableInitializer", e0);
+    eventHandler->endNonterminal(46, e0);
   }
 
   void try_variableInitializer()
@@ -2568,7 +2600,7 @@ private:
 
   void parse_arrayInitializer()
   {
-    eventHandler->startNonterminal(L"arrayInitializer", e0);
+    eventHandler->startNonterminal(47, e0);
     consume(105);                   // '{'
     lookahead1W(96);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -2616,7 +2648,7 @@ private:
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"arrayInitializer", e0);
+    eventHandler->endNonterminal(47, e0);
   }
 
   void try_arrayInitializer()
@@ -2670,7 +2702,7 @@ private:
 
   void parse_modifier()
   {
-    eventHandler->startNonterminal(L"modifier", e0);
+    eventHandler->startNonterminal(48, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -2710,7 +2742,7 @@ private:
       consume(92);                  // 'strictfp'
       break;
     }
-    eventHandler->endNonterminal(L"modifier", e0);
+    eventHandler->endNonterminal(48, e0);
   }
 
   void try_modifier()
@@ -2758,9 +2790,9 @@ private:
 
   void parse_enumConstantName()
   {
-    eventHandler->startNonterminal(L"enumConstantName", e0);
+    eventHandler->startNonterminal(49, e0);
     consume(9);                     // Identifier
-    eventHandler->endNonterminal(L"enumConstantName", e0);
+    eventHandler->endNonterminal(49, e0);
   }
 
   void try_enumConstantName()
@@ -2770,7 +2802,7 @@ private:
 
   void parse_type()
   {
-    eventHandler->startNonterminal(L"type", e0);
+    eventHandler->startNonterminal(50, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -2808,7 +2840,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"type", e0);
+    eventHandler->endNonterminal(50, e0);
   }
 
   void try_type()
@@ -2854,7 +2886,7 @@ private:
 
   void parse_classOrInterfaceType()
   {
-    eventHandler->startNonterminal(L"classOrInterfaceType", e0);
+    eventHandler->startNonterminal(51, e0);
     consume(9);                     // Identifier
     lookahead1W(104);               // Identifier | WS | COMMENT | LINE_COMMENT | '!=' | '%=' | '&' | '&&' | '&=' |
                                     // '(' | ')' | '*=' | '+=' | ',' | '-=' | '.' | '...' | '/=' | ':' | ';' | '<' |
@@ -2888,7 +2920,7 @@ private:
         parse_typeArguments();
       }
     }
-    eventHandler->endNonterminal(L"classOrInterfaceType", e0);
+    eventHandler->endNonterminal(51, e0);
   }
 
   void try_classOrInterfaceType()
@@ -2928,7 +2960,7 @@ private:
 
   void parse_primitiveType()
   {
-    eventHandler->startNonterminal(L"primitiveType", e0);
+    eventHandler->startNonterminal(52, e0);
     switch (l1)
     {
     case 57:                        // 'boolean'
@@ -2956,7 +2988,7 @@ private:
       consume(67);                  // 'double'
       break;
     }
-    eventHandler->endNonterminal(L"primitiveType", e0);
+    eventHandler->endNonterminal(52, e0);
   }
 
   void try_primitiveType()
@@ -2992,7 +3024,7 @@ private:
 
   void parse_variableModifier()
   {
-    eventHandler->startNonterminal(L"variableModifier", e0);
+    eventHandler->startNonterminal(53, e0);
     switch (l1)
     {
     case 71:                        // 'final'
@@ -3002,7 +3034,7 @@ private:
       parse_annotation();
       break;
     }
-    eventHandler->endNonterminal(L"variableModifier", e0);
+    eventHandler->endNonterminal(53, e0);
   }
 
   void try_variableModifier()
@@ -3020,7 +3052,7 @@ private:
 
   void parse_typeArguments()
   {
-    eventHandler->startNonterminal(L"typeArguments", e0);
+    eventHandler->startNonterminal(54, e0);
     consume(38);                    // '<'
     lookahead1W(72);                // Identifier | WS | COMMENT | LINE_COMMENT | '?' | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
@@ -3039,7 +3071,7 @@ private:
       parse_typeArgument();
     }
     consume(44);                    // '>'
-    eventHandler->endNonterminal(L"typeArguments", e0);
+    eventHandler->endNonterminal(54, e0);
   }
 
   void try_typeArguments()
@@ -3064,7 +3096,7 @@ private:
 
   void parse_typeArgument()
   {
-    eventHandler->startNonterminal(L"typeArgument", e0);
+    eventHandler->startNonterminal(55, e0);
     switch (l1)
     {
     case 50:                        // '?'
@@ -3092,7 +3124,7 @@ private:
       parse_type();
       break;
     }
-    eventHandler->endNonterminal(L"typeArgument", e0);
+    eventHandler->endNonterminal(55, e0);
   }
 
   void try_typeArgument()
@@ -3127,7 +3159,7 @@ private:
 
   void parse_qualifiedNameList()
   {
-    eventHandler->startNonterminal(L"qualifiedNameList", e0);
+    eventHandler->startNonterminal(56, e0);
     parse_qualifiedName();
     for (;;)
     {
@@ -3140,7 +3172,7 @@ private:
       whitespace();
       parse_qualifiedName();
     }
-    eventHandler->endNonterminal(L"qualifiedNameList", e0);
+    eventHandler->endNonterminal(56, e0);
   }
 
   void try_qualifiedNameList()
@@ -3160,7 +3192,7 @@ private:
 
   void parse_formalParameters()
   {
-    eventHandler->startNonterminal(L"formalParameters", e0);
+    eventHandler->startNonterminal(57, e0);
     consume(21);                    // '('
     lookahead1W(76);                // Identifier | WS | COMMENT | LINE_COMMENT | ')' | '@' | 'boolean' | 'byte' |
                                     // 'char' | 'double' | 'final' | 'float' | 'int' | 'long' | 'short'
@@ -3170,7 +3202,7 @@ private:
       parse_formalParameterDecls();
     }
     consume(22);                    // ')'
-    eventHandler->endNonterminal(L"formalParameters", e0);
+    eventHandler->endNonterminal(57, e0);
   }
 
   void try_formalParameters()
@@ -3187,13 +3219,13 @@ private:
 
   void parse_formalParameterDecls()
   {
-    eventHandler->startNonterminal(L"formalParameterDecls", e0);
+    eventHandler->startNonterminal(58, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_formalParameterDeclsRest();
-    eventHandler->endNonterminal(L"formalParameterDecls", e0);
+    eventHandler->endNonterminal(58, e0);
   }
 
   void try_formalParameterDecls()
@@ -3205,7 +3237,7 @@ private:
 
   void parse_formalParameterDeclsRest()
   {
-    eventHandler->startNonterminal(L"formalParameterDeclsRest", e0);
+    eventHandler->startNonterminal(59, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -3226,7 +3258,7 @@ private:
       parse_variableDeclaratorId();
       break;
     }
-    eventHandler->endNonterminal(L"formalParameterDeclsRest", e0);
+    eventHandler->endNonterminal(59, e0);
   }
 
   void try_formalParameterDeclsRest()
@@ -3253,9 +3285,9 @@ private:
 
   void parse_methodBody()
   {
-    eventHandler->startNonterminal(L"methodBody", e0);
+    eventHandler->startNonterminal(60, e0);
     parse_block();
-    eventHandler->endNonterminal(L"methodBody", e0);
+    eventHandler->endNonterminal(60, e0);
   }
 
   void try_methodBody()
@@ -3265,7 +3297,7 @@ private:
 
   void parse_constructorBody()
   {
-    eventHandler->startNonterminal(L"constructorBody", e0);
+    eventHandler->startNonterminal(61, e0);
     consume(105);                   // '{'
     lookahead1W(117);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | COMMENT |
@@ -3455,7 +3487,7 @@ private:
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"constructorBody", e0);
+    eventHandler->endNonterminal(61, e0);
   }
 
   void try_constructorBody()
@@ -3651,7 +3683,7 @@ private:
 
   void parse_explicitConstructorInvocation()
   {
-    eventHandler->startNonterminal(L"explicitConstructorInvocation", e0);
+    eventHandler->startNonterminal(62, e0);
     switch (l1)
     {
     case 93:                        // 'super'
@@ -3749,7 +3781,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"explicitConstructorInvocation", e0);
+    eventHandler->endNonterminal(62, e0);
   }
 
   void try_explicitConstructorInvocation()
@@ -3854,7 +3886,7 @@ private:
 
   void parse_qualifiedName()
   {
-    eventHandler->startNonterminal(L"qualifiedName", e0);
+    eventHandler->startNonterminal(63, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -3876,7 +3908,7 @@ private:
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler->endNonterminal(L"qualifiedName", e0);
+    eventHandler->endNonterminal(63, e0);
   }
 
   void try_qualifiedName()
@@ -3906,7 +3938,7 @@ private:
 
   void parse_literal()
   {
-    eventHandler->startNonterminal(L"literal", e0);
+    eventHandler->startNonterminal(64, e0);
     switch (l1)
     {
     case 4:                         // FloatingPointLiteral
@@ -3929,7 +3961,7 @@ private:
       parse_integerLiteral();
       break;
     }
-    eventHandler->endNonterminal(L"literal", e0);
+    eventHandler->endNonterminal(64, e0);
   }
 
   void try_literal()
@@ -3960,7 +3992,7 @@ private:
 
   void parse_integerLiteral()
   {
-    eventHandler->startNonterminal(L"integerLiteral", e0);
+    eventHandler->startNonterminal(65, e0);
     switch (l1)
     {
     case 1:                         // HexLiteral
@@ -3973,7 +4005,7 @@ private:
       consume(2);                   // DecimalLiteral
       break;
     }
-    eventHandler->endNonterminal(L"integerLiteral", e0);
+    eventHandler->endNonterminal(65, e0);
   }
 
   void try_integerLiteral()
@@ -3994,7 +4026,7 @@ private:
 
   void parse_booleanLiteral()
   {
-    eventHandler->startNonterminal(L"booleanLiteral", e0);
+    eventHandler->startNonterminal(66, e0);
     switch (l1)
     {
     case 100:                       // 'true'
@@ -4004,7 +4036,7 @@ private:
       consume(70);                  // 'false'
       break;
     }
-    eventHandler->endNonterminal(L"booleanLiteral", e0);
+    eventHandler->endNonterminal(66, e0);
   }
 
   void try_booleanLiteral()
@@ -4022,7 +4054,7 @@ private:
 
   void parse_annotations()
   {
-    eventHandler->startNonterminal(L"annotations", e0);
+    eventHandler->startNonterminal(67, e0);
     for (;;)
     {
       whitespace();
@@ -4067,7 +4099,7 @@ private:
         break;
       }
     }
-    eventHandler->endNonterminal(L"annotations", e0);
+    eventHandler->endNonterminal(67, e0);
   }
 
   void try_annotations()
@@ -4121,7 +4153,7 @@ private:
 
   void parse_annotation()
   {
-    eventHandler->startNonterminal(L"annotation", e0);
+    eventHandler->startNonterminal(68, e0);
     consume(51);                    // '@'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -4162,7 +4194,7 @@ private:
       lookahead1W(2);               // WS | COMMENT | LINE_COMMENT | ')'
       consume(22);                  // ')'
     }
-    eventHandler->endNonterminal(L"annotation", e0);
+    eventHandler->endNonterminal(68, e0);
   }
 
   void try_annotation()
@@ -4208,7 +4240,7 @@ private:
 
   void parse_annotationName()
   {
-    eventHandler->startNonterminal(L"annotationName", e0);
+    eventHandler->startNonterminal(69, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -4225,7 +4257,7 @@ private:
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler->endNonterminal(L"annotationName", e0);
+    eventHandler->endNonterminal(69, e0);
   }
 
   void try_annotationName()
@@ -4250,7 +4282,7 @@ private:
 
   void parse_elementValuePairs()
   {
-    eventHandler->startNonterminal(L"elementValuePairs", e0);
+    eventHandler->startNonterminal(70, e0);
     parse_elementValuePair();
     for (;;)
     {
@@ -4264,7 +4296,7 @@ private:
       whitespace();
       parse_elementValuePair();
     }
-    eventHandler->endNonterminal(L"elementValuePairs", e0);
+    eventHandler->endNonterminal(70, e0);
   }
 
   void try_elementValuePairs()
@@ -4285,7 +4317,7 @@ private:
 
   void parse_elementValuePair()
   {
-    eventHandler->startNonterminal(L"elementValuePair", e0);
+    eventHandler->startNonterminal(71, e0);
     consume(9);                     // Identifier
     lookahead1W(8);                 // WS | COMMENT | LINE_COMMENT | '='
     consume(42);                    // '='
@@ -4296,7 +4328,7 @@ private:
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler->endNonterminal(L"elementValuePair", e0);
+    eventHandler->endNonterminal(71, e0);
   }
 
   void try_elementValuePair()
@@ -4314,7 +4346,7 @@ private:
 
   void parse_elementValue()
   {
-    eventHandler->startNonterminal(L"elementValue", e0);
+    eventHandler->startNonterminal(72, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -4327,7 +4359,7 @@ private:
       parse_conditionalExpression();
       break;
     }
-    eventHandler->endNonterminal(L"elementValue", e0);
+    eventHandler->endNonterminal(72, e0);
   }
 
   void try_elementValue()
@@ -4348,7 +4380,7 @@ private:
 
   void parse_elementValueArrayInitializer()
   {
-    eventHandler->startNonterminal(L"elementValueArrayInitializer", e0);
+    eventHandler->startNonterminal(73, e0);
     consume(105);                   // '{'
     lookahead1W(101);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -4397,7 +4429,7 @@ private:
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"elementValueArrayInitializer", e0);
+    eventHandler->endNonterminal(73, e0);
   }
 
   void try_elementValueArrayInitializer()
@@ -4452,7 +4484,7 @@ private:
 
   void parse_annotationTypeDeclaration()
   {
-    eventHandler->startNonterminal(L"annotationTypeDeclaration", e0);
+    eventHandler->startNonterminal(74, e0);
     consume(51);                    // '@'
     lookahead1W(12);                // WS | COMMENT | LINE_COMMENT | 'interface'
     consume(80);                    // 'interface'
@@ -4461,7 +4493,7 @@ private:
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_annotationTypeBody();
-    eventHandler->endNonterminal(L"annotationTypeDeclaration", e0);
+    eventHandler->endNonterminal(74, e0);
   }
 
   void try_annotationTypeDeclaration()
@@ -4477,7 +4509,7 @@ private:
 
   void parse_annotationTypeBody()
   {
-    eventHandler->startNonterminal(L"annotationTypeBody", e0);
+    eventHandler->startNonterminal(75, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4493,7 +4525,7 @@ private:
       parse_annotationTypeElementDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"annotationTypeBody", e0);
+    eventHandler->endNonterminal(75, e0);
   }
 
   void try_annotationTypeBody()
@@ -4516,11 +4548,11 @@ private:
 
   void parse_annotationTypeElementDeclaration()
   {
-    eventHandler->startNonterminal(L"annotationTypeElementDeclaration", e0);
+    eventHandler->startNonterminal(76, e0);
     parse_modifiers();
     whitespace();
     parse_annotationTypeElementRest();
-    eventHandler->endNonterminal(L"annotationTypeElementDeclaration", e0);
+    eventHandler->endNonterminal(76, e0);
   }
 
   void try_annotationTypeElementDeclaration()
@@ -4531,7 +4563,7 @@ private:
 
   void parse_annotationTypeElementRest()
   {
-    eventHandler->startNonterminal(L"annotationTypeElementRest", e0);
+    eventHandler->startNonterminal(77, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -4586,7 +4618,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"annotationTypeElementRest", e0);
+    eventHandler->endNonterminal(77, e0);
   }
 
   void try_annotationTypeElementRest()
@@ -4648,7 +4680,7 @@ private:
 
   void parse_annotationMethodOrConstantRest()
   {
-    eventHandler->startNonterminal(L"annotationMethodOrConstantRest", e0);
+    eventHandler->startNonterminal(78, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4667,7 +4699,7 @@ private:
       parse_annotationConstantRest();
       break;
     }
-    eventHandler->endNonterminal(L"annotationMethodOrConstantRest", e0);
+    eventHandler->endNonterminal(78, e0);
   }
 
   void try_annotationMethodOrConstantRest()
@@ -4694,7 +4726,7 @@ private:
 
   void parse_annotationMethodRest()
   {
-    eventHandler->startNonterminal(L"annotationMethodRest", e0);
+    eventHandler->startNonterminal(79, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -4706,7 +4738,7 @@ private:
       whitespace();
       parse_defaultValue();
     }
-    eventHandler->endNonterminal(L"annotationMethodRest", e0);
+    eventHandler->endNonterminal(79, e0);
   }
 
   void try_annotationMethodRest()
@@ -4725,9 +4757,9 @@ private:
 
   void parse_annotationConstantRest()
   {
-    eventHandler->startNonterminal(L"annotationConstantRest", e0);
+    eventHandler->startNonterminal(80, e0);
     parse_variableDeclarators();
-    eventHandler->endNonterminal(L"annotationConstantRest", e0);
+    eventHandler->endNonterminal(80, e0);
   }
 
   void try_annotationConstantRest()
@@ -4737,7 +4769,7 @@ private:
 
   void parse_defaultValue()
   {
-    eventHandler->startNonterminal(L"defaultValue", e0);
+    eventHandler->startNonterminal(81, e0);
     consume(65);                    // 'default'
     lookahead1W(95);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -4746,7 +4778,7 @@ private:
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler->endNonterminal(L"defaultValue", e0);
+    eventHandler->endNonterminal(81, e0);
   }
 
   void try_defaultValue()
@@ -4762,7 +4794,7 @@ private:
 
   void parse_block()
   {
-    eventHandler->startNonterminal(L"block", e0);
+    eventHandler->startNonterminal(82, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4782,7 +4814,7 @@ private:
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler->endNonterminal(L"block", e0);
+    eventHandler->endNonterminal(82, e0);
   }
 
   void try_block()
@@ -4809,7 +4841,7 @@ private:
 
   void parse_blockStatement()
   {
-    eventHandler->startNonterminal(L"blockStatement", e0);
+    eventHandler->startNonterminal(83, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4937,7 +4969,7 @@ private:
       parse_statement();
       break;
     }
-    eventHandler->endNonterminal(L"blockStatement", e0);
+    eventHandler->endNonterminal(83, e0);
   }
 
   void try_blockStatement()
@@ -5077,10 +5109,10 @@ private:
 
   void parse_localVariableDeclarationStatement()
   {
-    eventHandler->startNonterminal(L"localVariableDeclarationStatement", e0);
+    eventHandler->startNonterminal(84, e0);
     parse_localVariableDeclaration();
     consume(37);                    // ';'
-    eventHandler->endNonterminal(L"localVariableDeclarationStatement", e0);
+    eventHandler->endNonterminal(84, e0);
   }
 
   void try_localVariableDeclarationStatement()
@@ -5091,13 +5123,13 @@ private:
 
   void parse_localVariableDeclaration()
   {
-    eventHandler->startNonterminal(L"localVariableDeclaration", e0);
+    eventHandler->startNonterminal(85, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclarators();
-    eventHandler->endNonterminal(L"localVariableDeclaration", e0);
+    eventHandler->endNonterminal(85, e0);
   }
 
   void try_localVariableDeclaration()
@@ -5109,7 +5141,7 @@ private:
 
   void parse_variableModifiers()
   {
-    eventHandler->startNonterminal(L"variableModifiers", e0);
+    eventHandler->startNonterminal(86, e0);
     for (;;)
     {
       lookahead1W(75);              // Identifier | WS | COMMENT | LINE_COMMENT | '@' | 'boolean' | 'byte' | 'char' |
@@ -5122,7 +5154,7 @@ private:
       whitespace();
       parse_variableModifier();
     }
-    eventHandler->endNonterminal(L"variableModifiers", e0);
+    eventHandler->endNonterminal(86, e0);
   }
 
   void try_variableModifiers()
@@ -5142,7 +5174,7 @@ private:
 
   void parse_statement()
   {
-    eventHandler->startNonterminal(L"statement", e0);
+    eventHandler->startNonterminal(87, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -5514,7 +5546,7 @@ private:
       consume(37);                  // ';'
       break;
     }
-    eventHandler->endNonterminal(L"statement", e0);
+    eventHandler->endNonterminal(87, e0);
   }
 
   void try_statement()
@@ -5874,7 +5906,7 @@ private:
 
   void parse_catches()
   {
-    eventHandler->startNonterminal(L"catches", e0);
+    eventHandler->startNonterminal(88, e0);
     parse_catchClause();
     for (;;)
     {
@@ -5894,7 +5926,7 @@ private:
       whitespace();
       parse_catchClause();
     }
-    eventHandler->endNonterminal(L"catches", e0);
+    eventHandler->endNonterminal(88, e0);
   }
 
   void try_catches()
@@ -5921,7 +5953,7 @@ private:
 
   void parse_catchClause()
   {
-    eventHandler->startNonterminal(L"catchClause", e0);
+    eventHandler->startNonterminal(89, e0);
     consume(61);                    // 'catch'
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -5933,7 +5965,7 @@ private:
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_block();
-    eventHandler->endNonterminal(L"catchClause", e0);
+    eventHandler->endNonterminal(89, e0);
   }
 
   void try_catchClause()
@@ -5951,13 +5983,13 @@ private:
 
   void parse_formalParameter()
   {
-    eventHandler->startNonterminal(L"formalParameter", e0);
+    eventHandler->startNonterminal(90, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclaratorId();
-    eventHandler->endNonterminal(L"formalParameter", e0);
+    eventHandler->endNonterminal(90, e0);
   }
 
   void try_formalParameter()
@@ -5969,7 +6001,7 @@ private:
 
   void parse_switchBlockStatementGroups()
   {
-    eventHandler->startNonterminal(L"switchBlockStatementGroups", e0);
+    eventHandler->startNonterminal(91, e0);
     for (;;)
     {
       if (l1 == 109)                // '}'
@@ -5979,7 +6011,7 @@ private:
       whitespace();
       parse_switchBlockStatementGroup();
     }
-    eventHandler->endNonterminal(L"switchBlockStatementGroups", e0);
+    eventHandler->endNonterminal(91, e0);
   }
 
   void try_switchBlockStatementGroups()
@@ -5996,7 +6028,7 @@ private:
 
   void parse_switchBlockStatementGroup()
   {
-    eventHandler->startNonterminal(L"switchBlockStatementGroup", e0);
+    eventHandler->startNonterminal(92, e0);
     for (;;)
     {
       whitespace();
@@ -6103,7 +6135,7 @@ private:
       whitespace();
       parse_blockStatement();
     }
-    eventHandler->endNonterminal(L"switchBlockStatementGroup", e0);
+    eventHandler->endNonterminal(92, e0);
   }
 
   void try_switchBlockStatementGroup()
@@ -6218,7 +6250,7 @@ private:
 
   void parse_switchLabel()
   {
-    eventHandler->startNonterminal(L"switchLabel", e0);
+    eventHandler->startNonterminal(93, e0);
     switch (l1)
     {
     case 60:                        // 'case'
@@ -6289,7 +6321,7 @@ private:
       consume(36);                  // ':'
       break;
     }
-    eventHandler->endNonterminal(L"switchLabel", e0);
+    eventHandler->endNonterminal(93, e0);
   }
 
   void try_switchLabel()
@@ -6369,7 +6401,7 @@ private:
 
   void parse_forControl()
   {
-    eventHandler->startNonterminal(L"forControl", e0);
+    eventHandler->startNonterminal(94, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -6489,7 +6521,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"forControl", e0);
+    eventHandler->endNonterminal(94, e0);
   }
 
   void try_forControl()
@@ -6617,7 +6649,7 @@ private:
 
   void parse_forInit()
   {
-    eventHandler->startNonterminal(L"forInit", e0);
+    eventHandler->startNonterminal(95, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -6694,7 +6726,7 @@ private:
       parse_expressionList();
       break;
     }
-    eventHandler->endNonterminal(L"forInit", e0);
+    eventHandler->endNonterminal(95, e0);
   }
 
   void try_forInit()
@@ -6782,7 +6814,7 @@ private:
 
   void parse_enhancedForControl()
   {
-    eventHandler->startNonterminal(L"enhancedForControl", e0);
+    eventHandler->startNonterminal(96, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
@@ -6796,7 +6828,7 @@ private:
                                     // 'this' | 'true' | 'void' | '~'
     whitespace();
     parse_expression();
-    eventHandler->endNonterminal(L"enhancedForControl", e0);
+    eventHandler->endNonterminal(96, e0);
   }
 
   void try_enhancedForControl()
@@ -6816,9 +6848,9 @@ private:
 
   void parse_forUpdate()
   {
-    eventHandler->startNonterminal(L"forUpdate", e0);
+    eventHandler->startNonterminal(97, e0);
     parse_expressionList();
-    eventHandler->endNonterminal(L"forUpdate", e0);
+    eventHandler->endNonterminal(97, e0);
   }
 
   void try_forUpdate()
@@ -6828,7 +6860,7 @@ private:
 
   void parse_parExpression()
   {
-    eventHandler->startNonterminal(L"parExpression", e0);
+    eventHandler->startNonterminal(98, e0);
     consume(21);                    // '('
     lookahead1W(89);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -6838,7 +6870,7 @@ private:
     whitespace();
     parse_expression();
     consume(22);                    // ')'
-    eventHandler->endNonterminal(L"parExpression", e0);
+    eventHandler->endNonterminal(98, e0);
   }
 
   void try_parExpression()
@@ -6855,7 +6887,7 @@ private:
 
   void parse_expressionList()
   {
-    eventHandler->startNonterminal(L"expressionList", e0);
+    eventHandler->startNonterminal(99, e0);
     parse_expression();
     for (;;)
     {
@@ -6872,7 +6904,7 @@ private:
       whitespace();
       parse_expression();
     }
-    eventHandler->endNonterminal(L"expressionList", e0);
+    eventHandler->endNonterminal(99, e0);
   }
 
   void try_expressionList()
@@ -6896,9 +6928,9 @@ private:
 
   void parse_statementExpression()
   {
-    eventHandler->startNonterminal(L"statementExpression", e0);
+    eventHandler->startNonterminal(100, e0);
     parse_expression();
-    eventHandler->endNonterminal(L"statementExpression", e0);
+    eventHandler->endNonterminal(100, e0);
   }
 
   void try_statementExpression()
@@ -6908,9 +6940,9 @@ private:
 
   void parse_constantExpression()
   {
-    eventHandler->startNonterminal(L"constantExpression", e0);
+    eventHandler->startNonterminal(101, e0);
     parse_expression();
-    eventHandler->endNonterminal(L"constantExpression", e0);
+    eventHandler->endNonterminal(101, e0);
   }
 
   void try_constantExpression()
@@ -6920,7 +6952,7 @@ private:
 
   void parse_expression()
   {
-    eventHandler->startNonterminal(L"expression", e0);
+    eventHandler->startNonterminal(102, e0);
     parse_conditionalExpression();
     switch (l1)
     {
@@ -6992,7 +7024,7 @@ private:
       whitespace();
       parse_expression();
     }
-    eventHandler->endNonterminal(L"expression", e0);
+    eventHandler->endNonterminal(102, e0);
   }
 
   void try_expression()
@@ -7070,7 +7102,7 @@ private:
 
   void parse_assignmentOperator()
   {
-    eventHandler->startNonterminal(L"assignmentOperator", e0);
+    eventHandler->startNonterminal(103, e0);
     switch (l1)
     {
     case 42:                        // '='
@@ -7110,7 +7142,7 @@ private:
       consume(47);                  // '>>='
       break;
     }
-    eventHandler->endNonterminal(L"assignmentOperator", e0);
+    eventHandler->endNonterminal(103, e0);
   }
 
   void try_assignmentOperator()
@@ -7158,7 +7190,7 @@ private:
 
   void parse_conditionalExpression()
   {
-    eventHandler->startNonterminal(L"conditionalExpression", e0);
+    eventHandler->startNonterminal(104, e0);
     parse_conditionalOrExpression();
     if (l1 == 50)                   // '?'
     {
@@ -7179,7 +7211,7 @@ private:
       whitespace();
       parse_expression();
     }
-    eventHandler->endNonterminal(L"conditionalExpression", e0);
+    eventHandler->endNonterminal(104, e0);
   }
 
   void try_conditionalExpression()
@@ -7206,7 +7238,7 @@ private:
 
   void parse_conditionalOrExpression()
   {
-    eventHandler->startNonterminal(L"conditionalOrExpression", e0);
+    eventHandler->startNonterminal(105, e0);
     parse_conditionalAndExpression();
     for (;;)
     {
@@ -7223,7 +7255,7 @@ private:
       whitespace();
       parse_conditionalAndExpression();
     }
-    eventHandler->endNonterminal(L"conditionalOrExpression", e0);
+    eventHandler->endNonterminal(105, e0);
   }
 
   void try_conditionalOrExpression()
@@ -7247,7 +7279,7 @@ private:
 
   void parse_conditionalAndExpression()
   {
-    eventHandler->startNonterminal(L"conditionalAndExpression", e0);
+    eventHandler->startNonterminal(106, e0);
     parse_inclusiveOrExpression();
     for (;;)
     {
@@ -7264,7 +7296,7 @@ private:
       whitespace();
       parse_inclusiveOrExpression();
     }
-    eventHandler->endNonterminal(L"conditionalAndExpression", e0);
+    eventHandler->endNonterminal(106, e0);
   }
 
   void try_conditionalAndExpression()
@@ -7288,7 +7320,7 @@ private:
 
   void parse_inclusiveOrExpression()
   {
-    eventHandler->startNonterminal(L"inclusiveOrExpression", e0);
+    eventHandler->startNonterminal(107, e0);
     parse_exclusiveOrExpression();
     for (;;)
     {
@@ -7305,7 +7337,7 @@ private:
       whitespace();
       parse_exclusiveOrExpression();
     }
-    eventHandler->endNonterminal(L"inclusiveOrExpression", e0);
+    eventHandler->endNonterminal(107, e0);
   }
 
   void try_inclusiveOrExpression()
@@ -7329,7 +7361,7 @@ private:
 
   void parse_exclusiveOrExpression()
   {
-    eventHandler->startNonterminal(L"exclusiveOrExpression", e0);
+    eventHandler->startNonterminal(108, e0);
     parse_andExpression();
     for (;;)
     {
@@ -7346,7 +7378,7 @@ private:
       whitespace();
       parse_andExpression();
     }
-    eventHandler->endNonterminal(L"exclusiveOrExpression", e0);
+    eventHandler->endNonterminal(108, e0);
   }
 
   void try_exclusiveOrExpression()
@@ -7370,7 +7402,7 @@ private:
 
   void parse_andExpression()
   {
-    eventHandler->startNonterminal(L"andExpression", e0);
+    eventHandler->startNonterminal(109, e0);
     parse_equalityExpression();
     for (;;)
     {
@@ -7387,7 +7419,7 @@ private:
       whitespace();
       parse_equalityExpression();
     }
-    eventHandler->endNonterminal(L"andExpression", e0);
+    eventHandler->endNonterminal(109, e0);
   }
 
   void try_andExpression()
@@ -7411,7 +7443,7 @@ private:
 
   void parse_equalityExpression()
   {
-    eventHandler->startNonterminal(L"equalityExpression", e0);
+    eventHandler->startNonterminal(110, e0);
     parse_instanceOfExpression();
     for (;;)
     {
@@ -7437,7 +7469,7 @@ private:
       whitespace();
       parse_instanceOfExpression();
     }
-    eventHandler->endNonterminal(L"equalityExpression", e0);
+    eventHandler->endNonterminal(110, e0);
   }
 
   void try_equalityExpression()
@@ -7470,7 +7502,7 @@ private:
 
   void parse_instanceOfExpression()
   {
-    eventHandler->startNonterminal(L"instanceOfExpression", e0);
+    eventHandler->startNonterminal(111, e0);
     parse_relationalExpression();
     if (l1 == 78)                   // 'instanceof'
     {
@@ -7480,7 +7512,7 @@ private:
       whitespace();
       parse_type();
     }
-    eventHandler->endNonterminal(L"instanceOfExpression", e0);
+    eventHandler->endNonterminal(111, e0);
   }
 
   void try_instanceOfExpression()
@@ -7497,7 +7529,7 @@ private:
 
   void parse_relationalExpression()
   {
-    eventHandler->startNonterminal(L"relationalExpression", e0);
+    eventHandler->startNonterminal(112, e0);
     parse_shiftExpression();
     for (;;)
     {
@@ -7518,7 +7550,7 @@ private:
       whitespace();
       parse_shiftExpression();
     }
-    eventHandler->endNonterminal(L"relationalExpression", e0);
+    eventHandler->endNonterminal(112, e0);
   }
 
   void try_relationalExpression()
@@ -7545,7 +7577,7 @@ private:
 
   void parse_relationalOp()
   {
-    eventHandler->startNonterminal(L"relationalOp", e0);
+    eventHandler->startNonterminal(113, e0);
     switch (l1)
     {
     case 41:                        // '<='
@@ -7561,7 +7593,7 @@ private:
       consume(44);                  // '>'
       break;
     }
-    eventHandler->endNonterminal(L"relationalOp", e0);
+    eventHandler->endNonterminal(113, e0);
   }
 
   void try_relationalOp()
@@ -7585,7 +7617,7 @@ private:
 
   void parse_shiftExpression()
   {
-    eventHandler->startNonterminal(L"shiftExpression", e0);
+    eventHandler->startNonterminal(114, e0);
     parse_additiveExpression();
     for (;;)
     {
@@ -7605,7 +7637,7 @@ private:
       whitespace();
       parse_additiveExpression();
     }
-    eventHandler->endNonterminal(L"shiftExpression", e0);
+    eventHandler->endNonterminal(114, e0);
   }
 
   void try_shiftExpression()
@@ -7631,7 +7663,7 @@ private:
 
   void parse_shiftOp()
   {
-    eventHandler->startNonterminal(L"shiftOp", e0);
+    eventHandler->startNonterminal(115, e0);
     switch (l1)
     {
     case 39:                        // '<<'
@@ -7644,7 +7676,7 @@ private:
       consume(46);                  // '>>'
       break;
     }
-    eventHandler->endNonterminal(L"shiftOp", e0);
+    eventHandler->endNonterminal(115, e0);
   }
 
   void try_shiftOp()
@@ -7665,7 +7697,7 @@ private:
 
   void parse_additiveExpression()
   {
-    eventHandler->startNonterminal(L"additiveExpression", e0);
+    eventHandler->startNonterminal(116, e0);
     parse_multiplicativeExpression();
     for (;;)
     {
@@ -7691,7 +7723,7 @@ private:
       whitespace();
       parse_multiplicativeExpression();
     }
-    eventHandler->endNonterminal(L"additiveExpression", e0);
+    eventHandler->endNonterminal(116, e0);
   }
 
   void try_additiveExpression()
@@ -7724,7 +7756,7 @@ private:
 
   void parse_multiplicativeExpression()
   {
-    eventHandler->startNonterminal(L"multiplicativeExpression", e0);
+    eventHandler->startNonterminal(117, e0);
     parse_unaryExpression();
     for (;;)
     {
@@ -7758,7 +7790,7 @@ private:
       whitespace();
       parse_unaryExpression();
     }
-    eventHandler->endNonterminal(L"multiplicativeExpression", e0);
+    eventHandler->endNonterminal(117, e0);
   }
 
   void try_multiplicativeExpression()
@@ -7799,7 +7831,7 @@ private:
 
   void parse_unaryExpression()
   {
-    eventHandler->startNonterminal(L"unaryExpression", e0);
+    eventHandler->startNonterminal(118, e0);
     switch (l1)
     {
     case 25:                        // '+'
@@ -7846,7 +7878,7 @@ private:
       parse_unaryExpressionNotPlusMinus();
       break;
     }
-    eventHandler->endNonterminal(L"unaryExpression", e0);
+    eventHandler->endNonterminal(118, e0);
   }
 
   void try_unaryExpression()
@@ -7897,7 +7929,7 @@ private:
 
   void parse_unaryExpressionNotPlusMinus()
   {
-    eventHandler->startNonterminal(L"unaryExpressionNotPlusMinus", e0);
+    eventHandler->startNonterminal(119, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8014,7 +8046,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"unaryExpressionNotPlusMinus", e0);
+    eventHandler->endNonterminal(119, e0);
   }
 
   void try_unaryExpressionNotPlusMinus()
@@ -8139,7 +8171,7 @@ private:
 
   void parse_castExpression()
   {
-    eventHandler->startNonterminal(L"castExpression", e0);
+    eventHandler->startNonterminal(120, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8303,7 +8335,7 @@ private:
       parse_unaryExpressionNotPlusMinus();
       break;
     }
-    eventHandler->endNonterminal(L"castExpression", e0);
+    eventHandler->endNonterminal(120, e0);
   }
 
   void try_castExpression()
@@ -8476,7 +8508,7 @@ private:
 
   void parse_primary()
   {
-    eventHandler->startNonterminal(L"primary", e0);
+    eventHandler->startNonterminal(121, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8796,7 +8828,7 @@ private:
       parse_literal();
       break;
     }
-    eventHandler->endNonterminal(L"primary", e0);
+    eventHandler->endNonterminal(121, e0);
   }
 
   void try_primary()
@@ -9122,7 +9154,7 @@ private:
 
   void parse_identifierSuffix()
   {
-    eventHandler->startNonterminal(L"identifierSuffix", e0);
+    eventHandler->startNonterminal(122, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -9287,7 +9319,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"identifierSuffix", e0);
+    eventHandler->endNonterminal(122, e0);
   }
 
   void try_identifierSuffix()
@@ -9465,7 +9497,7 @@ private:
 
   void parse_creator()
   {
-    eventHandler->startNonterminal(L"creator", e0);
+    eventHandler->startNonterminal(123, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -9494,7 +9526,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"creator", e0);
+    eventHandler->endNonterminal(123, e0);
   }
 
   void try_creator()
@@ -9527,7 +9559,7 @@ private:
 
   void parse_createdName()
   {
-    eventHandler->startNonterminal(L"createdName", e0);
+    eventHandler->startNonterminal(124, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -9537,7 +9569,7 @@ private:
       parse_primitiveType();
       break;
     }
-    eventHandler->endNonterminal(L"createdName", e0);
+    eventHandler->endNonterminal(124, e0);
   }
 
   void try_createdName()
@@ -9555,7 +9587,7 @@ private:
 
   void parse_innerCreator()
   {
-    eventHandler->startNonterminal(L"innerCreator", e0);
+    eventHandler->startNonterminal(125, e0);
     if (l1 == 38)                   // '<'
     {
       whitespace();
@@ -9572,7 +9604,7 @@ private:
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_classCreatorRest();
-    eventHandler->endNonterminal(L"innerCreator", e0);
+    eventHandler->endNonterminal(125, e0);
   }
 
   void try_innerCreator()
@@ -9594,7 +9626,7 @@ private:
 
   void parse_nonWildcardTypeArgumentsOrDiamond()
   {
-    eventHandler->startNonterminal(L"nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler->startNonterminal(126, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -9616,7 +9648,7 @@ private:
       parse_nonWildcardTypeArguments();
       break;
     }
-    eventHandler->endNonterminal(L"nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler->endNonterminal(126, e0);
   }
 
   void try_nonWildcardTypeArgumentsOrDiamond()
@@ -9646,7 +9678,7 @@ private:
 
   void parse_arrayCreatorRest()
   {
-    eventHandler->startNonterminal(L"arrayCreatorRest", e0);
+    eventHandler->startNonterminal(127, e0);
     consume(52);                    // '['
     lookahead1W(93);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -9797,7 +9829,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"arrayCreatorRest", e0);
+    eventHandler->endNonterminal(127, e0);
   }
 
   void try_arrayCreatorRest()
@@ -9954,7 +9986,7 @@ private:
 
   void parse_classCreatorRest()
   {
-    eventHandler->startNonterminal(L"classCreatorRest", e0);
+    eventHandler->startNonterminal(128, e0);
     parse_arguments();
     lookahead1W(115);               // WS | COMMENT | LINE_COMMENT | '!=' | '%' | '%=' | '&' | '&&' | '&=' | ')' | '*' |
                                     // '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' | '.' | '/' | '/=' | ':' |
@@ -9966,7 +9998,7 @@ private:
       whitespace();
       parse_classBody();
     }
-    eventHandler->endNonterminal(L"classCreatorRest", e0);
+    eventHandler->endNonterminal(128, e0);
   }
 
   void try_classCreatorRest()
@@ -9985,14 +10017,14 @@ private:
 
   void parse_explicitGenericInvocation()
   {
-    eventHandler->startNonterminal(L"explicitGenericInvocation", e0);
+    eventHandler->startNonterminal(129, e0);
     parse_nonWildcardTypeArguments();
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_arguments();
-    eventHandler->endNonterminal(L"explicitGenericInvocation", e0);
+    eventHandler->endNonterminal(129, e0);
   }
 
   void try_explicitGenericInvocation()
@@ -10006,14 +10038,14 @@ private:
 
   void parse_nonWildcardTypeArguments()
   {
-    eventHandler->startNonterminal(L"nonWildcardTypeArguments", e0);
+    eventHandler->startNonterminal(130, e0);
     consume(38);                    // '<'
     lookahead1W(69);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
     whitespace();
     parse_typeList();
     consume(44);                    // '>'
-    eventHandler->endNonterminal(L"nonWildcardTypeArguments", e0);
+    eventHandler->endNonterminal(130, e0);
   }
 
   void try_nonWildcardTypeArguments()
@@ -10027,7 +10059,7 @@ private:
 
   void parse_selector()
   {
-    eventHandler->startNonterminal(L"selector", e0);
+    eventHandler->startNonterminal(131, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -10087,7 +10119,7 @@ private:
       consume(53);                  // ']'
       break;
     }
-    eventHandler->endNonterminal(L"selector", e0);
+    eventHandler->endNonterminal(131, e0);
   }
 
   void try_selector()
@@ -10151,7 +10183,7 @@ private:
 
   void parse_superSuffix()
   {
-    eventHandler->startNonterminal(L"superSuffix", e0);
+    eventHandler->startNonterminal(132, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -10173,7 +10205,7 @@ private:
       }
       break;
     }
-    eventHandler->endNonterminal(L"superSuffix", e0);
+    eventHandler->endNonterminal(132, e0);
   }
 
   void try_superSuffix()
@@ -10202,7 +10234,7 @@ private:
 
   void parse_arguments()
   {
-    eventHandler->startNonterminal(L"arguments", e0);
+    eventHandler->startNonterminal(133, e0);
     consume(21);                    // '('
     lookahead1W(91);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -10215,7 +10247,7 @@ private:
       parse_expressionList();
     }
     consume(22);                    // ')'
-    eventHandler->endNonterminal(L"arguments", e0);
+    eventHandler->endNonterminal(133, e0);
   }
 
   void try_arguments()
@@ -10238,7 +10270,7 @@ private:
     if (l1 == t)
     {
       whitespace();
-      eventHandler->terminal(TOKEN[l1], b1, e1);
+      eventHandler->terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -10676,7 +10708,9 @@ private:
   static const int INITIAL[];
   static const int TRANSITION[];
   static const int EXPECTED[];
+public:
   static const wchar_t *TOKEN[];
+  static const wchar_t *NONTERMINAL[];
 };
 
 const int Java::MAP0[] =
@@ -11602,6 +11636,145 @@ const wchar_t *Java::TOKEN[] =
   L"'||'",
   L"'}'",
   L"'~'"
+};
+
+const wchar_t *Java::NONTERMINAL[] =
+{
+  L"compilationUnit",
+  L"packageDeclaration",
+  L"importDeclaration",
+  L"typeDeclaration",
+  L"classOrInterfaceDeclaration",
+  L"classOrInterfaceModifiers",
+  L"classOrInterfaceModifier",
+  L"modifiers",
+  L"classDeclaration",
+  L"normalClassDeclaration",
+  L"typeParameters",
+  L"typeParameter",
+  L"typeBound",
+  L"enumDeclaration",
+  L"enumBody",
+  L"enumConstants",
+  L"enumConstant",
+  L"enumBodyDeclarations",
+  L"interfaceDeclaration",
+  L"normalInterfaceDeclaration",
+  L"typeList",
+  L"classBody",
+  L"interfaceBody",
+  L"classBodyDeclaration",
+  L"memberDecl",
+  L"memberDeclaration",
+  L"genericMethodOrConstructorDecl",
+  L"genericMethodOrConstructorRest",
+  L"methodDeclaration",
+  L"fieldDeclaration",
+  L"interfaceBodyDeclaration",
+  L"interfaceMemberDecl",
+  L"interfaceMethodOrFieldDecl",
+  L"interfaceMethodOrFieldRest",
+  L"methodDeclaratorRest",
+  L"voidMethodDeclaratorRest",
+  L"interfaceMethodDeclaratorRest",
+  L"interfaceGenericMethodDecl",
+  L"voidInterfaceMethodDeclaratorRest",
+  L"constructorDeclaratorRest",
+  L"constantDeclarator",
+  L"variableDeclarators",
+  L"variableDeclarator",
+  L"constantDeclaratorsRest",
+  L"constantDeclaratorRest",
+  L"variableDeclaratorId",
+  L"variableInitializer",
+  L"arrayInitializer",
+  L"modifier",
+  L"enumConstantName",
+  L"type",
+  L"classOrInterfaceType",
+  L"primitiveType",
+  L"variableModifier",
+  L"typeArguments",
+  L"typeArgument",
+  L"qualifiedNameList",
+  L"formalParameters",
+  L"formalParameterDecls",
+  L"formalParameterDeclsRest",
+  L"methodBody",
+  L"constructorBody",
+  L"explicitConstructorInvocation",
+  L"qualifiedName",
+  L"literal",
+  L"integerLiteral",
+  L"booleanLiteral",
+  L"annotations",
+  L"annotation",
+  L"annotationName",
+  L"elementValuePairs",
+  L"elementValuePair",
+  L"elementValue",
+  L"elementValueArrayInitializer",
+  L"annotationTypeDeclaration",
+  L"annotationTypeBody",
+  L"annotationTypeElementDeclaration",
+  L"annotationTypeElementRest",
+  L"annotationMethodOrConstantRest",
+  L"annotationMethodRest",
+  L"annotationConstantRest",
+  L"defaultValue",
+  L"block",
+  L"blockStatement",
+  L"localVariableDeclarationStatement",
+  L"localVariableDeclaration",
+  L"variableModifiers",
+  L"statement",
+  L"catches",
+  L"catchClause",
+  L"formalParameter",
+  L"switchBlockStatementGroups",
+  L"switchBlockStatementGroup",
+  L"switchLabel",
+  L"forControl",
+  L"forInit",
+  L"enhancedForControl",
+  L"forUpdate",
+  L"parExpression",
+  L"expressionList",
+  L"statementExpression",
+  L"constantExpression",
+  L"expression",
+  L"assignmentOperator",
+  L"conditionalExpression",
+  L"conditionalOrExpression",
+  L"conditionalAndExpression",
+  L"inclusiveOrExpression",
+  L"exclusiveOrExpression",
+  L"andExpression",
+  L"equalityExpression",
+  L"instanceOfExpression",
+  L"relationalExpression",
+  L"relationalOp",
+  L"shiftExpression",
+  L"shiftOp",
+  L"additiveExpression",
+  L"multiplicativeExpression",
+  L"unaryExpression",
+  L"unaryExpressionNotPlusMinus",
+  L"castExpression",
+  L"primary",
+  L"identifierSuffix",
+  L"creator",
+  L"createdName",
+  L"innerCreator",
+  L"nonWildcardTypeArgumentsOrDiamond",
+  L"arrayCreatorRest",
+  L"classCreatorRest",
+  L"explicitGenericInvocation",
+  L"nonWildcardTypeArguments",
+  L"selector",
+  L"superSuffix",
+  L"arguments",
+  L"whitespace"
 };
 
 int main(int argc, char **argv)

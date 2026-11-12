@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintGo.cpp.template
                                                             #line 1 "PrintGo.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -389,8 +389,8 @@
   append(L"type DeferredEvent interface {\n");
   append(L"  getLink() DeferredEvent\n");
   append(L"  setLink(d DeferredEvent)\n");
-  append(L"  getName() string\n");
-  append(L"  setName(s string)\n");
+  append(L"  getId() int\n");
+  append(L"  setId(i int)\n");
   append(L"  getBegin() int\n");
   append(L"  setBegin(i int)\n");
   append(L"  getEnd() int\n");
@@ -400,7 +400,7 @@
   append(L"\n");
   append(L"type AbstractDeferredEvent struct {\n");
   append(L"  link DeferredEvent\n");
-  append(L"  name string\n");
+  append(L"  id int\n");
   append(L"  begin int\n");
   append(L"  end int\n");
   append(L"}\n");
@@ -415,8 +415,8 @@
   append(L"}\n");
   append(L"\n");
   append(L"func (this *AbstractDeferredEvent) setLink(d DeferredEvent) {this.link = d}\n");
-  append(L"func (this *AbstractDeferredEvent) getName() string {return this.name}\n");
-  append(L"func (this *AbstractDeferredEvent) setName(s string) {this.name = s}\n");
+  append(L"func (this *AbstractDeferredEvent) getId() int {return this.id}\n");
+  append(L"func (this *AbstractDeferredEvent) setId(i int) {this.id = i}\n");
   append(L"func (this *AbstractDeferredEvent) getBegin() int {return this.begin}\n");
   append(L"func (this *AbstractDeferredEvent) setBegin(i int) {this.begin = i}\n");
   append(L"func (this *AbstractDeferredEvent) getEnd() int {return this.end}\n");
@@ -476,11 +476,11 @@
   append(L"}\n");
   append(L"\n");
   append(L"func (this *TerminalEvent) execute(eventHandler BottomUpEventHandler) {\n");
-  append(L"  eventHandler.Terminal(this.name, this.begin, this.end)\n");
+  append(L"  eventHandler.Terminal(this.id, this.begin, this.end)\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *TerminalEvent) toString() string {\n");
-  append(L"  return \"terminal(\" + this.name + \", \" + strconv.Itoa(this.begin) + \", \" + strconv.Itoa(this.end) + \")\"\n");
+  append(L"  return \"terminal(\" + TOKEN[this.id] + \", \" + strconv.Itoa(this.begin) + \", \" + strconv.Itoa(this.end) + \")\"\n");
   append(L"}\n");
   append(L"\n");
   append(L"type NonterminalEvent struct {\n");
@@ -489,11 +489,11 @@
   append(L"}\n");
   append(L"\n");
   append(L"func (this *NonterminalEvent) execute(eventHandler BottomUpEventHandler) {\n");
-  append(L"  eventHandler.Nonterminal(this.name, this.begin, this.end, this.count)\n");
+  append(L"  eventHandler.Nonterminal(this.id, this.begin, this.end, this.count)\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *NonterminalEvent) toString() string {\n");
-  append(L"  return \"nonterminal(\" + this.name + \", \" + strconv.Itoa(this.begin) + \", \" + strconv.Itoa(this.end) + \", \" + strconv.Itoa(this.count) + \")\"\n");
+  append(L"  return \"nonterminal(\" + GetNonterminalName(this.id) + \", \" + strconv.Itoa(this.begin) + \", \" + strconv.Itoa(this.end) + \", \" + strconv.Itoa(this.count) + \")\"\n");
   append(L"}\n");
                                                             #line 334 "PrintGo.cpp.template"
                                                                 if (resolvesAmbiguity)
@@ -739,42 +739,54 @@
   append(L"  treeBuilder := new(ParseTreeBuilder)\n");
   append(L"  treeBuilder.Reset(this.input)\n");
   append(L"  show(second, treeBuilder)\n");
-  append(L"  treeBuilder.Nonterminal(\"ALTERNATIVE\", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)\n");
+  append(L"  treeBuilder.Nonterminal(");
+                                                            #line 496 "PrintGo.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 746 "PrintGo.cpp"
+  append(L", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)\n");
   append(L"  secondTree := treeBuilder.pop(1)[0]\n");
   append(L"  show(first, treeBuilder)\n");
-  append(L"  treeBuilder.Nonterminal(\"ALTERNATIVE\", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)\n");
+  append(L"  treeBuilder.Nonterminal(");
+                                                            #line 500 "PrintGo.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 753 "PrintGo.cpp"
+  append(L", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), treeBuilder.top + 1)\n");
   append(L"  treeBuilder.push(secondTree)\n");
-  append(L"  treeBuilder.Nonterminal(\"AMBIGUOUS\", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)");
-                                                            #line 502 "PrintGo.cpp.template"
+  append(L"  treeBuilder.Nonterminal(");
+                                                            #line 503 "PrintGo.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                                                            #line 759 "PrintGo.cpp"
+  append(L", treeBuilder.stack[0].GetBegin(), treeBuilder.stack[treeBuilder.top].GetEnd(), 2)");
+                                                            #line 505 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 751 "PrintGo.cpp"
+                                                            #line 763 "PrintGo.cpp"
   append(L"\n");
   append(L"  panic(&ParseError{begin, end, 1, -1, -1, true");
-                                                            #line 504 "PrintGo.cpp.template"
+                                                            #line 507 "PrintGo.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 757 "PrintGo.cpp"
+                                                            #line 769 "PrintGo.cpp"
   append(L", treeBuilder");
-                                                            #line 506 "PrintGo.cpp.template"
+                                                            #line 509 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 761 "PrintGo.cpp"
+                                                            #line 773 "PrintGo.cpp"
   append(L"})\n");
   append(L"}");
-                                                            #line 508 "PrintGo.cpp.template"
+                                                            #line 511 "PrintGo.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 768 "PrintGo.cpp"
+                                                            #line 780 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *");
-                                                            #line 512 "PrintGo.cpp.template"
+                                                            #line 515 "PrintGo.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 773 "PrintGo.cpp"
+                                                            #line 785 "PrintGo.cpp"
   append(L") resolve(thread *ParsingThread, other *ParsingThread) *ParsingThread {");
-                                                            #line 514 "PrintGo.cpp.template"
+                                                            #line 517 "PrintGo.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 778 "PrintGo.cpp"
+                                                            #line 790 "PrintGo.cpp"
   append(L"\n");
   append(L"  a := thread.stack\n");
   append(L"  b := other.stack\n");
@@ -784,14 +796,14 @@
   append(L"    a = a.link\n");
   append(L"    b = b.link\n");
   append(L"  }");
-                                                            #line 524 "PrintGo.cpp.template"
+                                                            #line 527 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 790 "PrintGo.cpp"
+                                                            #line 802 "PrintGo.cpp"
   append(L"\n");
-                                                            #line 526 "PrintGo.cpp.template"
+                                                            #line 529 "PrintGo.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 795 "PrintGo.cpp"
+                                                            #line 807 "PrintGo.cpp"
   append(L"\n");
   append(L"  ea := thread.deferredEvent\n");
   append(L"  eb := other.deferredEvent\n");
@@ -825,35 +837,35 @@
   append(L"  } else if other.eventCount < thread.eventCount {\n");
   append(L"    thread = other\n");
   append(L"  }");
-                                                            #line 560 "PrintGo.cpp.template"
+                                                            #line 563 "PrintGo.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 833 "PrintGo.cpp"
+                                                            #line 845 "PrintGo.cpp"
   append(L"\n");
   append(L"  if other.eventCount < thread.eventCount {\n");
   append(L"    thread = other\n");
   append(L"  }");
-                                                            #line 566 "PrintGo.cpp.template"
+                                                            #line 569 "PrintGo.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 842 "PrintGo.cpp"
+                                                            #line 854 "PrintGo.cpp"
   append(L"\n");
   append(L"  thread.addAmbiguity(begin, thread.e0)");
-                                                            #line 570 "PrintGo.cpp.template"
+                                                            #line 573 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 847 "PrintGo.cpp"
+                                                            #line 859 "PrintGo.cpp"
   append(L"\n");
   append(L"  return thread\n");
   append(L"}");
-                                                            #line 573 "PrintGo.cpp.template"
+                                                            #line 576 "PrintGo.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintGo::openThread()
                                                             {
-                                                            #line 857 "PrintGo.cpp"
+                                                            #line 869 "PrintGo.cpp"
   append(L"\n");
   append(L"type PriorityQueue []*ParsingThread\n");
   append(L"\n");
@@ -894,9 +906,9 @@
   append(L"\n");
   append(L"type ParsingThread struct {\n");
   append(L"  parser *");
-                                                            #line 617 "PrintGo.cpp.template"
+                                                            #line 620 "PrintGo.cpp.template"
                                                               print(className.c_str());
-                                                            #line 900 "PrintGo.cpp"
+                                                            #line 912 "PrintGo.cpp"
   append(L"\n");
   append(L"  threads *PriorityQueue\n");
   append(L"  accepted bool\n");
@@ -904,102 +916,102 @@
   append(L"  state int\n");
   append(L"  action int\n");
   append(L"  target int");
-                                                            #line 624 "PrintGo.cpp.template"
+                                                            #line 627 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 911 "PrintGo.cpp"
+                                                            #line 923 "PrintGo.cpp"
   append(L"\n");
   append(L"  deferredEvent DeferredEvent");
-                                                            #line 627 "PrintGo.cpp.template"
+                                                            #line 630 "PrintGo.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 918 "PrintGo.cpp"
+                                                            #line 930 "PrintGo.cpp"
   append(L"\n");
   append(L"  deferredCode *DeferredCode");
-                                                            #line 631 "PrintGo.cpp.template"
+                                                            #line 634 "PrintGo.cpp.template"
                                                               }
-                                                            #line 923 "PrintGo.cpp"
+                                                            #line 935 "PrintGo.cpp"
   append(L"\n");
   append(L"  id int");
-                                                            #line 633 "PrintGo.cpp.template"
+                                                            #line 636 "PrintGo.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 929 "PrintGo.cpp"
+                                                            #line 941 "PrintGo.cpp"
   append(L"\n");
   append(L"  eventCount int");
-                                                            #line 636 "PrintGo.cpp.template"
+                                                            #line 639 "PrintGo.cpp.template"
                                                               }
                                                               printTokenVars();
-                                                            #line 935 "PrintGo.cpp"
+                                                            #line 947 "PrintGo.cpp"
   append(L"\n");
   append(L"  begin int\n");
   append(L"  end int\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *ParsingThread) open(initialState int");
-                                                            #line 643 "PrintGo.cpp.template"
+                                                            #line 646 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 945 "PrintGo.cpp"
+                                                            #line 957 "PrintGo.cpp"
   append(L", eh BottomUpEventHandler");
-                                                            #line 645 "PrintGo.cpp.template"
+                                                            #line 648 "PrintGo.cpp.template"
                                                               }
-                                                            #line 949 "PrintGo.cpp"
+                                                            #line 961 "PrintGo.cpp"
   append(L", t int) *PriorityQueue {\n");
   append(L"  this.accepted = false\n");
   append(L"  this.target = t");
-                                                            #line 648 "PrintGo.cpp.template"
+                                                            #line 651 "PrintGo.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 956 "PrintGo.cpp"
+                                                            #line 968 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.eventCount = 0");
-                                                            #line 651 "PrintGo.cpp.template"
+                                                            #line 654 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 963 "PrintGo.cpp"
+                                                            #line 975 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.eventHandler = eh\n");
   append(L"  if this.eventHandler != nil {\n");
   append(L"    this.eventHandler.Reset(this.parser.input)\n");
   append(L"  }\n");
   append(L"  this.deferredEvent = nil");
-                                                            #line 659 "PrintGo.cpp.template"
+                                                            #line 662 "PrintGo.cpp.template"
                                                               }
                                                               if (hasCustomCode && useGlr)
                                                               {
-                                                            #line 974 "PrintGo.cpp"
+                                                            #line 986 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.deferredCode = nil");
-                                                            #line 663 "PrintGo.cpp.template"
+                                                            #line 666 "PrintGo.cpp.template"
                                                               }
-                                                            #line 979 "PrintGo.cpp"
+                                                            #line 991 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.stack = &StackNode{-1, ");
-                                                            #line 665 "PrintGo.cpp.template"
+                                                            #line 668 "PrintGo.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 985 "PrintGo.cpp"
+                                                            #line 997 "PrintGo.cpp"
   append(L"0, ");
-                                                            #line 667 "PrintGo.cpp.template"
+                                                            #line 670 "PrintGo.cpp.template"
                                                               }
-                                                            #line 989 "PrintGo.cpp"
+                                                            #line 1001 "PrintGo.cpp"
   append(L"this.e0, nil}\n");
   append(L"  this.state = initialState\n");
   append(L"  this.action = this.predict(initialState)");
-                                                            #line 670 "PrintGo.cpp.template"
+                                                            #line 673 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 996 "PrintGo.cpp"
+                                                            #line 1008 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.bw = this.e0\n");
   append(L"  this.bs = this.e0\n");
   append(L"  this.es = this.e0");
-                                                            #line 675 "PrintGo.cpp.template"
+                                                            #line 678 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1003 "PrintGo.cpp"
+                                                            #line 1015 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.threads = new(PriorityQueue)\n");
   append(L"  heap.Push(this.threads, this)\n");
@@ -1011,33 +1023,33 @@
   append(L"  this.accepted = other.accepted\n");
   append(L"  this.target = other.target\n");
   append(L"  this.parser = other.parser");
-                                                            #line 686 "PrintGo.cpp.template"
+                                                            #line 689 "PrintGo.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 1018 "PrintGo.cpp"
+                                                            #line 1030 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.eventCount = other.eventCount");
-                                                            #line 689 "PrintGo.cpp.template"
+                                                            #line 692 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1025 "PrintGo.cpp"
+                                                            #line 1037 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.bs = other.bs\n");
   append(L"  this.es = other.es\n");
   append(L"  this.bw = other.bw\n");
   append(L"  this.eventHandler = other.eventHandler\n");
   append(L"  this.deferredEvent = other.deferredEvent");
-                                                            #line 697 "PrintGo.cpp.template"
+                                                            #line 700 "PrintGo.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 1036 "PrintGo.cpp"
+                                                            #line 1048 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.deferredCode = other.deferredCode");
-                                                            #line 701 "PrintGo.cpp.template"
+                                                            #line 704 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1041 "PrintGo.cpp"
+                                                            #line 1053 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.parser.maxId++\n");
   append(L"  this.id = this.parser.maxId\n");
@@ -1046,58 +1058,58 @@
   append(L"  this.stack = other.stack\n");
   append(L"  this.b0 = other.b0\n");
   append(L"  this.e0 = other.e0");
-                                                            #line 709 "PrintGo.cpp.template"
+                                                            #line 712 "PrintGo.cpp.template"
                                                               for (size_t i = 1; i <= grammar->k; ++i)
                                                               {
                                                                 const wchar_t *iString = format.toString<wchar_t>(i);
-                                                            #line 1054 "PrintGo.cpp"
+                                                            #line 1066 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.l");
-                                                            #line 713 "PrintGo.cpp.template"
-                                                                print(iString);
-                                                            #line 1059 "PrintGo.cpp"
-  append(L" = other.l");
-                                                            #line 714 "PrintGo.cpp.template"
-                                                                print(iString);
-                                                            #line 1063 "PrintGo.cpp"
-  append(L"\n");
-  append(L"  this.b");
                                                             #line 716 "PrintGo.cpp.template"
                                                                 print(iString);
-                                                            #line 1068 "PrintGo.cpp"
-  append(L" = other.b");
+                                                            #line 1071 "PrintGo.cpp"
+  append(L" = other.l");
                                                             #line 717 "PrintGo.cpp.template"
                                                                 print(iString);
-                                                            #line 1072 "PrintGo.cpp"
+                                                            #line 1075 "PrintGo.cpp"
   append(L"\n");
-  append(L"  this.e");
+  append(L"  this.b");
                                                             #line 719 "PrintGo.cpp.template"
                                                                 print(iString);
-                                                            #line 1077 "PrintGo.cpp"
-  append(L" = other.e");
+                                                            #line 1080 "PrintGo.cpp"
+  append(L" = other.b");
                                                             #line 720 "PrintGo.cpp.template"
                                                                 print(iString);
+                                                            #line 1084 "PrintGo.cpp"
+  append(L"\n");
+  append(L"  this.e");
+                                                            #line 722 "PrintGo.cpp.template"
+                                                                print(iString);
+                                                            #line 1089 "PrintGo.cpp"
+  append(L" = other.e");
+                                                            #line 723 "PrintGo.cpp.template"
+                                                                print(iString);
                                                               }
-                                                            #line 1082 "PrintGo.cpp"
+                                                            #line 1094 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.end = other.end\n");
   append(L"  return this\n");
   append(L"}\n");
   append(L"\n");
-                                                            #line 727 "PrintGo.cpp.template"
+                                                            #line 730 "PrintGo.cpp.template"
                                                               if (resolvesAmbiguity && tree)
                                                               {
-                                                            #line 1091 "PrintGo.cpp"
+                                                            #line 1103 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *ParsingThread) addAmbiguity(begin int, end int) {\n");
   append(L"  if this.eventHandler != nil {\n");
-  append(L"    this.deferredEvent = &AmbiguityEvent{&AbstractDeferredEvent{this.deferredEvent, \"\", begin, end}}\n");
+  append(L"    this.deferredEvent = &AmbiguityEvent{&AbstractDeferredEvent{this.deferredEvent, -1, begin, end}}\n");
   append(L"  }\n");
   append(L"}\n");
   append(L"\n");
-                                                            #line 736 "PrintGo.cpp.template"
+                                                            #line 739 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1101 "PrintGo.cpp"
+                                                            #line 1113 "PrintGo.cpp"
   append(L"func (this *ParsingThread) compareTo(other *ParsingThread) int {\n");
   append(L"  if this.accepted != other.accepted {\n");
   append(L"    if this.accepted {\n");
@@ -1138,7 +1150,7 @@
   append(L"}\n");
   append(L"\n");
   append(L"func (this *ParsingThread) parse() int {");
-                                                            #line 776 "PrintGo.cpp.template"
+                                                            #line 779 "PrintGo.cpp.template"
                                                               beginPublic();
                                                             }
 
@@ -1147,10 +1159,10 @@
                                                               if (trace)
                                                               {
                                                                 increaseIndent(i);
-                                                            #line 1151 "PrintGo.cpp"
+                                                            #line 1163 "PrintGo.cpp"
   append(L"\n");
   append(L"flushTrace();");
-                                                            #line 785 "PrintGo.cpp.template"
+                                                            #line 788 "PrintGo.cpp.template"
                                                                 decreaseIndent(i);
                                                               }
                                                             }
@@ -1163,30 +1175,30 @@
                                                                                      const wchar_t *clazz)
                                                             {
                                                               if (clazz == 0) clazz = className.c_str();
-                                                            #line 1167 "PrintGo.cpp"
+                                                            #line 1179 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *");
-                                                            #line 798 "PrintGo.cpp.template"
+                                                            #line 801 "PrintGo.cpp.template"
                                                               print(clazz);
-                                                            #line 1172 "PrintGo.cpp"
+                                                            #line 1184 "PrintGo.cpp"
   append(L") ");
-                                                            #line 799 "PrintGo.cpp.template"
+                                                            #line 802 "PrintGo.cpp.template"
                                                               wchar_t initial[2] = {name[0], 0};
                                                               if (wcscmp(visibility, publ()) == 0) initial[0] = towupper(initial[0]);
                                                               print(initial);
                                                               print(name + 1);
-                                                            #line 1179 "PrintGo.cpp"
+                                                            #line 1191 "PrintGo.cpp"
   append(L"(");
-                                                            #line 803 "PrintGo.cpp.template"
+                                                            #line 806 "PrintGo.cpp.template"
                                                               printArgs(args);
-                                                            #line 1183 "PrintGo.cpp"
+                                                            #line 1195 "PrintGo.cpp"
   append(L")");
-                                                            #line 804 "PrintGo.cpp.template"
+                                                            #line 807 "PrintGo.cpp.template"
                                                               if (wcscmp(type, voidType()))
                                                               {
-                                                            #line 1188 "PrintGo.cpp"
+                                                            #line 1200 "PrintGo.cpp"
   append(L" ");
-                                                            #line 806 "PrintGo.cpp.template"
+                                                            #line 809 "PrintGo.cpp.template"
                                                                 print(WString(type).rtrim().c_str());
                                                               }
                                                             }
@@ -1195,112 +1207,113 @@
                                                             {
                                                               if (trace)
                                                               {
-                                                            #line 1199 "PrintGo.cpp"
+                                                            #line 1211 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *");
-                                                            #line 815 "PrintGo.cpp.template"
+                                                            #line 818 "PrintGo.cpp.template"
                                                                 print(useGlr ? L"ParsingThread" : className.c_str());
-                                                            #line 1204 "PrintGo.cpp"
+                                                            #line 1216 "PrintGo.cpp"
   append(L") lookaheadString() string {\n");
   append(L"  result := \"\"");
-                                                            #line 817 "PrintGo.cpp.template"
+                                                            #line 820 "PrintGo.cpp.template"
                                                                 for (size_t i = 1; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 1210 "PrintGo.cpp"
+                                                            #line 1222 "PrintGo.cpp"
   append(L"\n");
   append(L"  if this.l");
-                                                            #line 820 "PrintGo.cpp.template"
+                                                            #line 823 "PrintGo.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1215 "PrintGo.cpp"
+                                                            #line 1227 "PrintGo.cpp"
   append(L" > 0 {\n");
   append(L"    result += ");
-                                                            #line 822 "PrintGo.cpp.template"
+                                                            #line 825 "PrintGo.cpp.template"
                                                                   if (i != 1)
                                                                   {
-                                                            #line 1221 "PrintGo.cpp"
+                                                            #line 1233 "PrintGo.cpp"
   append(L"\" \" + ");
-                                                            #line 824 "PrintGo.cpp.template"
+                                                            #line 827 "PrintGo.cpp.template"
                                                                   }
-                                                            #line 1225 "PrintGo.cpp"
-  append(L"token[this.l");
-                                                            #line 825 "PrintGo.cpp.template"
+                                                                  print(tokenTableName());
+                                                            #line 1238 "PrintGo.cpp"
+  append(L"[this.l");
+                                                            #line 829 "PrintGo.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1229 "PrintGo.cpp"
+                                                            #line 1242 "PrintGo.cpp"
   append(L"]");
-                                                            #line 826 "PrintGo.cpp.template"
+                                                            #line 830 "PrintGo.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 for (size_t i = 1; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 1237 "PrintGo.cpp"
+                                                            #line 1250 "PrintGo.cpp"
   append(L"\n");
   append(L"  }");
-                                                            #line 832 "PrintGo.cpp.template"
+                                                            #line 836 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1242 "PrintGo.cpp"
+                                                            #line 1255 "PrintGo.cpp"
   append(L"\n");
   append(L"  return result\n");
   append(L"}\n");
-                                                            #line 836 "PrintGo.cpp.template"
+                                                            #line 840 "PrintGo.cpp.template"
                                                               }
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 1251 "PrintGo.cpp"
+                                                            #line 1264 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *");
-                                                            #line 841 "PrintGo.cpp.template"
+                                                            #line 845 "PrintGo.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1256 "PrintGo.cpp"
+                                                            #line 1269 "PrintGo.cpp"
   append(L") memoize(i int, e int, v int) {\n");
   append(L"  this.memo[(e << ");
-                                                            #line 843 "PrintGo.cpp.template"
+                                                            #line 847 "PrintGo.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1261 "PrintGo.cpp"
+                                                            #line 1274 "PrintGo.cpp"
   append(L") + i] = v\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *");
-                                                            #line 847 "PrintGo.cpp.template"
+                                                            #line 851 "PrintGo.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1268 "PrintGo.cpp"
+                                                            #line 1281 "PrintGo.cpp"
   append(L") memoized(i int, e int) int {\n");
   append(L"  return this.memo[(e << ");
-                                                            #line 849 "PrintGo.cpp.template"
+                                                            #line 853 "PrintGo.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1273 "PrintGo.cpp"
+                                                            #line 1286 "PrintGo.cpp"
   append(L") + i]\n");
   append(L"}\n");
-                                                            #line 852 "PrintGo.cpp.template"
+                                                            #line 856 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1278 "PrintGo.cpp"
+                                                            #line 1291 "PrintGo.cpp"
   append(L"\n");
   append(L"type ");
-                                                            #line 854 "PrintGo.cpp.template"
+                                                            #line 858 "PrintGo.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1283 "PrintGo.cpp"
+                                                            #line 1296 "PrintGo.cpp"
   append(L" struct {");
-                                                            #line 855 "PrintGo.cpp.template"
+                                                            #line 859 "PrintGo.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1288 "PrintGo.cpp"
+                                                            #line 1301 "PrintGo.cpp"
   append(L"\n");
   append(L"  thread *ParsingThread\n");
   append(L"  input string");
-                                                            #line 859 "PrintGo.cpp.template"
+                                                            #line 863 "PrintGo.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1295 "PrintGo.cpp"
+                                                            #line 1308 "PrintGo.cpp"
   append(L"\n");
   append(L"  eventHandler BottomUpEventHandler");
-                                                            #line 862 "PrintGo.cpp.template"
+                                                            #line 866 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1300 "PrintGo.cpp"
+                                                            #line 1313 "PrintGo.cpp"
   append(L"\n");
   append(L"  size int\n");
   append(L"  maxId int");
-                                                            #line 865 "PrintGo.cpp.template"
+                                                            #line 869 "PrintGo.cpp.template"
                                                               }
                                                               else
                                                               {
@@ -1308,23 +1321,23 @@
                                                               }
                                                               if (memoization)
                                                               {
-                                                            #line 1312 "PrintGo.cpp"
+                                                            #line 1325 "PrintGo.cpp"
   append(L"\n");
   append(L"  memo map[int]int");
-                                                            #line 873 "PrintGo.cpp.template"
+                                                            #line 877 "PrintGo.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1318 "PrintGo.cpp"
+                                                            #line 1331 "PrintGo.cpp"
   append(L"\n");
   append(L"  viable bool");
-                                                            #line 876 "PrintGo.cpp.template"
+                                                            #line 880 "PrintGo.cpp.template"
                                                                 }
                                                               }
                                                             }
 
                                                             void PrintGo::printFileProcessor()
                                                             {
-                                                            #line 1328 "PrintGo.cpp"
+                                                            #line 1341 "PrintGo.cpp"
   append(L"\n");
   append(L"var quiet bool = false\n");
   append(L"var parsed int64 = 0\n");
@@ -1335,32 +1348,32 @@
   append(L"  name string\n");
   append(L"  input string\n");
   append(L"  parser *");
-                                                            #line 891 "PrintGo.cpp.template"
+                                                            #line 895 "PrintGo.cpp.template"
                                                               print(className.c_str());
                                                               if (tree)
                                                               {
-                                                            #line 1343 "PrintGo.cpp"
+                                                            #line 1356 "PrintGo.cpp"
   append(L"\n");
   append(L"  contentCounter *ContentCounter");
-                                                            #line 895 "PrintGo.cpp.template"
+                                                            #line 899 "PrintGo.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1349 "PrintGo.cpp"
+                                                            #line 1362 "PrintGo.cpp"
   append(L"\n");
   append(L"  parseTreeBuilder *ParseTreeBuilder");
-                                                            #line 898 "PrintGo.cpp.template"
+                                                            #line 902 "PrintGo.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1355 "PrintGo.cpp"
+                                                            #line 1368 "PrintGo.cpp"
   append(L"\n");
   append(L"}\n");
   append(L"\n");
   append(L"func main() {\n");
   append(L"  if len(os.Args) < 2 {\n");
   append(L"    os.Stderr.WriteString(\"Usage: ");
-                                                            #line 905 "PrintGo.cpp.template"
+                                                            #line 909 "PrintGo.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1364 "PrintGo.cpp"
+                                                            #line 1377 "PrintGo.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\\n\")\n");
   append(L"    os.Stderr.WriteString(\"\\n\")\n");
   append(L"    os.Stderr.WriteString(\"  parse all files that have names ending with ENDING, in current dir and below,\\n\")\n");
@@ -1440,19 +1453,19 @@
   append(L"              fmt.Print(\"parsing \" + job.name)\n");
   append(L"            }\n");
   append(L"            job.parser");
-                                                            #line 984 "PrintGo.cpp.template"
+                                                            #line 988 "PrintGo.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1447 "PrintGo.cpp"
+                                                            #line 1460 "PrintGo.cpp"
   append(L".thread");
-                                                            #line 986 "PrintGo.cpp.template"
+                                                            #line 990 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1451 "PrintGo.cpp"
+                                                            #line 1464 "PrintGo.cpp"
   append(L".Reset(0, 0, 0)\n");
   append(L"            pe := job.parser.Parse_");
-                                                            #line 988 "PrintGo.cpp.template"
+                                                            #line 992 "PrintGo.cpp.template"
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1456 "PrintGo.cpp"
+                                                            #line 1469 "PrintGo.cpp"
   append(L"()\n");
   append(L"            if pe != nil {\n");
   append(L"              errorCount++\n");
@@ -1465,24 +1478,24 @@
   append(L"            if ! quiet {\n");
   append(L"              fmt.Println()\n");
   append(L"            }");
-                                                            #line 1000 "PrintGo.cpp.template"
+                                                            #line 1004 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1474 "PrintGo.cpp"
+                                                            #line 1487 "PrintGo.cpp"
   append(L"\n");
   append(L"            job.parseTreeBuilder.Serialize(job.contentCounter)");
-                                                            #line 1005 "PrintGo.cpp.template"
+                                                            #line 1009 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1479 "PrintGo.cpp"
+                                                            #line 1492 "PrintGo.cpp"
   append(L"\n");
   append(L"            if (job.contentCounter.getLength() != len(job.input)) {\n");
   append(L"              panic(\"content counter saw \" + strconv.Itoa(job.contentCounter.getLength()) + \", but input length is \" + strconv.Itoa(len(job.input)))\n");
   append(L"            }");
-                                                            #line 1009 "PrintGo.cpp.template"
+                                                            #line 1013 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1486 "PrintGo.cpp"
+                                                            #line 1499 "PrintGo.cpp"
   append(L"\n");
   append(L"            parsed += int64(len(job.input))\n");
   append(L"          }\n");
@@ -1520,64 +1533,64 @@
   append(L"  if ! quiet {\n");
   append(L"    fmt.Println(\"loading \" + name)\n");
   append(L"  }\n");
-                                                            #line 1047 "PrintGo.cpp.template"
+                                                            #line 1051 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1527 "PrintGo.cpp"
+                                                            #line 1540 "PrintGo.cpp"
   append(L"\n");
   append(L"  contentCounter := new(ContentCounter)");
-                                                            #line 1050 "PrintGo.cpp.template"
+                                                            #line 1054 "PrintGo.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1533 "PrintGo.cpp"
+                                                            #line 1546 "PrintGo.cpp"
   append(L"\n");
   append(L"  parseTreeBuilder := new(ParseTreeBuilder)");
-                                                            #line 1053 "PrintGo.cpp.template"
+                                                            #line 1057 "PrintGo.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1539 "PrintGo.cpp"
+                                                            #line 1552 "PrintGo.cpp"
   append(L"\n");
   append(L"  parsers = append(parsers, &ParseJob{name, content, NewParser(content");
-                                                            #line 1057 "PrintGo.cpp.template"
+                                                            #line 1061 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1547 "PrintGo.cpp"
+                                                            #line 1560 "PrintGo.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 1061 "PrintGo.cpp.template"
+                                                            #line 1065 "PrintGo.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1553 "PrintGo.cpp"
-  append(L", contentCounter");
-                                                            #line 1064 "PrintGo.cpp.template"
-                                                                }
-                                                              }
-                                                            #line 1558 "PrintGo.cpp"
-  append(L")");
-                                                            #line 1066 "PrintGo.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 1563 "PrintGo.cpp"
+                                                            #line 1566 "PrintGo.cpp"
   append(L", contentCounter");
                                                             #line 1068 "PrintGo.cpp.template"
-                                                                if (isLrParser)
-                                                                {
-                                                            #line 1568 "PrintGo.cpp"
-  append(L", parseTreeBuilder");
-                                                            #line 1070 "PrintGo.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1573 "PrintGo.cpp"
+                                                            #line 1571 "PrintGo.cpp"
+  append(L")");
+                                                            #line 1070 "PrintGo.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                            #line 1576 "PrintGo.cpp"
+  append(L", contentCounter");
+                                                            #line 1072 "PrintGo.cpp.template"
+                                                                if (isLrParser)
+                                                                {
+                                                            #line 1581 "PrintGo.cpp"
+  append(L", parseTreeBuilder");
+                                                            #line 1074 "PrintGo.cpp.template"
+                                                                }
+                                                              }
+                                                            #line 1586 "PrintGo.cpp"
   append(L"})\n");
   append(L"}\n");
-                                                            #line 1074 "PrintGo.cpp.template"
+                                                            #line 1078 "PrintGo.cpp.template"
                                                             }
 
                                                             void PrintGo::printReadMethod()
                                                             {
-                                                            #line 1581 "PrintGo.cpp"
+                                                            #line 1594 "PrintGo.cpp"
   append(L"\n");
   append(L"func read(arg string) string {\n");
   append(L"  if strings.HasPrefix(arg, \"{\") && strings.HasSuffix(arg, \"}\") {\n");
@@ -1593,84 +1606,84 @@
   append(L"    return string(content)\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1093 "PrintGo.cpp.template"
+                                                            #line 1097 "PrintGo.cpp.template"
                                                             }
 
                                                             void PrintGo::printInterface()
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 1604 "PrintGo.cpp"
+                                                            #line 1617 "PrintGo.cpp"
   append(L"\n");
   append(L"package ");
-                                                            #line 1100 "PrintGo.cpp.template"
+                                                            #line 1104 "PrintGo.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 1609 "PrintGo.cpp"
+                                                            #line 1622 "PrintGo.cpp"
   append(L";\n");
-                                                            #line 1102 "PrintGo.cpp.template"
+                                                            #line 1106 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 1617 "PrintGo.cpp"
+                                                            #line 1630 "PrintGo.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
-                                                            #line 1110 "PrintGo.cpp.template"
+                                                            #line 1114 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1623 "PrintGo.cpp"
+                                                            #line 1636 "PrintGo.cpp"
   append(L"\n");
   append(L"import java.util.Arrays;");
-                                                            #line 1112 "PrintGo.cpp.template"
+                                                            #line 1116 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1628 "PrintGo.cpp"
+                                                            #line 1641 "PrintGo.cpp"
   append(L"\n");
   append(L"public interface ");
-                                                            #line 1114 "PrintGo.cpp.template"
+                                                            #line 1118 "PrintGo.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1633 "PrintGo.cpp"
+                                                            #line 1646 "PrintGo.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  public void initialize(CharSequence input");
-                                                            #line 1117 "PrintGo.cpp.template"
+                                                            #line 1121 "PrintGo.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1640 "PrintGo.cpp"
+                                                            #line 1653 "PrintGo.cpp"
   append(L", Lexer l");
-                                                            #line 1119 "PrintGo.cpp.template"
+                                                            #line 1123 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1646 "PrintGo.cpp"
+                                                            #line 1659 "PrintGo.cpp"
   append(L", ");
-                                                            #line 1122 "PrintGo.cpp.template"
+                                                            #line 1126 "PrintGo.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1651 "PrintGo.cpp"
+                                                            #line 1664 "PrintGo.cpp"
   append(L"BottomUp");
-                                                            #line 1124 "PrintGo.cpp.template"
+                                                            #line 1128 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1655 "PrintGo.cpp"
+                                                            #line 1668 "PrintGo.cpp"
   append(L"EventHandler eh");
-                                                            #line 1126 "PrintGo.cpp.template"
+                                                            #line 1130 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1659 "PrintGo.cpp"
+                                                            #line 1672 "PrintGo.cpp"
   append(L");\n");
   append(L"  public void parse();\n");
   append(L"  public void Reset();\n");
   append(L"  public String getErrorMessage(ParseException e);\n");
-                                                            #line 1131 "PrintGo.cpp.template"
+                                                            #line 1135 "PrintGo.cpp.template"
                                                               printParseException();
                                                               printEventHandlerImplementation();
-                                                            #line 1667 "PrintGo.cpp"
+                                                            #line 1680 "PrintGo.cpp"
   append(L"}\n");
-                                                            #line 1134 "PrintGo.cpp.template"
+                                                            #line 1138 "PrintGo.cpp.template"
                                                             }
 
                                                             void PrintGo::printParseException()
                                                             {
-                                                            #line 1674 "PrintGo.cpp"
+                                                            #line 1687 "PrintGo.cpp"
   append(L"\n");
   append(L"type ParseError struct {\n");
   append(L"  begin int\n");
@@ -1678,63 +1691,63 @@
   append(L"  state int\n");
   append(L"  offending int\n");
   append(L"  expected int");
-                                                            #line 1144 "PrintGo.cpp.template"
+                                                            #line 1148 "PrintGo.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1685 "PrintGo.cpp"
+                                                            #line 1698 "PrintGo.cpp"
   append(L"\n");
   append(L"  ambiguousInput bool");
-                                                            #line 1147 "PrintGo.cpp.template"
+                                                            #line 1151 "PrintGo.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1691 "PrintGo.cpp"
+                                                            #line 1704 "PrintGo.cpp"
   append(L"\n");
   append(L"  ambiguityDescriptor *ParseTreeBuilder");
-                                                            #line 1150 "PrintGo.cpp.template"
+                                                            #line 1154 "PrintGo.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1697 "PrintGo.cpp"
+                                                            #line 1710 "PrintGo.cpp"
   append(L"\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this ParseError) Error() string {\n");
   append(L"  if ");
-                                                            #line 1156 "PrintGo.cpp.template"
+                                                            #line 1160 "PrintGo.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1706 "PrintGo.cpp"
+                                                            #line 1719 "PrintGo.cpp"
   append(L"this.ambiguousInput {\n");
   append(L"    return \"ambiguous input\"\n");
   append(L"  } else if ");
-                                                            #line 1160 "PrintGo.cpp.template"
+                                                            #line 1164 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1712 "PrintGo.cpp"
+                                                            #line 1725 "PrintGo.cpp"
   append(L"this.offending < 0 {\n");
   append(L"    return \"lexical analysis failed\"\n");
   append(L"  } else {\n");
   append(L"    return \"syntax error\"\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1167 "PrintGo.cpp.template"
+                                                            #line 1171 "PrintGo.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1722 "PrintGo.cpp"
+                                                            #line 1735 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *ParseError) Serialize(eventHandler EventHandler) {");
-                                                            #line 1170 "PrintGo.cpp.template"
+                                                            #line 1174 "PrintGo.cpp.template"
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 1728 "PrintGo.cpp"
+                                                            #line 1741 "PrintGo.cpp"
   append(L"\n");
   append(L"  this.ambiguityDescriptor.Serialize(eventHandler)");
-                                                            #line 1173 "PrintGo.cpp.template"
+                                                            #line 1177 "PrintGo.cpp.template"
                                                                 }
-                                                            #line 1733 "PrintGo.cpp"
+                                                            #line 1746 "PrintGo.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 1176 "PrintGo.cpp.template"
+                                                            #line 1180 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1738 "PrintGo.cpp"
+                                                            #line 1751 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *ParseError) GetBegin() int {return this.begin}\n");
   append(L"func (this *ParseError) GetEnd() int {return this.end}\n");
@@ -1742,25 +1755,25 @@
   append(L"func (this *ParseError) GetOffending() int {return this.offending}\n");
   append(L"func (this *ParseError) GetExpected() int {return this.expected}\n");
   append(L"func (this *ParseError) IsAmbiguousInput() bool {return ");
-                                                            #line 1183 "PrintGo.cpp.template"
+                                                            #line 1187 "PrintGo.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1749 "PrintGo.cpp"
+                                                            #line 1762 "PrintGo.cpp"
   append(L"this.ambiguousInput");
-                                                            #line 1186 "PrintGo.cpp.template"
+                                                            #line 1190 "PrintGo.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1755 "PrintGo.cpp"
+                                                            #line 1768 "PrintGo.cpp"
   append(L"false");
-                                                            #line 1190 "PrintGo.cpp.template"
+                                                            #line 1194 "PrintGo.cpp.template"
                                                               }
-                                                            #line 1759 "PrintGo.cpp"
+                                                            #line 1772 "PrintGo.cpp"
   append(L"}\n");
-                                                            #line 1192 "PrintGo.cpp.template"
+                                                            #line 1196 "PrintGo.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1764 "PrintGo.cpp"
+                                                            #line 1777 "PrintGo.cpp"
   append(L"\n");
   append(L"  public static class Token\n");
   append(L"  {\n");
@@ -1774,17 +1787,17 @@
   append(L"    void Reset(CharSequence input);\n");
   append(L"    void match(int tokenset, Token token);\n");
   append(L"  }\n");
-                                                            #line 1207 "PrintGo.cpp.template"
+                                                            #line 1211 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1782 "PrintGo.cpp"
+                                                            #line 1795 "PrintGo.cpp"
   append(L"\n");
   append(L"type EventHandler interface {\n");
   append(L"  Reset(input string)\n");
-  append(L"  StartNonterminal(name string, begin int)\n");
-  append(L"  EndNonterminal(name string, end int)\n");
-  append(L"  Terminal(name string, begin, end int)\n");
+  append(L"  StartNonterminal(id int, begin int)\n");
+  append(L"  EndNonterminal(id int, end int)\n");
+  append(L"  Terminal(id int, begin, end int)\n");
   append(L"  Whitespace(begin, end int)\n");
   append(L"}\n");
   append(L"\n");
@@ -1800,8 +1813,8 @@
   append(L"  this.top = -1\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *TopDownTreeBuilder) StartNonterminal(name string, begin int) {\n");
-  append(L"  nonterminal := &Nonterminal{&AbstractSymbol{name, begin, begin}, []Symbol{}}\n");
+  append(L"func (this *TopDownTreeBuilder) StartNonterminal(id int, begin int) {\n");
+  append(L"  nonterminal := &Nonterminal{&AbstractSymbol{id, begin, begin}, []Symbol{}}\n");
   append(L"  if this.top >= 0 {\n");
   append(L"    this.addChild(nonterminal)\n");
   append(L"  }\n");
@@ -1812,15 +1825,15 @@
   append(L"  this.stack[this.top] = nonterminal\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *TopDownTreeBuilder) EndNonterminal(name string, end int) {\n");
+  append(L"func (this *TopDownTreeBuilder) EndNonterminal(id int, end int) {\n");
   append(L"  this.stack[this.top].end = end\n");
   append(L"  if this.top > 0 {\n");
   append(L"    this.top--\n");
   append(L"  }\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *TopDownTreeBuilder) Terminal(name string, begin, end int) {\n");
-  append(L"  this.addChild(&Terminal{&AbstractSymbol{name, begin, end}})\n");
+  append(L"func (this *TopDownTreeBuilder) Terminal(id int, begin, end int) {\n");
+  append(L"  this.addChild(&Terminal{&AbstractSymbol{id, begin, end}})\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *TopDownTreeBuilder) Whitespace(begin, end int) {\n");
@@ -1837,6 +1850,7 @@
   append(L"}\n");
   append(L"\n");
   append(L"type Symbol interface {\n");
+  append(L"  GetId() int\n");
   append(L"  GetName() string\n");
   append(L"  GetBegin() int\n");
   append(L"  GetEnd() int\n");
@@ -1844,13 +1858,13 @@
   append(L"}\n");
   append(L"\n");
   append(L"type AbstractSymbol struct {\n");
-  append(L"  name string\n");
+  append(L"  id int\n");
   append(L"  begin int\n");
   append(L"  end int\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *AbstractSymbol) GetName() string {\n");
-  append(L"  return this.name\n");
+  append(L"func (this *AbstractSymbol) GetId() int {\n");
+  append(L"  return this.id\n");
   append(L"}\n");
   append(L"\n");
   append(L"func (this *AbstractSymbol) GetBegin() int {\n");
@@ -1870,8 +1884,12 @@
   append(L"  this.children = append(this.children, s)\n");
   append(L"}\n");
   append(L"\n");
+  append(L"func (this *Nonterminal) GetName() string {\n");
+  append(L"  return GetNonterminalName(this.id)\n");
+  append(L"}\n");
+  append(L"\n");
   append(L"func (this *Nonterminal) send(e EventHandler) {\n");
-  append(L"  e.StartNonterminal(this.GetName(), this.GetBegin())\n");
+  append(L"  e.StartNonterminal(this.id, this.GetBegin())\n");
   append(L"  pos := this.GetBegin()\n");
   append(L"  for _, c := range this.children {\n");
   append(L"    if pos < c.GetBegin() {\n");
@@ -1883,37 +1901,41 @@
   append(L"  if pos < this.GetEnd() {\n");
   append(L"    e.Whitespace(pos, this.GetEnd())\n");
   append(L"  }\n");
-  append(L"  e.EndNonterminal(this.GetName(), this.GetEnd())\n");
+  append(L"  e.EndNonterminal(this.id, this.GetEnd())\n");
   append(L"}\n");
   append(L"\n");
   append(L"type Terminal struct {\n");
   append(L"  *AbstractSymbol\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *Terminal) send(e EventHandler) {\n");
-  append(L"  e.Terminal(this.GetName(), this.GetBegin(), this.GetEnd())\n");
+  append(L"func (this *Terminal) GetName() string {\n");
+  append(L"  return TOKEN[this.id]\n");
   append(L"}\n");
-                                                            #line 1324 "PrintGo.cpp.template"
+  append(L"\n");
+  append(L"func (this *Terminal) send(e EventHandler) {\n");
+  append(L"  e.Terminal(this.id, this.GetBegin(), this.GetEnd())\n");
+  append(L"}\n");
+                                                            #line 1337 "PrintGo.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1900 "PrintGo.cpp"
+                                                            #line 1922 "PrintGo.cpp"
   append(L"\n");
   append(L"type BottomUpEventHandler interface {\n");
   append(L"  Reset(input string)\n");
-  append(L"  Nonterminal(name string, begin int, end int, count int)\n");
-  append(L"  Terminal(name string, begin int, end int)");
-                                                            #line 1330 "PrintGo.cpp.template"
+  append(L"  Nonterminal(id int, begin int, end int, count int)\n");
+  append(L"  Terminal(id int, begin int, end int)");
+                                                            #line 1343 "PrintGo.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1909 "PrintGo.cpp"
+                                                            #line 1931 "PrintGo.cpp"
   append(L"\n");
   append(L"  Ambiguity(begin int, end int)");
-                                                            #line 1333 "PrintGo.cpp.template"
+                                                            #line 1346 "PrintGo.cpp.template"
                                                                   }
-                                                            #line 1914 "PrintGo.cpp"
+                                                            #line 1936 "PrintGo.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 1336 "PrintGo.cpp.template"
+                                                            #line 1349 "PrintGo.cpp.template"
                                                                 }
                                                               }
                                                             }
@@ -1924,7 +1946,7 @@
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 1928 "PrintGo.cpp"
+                                                            #line 1950 "PrintGo.cpp"
   append(L"\n");
   append(L"type XmlSerializer struct {\n");
   append(L"  indent bool\n");
@@ -1943,7 +1965,11 @@
   append(L"  this.depth = 0\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *XmlSerializer) StartNonterminal(tag string, b int) {\n");
+  append(L"func (this *XmlSerializer) StartNonterminal(id int, b int) {\n");
+  append(L"  this.startElement(GetNonterminalName(id))\n");
+  append(L"}\n");
+  append(L"\n");
+  append(L"func (this *XmlSerializer) startElement(tag string) {\n");
   append(L"  if this.delayedTag != \"\" {\n");
   append(L"    fmt.Print(\"<\")\n");
   append(L"    fmt.Print(this.delayedTag)\n");
@@ -1960,7 +1986,11 @@
   append(L"  this.depth++\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *XmlSerializer) EndNonterminal(tag string, e int) {\n");
+  append(L"func (this *XmlSerializer) EndNonterminal(id int, e int) {\n");
+  append(L"  this.endElement(GetNonterminalName(id))\n");
+  append(L"}\n");
+  append(L"\n");
+  append(L"func (this *XmlSerializer) endElement(tag string) {\n");
   append(L"  this.depth--\n");
   append(L"  if this.delayedTag != \"\" {\n");
   append(L"    this.delayedTag = \"\"\n");
@@ -2008,19 +2038,20 @@
   append(L"  }\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *XmlSerializer) Terminal(tag string, b, e int) {\n");
+  append(L"func (this *XmlSerializer) Terminal(id int, b, e int) {\n");
+  append(L"  tag := GetTerminalName(id)\n");
   append(L"  if tag[0] == '\\'' {\n");
   append(L"    tag = \"TOKEN\"\n");
   append(L"  }\n");
-  append(L"  this.StartNonterminal(tag, b)\n");
+  append(L"  this.startElement(tag)\n");
   append(L"  this.characters(b, e)\n");
-  append(L"  this.EndNonterminal(tag, e)\n");
+  append(L"  this.endElement(tag)\n");
   append(L"}\n");
-                                                            #line 1437 "PrintGo.cpp.template"
+                                                            #line 1459 "PrintGo.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2024 "PrintGo.cpp"
+                                                            #line 2055 "PrintGo.cpp"
   append(L"\n");
   append(L"type ContentCounter struct {\n");
   append(L"  length int\n");
@@ -2031,15 +2062,15 @@
   append(L"}\n");
   append(L"\n");
   append(L"func (this *ContentCounter) Reset(input string) {this.length = 0}\n");
-  append(L"func (this *ContentCounter) StartNonterminal(name string, begin int) {}\n");
-  append(L"func (this *ContentCounter) EndNonterminal(name string, end int) {}\n");
-  append(L"func (this *ContentCounter) Terminal(name string, begin, end int) {this.length += end - begin}\n");
+  append(L"func (this *ContentCounter) StartNonterminal(id int, begin int) {}\n");
+  append(L"func (this *ContentCounter) EndNonterminal(id int, end int) {}\n");
+  append(L"func (this *ContentCounter) Terminal(id int, begin, end int) {this.length += end - begin}\n");
   append(L"func (this *ContentCounter) Whitespace(begin, end int) {this.length += end - begin}\n");
-                                                            #line 1454 "PrintGo.cpp.template"
+                                                            #line 1476 "PrintGo.cpp.template"
                                                                 }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 2043 "PrintGo.cpp"
+                                                            #line 2074 "PrintGo.cpp"
   append(L"\n");
   append(L"type ParseTreeBuilder struct {\n");
   append(L"  input string\n");
@@ -2053,11 +2084,11 @@
   append(L"  this.top = -1\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *ParseTreeBuilder) Nonterminal(name string, begin int, end int, count int) {");
-                                                            #line 1471 "PrintGo.cpp.template"
+  append(L"func (this *ParseTreeBuilder) Nonterminal(id int, begin int, end int, count int) {");
+                                                            #line 1493 "PrintGo.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 2061 "PrintGo.cpp"
+                                                            #line 2092 "PrintGo.cpp"
   append(L"\n");
   append(L"  if count > this.top + 1 {\n");
   append(L"    content := this.pop(this.top + 1)\n");
@@ -2065,32 +2096,36 @@
   append(L"    if len(content) != 0 {\n");
   append(L"       e = content[0].GetBegin()\n");
   append(L"    }\n");
-  append(L"    this.Nonterminal(\"UNAMBIGUOUS\", begin, e, 0)\n");
+  append(L"    this.Nonterminal(");
+                                                            #line 1502 "PrintGo.cpp.template"
+                                                                    print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                                                            #line 2103 "PrintGo.cpp"
+  append(L", begin, e, 0)\n");
   append(L"    for _, symbol := range content {\n");
   append(L"      this.push(symbol)\n");
   append(L"    }\n");
   append(L"    count = this.top + 1\n");
   append(L"  }");
-                                                            #line 1485 "PrintGo.cpp.template"
+                                                            #line 1508 "PrintGo.cpp.template"
                                                                   }
-                                                            #line 2077 "PrintGo.cpp"
+                                                            #line 2112 "PrintGo.cpp"
   append(L"\n");
-  append(L"  this.push(&Nonterminal{&AbstractSymbol{name, begin, end}, this.pop(count)})\n");
+  append(L"  this.push(&Nonterminal{&AbstractSymbol{id, begin, end}, this.pop(count)})\n");
   append(L"}\n");
   append(L"\n");
-  append(L"func (this *ParseTreeBuilder) Terminal(name string, begin int, end int) {\n");
-  append(L"  this.push(&Terminal{&AbstractSymbol{name, begin, end}})\n");
+  append(L"func (this *ParseTreeBuilder) Terminal(id int, begin int, end int) {\n");
+  append(L"  this.push(&Terminal{&AbstractSymbol{id, begin, end}})\n");
   append(L"}\n");
-                                                            #line 1493 "PrintGo.cpp.template"
+                                                            #line 1516 "PrintGo.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 2088 "PrintGo.cpp"
+                                                            #line 2123 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *ParseTreeBuilder) Ambiguity(begin int, end int) {\n");
   append(L"}\n");
-                                                            #line 1498 "PrintGo.cpp.template"
+                                                            #line 1521 "PrintGo.cpp.template"
                                                                   }
-                                                            #line 2094 "PrintGo.cpp"
+                                                            #line 2129 "PrintGo.cpp"
   append(L"\n");
   append(L"func (this *ParseTreeBuilder) Serialize(e EventHandler) {\n");
   append(L"  e.Reset(this.input)\n");
@@ -2112,69 +2147,69 @@
   append(L"  this.top -= count\n");
   append(L"  return append([]Symbol{}, this.stack[this.top + 1:this.top + count + 1]...)\n");
   append(L"}\n");
-                                                            #line 1520 "PrintGo.cpp.template"
+                                                            #line 1543 "PrintGo.cpp.template"
                                                                 }
                                                               }
                                                             }
 
                                                             void PrintGo::printTokenVars()
                                                             {
-                                                            #line 2123 "PrintGo.cpp"
+                                                            #line 2158 "PrintGo.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 1527 "PrintGo.cpp.template"
+                                                            #line 1550 "PrintGo.cpp.template"
                                                               if (! isLrParser && (grammar->k > 1 ||
                                                                                    memoization ||
                                                                                    ! grammar->decisionPoints.empty()))
                                                               {
-                                                            #line 2131 "PrintGo.cpp"
+                                                            #line 2166 "PrintGo.cpp"
   append(L"lk,");
-                                                            #line 1531 "PrintGo.cpp.template"
+                                                            #line 1554 "PrintGo.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 2137 "PrintGo.cpp"
+                                                            #line 2172 "PrintGo.cpp"
   append(L"   ");
-                                                            #line 1534 "PrintGo.cpp.template"
+                                                            #line 1557 "PrintGo.cpp.template"
                                                               }
-                                                            #line 2141 "PrintGo.cpp"
+                                                            #line 2176 "PrintGo.cpp"
   append(L" b0, e0 int");
-                                                            #line 1535 "PrintGo.cpp.template"
+                                                            #line 1558 "PrintGo.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 2148 "PrintGo.cpp"
+                                                            #line 2183 "PrintGo.cpp"
   append(L"\n");
   append(L"  l");
-                                                            #line 1540 "PrintGo.cpp.template"
+                                                            #line 1563 "PrintGo.cpp.template"
                                                                 print(asString);
-                                                            #line 2153 "PrintGo.cpp"
+                                                            #line 2188 "PrintGo.cpp"
   append(L", b");
-                                                            #line 1541 "PrintGo.cpp.template"
+                                                            #line 1564 "PrintGo.cpp.template"
                                                                 print(asString);
-                                                            #line 2157 "PrintGo.cpp"
+                                                            #line 2192 "PrintGo.cpp"
   append(L", e");
-                                                            #line 1542 "PrintGo.cpp.template"
+                                                            #line 1565 "PrintGo.cpp.template"
                                                                 print(asString);
-                                                            #line 2161 "PrintGo.cpp"
+                                                            #line 2196 "PrintGo.cpp"
   append(L" int");
-                                                            #line 1543 "PrintGo.cpp.template"
+                                                            #line 1566 "PrintGo.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 2167 "PrintGo.cpp"
+                                                            #line 2202 "PrintGo.cpp"
   append(L"\n");
   append(L"  bx, ex, sx, lx, tx int");
-                                                            #line 1547 "PrintGo.cpp.template"
+                                                            #line 1570 "PrintGo.cpp.template"
                                                               }
                                                               else if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 2174 "PrintGo.cpp"
+                                                            #line 2209 "PrintGo.cpp"
   append(L"\n");
   append(L"  iStack []int\n");
   append(L"  top int");
-                                                            #line 1552 "PrintGo.cpp.template"
+                                                            #line 1575 "PrintGo.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
@@ -2182,22 +2217,22 @@
                                                                 {
                                                                   if (useGlr)
                                                                   {
-                                                            #line 2186 "PrintGo.cpp"
+                                                            #line 2221 "PrintGo.cpp"
   append(L"\n");
   append(L"  bw, bs, es int");
-                                                            #line 1560 "PrintGo.cpp.template"
+                                                            #line 1583 "PrintGo.cpp.template"
                                                                   }
-                                                            #line 2191 "PrintGo.cpp"
+                                                            #line 2226 "PrintGo.cpp"
   append(L"\n");
   append(L"  eventHandler BottomUpEventHandler");
-                                                            #line 1562 "PrintGo.cpp.template"
+                                                            #line 1585 "PrintGo.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 2198 "PrintGo.cpp"
+                                                            #line 2233 "PrintGo.cpp"
   append(L"\n");
   append(L"  eventHandler EventHandler");
-                                                            #line 1566 "PrintGo.cpp.template"
+                                                            #line 1589 "PrintGo.cpp.template"
                                                                 }
                                                               }
                                                             }

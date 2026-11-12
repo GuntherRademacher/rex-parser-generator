@@ -207,10 +207,10 @@ func (this *~                                                 print(clazz);
       result = code~                                            if (variable("trace").boolean())
                                                                 {
 ~
-      writeTrace(" result=\"" + xmlEscape(token[((result >> ~     print(variable("stateCodeBits").integer());
-                                                            ~) & ~
-                                                                  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
-                                                            ~) - 1]) + "\"")~
+      writeTrace(" result=\"" + xmlEscape(~                       print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
+                                          ~[((result >> ~         print(variable("stateCodeBits").integer());
+                                                        ~) & ~    print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+                                                        ~) - 1]) + "\"")~
                                                                   if (lookahead || hasFixedTokenLength)
                                                                   {
                                                                     int contextOffset = variable("stateCodeBits").integer()
@@ -340,7 +340,8 @@ func (this *~                                                 print(clazz);
   }~                                                            if (variable("trace").boolean())
                                                                 {
 ~
-  writeTrace("    <done result=\"" + xmlEscape(token[(result & ~  print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
+  writeTrace("    <done result=\"" + xmlEscape(~                  print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
+                                               ~[(result & ~      print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
              ~) - 1]) + "\" begin=\"" + strconv.Itoa(this.begin) + "\" end=\"" + strconv.Itoa(this.end) + "\"/>\n")
   writeTrace("  </tokenize>\n")~                                }
                                                                 if (hack)
@@ -412,7 +413,7 @@ func flushTrace() {
                                             ~;}
   public static String getTokenName(int code) {return code >= 0 && code < ~
                                                                 print(variable("t1").size);
-                                                                          ~ ? token[code] : null;}
+                                                                          ~ ? TOKEN[code] : null;}
   public static int getTokenSetCount() {return ~                print(variable("entrycount").integer());
                                                ~;}
 
@@ -449,7 +450,8 @@ func getTokenSet(tokenSetId int) []string {~                  }
 ~)
     for ; f != 0; f >>= 1 {
       if (f & 1) != 0 {
-        set = append(set, token[j])
+        set = append(set, ~                                   print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
+~[j])
         size++
       }
       j++
@@ -482,7 +484,7 @@ func getTokenSet(tokenSetId int) []string {~                  }
 
   private void selfTest(int set, int tokenId)
   {
-    String tokenString = token[tokenId];
+    String tokenString = TOKEN[tokenId];
     if (tokenString.startsWith("'"))
     {
       System.out.print("testing(" + set + ", " + tokenId + ")...");
@@ -626,13 +628,15 @@ var ~                                                           if (strcmp(a->lo
                                                               {
 ~
 
-var ~                                                           char name[] = {0, 0};
-                                                                for (const char *p = a->longName; *p; ++p)
+var ~                                                           if (strcmp(a->longName, "TOKEN") == 0)
                                                                 {
-                                                                  name[0] = tolower(*p);
-                                                                  print(name);
+                                                                  print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
                                                                 }
-                            ~ = [...]string {
+                                                                else
+                                                                {
+                                                                  print(variable("tree").boolean() ? "NONTERMINAL" : "nonterminal");
+                                                                }
+    ~ = [...]string {
 ~                                                               for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)

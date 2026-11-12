@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintXSLT.cpp.template
                                                             #line 1 "PrintXSLT.cpp.template"
                                                             /*

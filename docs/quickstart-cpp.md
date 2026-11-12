@@ -169,12 +169,16 @@ When looking at the generated C++ code, you will find this pure virtual class, w
     virtual ~EventHandler() {}
 
     virtual void reset(const wchar_t *string) = 0;
-    virtual void startNonterminal(const wchar_t *name, int begin) = 0;
-    virtual void endNonterminal(const wchar_t *name, int end) = 0;
-    virtual void terminal(const wchar_t *name, int begin, int end) = 0;
+    virtual void startNonterminal(int id, int begin) = 0;
+    virtual void endNonterminal(int id, int end) = 0;
+    virtual void terminal(int id, int begin, int end) = 0;
     virtual void whitespace(int begin, int end) = 0;
   };
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the public static arrays `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its static `getNonterminalName(int)` and `getTerminalName(int)` methods.
 
 Applications could derive from it and use `EventHandler` implementations for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

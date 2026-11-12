@@ -173,7 +173,8 @@ public class ~                                                  print(className.
           continue;
         }
         Writer w = new OutputStreamWriter(System.out, "UTF-8");
-        XmlSerializer s = new XmlSerializer(w, indent);~          if (isLrParser)
+        XmlSerializer s = new XmlSerializer(w, indent~            printNamesArgument();
+                                                     ~);~         if (isLrParser)
                                                                   {
 ~
         ParseTreeBuilder b = new ParseTreeBuilder();~             }
@@ -346,7 +347,8 @@ public class ~                                                  print(className.
                    ~, bottomUpTreeBuilder~                            }
                                                                       else
                                                                       {
-                   ~, new SaxonTreeBuilder(builder)~                  }
+                   ~, new SaxonTreeBuilder(builder~                     printNamesArgument();
+                                                  ~)~                 }
                                                                     }
                    ~);
     try
@@ -359,7 +361,8 @@ public class ~                                                  print(className.
                                                                     else if (isLrParser)
                                                                     {
 ~
-      bottomUpTreeBuilder.serialize(new SaxonTreeBuilder(builder));~
+      bottomUpTreeBuilder.serialize(new SaxonTreeBuilder(builder~     printNamesArgument();
+                                                                ~));~
                                                                     }
 ~
     }
@@ -497,7 +500,8 @@ public class ~                                                  print(className.
 ~
     if (pe.isAmbiguousInput())
     {
-      pe.serialize(new SaxonTreeBuilder(builder));
+      pe.serialize(new SaxonTreeBuilder(builder~                  printNamesArgument();
+                                               ~));
     }~                                                          }
 ~
     builder.endElement();
@@ -544,8 +548,9 @@ public class ~                                                  print(className.
                                                                 if (tree)
                                                                 {
 ~
-      BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder);~
-                                                                  if (isLrParser)
+      BaseXTreeBuilder treeBuilder = new BaseXTreeBuilder(memBuilder~
+                                                                  printNamesArgument();
+                                    ~);~                          if (isLrParser)
                                                                   {
 ~
       ParseTreeBuilder bottomUpTreeBuilder = new ParseTreeBuilder();~
@@ -606,7 +611,8 @@ public class ~                                                  print(className.
 ~
         if (pe.isAmbiguousInput())
         {
-          pe.serialize(new BaseXTreeBuilder(memBuilder));
+          pe.serialize(new BaseXTreeBuilder(memBuilder~           printNamesArgument();
+                                                      ~));
         }~                                                      }
 ~
         memBuilder.closeElem();
@@ -628,10 +634,19 @@ public class ~                                                  print(className.
             ~ input;
     private MemBuilder builder;
     private Atts nsp = new Atts();
-    private Atts atts = new Atts();
+    private Atts atts = new Atts();~                              printNameSupport();
+~
 
-    public BaseXTreeBuilder(MemBuilder b)
-    {
+    public BaseXTreeBuilder(MemBuilder b~                         if (! interfaceName.empty())
+                                                                  {
+                                        ~, ~                        print(className.c_str());
+                                        ~ names~                  }
+                                        ~)
+    {~                                                            if (! interfaceName.empty())
+                                                                  {
+~
+      this.names = names;~                                        }
+~
       input = null;
       builder = b;
     }
@@ -644,7 +659,13 @@ public class ~                                                  print(className.
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(~                                              printNamesPrefix();
+                   ~getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       try
       {
@@ -657,7 +678,12 @@ public class ~                                                  print(className.
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement();
+    }
+
+    private void endElement()
     {
       try
       {
@@ -670,15 +696,17 @@ public class ~                                                  print(className.
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = ~                                             printNamesPrefix();
+                    ~getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement();
     }
 
     @Override
@@ -851,7 +879,7 @@ private static class DeferredCode
 private abstract static class DeferredEvent
 {
   public DeferredEvent link;
-  public String name;
+  public int id;
   public int begin;
   public int end;~                                              if (shiftAmbiguity)
                                                                 {
@@ -859,10 +887,10 @@ private abstract static class DeferredEvent
   public int depth;~                                            }
 ~
 
-  public DeferredEvent(DeferredEvent link, String name, int begin, int end)
+  public DeferredEvent(DeferredEvent link, int id, int begin, int end)
   {
     this.link = link;
-    this.name = name;
+    this.id = id;
     this.begin = begin;
     this.end = end;~                                            if (shiftAmbiguity)
                                                                 {
@@ -920,7 +948,7 @@ private abstract static class DeferredEvent
 {
   public AmbiguityEvent(DeferredEvent link, int begin, int end)
   {
-    super(link, null, begin, end);
+    super(link, -1, begin, end);
   }
 
   @Override
@@ -939,21 +967,21 @@ private abstract static class DeferredEvent
 ~                                                               }
 ~public static class TerminalEvent extends DeferredEvent
 {
-  public TerminalEvent(DeferredEvent link, String name, int begin, int end)
+  public TerminalEvent(DeferredEvent link, int id, int begin, int end)
   {
-    super(link, name, begin, end);
+    super(link, id, begin, end);
   }
 
   @Override
   public void execute(BottomUpEventHandler eventHandler)
   {
-    eventHandler.terminal(name, begin, end);
+    eventHandler.terminal(id, begin, end);
   }
 
   @Override
   public String toString()
   {
-    return "terminal(" + name + ", " + begin + ", " + end + ")";
+    return "terminal(" + TOKEN[id] + ", " + begin + ", " + end + ")";
   }
 }
 
@@ -961,22 +989,24 @@ public static class NonterminalEvent extends DeferredEvent
 {
   public int count;
 
-  public NonterminalEvent(DeferredEvent link, String name, int begin, int end, int count)
+  public NonterminalEvent(DeferredEvent link, int id, int begin, int end, int count)
   {
-    super(link, name, begin, end);
+    super(link, id, begin, end);
     this.count = count;
   }
 
   @Override
   public void execute(BottomUpEventHandler eventHandler)
   {
-    eventHandler.nonterminal(name, begin, end, count);
+    eventHandler.nonterminal(id, begin, end, count);
   }
 
   @Override
   public String toString()
   {
-    return "nonterminal(" + name + ", " + begin + ", " + end + ", " + count + ")";
+    return "nonterminal(" + ~                                   printSyntheticNamePrefix(true);
+                            ~NONTERMINAL[id]~                   printSyntheticNameSuffix(true);
+                                            ~ + ", " + begin + ", " + end + ", " + count + ")";
   }
 }
 ~                                                             }
@@ -1128,12 +1158,15 @@ private void rejectAmbiguity(int begin, int end~                if (tree)
   ParseTreeBuilder treeBuilder = new ParseTreeBuilder();
   treeBuilder.reset(input);
   second.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
   Symbol secondTree = treeBuilder.pop(1)[0];
   first.show(treeBuilder);
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, treeBuilder.top + 1);
   treeBuilder.push(secondTree);
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, 2);~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.stack[0].begin, treeBuilder.stack[treeBuilder.top].end, 2);~
                                                                 }
 ~
   throw new ParseException(begin, end~                          if (tree)
@@ -1804,7 +1837,12 @@ public interface ~                                            print(className.c_
                                            ~);
   public void parse();
   public void reset();
-  public String getErrorMessage(ParseException e);
+  public String getErrorMessage(ParseException e);~           if (tree)
+                                                              {
+~
+  public String getTerminalName(int id);
+  public String getNonterminalName(int id);~                  }
+~
 ~                                                             printParseException();
                                                               printEventHandlerImplementation();
 ~}
@@ -1917,9 +1955,9 @@ public interface ~                                            print(className.c_
   {
     public void reset(~                                         print(inputType());
                       ~ string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -1939,25 +1977,25 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -1981,31 +2019,53 @@ public interface ~                                            print(className.c_
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName(~                            if (! interfaceName.empty())
+                                                                {
+                                                                  print(className.c_str());
+                                   ~ names~                     }
+                                   ~);
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName(~                                     if (! interfaceName.empty())
+                                                                {
+                                                                  print(className.c_str());
+                          ~ names~                              }
+                          ~)
+    {
+      return ~                                                  if (interfaceName.empty())
+                                                                {
+             ~TOKEN[id]~                                        }
+                                                                else
+                                                                {
+             ~names.getTerminalName(id)~                        }
+             ~;
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -2013,16 +2073,34 @@ public interface ~                                            print(className.c_
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName(~                                     if (! interfaceName.empty())
+                                                                {
+                                                                  print(className.c_str());
+                          ~ names~                              }
+                          ~)
+    {
+      return ~                                                  if (interfaceName.empty())
+                                                                {
+                                                                  printSyntheticNamePrefix();
+             ~NONTERMINAL[id]~                                    printSyntheticNameSuffix();
+                                                                }
+                                                                else
+                                                                {
+             ~names.getNonterminalName(id)~                     }
+             ~;
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -2031,7 +2109,7 @@ public interface ~                                            print(className.c_
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 ~                                                               if (isLrParser)
@@ -2041,8 +2119,8 @@ public interface ~                                            print(className.c_
   {
     public void reset(~                                           print(inputType());
                       ~ string);
-    public void nonterminal(String name, int begin, int end, int count);
-    public void terminal(String name, int begin, int end);~       if (resolvesAmbiguity)
+    public void nonterminal(int id, int begin, int end, int count);
+    public void terminal(int id, int begin, int end);~            if (resolvesAmbiguity)
                                                                   {
 ~
     public void ambiguity(int begin, int end);~                   }
@@ -2050,6 +2128,31 @@ public interface ~                                            print(className.c_
   }
 ~                                                               }
                                                               }
+                                                            }
+
+                                                            void PrintJava::printNamesArgument()
+                                                            {
+                                                              if (! interfaceName.empty())
+                                                              {
+~, new ~                                                        print(className.c_str());
+       ~()~                                                   }
+                                                            }
+
+                                                            void PrintJava::printNamesPrefix()
+                                                            {
+                                                              if (! interfaceName.empty())
+                                                              {
+~names.~                                                      }
+                                                            }
+
+                                                            void PrintJava::printNameSupport()
+                                                            {
+                                                              if (! interfaceName.empty())
+                                                              {
+~
+
+    private ~                                                   print(className.c_str());
+            ~ names;~                                         }
                                                             }
 
                                                             void PrintJava::printEventHandlerImplementation()
@@ -2067,10 +2170,19 @@ public interface ~                                            print(className.c_
     private Writer out;
     private boolean indent;
     private boolean hasChildElement;
-    private int depth;
+    private int depth;~                                           printNameSupport();
+~
 
-    public XmlSerializer(Writer w, boolean indent)
-    {
+    public XmlSerializer(Writer w, boolean indent~                if (! interfaceName.empty())
+                                                                  {
+                                                 ~, ~               print(className.c_str());
+                                                      ~ names~    }
+                                                 ~)
+    {~                                                            if (! interfaceName.empty())
+                                                                  {
+~
+      this.names = names;~                                        }
+~
       input = null;
       delayedTag = null;
       out = w;
@@ -2089,7 +2201,13 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(~                                              printNamesPrefix();
+                   ~getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -2111,7 +2229,13 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(~                                                printNamesPrefix();
+                 ~getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -2142,15 +2266,17 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = ~                                             printNamesPrefix();
+                    ~getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     @Override
@@ -2208,11 +2334,11 @@ public interface ~                                            print(className.c_
     public void reset(~                                           print(inputType());
                       ~ string) {length = 0;}
     @Override
-    public void startNonterminal(String name, int begin) {}
+    public void startNonterminal(int id, int begin) {}
     @Override
-    public void endNonterminal(String name, int end) {}
+    public void endNonterminal(int id, int end) {}
     @Override
-    public void terminal(String name, int begin, int end) {length += end - begin;}
+    public void terminal(int id, int begin, int end) {length += end - begin;}
     @Override
     public void whitespace(int begin, int end) {length += end - begin;}
   }
@@ -2225,10 +2351,19 @@ public interface ~                                            print(className.c_
     private ~                                                     print(inputType());
             ~ input;
     private Builder builder;
-    private AnyType anyType;
+    private AnyType anyType;~                                     printNameSupport();
+~
 
-    public SaxonTreeBuilder(Builder b)
-    {
+    public SaxonTreeBuilder(Builder b~                            if (! interfaceName.empty())
+                                                                  {
+                                     ~, ~                           print(className.c_str());
+                                        ~ names~                  }
+                                               ~)
+    {~                                                            if (! interfaceName.empty())
+                                                                  {
+~
+      this.names = names;~                                        }
+~
       input = null;
       builder = b;
       anyType = AnyType.getInstance();
@@ -2242,7 +2377,13 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(~                                              printNamesPrefix();
+                   ~getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       try
       {
@@ -2259,7 +2400,12 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement();
+    }
+
+    private void endElement()
     {
       try
       {
@@ -2272,15 +2418,17 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = ~                                             printNamesPrefix();
+                    ~getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement();
     }
 
     @Override
@@ -2341,14 +2489,15 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public void nonterminal(String name, int begin, int end, int count)
+    public void nonterminal(int id, int begin, int end, int count)
     {~                                                            if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > top + 1)
       {
         Symbol[] content = pop(top + 1);
-        nonterminal("UNAMBIGUOUS", begin, content.length == 0 ? end : content[0].begin, 0);
+        nonterminal(~                                               print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                    ~, begin, content.length == 0 ? end : content[0].begin, 0);
         for (Symbol symbol : content)
         {
           push(symbol);
@@ -2356,13 +2505,13 @@ public interface ~                                            print(className.c_
         count = top + 1;
       }~                                                          }
 ~
-      push(new Nonterminal(name, begin, end, pop(count)));
+      push(new Nonterminal(id, begin, end, pop(count)));
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      push(new Terminal(name, begin, end));
+      push(new Terminal(id, begin, end));
     }~                                                            if (resolvesAmbiguity)
                                                                   {
 ~

@@ -168,16 +168,16 @@ It takes a string containing the input, and an `EventHandler`, that is used by p
  * @property {function(string): void} reset
  *   @param (string) input
  *
- * @property {function(string, number): void} startNonterminal
- *   @param {string} name - The name of the nonterminal.
+ * @property {function(number, number): void} startNonterminal
+ *   @param {number} id - The code of the nonterminal.
  *   @param {number} begin - The start offset of the nonterminal.
  *
- * @property {function(string, number): void} endNonterminal
- *   @param {string} name - The name of the nonterminal.
+ * @property {function(number, number): void} endNonterminal
+ *   @param {number} id - The code of the nonterminal.
  *   @param {number} end - The end offset of the nonterminal.
  *
- * @property {function(string, number, number): void} terminal
- *   @param {string} name - The name of the terminal.
+ * @property {function(number, number, number): void} terminal
+ *   @param {number} id - The code of the terminal.
  *   @param {number} begin - The start offset of the terminal.
  *   @param {number} end - The end offset of the terminal.
  *
@@ -187,7 +187,12 @@ It takes a string containing the input, and an `EventHandler`, that is used by p
  */
 ```
 
-All of the number arguments are offsets into the input string, which point to the begin, or behind the end of a nonterminal, terminal, or whitespace.
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the properties `NONTERMINAL` and `TOKEN` of the generated parser function, or by calling 
+the `getNonterminalName(id)` and `getTerminalName(id)` methods of a parser instance.
+
+All of the other number arguments are offsets into the input string, which point to the begin, 
+or behind the end of a nonterminal, terminal, or whitespace.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

@@ -166,12 +166,16 @@ When looking at the generated Haxe code, you will find this interface, that is u
 interface EventHandler
 {
   public function reset(input: Bytes): Void;
-  public function startNonterminal(tag: String, begin: Int): Void;
-  public function endNonterminal(tag: String, end: Int): Void;
-  public function terminal(tag: String, begin: Int, end: Int): Void;
+  public function startNonterminal(id: Int, begin: Int): Void;
+  public function endNonterminal(id: Int, end: Int): Void;
+  public function terminal(id: Int, begin: Int, end: Int): Void;
   public function whitespace(begin: Int, end: Int): Void;
 }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the public static arrays `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its static `getNonterminalName(Int)` and `getTerminalName(Int)` methods.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

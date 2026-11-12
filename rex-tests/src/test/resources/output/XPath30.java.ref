@@ -1,4 +1,4 @@
-// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q xpath-30.ebnf -java -tree -main -saxon -name XPath30
 
 import java.io.IOException;
@@ -110,9 +110,9 @@ public class XPath30
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -130,25 +130,25 @@ public class XPath30
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -172,31 +172,39 @@ public class XPath30
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -204,16 +212,22 @@ public class XPath30
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -222,7 +236,7 @@ public class XPath30
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -254,7 +268,12 @@ public class XPath30
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -276,7 +295,12 @@ public class XPath30
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -307,15 +331,16 @@ public class XPath30
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     @Override
@@ -376,7 +401,12 @@ public class XPath30
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       try
       {
@@ -389,7 +419,12 @@ public class XPath30
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement();
+    }
+
+    private void endElement()
     {
       try
       {
@@ -402,15 +437,16 @@ public class XPath30
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement();
     }
 
     @Override
@@ -591,6 +627,16 @@ public class XPath30
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -627,7 +673,7 @@ public class XPath30
 
   public void parse_XPath()
   {
-    eventHandler.startNonterminal("XPath", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1W(44);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
                                     // URIQualifiedName | QName^Token | S^WS | Wildcard | '$' | '(' | '(:' | '+' | '-' |
                                     // '.' | '..' | '/' | '//' | '@' | 'ancestor' | 'ancestor-or-self' | 'and' |
@@ -643,12 +689,12 @@ public class XPath30
     whitespace();
     parse_Expr();
     consume(11);                    // EOF
-    eventHandler.endNonterminal("XPath", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_ParamList()
   {
-    eventHandler.startNonterminal("ParamList", e0);
+    eventHandler.startNonterminal(1, e0);
     parse_Param();
     for (;;)
     {
@@ -662,12 +708,12 @@ public class XPath30
       whitespace();
       parse_Param();
     }
-    eventHandler.endNonterminal("ParamList", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void parse_Param()
   {
-    eventHandler.startNonterminal("Param", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(15);                    // '$'
     lookahead1W(36);                // URIQualifiedName | QName^Token | S^WS | '(:' | 'ancestor' | 'ancestor-or-self' |
                                     // 'and' | 'attribute' | 'cast' | 'castable' | 'child' | 'comment' | 'descendant' |
@@ -687,19 +733,19 @@ public class XPath30
       whitespace();
       parse_TypeDeclaration();
     }
-    eventHandler.endNonterminal("Param", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void parse_FunctionBody()
   {
-    eventHandler.startNonterminal("FunctionBody", e0);
+    eventHandler.startNonterminal(3, e0);
     parse_EnclosedExpr();
-    eventHandler.endNonterminal("FunctionBody", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void parse_EnclosedExpr()
   {
-    eventHandler.startNonterminal("EnclosedExpr", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(100);                   // '{'
     lookahead1W(44);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
                                     // URIQualifiedName | QName^Token | S^WS | Wildcard | '$' | '(' | '(:' | '+' | '-' |
@@ -716,12 +762,12 @@ public class XPath30
     whitespace();
     parse_Expr();
     consume(103);                   // '}'
-    eventHandler.endNonterminal("EnclosedExpr", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void parse_Expr()
   {
-    eventHandler.startNonterminal("Expr", e0);
+    eventHandler.startNonterminal(5, e0);
     parse_ExprSingle();
     for (;;)
     {
@@ -745,12 +791,12 @@ public class XPath30
       whitespace();
       parse_ExprSingle();
     }
-    eventHandler.endNonterminal("Expr", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void parse_ExprSingle()
   {
-    eventHandler.startNonterminal("ExprSingle", e0);
+    eventHandler.startNonterminal(6, e0);
     switch (l1)
     {
     case 67:                        // 'if'
@@ -791,12 +837,12 @@ public class XPath30
     default:
       parse_OrExpr();
     }
-    eventHandler.endNonterminal("ExprSingle", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void parse_ForExpr()
   {
-    eventHandler.startNonterminal("ForExpr", e0);
+    eventHandler.startNonterminal(7, e0);
     parse_SimpleForClause();
     consume(87);                    // 'return'
     lookahead1W(44);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
@@ -813,12 +859,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ForExpr", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void parse_SimpleForClause()
   {
-    eventHandler.startNonterminal("SimpleForClause", e0);
+    eventHandler.startNonterminal(8, e0);
     consume(62);                    // 'for'
     lookahead1W(2);                 // S^WS | '$' | '(:'
     whitespace();
@@ -834,12 +880,12 @@ public class XPath30
       whitespace();
       parse_SimpleForBinding();
     }
-    eventHandler.endNonterminal("SimpleForClause", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void parse_SimpleForBinding()
   {
-    eventHandler.startNonterminal("SimpleForBinding", e0);
+    eventHandler.startNonterminal(9, e0);
     consume(15);                    // '$'
     lookahead1W(36);                // URIQualifiedName | QName^Token | S^WS | '(:' | 'ancestor' | 'ancestor-or-self' |
                                     // 'and' | 'attribute' | 'cast' | 'castable' | 'child' | 'comment' | 'descendant' |
@@ -869,12 +915,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("SimpleForBinding", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void parse_LetExpr()
   {
-    eventHandler.startNonterminal("LetExpr", e0);
+    eventHandler.startNonterminal(10, e0);
     parse_SimpleLetClause();
     consume(87);                    // 'return'
     lookahead1W(44);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
@@ -891,12 +937,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("LetExpr", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void parse_SimpleLetClause()
   {
-    eventHandler.startNonterminal("SimpleLetClause", e0);
+    eventHandler.startNonterminal(11, e0);
     consume(74);                    // 'let'
     lookahead1W(2);                 // S^WS | '$' | '(:'
     whitespace();
@@ -912,12 +958,12 @@ public class XPath30
       whitespace();
       parse_SimpleLetBinding();
     }
-    eventHandler.endNonterminal("SimpleLetClause", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void parse_SimpleLetBinding()
   {
-    eventHandler.startNonterminal("SimpleLetBinding", e0);
+    eventHandler.startNonterminal(12, e0);
     consume(15);                    // '$'
     lookahead1W(36);                // URIQualifiedName | QName^Token | S^WS | '(:' | 'ancestor' | 'ancestor-or-self' |
                                     // 'and' | 'attribute' | 'cast' | 'castable' | 'child' | 'comment' | 'descendant' |
@@ -947,12 +993,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("SimpleLetBinding", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   private void parse_QuantifiedExpr()
   {
-    eventHandler.startNonterminal("QuantifiedExpr", e0);
+    eventHandler.startNonterminal(13, e0);
     switch (l1)
     {
     case 92:                        // 'some'
@@ -1044,12 +1090,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("QuantifiedExpr", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   private void parse_IfExpr()
   {
-    eventHandler.startNonterminal("IfExpr", e0);
+    eventHandler.startNonterminal(14, e0);
     consume(67);                    // 'if'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -1099,12 +1145,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("IfExpr", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   private void parse_OrExpr()
   {
-    eventHandler.startNonterminal("OrExpr", e0);
+    eventHandler.startNonterminal(15, e0);
     parse_AndExpr();
     for (;;)
     {
@@ -1128,12 +1174,12 @@ public class XPath30
       whitespace();
       parse_AndExpr();
     }
-    eventHandler.endNonterminal("OrExpr", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   private void parse_AndExpr()
   {
-    eventHandler.startNonterminal("AndExpr", e0);
+    eventHandler.startNonterminal(16, e0);
     parse_ComparisonExpr();
     for (;;)
     {
@@ -1157,12 +1203,12 @@ public class XPath30
       whitespace();
       parse_ComparisonExpr();
     }
-    eventHandler.endNonterminal("AndExpr", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   private void parse_ComparisonExpr()
   {
-    eventHandler.startNonterminal("ComparisonExpr", e0);
+    eventHandler.startNonterminal(17, e0);
     parse_StringConcatExpr();
     if (l1 != 11                    // EOF
      && l1 != 18                    // ')'
@@ -1211,12 +1257,12 @@ public class XPath30
       whitespace();
       parse_StringConcatExpr();
     }
-    eventHandler.endNonterminal("ComparisonExpr", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   private void parse_StringConcatExpr()
   {
-    eventHandler.startNonterminal("StringConcatExpr", e0);
+    eventHandler.startNonterminal(18, e0);
     parse_RangeExpr();
     for (;;)
     {
@@ -1240,12 +1286,12 @@ public class XPath30
       whitespace();
       parse_RangeExpr();
     }
-    eventHandler.endNonterminal("StringConcatExpr", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   private void parse_RangeExpr()
   {
-    eventHandler.startNonterminal("RangeExpr", e0);
+    eventHandler.startNonterminal(19, e0);
     parse_AdditiveExpr();
     if (l1 == 96)                   // 'to'
     {
@@ -1265,12 +1311,12 @@ public class XPath30
       whitespace();
       parse_AdditiveExpr();
     }
-    eventHandler.endNonterminal("RangeExpr", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   private void parse_AdditiveExpr()
   {
-    eventHandler.startNonterminal("AdditiveExpr", e0);
+    eventHandler.startNonterminal(20, e0);
     parse_MultiplicativeExpr();
     for (;;)
     {
@@ -1302,12 +1348,12 @@ public class XPath30
       whitespace();
       parse_MultiplicativeExpr();
     }
-    eventHandler.endNonterminal("AdditiveExpr", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   private void parse_MultiplicativeExpr()
   {
-    eventHandler.startNonterminal("MultiplicativeExpr", e0);
+    eventHandler.startNonterminal(21, e0);
     parse_UnionExpr();
     for (;;)
     {
@@ -1347,12 +1393,12 @@ public class XPath30
       whitespace();
       parse_UnionExpr();
     }
-    eventHandler.endNonterminal("MultiplicativeExpr", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   private void parse_UnionExpr()
   {
-    eventHandler.startNonterminal("UnionExpr", e0);
+    eventHandler.startNonterminal(22, e0);
     parse_IntersectExceptExpr();
     for (;;)
     {
@@ -1384,12 +1430,12 @@ public class XPath30
       whitespace();
       parse_IntersectExceptExpr();
     }
-    eventHandler.endNonterminal("UnionExpr", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   private void parse_IntersectExceptExpr()
   {
-    eventHandler.startNonterminal("IntersectExceptExpr", e0);
+    eventHandler.startNonterminal(23, e0);
     parse_InstanceofExpr();
     for (;;)
     {
@@ -1425,12 +1471,12 @@ public class XPath30
       whitespace();
       parse_InstanceofExpr();
     }
-    eventHandler.endNonterminal("IntersectExceptExpr", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   private void parse_InstanceofExpr()
   {
-    eventHandler.startNonterminal("InstanceofExpr", e0);
+    eventHandler.startNonterminal(24, e0);
     parse_TreatExpr();
     lookahead1W(23);                // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '<' | '<<' | '<=' |
                                     // '=' | '>' | '>=' | '>>' | ']' | 'and' | 'div' | 'else' | 'eq' | 'except' | 'ge' |
@@ -1454,12 +1500,12 @@ public class XPath30
       whitespace();
       parse_SequenceType();
     }
-    eventHandler.endNonterminal("InstanceofExpr", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   private void parse_TreatExpr()
   {
-    eventHandler.startNonterminal("TreatExpr", e0);
+    eventHandler.startNonterminal(25, e0);
     parse_CastableExpr();
     lookahead1W(24);                // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '<' | '<<' | '<=' |
                                     // '=' | '>' | '>=' | '>>' | ']' | 'and' | 'div' | 'else' | 'eq' | 'except' | 'ge' |
@@ -1483,12 +1529,12 @@ public class XPath30
       whitespace();
       parse_SequenceType();
     }
-    eventHandler.endNonterminal("TreatExpr", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   private void parse_CastableExpr()
   {
-    eventHandler.startNonterminal("CastableExpr", e0);
+    eventHandler.startNonterminal(26, e0);
     parse_CastExpr();
     lookahead1W(26);                // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '<' | '<<' | '<=' |
                                     // '=' | '>' | '>=' | '>>' | ']' | 'and' | 'castable' | 'div' | 'else' | 'eq' |
@@ -1513,12 +1559,12 @@ public class XPath30
       whitespace();
       parse_SingleType();
     }
-    eventHandler.endNonterminal("CastableExpr", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   private void parse_CastExpr()
   {
-    eventHandler.startNonterminal("CastExpr", e0);
+    eventHandler.startNonterminal(27, e0);
     parse_UnaryExpr();
     if (l1 == 46)                   // 'cast'
     {
@@ -1538,12 +1584,12 @@ public class XPath30
       whitespace();
       parse_SingleType();
     }
-    eventHandler.endNonterminal("CastExpr", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   private void parse_UnaryExpr()
   {
-    eventHandler.startNonterminal("UnaryExpr", e0);
+    eventHandler.startNonterminal(28, e0);
     for (;;)
     {
       lookahead1W(44);              // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
@@ -1574,19 +1620,19 @@ public class XPath30
     }
     whitespace();
     parse_ValueExpr();
-    eventHandler.endNonterminal("UnaryExpr", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   private void parse_ValueExpr()
   {
-    eventHandler.startNonterminal("ValueExpr", e0);
+    eventHandler.startNonterminal(29, e0);
     parse_SimpleMapExpr();
-    eventHandler.endNonterminal("ValueExpr", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   private void parse_GeneralComp()
   {
-    eventHandler.startNonterminal("GeneralComp", e0);
+    eventHandler.startNonterminal(30, e0);
     switch (l1)
     {
     case 33:                        // '='
@@ -1607,12 +1653,12 @@ public class XPath30
     default:
       consume(35);                  // '>='
     }
-    eventHandler.endNonterminal("GeneralComp", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   private void parse_ValueComp()
   {
-    eventHandler.startNonterminal("ValueComp", e0);
+    eventHandler.startNonterminal(31, e0);
     switch (l1)
     {
     case 57:                        // 'eq'
@@ -1633,12 +1679,12 @@ public class XPath30
     default:
       consume(64);                  // 'ge'
     }
-    eventHandler.endNonterminal("ValueComp", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   private void parse_NodeComp()
   {
-    eventHandler.startNonterminal("NodeComp", e0);
+    eventHandler.startNonterminal(32, e0);
     switch (l1)
     {
     case 71:                        // 'is'
@@ -1650,12 +1696,12 @@ public class XPath30
     default:
       consume(36);                  // '>>'
     }
-    eventHandler.endNonterminal("NodeComp", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   private void parse_SimpleMapExpr()
   {
-    eventHandler.startNonterminal("SimpleMapExpr", e0);
+    eventHandler.startNonterminal(33, e0);
     parse_PathExpr();
     for (;;)
     {
@@ -1678,12 +1724,12 @@ public class XPath30
       whitespace();
       parse_PathExpr();
     }
-    eventHandler.endNonterminal("SimpleMapExpr", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   private void parse_PathExpr()
   {
-    eventHandler.startNonterminal("PathExpr", e0);
+    eventHandler.startNonterminal(34, e0);
     switch (l1)
     {
     case 25:                        // '/'
@@ -1747,12 +1793,12 @@ public class XPath30
     default:
       parse_RelativePathExpr();
     }
-    eventHandler.endNonterminal("PathExpr", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   private void parse_RelativePathExpr()
   {
-    eventHandler.startNonterminal("RelativePathExpr", e0);
+    eventHandler.startNonterminal(35, e0);
     parse_StepExpr();
     for (;;)
     {
@@ -1783,12 +1829,12 @@ public class XPath30
       whitespace();
       parse_StepExpr();
     }
-    eventHandler.endNonterminal("RelativePathExpr", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   private void parse_StepExpr()
   {
-    eventHandler.startNonterminal("StepExpr", e0);
+    eventHandler.startNonterminal(36, e0);
     switch (l1)
     {
     case 63:                        // 'function'
@@ -1951,12 +1997,12 @@ public class XPath30
     default:
       parse_AxisStep();
     }
-    eventHandler.endNonterminal("StepExpr", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   private void parse_AxisStep()
   {
-    eventHandler.startNonterminal("AxisStep", e0);
+    eventHandler.startNonterminal(37, e0);
     switch (l1)
     {
     case 41:                        // 'ancestor'
@@ -1993,12 +2039,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'union' | '|' | '||' | '}'
     whitespace();
     parse_PredicateList();
-    eventHandler.endNonterminal("AxisStep", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   private void parse_ForwardStep()
   {
-    eventHandler.startNonterminal("ForwardStep", e0);
+    eventHandler.startNonterminal(38, e0);
     switch (l1)
     {
     case 45:                        // 'attribute'
@@ -2051,12 +2097,12 @@ public class XPath30
     default:
       parse_AbbrevForwardStep();
     }
-    eventHandler.endNonterminal("ForwardStep", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   private void parse_ForwardAxis()
   {
-    eventHandler.startNonterminal("ForwardAxis", e0);
+    eventHandler.startNonterminal(39, e0);
     switch (l1)
     {
     case 48:                        // 'child'
@@ -2099,12 +2145,12 @@ public class XPath30
       lookahead1W(6);               // S^WS | '(:' | '::'
       consume(28);                  // '::'
     }
-    eventHandler.endNonterminal("ForwardAxis", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   private void parse_AbbrevForwardStep()
   {
-    eventHandler.startNonterminal("AbbrevForwardStep", e0);
+    eventHandler.startNonterminal(40, e0);
     if (l1 == 38)                   // '@'
     {
       consume(38);                  // '@'
@@ -2121,12 +2167,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_NodeTest();
-    eventHandler.endNonterminal("AbbrevForwardStep", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   private void parse_ReverseStep()
   {
-    eventHandler.startNonterminal("ReverseStep", e0);
+    eventHandler.startNonterminal(41, e0);
     switch (l1)
     {
     case 24:                        // '..'
@@ -2147,12 +2193,12 @@ public class XPath30
       whitespace();
       parse_NodeTest();
     }
-    eventHandler.endNonterminal("ReverseStep", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   private void parse_ReverseAxis()
   {
-    eventHandler.startNonterminal("ReverseAxis", e0);
+    eventHandler.startNonterminal(42, e0);
     switch (l1)
     {
     case 83:                        // 'parent'
@@ -2180,19 +2226,19 @@ public class XPath30
       lookahead1W(6);               // S^WS | '(:' | '::'
       consume(28);                  // '::'
     }
-    eventHandler.endNonterminal("ReverseAxis", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   private void parse_AbbrevReverseStep()
   {
-    eventHandler.startNonterminal("AbbrevReverseStep", e0);
+    eventHandler.startNonterminal(43, e0);
     consume(24);                    // '..'
-    eventHandler.endNonterminal("AbbrevReverseStep", e0);
+    eventHandler.endNonterminal(43, e0);
   }
 
   private void parse_NodeTest()
   {
-    eventHandler.startNonterminal("NodeTest", e0);
+    eventHandler.startNonterminal(44, e0);
     switch (l1)
     {
     case 45:                        // 'attribute'
@@ -2231,12 +2277,12 @@ public class XPath30
     default:
       parse_NameTest();
     }
-    eventHandler.endNonterminal("NodeTest", e0);
+    eventHandler.endNonterminal(44, e0);
   }
 
   private void parse_NameTest()
   {
-    eventHandler.startNonterminal("NameTest", e0);
+    eventHandler.startNonterminal(45, e0);
     switch (l1)
     {
     case 10:                        // Wildcard
@@ -2245,12 +2291,12 @@ public class XPath30
     default:
       parse_EQName();
     }
-    eventHandler.endNonterminal("NameTest", e0);
+    eventHandler.endNonterminal(45, e0);
   }
 
   private void parse_PostfixExpr()
   {
-    eventHandler.startNonterminal("PostfixExpr", e0);
+    eventHandler.startNonterminal(46, e0);
     parse_PrimaryExpr();
     for (;;)
     {
@@ -2275,12 +2321,12 @@ public class XPath30
         parse_ArgumentList();
       }
     }
-    eventHandler.endNonterminal("PostfixExpr", e0);
+    eventHandler.endNonterminal(46, e0);
   }
 
   private void parse_ArgumentList()
   {
-    eventHandler.startNonterminal("ArgumentList", e0);
+    eventHandler.startNonterminal(47, e0);
     consume(16);                    // '('
     lookahead1W(47);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
                                     // URIQualifiedName | QName^Token | S^WS | Wildcard | '$' | '(' | '(:' | ')' | '+' |
@@ -2323,12 +2369,12 @@ public class XPath30
       }
     }
     consume(18);                    // ')'
-    eventHandler.endNonterminal("ArgumentList", e0);
+    eventHandler.endNonterminal(47, e0);
   }
 
   private void parse_PredicateList()
   {
-    eventHandler.startNonterminal("PredicateList", e0);
+    eventHandler.startNonterminal(48, e0);
     for (;;)
     {
       lookahead1W(29);              // S^WS | EOF | '!' | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '/' | '//' | '<' |
@@ -2343,12 +2389,12 @@ public class XPath30
       whitespace();
       parse_Predicate();
     }
-    eventHandler.endNonterminal("PredicateList", e0);
+    eventHandler.endNonterminal(48, e0);
   }
 
   private void parse_Predicate()
   {
-    eventHandler.startNonterminal("Predicate", e0);
+    eventHandler.startNonterminal(49, e0);
     consume(39);                    // '['
     lookahead1W(44);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
                                     // URIQualifiedName | QName^Token | S^WS | Wildcard | '$' | '(' | '(:' | '+' | '-' |
@@ -2365,12 +2411,12 @@ public class XPath30
     whitespace();
     parse_Expr();
     consume(40);                    // ']'
-    eventHandler.endNonterminal("Predicate", e0);
+    eventHandler.endNonterminal(49, e0);
   }
 
   private void parse_PrimaryExpr()
   {
-    eventHandler.startNonterminal("PrimaryExpr", e0);
+    eventHandler.startNonterminal(50, e0);
     switch (l1)
     {
     case 5:                         // URIQualifiedName
@@ -2482,12 +2528,12 @@ public class XPath30
     default:
       parse_FunctionItemExpr();
     }
-    eventHandler.endNonterminal("PrimaryExpr", e0);
+    eventHandler.endNonterminal(50, e0);
   }
 
   private void parse_Literal()
   {
-    eventHandler.startNonterminal("Literal", e0);
+    eventHandler.startNonterminal(51, e0);
     switch (l1)
     {
     case 4:                         // StringLiteral
@@ -2496,12 +2542,12 @@ public class XPath30
     default:
       parse_NumericLiteral();
     }
-    eventHandler.endNonterminal("Literal", e0);
+    eventHandler.endNonterminal(51, e0);
   }
 
   private void parse_NumericLiteral()
   {
-    eventHandler.startNonterminal("NumericLiteral", e0);
+    eventHandler.startNonterminal(52, e0);
     switch (l1)
     {
     case 1:                         // IntegerLiteral
@@ -2513,12 +2559,12 @@ public class XPath30
     default:
       consume(3);                   // DoubleLiteral
     }
-    eventHandler.endNonterminal("NumericLiteral", e0);
+    eventHandler.endNonterminal(52, e0);
   }
 
   private void parse_VarRef()
   {
-    eventHandler.startNonterminal("VarRef", e0);
+    eventHandler.startNonterminal(53, e0);
     consume(15);                    // '$'
     lookahead1W(36);                // URIQualifiedName | QName^Token | S^WS | '(:' | 'ancestor' | 'ancestor-or-self' |
                                     // 'and' | 'attribute' | 'cast' | 'castable' | 'child' | 'comment' | 'descendant' |
@@ -2532,19 +2578,19 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_VarName();
-    eventHandler.endNonterminal("VarRef", e0);
+    eventHandler.endNonterminal(53, e0);
   }
 
   private void parse_VarName()
   {
-    eventHandler.startNonterminal("VarName", e0);
+    eventHandler.startNonterminal(54, e0);
     parse_EQName();
-    eventHandler.endNonterminal("VarName", e0);
+    eventHandler.endNonterminal(54, e0);
   }
 
   private void parse_ParenthesizedExpr()
   {
-    eventHandler.startNonterminal("ParenthesizedExpr", e0);
+    eventHandler.startNonterminal(55, e0);
     consume(16);                    // '('
     lookahead1W(45);                // IntegerLiteral | DecimalLiteral | DoubleLiteral | StringLiteral |
                                     // URIQualifiedName | QName^Token | S^WS | Wildcard | '$' | '(' | '(:' | ')' | '+' |
@@ -2564,29 +2610,29 @@ public class XPath30
       parse_Expr();
     }
     consume(18);                    // ')'
-    eventHandler.endNonterminal("ParenthesizedExpr", e0);
+    eventHandler.endNonterminal(55, e0);
   }
 
   private void parse_ContextItemExpr()
   {
-    eventHandler.startNonterminal("ContextItemExpr", e0);
+    eventHandler.startNonterminal(56, e0);
     consume(23);                    // '.'
-    eventHandler.endNonterminal("ContextItemExpr", e0);
+    eventHandler.endNonterminal(56, e0);
   }
 
   private void parse_FunctionCall()
   {
-    eventHandler.startNonterminal("FunctionCall", e0);
+    eventHandler.startNonterminal(57, e0);
     parse_FunctionEQName();
     lookahead1W(3);                 // S^WS | '(' | '(:'
     whitespace();
     parse_ArgumentList();
-    eventHandler.endNonterminal("FunctionCall", e0);
+    eventHandler.endNonterminal(57, e0);
   }
 
   private void parse_Argument()
   {
-    eventHandler.startNonterminal("Argument", e0);
+    eventHandler.startNonterminal(58, e0);
     switch (l1)
     {
     case 37:                        // '?'
@@ -2595,19 +2641,19 @@ public class XPath30
     default:
       parse_ExprSingle();
     }
-    eventHandler.endNonterminal("Argument", e0);
+    eventHandler.endNonterminal(58, e0);
   }
 
   private void parse_ArgumentPlaceholder()
   {
-    eventHandler.startNonterminal("ArgumentPlaceholder", e0);
+    eventHandler.startNonterminal(59, e0);
     consume(37);                    // '?'
-    eventHandler.endNonterminal("ArgumentPlaceholder", e0);
+    eventHandler.endNonterminal(59, e0);
   }
 
   private void parse_FunctionItemExpr()
   {
-    eventHandler.startNonterminal("FunctionItemExpr", e0);
+    eventHandler.startNonterminal(60, e0);
     switch (l1)
     {
     case 63:                        // 'function'
@@ -2616,23 +2662,23 @@ public class XPath30
     default:
       parse_NamedFunctionRef();
     }
-    eventHandler.endNonterminal("FunctionItemExpr", e0);
+    eventHandler.endNonterminal(60, e0);
   }
 
   private void parse_NamedFunctionRef()
   {
-    eventHandler.startNonterminal("NamedFunctionRef", e0);
+    eventHandler.startNonterminal(61, e0);
     parse_FunctionEQName();
     lookahead1W(1);                 // S^WS | '#' | '(:'
     consume(14);                    // '#'
     lookahead1W(0);                 // IntegerLiteral | S^WS | '(:'
     consume(1);                     // IntegerLiteral
-    eventHandler.endNonterminal("NamedFunctionRef", e0);
+    eventHandler.endNonterminal(61, e0);
   }
 
   private void parse_InlineFunctionExpr()
   {
-    eventHandler.startNonterminal("InlineFunctionExpr", e0);
+    eventHandler.startNonterminal(62, e0);
     consume(63);                    // 'function'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -2663,12 +2709,12 @@ public class XPath30
     lookahead1W(12);                // S^WS | '(:' | '{'
     whitespace();
     parse_FunctionBody();
-    eventHandler.endNonterminal("InlineFunctionExpr", e0);
+    eventHandler.endNonterminal(62, e0);
   }
 
   private void parse_SingleType()
   {
-    eventHandler.startNonterminal("SingleType", e0);
+    eventHandler.startNonterminal(63, e0);
     parse_SimpleTypeName();
     lookahead1W(28);                // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '<' | '<<' | '<=' |
                                     // '=' | '>' | '>=' | '>>' | '?' | ']' | 'and' | 'castable' | 'div' | 'else' |
@@ -2679,12 +2725,12 @@ public class XPath30
     {
       consume(37);                  // '?'
     }
-    eventHandler.endNonterminal("SingleType", e0);
+    eventHandler.endNonterminal(63, e0);
   }
 
   private void parse_TypeDeclaration()
   {
-    eventHandler.startNonterminal("TypeDeclaration", e0);
+    eventHandler.startNonterminal(64, e0);
     consume(44);                    // 'as'
     lookahead1W(38);                // URIQualifiedName | QName^Token | S^WS | '(' | '(:' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'attribute' | 'cast' | 'castable' | 'child' |
@@ -2698,12 +2744,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_SequenceType();
-    eventHandler.endNonterminal("TypeDeclaration", e0);
+    eventHandler.endNonterminal(64, e0);
   }
 
   private void parse_SequenceType()
   {
-    eventHandler.startNonterminal("SequenceType", e0);
+    eventHandler.startNonterminal(65, e0);
     switch (l1)
     {
     case 56:                        // 'empty-sequence'
@@ -2743,12 +2789,12 @@ public class XPath30
         break;
       }
     }
-    eventHandler.endNonterminal("SequenceType", e0);
+    eventHandler.endNonterminal(65, e0);
   }
 
   private void parse_OccurrenceIndicator()
   {
-    eventHandler.startNonterminal("OccurrenceIndicator", e0);
+    eventHandler.startNonterminal(66, e0);
     switch (l1)
     {
     case 37:                        // '?'
@@ -2760,12 +2806,12 @@ public class XPath30
     default:
       consume(20);                  // '+'
     }
-    eventHandler.endNonterminal("OccurrenceIndicator", e0);
+    eventHandler.endNonterminal(66, e0);
   }
 
   private void parse_ItemType()
   {
-    eventHandler.startNonterminal("ItemType", e0);
+    eventHandler.startNonterminal(67, e0);
     switch (l1)
     {
     case 45:                        // 'attribute'
@@ -2819,19 +2865,19 @@ public class XPath30
     default:
       parse_AtomicOrUnionType();
     }
-    eventHandler.endNonterminal("ItemType", e0);
+    eventHandler.endNonterminal(67, e0);
   }
 
   private void parse_AtomicOrUnionType()
   {
-    eventHandler.startNonterminal("AtomicOrUnionType", e0);
+    eventHandler.startNonterminal(68, e0);
     parse_EQName();
-    eventHandler.endNonterminal("AtomicOrUnionType", e0);
+    eventHandler.endNonterminal(68, e0);
   }
 
   private void parse_KindTest()
   {
-    eventHandler.startNonterminal("KindTest", e0);
+    eventHandler.startNonterminal(69, e0);
     switch (l1)
     {
     case 53:                        // 'document-node'
@@ -2864,23 +2910,23 @@ public class XPath30
     default:
       parse_AnyKindTest();
     }
-    eventHandler.endNonterminal("KindTest", e0);
+    eventHandler.endNonterminal(69, e0);
   }
 
   private void parse_AnyKindTest()
   {
-    eventHandler.startNonterminal("AnyKindTest", e0);
+    eventHandler.startNonterminal(70, e0);
     consume(80);                    // 'node'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("AnyKindTest", e0);
+    eventHandler.endNonterminal(70, e0);
   }
 
   private void parse_DocumentTest()
   {
-    eventHandler.startNonterminal("DocumentTest", e0);
+    eventHandler.startNonterminal(71, e0);
     consume(53);                    // 'document-node'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -2900,45 +2946,45 @@ public class XPath30
     }
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("DocumentTest", e0);
+    eventHandler.endNonterminal(71, e0);
   }
 
   private void parse_TextTest()
   {
-    eventHandler.startNonterminal("TextTest", e0);
+    eventHandler.startNonterminal(72, e0);
     consume(94);                    // 'text'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("TextTest", e0);
+    eventHandler.endNonterminal(72, e0);
   }
 
   private void parse_CommentTest()
   {
-    eventHandler.startNonterminal("CommentTest", e0);
+    eventHandler.startNonterminal(73, e0);
     consume(49);                    // 'comment'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("CommentTest", e0);
+    eventHandler.endNonterminal(73, e0);
   }
 
   private void parse_NamespaceNodeTest()
   {
-    eventHandler.startNonterminal("NamespaceNodeTest", e0);
+    eventHandler.startNonterminal(74, e0);
     consume(78);                    // 'namespace-node'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("NamespaceNodeTest", e0);
+    eventHandler.endNonterminal(74, e0);
   }
 
   private void parse_PITest()
   {
-    eventHandler.startNonterminal("PITest", e0);
+    eventHandler.startNonterminal(75, e0);
     consume(86);                    // 'processing-instruction'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -2956,12 +3002,12 @@ public class XPath30
     }
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("PITest", e0);
+    eventHandler.endNonterminal(75, e0);
   }
 
   private void parse_AttributeTest()
   {
-    eventHandler.startNonterminal("AttributeTest", e0);
+    eventHandler.startNonterminal(76, e0);
     consume(45);                    // 'attribute'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -2999,12 +3045,12 @@ public class XPath30
     }
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("AttributeTest", e0);
+    eventHandler.endNonterminal(76, e0);
   }
 
   private void parse_AttribNameOrWildcard()
   {
-    eventHandler.startNonterminal("AttribNameOrWildcard", e0);
+    eventHandler.startNonterminal(77, e0);
     switch (l1)
     {
     case 19:                        // '*'
@@ -3013,12 +3059,12 @@ public class XPath30
     default:
       parse_AttributeName();
     }
-    eventHandler.endNonterminal("AttribNameOrWildcard", e0);
+    eventHandler.endNonterminal(77, e0);
   }
 
   private void parse_SchemaAttributeTest()
   {
-    eventHandler.startNonterminal("SchemaAttributeTest", e0);
+    eventHandler.startNonterminal(78, e0);
     consume(89);                    // 'schema-attribute'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -3036,19 +3082,19 @@ public class XPath30
     parse_AttributeDeclaration();
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("SchemaAttributeTest", e0);
+    eventHandler.endNonterminal(78, e0);
   }
 
   private void parse_AttributeDeclaration()
   {
-    eventHandler.startNonterminal("AttributeDeclaration", e0);
+    eventHandler.startNonterminal(79, e0);
     parse_AttributeName();
-    eventHandler.endNonterminal("AttributeDeclaration", e0);
+    eventHandler.endNonterminal(79, e0);
   }
 
   private void parse_ElementTest()
   {
-    eventHandler.startNonterminal("ElementTest", e0);
+    eventHandler.startNonterminal(80, e0);
     consume(54);                    // 'element'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -3091,12 +3137,12 @@ public class XPath30
     }
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("ElementTest", e0);
+    eventHandler.endNonterminal(80, e0);
   }
 
   private void parse_ElementNameOrWildcard()
   {
-    eventHandler.startNonterminal("ElementNameOrWildcard", e0);
+    eventHandler.startNonterminal(81, e0);
     switch (l1)
     {
     case 19:                        // '*'
@@ -3105,12 +3151,12 @@ public class XPath30
     default:
       parse_ElementName();
     }
-    eventHandler.endNonterminal("ElementNameOrWildcard", e0);
+    eventHandler.endNonterminal(81, e0);
   }
 
   private void parse_SchemaElementTest()
   {
-    eventHandler.startNonterminal("SchemaElementTest", e0);
+    eventHandler.startNonterminal(82, e0);
     consume(90);                    // 'schema-element'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -3128,47 +3174,47 @@ public class XPath30
     parse_ElementDeclaration();
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("SchemaElementTest", e0);
+    eventHandler.endNonterminal(82, e0);
   }
 
   private void parse_ElementDeclaration()
   {
-    eventHandler.startNonterminal("ElementDeclaration", e0);
+    eventHandler.startNonterminal(83, e0);
     parse_ElementName();
-    eventHandler.endNonterminal("ElementDeclaration", e0);
+    eventHandler.endNonterminal(83, e0);
   }
 
   private void parse_AttributeName()
   {
-    eventHandler.startNonterminal("AttributeName", e0);
+    eventHandler.startNonterminal(84, e0);
     parse_EQName();
-    eventHandler.endNonterminal("AttributeName", e0);
+    eventHandler.endNonterminal(84, e0);
   }
 
   private void parse_ElementName()
   {
-    eventHandler.startNonterminal("ElementName", e0);
+    eventHandler.startNonterminal(85, e0);
     parse_EQName();
-    eventHandler.endNonterminal("ElementName", e0);
+    eventHandler.endNonterminal(85, e0);
   }
 
   private void parse_SimpleTypeName()
   {
-    eventHandler.startNonterminal("SimpleTypeName", e0);
+    eventHandler.startNonterminal(86, e0);
     parse_TypeName();
-    eventHandler.endNonterminal("SimpleTypeName", e0);
+    eventHandler.endNonterminal(86, e0);
   }
 
   private void parse_TypeName()
   {
-    eventHandler.startNonterminal("TypeName", e0);
+    eventHandler.startNonterminal(87, e0);
     parse_EQName();
-    eventHandler.endNonterminal("TypeName", e0);
+    eventHandler.endNonterminal(87, e0);
   }
 
   private void parse_FunctionTest()
   {
-    eventHandler.startNonterminal("FunctionTest", e0);
+    eventHandler.startNonterminal(88, e0);
     switch (l1)
     {
     case 63:                        // 'function'
@@ -3200,12 +3246,12 @@ public class XPath30
     default:
       parse_TypedFunctionTest();
     }
-    eventHandler.endNonterminal("FunctionTest", e0);
+    eventHandler.endNonterminal(88, e0);
   }
 
   private void parse_AnyFunctionTest()
   {
-    eventHandler.startNonterminal("AnyFunctionTest", e0);
+    eventHandler.startNonterminal(89, e0);
     consume(63);                    // 'function'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -3213,12 +3259,12 @@ public class XPath30
     consume(19);                    // '*'
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("AnyFunctionTest", e0);
+    eventHandler.endNonterminal(89, e0);
   }
 
   private void parse_TypedFunctionTest()
   {
-    eventHandler.startNonterminal("TypedFunctionTest", e0);
+    eventHandler.startNonterminal(90, e0);
     consume(63);                    // 'function'
     lookahead1W(3);                 // S^WS | '(' | '(:'
     consume(16);                    // '('
@@ -3273,12 +3319,12 @@ public class XPath30
                                     // 'to' | 'treat' | 'typeswitch' | 'union'
     whitespace();
     parse_SequenceType();
-    eventHandler.endNonterminal("TypedFunctionTest", e0);
+    eventHandler.endNonterminal(90, e0);
   }
 
   private void parse_ParenthesizedItemType()
   {
-    eventHandler.startNonterminal("ParenthesizedItemType", e0);
+    eventHandler.startNonterminal(91, e0);
     consume(16);                    // '('
     lookahead1W(38);                // URIQualifiedName | QName^Token | S^WS | '(' | '(:' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'attribute' | 'cast' | 'castable' | 'child' |
@@ -3294,12 +3340,12 @@ public class XPath30
     parse_ItemType();
     lookahead1W(4);                 // S^WS | '(:' | ')'
     consume(18);                    // ')'
-    eventHandler.endNonterminal("ParenthesizedItemType", e0);
+    eventHandler.endNonterminal(91, e0);
   }
 
   private void parse_FunctionEQName()
   {
-    eventHandler.startNonterminal("FunctionEQName", e0);
+    eventHandler.startNonterminal(92, e0);
     switch (l1)
     {
     case 5:                         // URIQualifiedName
@@ -3308,12 +3354,12 @@ public class XPath30
     default:
       parse_FunctionName();
     }
-    eventHandler.endNonterminal("FunctionEQName", e0);
+    eventHandler.endNonterminal(92, e0);
   }
 
   private void parse_EQName()
   {
-    eventHandler.startNonterminal("EQName", e0);
+    eventHandler.startNonterminal(93, e0);
     switch (l1)
     {
     case 5:                         // URIQualifiedName
@@ -3322,7 +3368,7 @@ public class XPath30
     default:
       parse_QName();
     }
-    eventHandler.endNonterminal("EQName", e0);
+    eventHandler.endNonterminal(93, e0);
   }
 
   private void try_Whitespace()
@@ -3361,7 +3407,7 @@ public class XPath30
 
   private void parse_FunctionName()
   {
-    eventHandler.startNonterminal("FunctionName", e0);
+    eventHandler.startNonterminal(96, e0);
     switch (l1)
     {
     case 7:                         // QName^Token
@@ -3484,12 +3530,12 @@ public class XPath30
     default:
       consume(99);                  // 'union'
     }
-    eventHandler.endNonterminal("FunctionName", e0);
+    eventHandler.endNonterminal(96, e0);
   }
 
   private void parse_QName()
   {
-    eventHandler.startNonterminal("QName", e0);
+    eventHandler.startNonterminal(97, e0);
     switch (l1)
     {
     case 45:                        // 'attribute'
@@ -3543,7 +3589,7 @@ public class XPath30
     default:
       parse_FunctionName();
     }
-    eventHandler.endNonterminal("QName", e0);
+    eventHandler.endNonterminal(97, e0);
   }
 
   private void consume(int t)
@@ -3551,7 +3597,7 @@ public class XPath30
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = l3; if (l2 != 0) {
       b2 = b3; e2 = e3; l3 = 0; }}
@@ -4613,7 +4659,7 @@ public class XPath30
     decode(s1, EXPECTED);
   }
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "IntegerLiteral",
@@ -4719,6 +4765,108 @@ public class XPath30
     "'|'",
     "'||'",
     "'}'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "XPath",
+    "ParamList",
+    "Param",
+    "FunctionBody",
+    "EnclosedExpr",
+    "Expr",
+    "ExprSingle",
+    "ForExpr",
+    "SimpleForClause",
+    "SimpleForBinding",
+    "LetExpr",
+    "SimpleLetClause",
+    "SimpleLetBinding",
+    "QuantifiedExpr",
+    "IfExpr",
+    "OrExpr",
+    "AndExpr",
+    "ComparisonExpr",
+    "StringConcatExpr",
+    "RangeExpr",
+    "AdditiveExpr",
+    "MultiplicativeExpr",
+    "UnionExpr",
+    "IntersectExceptExpr",
+    "InstanceofExpr",
+    "TreatExpr",
+    "CastableExpr",
+    "CastExpr",
+    "UnaryExpr",
+    "ValueExpr",
+    "GeneralComp",
+    "ValueComp",
+    "NodeComp",
+    "SimpleMapExpr",
+    "PathExpr",
+    "RelativePathExpr",
+    "StepExpr",
+    "AxisStep",
+    "ForwardStep",
+    "ForwardAxis",
+    "AbbrevForwardStep",
+    "ReverseStep",
+    "ReverseAxis",
+    "AbbrevReverseStep",
+    "NodeTest",
+    "NameTest",
+    "PostfixExpr",
+    "ArgumentList",
+    "PredicateList",
+    "Predicate",
+    "PrimaryExpr",
+    "Literal",
+    "NumericLiteral",
+    "VarRef",
+    "VarName",
+    "ParenthesizedExpr",
+    "ContextItemExpr",
+    "FunctionCall",
+    "Argument",
+    "ArgumentPlaceholder",
+    "FunctionItemExpr",
+    "NamedFunctionRef",
+    "InlineFunctionExpr",
+    "SingleType",
+    "TypeDeclaration",
+    "SequenceType",
+    "OccurrenceIndicator",
+    "ItemType",
+    "AtomicOrUnionType",
+    "KindTest",
+    "AnyKindTest",
+    "DocumentTest",
+    "TextTest",
+    "CommentTest",
+    "NamespaceNodeTest",
+    "PITest",
+    "AttributeTest",
+    "AttribNameOrWildcard",
+    "SchemaAttributeTest",
+    "AttributeDeclaration",
+    "ElementTest",
+    "ElementNameOrWildcard",
+    "SchemaElementTest",
+    "ElementDeclaration",
+    "AttributeName",
+    "ElementName",
+    "SimpleTypeName",
+    "TypeName",
+    "FunctionTest",
+    "AnyFunctionTest",
+    "TypedFunctionTest",
+    "ParenthesizedItemType",
+    "FunctionEQName",
+    "EQName",
+    "Whitespace",
+    "Comment",
+    "FunctionName",
+    "QName"
   };
 }
 

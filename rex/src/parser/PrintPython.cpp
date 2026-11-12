@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintPython.cpp.template
                                                             #line 1 "PrintPython.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -191,9 +191,9 @@
   append(L"\n");
   append(L"class DeferredEvent:\n");
   append(L"\n");
-  append(L"  def __init__(self, link, name, begin, end):\n");
+  append(L"  def __init__(self, link, id, begin, end):\n");
   append(L"    self.link = link\n");
-  append(L"    self.name = name\n");
+  append(L"    self.id = id\n");
   append(L"    self.begin = begin\n");
   append(L"    self.end = end");
                                                             #line 134 "PrintPython.cpp.template"
@@ -246,11 +246,11 @@
   append(L"\n");
   append(L"class TerminalEvent(DeferredEvent):\n");
   append(L"\n");
-  append(L"  def __init__(self, link, name, begin, end):\n");
-  append(L"    super().__init__(link, name, begin, end)\n");
+  append(L"  def __init__(self, link, id, begin, end):\n");
+  append(L"    super().__init__(link, id, begin, end)\n");
   append(L"\n");
   append(L"  def execute(self, eventHandler):\n");
-  append(L"    eventHandler.terminal(self.name, self.begin, self.end)");
+  append(L"    eventHandler.terminal(self.id, self.begin, self.end)");
                                                             #line 177 "PrintPython.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
@@ -265,71 +265,84 @@
   append(L"\n");
   append(L"\n");
   append(L"  def toString(self):\n");
-  append(L"    return \"terminal(\" + self.name + \", \" + str(self.begin) + \", \" + str(self.end) + \")\"\n");
+  append(L"    return \"terminal(\" + ");
+                                                            #line 186 "PrintPython.cpp.template"
+                                                                print(className.c_str());
+                                                            #line 272 "PrintPython.cpp"
+  append(L".TOKEN[self.id] + \", \" + str(self.begin) + \", \" + str(self.end) + \")\"\n");
   append(L"\n");
   append(L"class NonterminalEvent(DeferredEvent):\n");
   append(L"\n");
-  append(L"  def __init__(self, link, name, begin, end, count):\n");
-  append(L"    super().__init__(link, name, begin, end)\n");
+  append(L"  def __init__(self, link, id, begin, end, count):\n");
+  append(L"    super().__init__(link, id, begin, end)\n");
   append(L"    self.count = count\n");
   append(L"\n");
   append(L"  def execute(self, eventHandler):\n");
-  append(L"    eventHandler.nonterminal(self.name, self.begin, self.end, self.count)\n");
+  append(L"    eventHandler.nonterminal(self.id, self.begin, self.end, self.count)\n");
   append(L"\n");
   append(L"  def toString(self):\n");
-  append(L"    return \"nonterminal(\" + self.name + \", \" + str(self.begin) + \", \" + str(self.end) + \", \" + str(self.count) + \")\"\n");
+  append(L"    return \"nonterminal(\" + ");
                                                             #line 199 "PrintPython.cpp.template"
+                                                                printSyntheticNamePrefix(true, L"self.id");
+                                                                print(className.c_str());
+                                                            #line 289 "PrintPython.cpp"
+  append(L".NONTERMINAL[self.id]");
+                                                            #line 201 "PrintPython.cpp.template"
+                                                                printSyntheticNameSuffix(true, L"self.id");
+                                                            #line 293 "PrintPython.cpp"
+  append(L" + \", \" + str(self.begin) + \", \" + str(self.end) + \", \" + str(self.count) + \")\"\n");
+                                                            #line 203 "PrintPython.cpp.template"
                                                                 if (resolvesAmbiguity)
                                                                 {
-                                                            #line 285 "PrintPython.cpp"
+                                                            #line 298 "PrintPython.cpp"
   append(L"\n");
   append(L"\n");
   append(L"class AmbiguityEvent(DeferredEvent):\n");
   append(L"\n");
   append(L"  def __init__(self, link, begin, end):\n");
-  append(L"    super().__init__(link, None, begin, end)\n");
+  append(L"    super().__init__(link, -1, begin, end)\n");
   append(L"\n");
   append(L"  def execute(self, eventHandler):\n");
   append(L"    eventHandler.ambiguity(self.begin, self.end)\n");
   append(L"\n");
   append(L"  def toString(self):\n");
   append(L"    return \"ambiguity(\" + str(self.begin) + \", \" + str(self.end) + \")\"\n");
-                                                            #line 213 "PrintPython.cpp.template"
+                                                            #line 217 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 301 "PrintPython.cpp"
+                                                            #line 314 "PrintPython.cpp"
   append(L"\n");
   append(L"PARSING = 0\n");
   append(L"ACCEPTED = 1\n");
   append(L"ERROR = 2\n");
   append(L"\n");
   append(L"def parse(self, target, initialState, ");
-                                                            #line 220 "PrintPython.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                            #line 311 "PrintPython.cpp"
-  append(L"eventHandler, ");
-                                                            #line 222 "PrintPython.cpp.template"
-                                                              }
-                                                            #line 315 "PrintPython.cpp"
-  append(L"thread):\n");
-  append(L"  threads = thread.open(initialState");
                                                             #line 224 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 321 "PrintPython.cpp"
-  append(L", eventHandler");
+                                                            #line 324 "PrintPython.cpp"
+  append(L"eventHandler, ");
                                                             #line 226 "PrintPython.cpp.template"
                                                               }
-                                                            #line 325 "PrintPython.cpp"
+                                                            #line 328 "PrintPython.cpp"
+  append(L"thread):\n");
+  append(L"  threads = thread.open(initialState");
+                                                            #line 228 "PrintPython.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                            #line 334 "PrintPython.cpp"
+  append(L", eventHandler");
+                                                            #line 230 "PrintPython.cpp.template"
+                                                              }
+                                                            #line 338 "PrintPython.cpp"
   append(L", target)\n");
   append(L"  while True:\n");
   append(L"    thread = heapq.heappop(threads)[3]\n");
   append(L"    if thread.accepted:");
-                                                            #line 230 "PrintPython.cpp.template"
+                                                            #line 234 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 333 "PrintPython.cpp"
+                                                            #line 346 "PrintPython.cpp"
   append(L"\n");
   append(L"      other = None\n");
   append(L"      while len(threads) != 0:\n");
@@ -339,218 +352,230 @@
   append(L"          other = None\n");
   append(L"      if other != None:\n");
   append(L"        self.rejectAmbiguity(thread.stack.pos, thread.e0");
-                                                            #line 240 "PrintPython.cpp.template"
+                                                            #line 244 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 346 "PrintPython.cpp"
+                                                            #line 359 "PrintPython.cpp"
   append(L", thread.deferredEvent, other.deferredEvent");
-                                                            #line 243 "PrintPython.cpp.template"
+                                                            #line 247 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 350 "PrintPython.cpp"
+                                                            #line 363 "PrintPython.cpp"
   append(L")");
-                                                            #line 244 "PrintPython.cpp.template"
+                                                            #line 248 "PrintPython.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 356 "PrintPython.cpp"
+                                                            #line 369 "PrintPython.cpp"
   append(L"\n");
   append(L"      while len(threads) != 0:\n");
   append(L"        other = heapq.heappop(threads)[3]\n");
   append(L"        thread = other if thread.e0 < other.e0 else self.resolve(thread, other)");
-                                                            #line 251 "PrintPython.cpp.template"
+                                                            #line 255 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 365 "PrintPython.cpp"
+                                                            #line 378 "PrintPython.cpp"
   append(L"\n");
   append(L"      if thread.deferredEvent != None:\n");
   append(L"        thread.deferredEvent.release(eventHandler)\n");
   append(L"        thread.deferredEvent = None");
-                                                            #line 257 "PrintPython.cpp.template"
+                                                            #line 261 "PrintPython.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 374 "PrintPython.cpp"
+                                                            #line 387 "PrintPython.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode()");
-                                                            #line 261 "PrintPython.cpp.template"
+                                                            #line 265 "PrintPython.cpp.template"
                                                               }
-                                                            #line 379 "PrintPython.cpp"
+                                                            #line 392 "PrintPython.cpp"
   append(L"\n");
   append(L"      return thread\n");
   append(L"\n");
-                                                            #line 265 "PrintPython.cpp.template"
+                                                            #line 269 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 386 "PrintPython.cpp"
+                                                            #line 399 "PrintPython.cpp"
   append(L"    if len(threads) != 0:\n");
   append(L"      if threads[0][3].equals(thread):\n");
   append(L"        self.rejectAmbiguity(thread.stack.pos, thread.e0");
-                                                            #line 269 "PrintPython.cpp.template"
+                                                            #line 273 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 393 "PrintPython.cpp"
+                                                            #line 406 "PrintPython.cpp"
   append(L", thread.deferredEvent, threads[0][3].deferredEvent");
-                                                            #line 272 "PrintPython.cpp.template"
+                                                            #line 276 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 397 "PrintPython.cpp"
+                                                            #line 410 "PrintPython.cpp"
   append(L")");
-                                                            #line 273 "PrintPython.cpp.template"
+                                                            #line 277 "PrintPython.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 403 "PrintPython.cpp"
+                                                            #line 416 "PrintPython.cpp"
   append(L"    while len(threads) != 0 and threads[0][3].equals(thread):\n");
   append(L"      thread = self.resolve(thread, heapq.heappop(threads)[3])");
-                                                            #line 278 "PrintPython.cpp.template"
+                                                            #line 282 "PrintPython.cpp.template"
                                                               }
                                                               if (tree || hasCustomCode)
                                                               {
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 412 "PrintPython.cpp"
+                                                            #line 425 "PrintPython.cpp"
   append(L"\n");
   append(L"    else:");
-                                                            #line 284 "PrintPython.cpp.template"
+                                                            #line 288 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 419 "PrintPython.cpp"
+                                                            #line 432 "PrintPython.cpp"
   append(L"\n");
   append(L"    if len(threads) == 0:");
-                                                            #line 288 "PrintPython.cpp.template"
+                                                            #line 292 "PrintPython.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 426 "PrintPython.cpp"
+                                                            #line 439 "PrintPython.cpp"
   append(L"\n");
   append(L"      if thread.deferredEvent != None:\n");
   append(L"        thread.deferredEvent.release(eventHandler)\n");
   append(L"        thread.deferredEvent = None");
-                                                            #line 294 "PrintPython.cpp.template"
+                                                            #line 298 "PrintPython.cpp.template"
                                                                 }
                                                                 if (hasCustomCode)
                                                                 {
-                                                            #line 435 "PrintPython.cpp"
+                                                            #line 448 "PrintPython.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode()");
-                                                            #line 298 "PrintPython.cpp.template"
+                                                            #line 302 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 441 "PrintPython.cpp"
+                                                            #line 454 "PrintPython.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    while True:\n");
   append(L"      status = thread.parse()\n");
   append(L"      if status != ");
-                                                            #line 304 "PrintPython.cpp.template"
+                                                            #line 308 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 449 "PrintPython.cpp"
+                                                            #line 462 "PrintPython.cpp"
   append(L".PARSING:\n");
   append(L"        break\n");
   append(L"      if len(threads) != 0:\n");
   append(L"        break\n");
   append(L"\n");
   append(L"    if status != ");
-                                                            #line 310 "PrintPython.cpp.template"
+                                                            #line 314 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 458 "PrintPython.cpp"
+                                                            #line 471 "PrintPython.cpp"
   append(L".ERROR:\n");
   append(L"      heapq.heappush(threads, (thread.accepted, thread.e0, thread.id, thread))\n");
   append(L"    elif len(threads) == 0:\n");
   append(L"      raise ");
-                                                            #line 314 "PrintPython.cpp.template"
+                                                            #line 318 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 465 "PrintPython.cpp"
+                                                            #line 478 "PrintPython.cpp"
   append(L".ParseException(");
-                                                            #line 315 "PrintPython.cpp.template"
+                                                            #line 319 "PrintPython.cpp.template"
                                                               size_t filler = column();
-                                                            #line 469 "PrintPython.cpp"
+                                                            #line 482 "PrintPython.cpp"
   append(L"thread.b1,");
-                                                            #line 316 "PrintPython.cpp.template"
+                                                            #line 320 "PrintPython.cpp.template"
                                                               print(L"\n");
                                                               filler -= column();
                                                               print(filler, L" ");
-                                                            #line 475 "PrintPython.cpp"
+                                                            #line 488 "PrintPython.cpp"
   append(L"thread.e1,");
-                                                            #line 319 "PrintPython.cpp.template"
+                                                            #line 323 "PrintPython.cpp.template"
                                                               print(L"\n");
                                                               print(filler, L" ");
                                                               print(className.c_str());
-                                                            #line 481 "PrintPython.cpp"
+                                                            #line 494 "PrintPython.cpp"
   append(L".TOKENSET[thread.state] + 1,");
-                                                            #line 322 "PrintPython.cpp.template"
+                                                            #line 326 "PrintPython.cpp.template"
                                                               print(L"\n");
                                                               print(filler, L" ");
-                                                            #line 486 "PrintPython.cpp"
+                                                            #line 499 "PrintPython.cpp"
   append(L"thread.l1,");
-                                                            #line 324 "PrintPython.cpp.template"
+                                                            #line 328 "PrintPython.cpp.template"
                                                               print(L"\n");
                                                               print(filler, L" ");
-                                                            #line 491 "PrintPython.cpp"
+                                                            #line 504 "PrintPython.cpp"
   append(L"-1)\n");
-                                                            #line 327 "PrintPython.cpp.template"
+                                                            #line 331 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 496 "PrintPython.cpp"
+                                                            #line 509 "PrintPython.cpp"
   append(L"\n");
   append(L"def rejectAmbiguity(self, begin, end");
-                                                            #line 330 "PrintPython.cpp.template"
+                                                            #line 334 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 502 "PrintPython.cpp"
+                                                            #line 515 "PrintPython.cpp"
   append(L", first, second");
-                                                            #line 332 "PrintPython.cpp.template"
+                                                            #line 336 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 506 "PrintPython.cpp"
+                                                            #line 519 "PrintPython.cpp"
   append(L"):");
-                                                            #line 333 "PrintPython.cpp.template"
+                                                            #line 337 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 511 "PrintPython.cpp"
+                                                            #line 524 "PrintPython.cpp"
   append(L"\n");
   append(L"  treeBuilder = ");
-                                                            #line 336 "PrintPython.cpp.template"
+                                                            #line 340 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 516 "PrintPython.cpp"
+                                                            #line 529 "PrintPython.cpp"
   append(L".ParseTreeBuilder()\n");
   append(L"  treeBuilder.reset(self.input)\n");
   append(L"  second.show(treeBuilder)\n");
-  append(L"  treeBuilder.nonterminal(\"ALTERNATIVE\", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))\n");
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 344 "PrintPython.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 536 "PrintPython.cpp"
+  append(L", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))\n");
   append(L"  secondTree = treeBuilder.pop(1)[0]\n");
   append(L"  first.show(treeBuilder)\n");
-  append(L"  treeBuilder.nonterminal(\"ALTERNATIVE\", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))\n");
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 348 "PrintPython.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 543 "PrintPython.cpp"
+  append(L", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, len(treeBuilder.stack))\n");
   append(L"  treeBuilder.push(secondTree)\n");
-  append(L"  treeBuilder.nonterminal(\"AMBIGUOUS\", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, 2)");
-                                                            #line 346 "PrintPython.cpp.template"
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 351 "PrintPython.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                                                            #line 549 "PrintPython.cpp"
+  append(L", treeBuilder.stack[0].begin, treeBuilder.stack[len(treeBuilder.stack) - 1].end, 2)");
+                                                            #line 353 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 528 "PrintPython.cpp"
+                                                            #line 553 "PrintPython.cpp"
   append(L"\n");
   append(L"  raise ");
-                                                            #line 348 "PrintPython.cpp.template"
+                                                            #line 355 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 533 "PrintPython.cpp"
+                                                            #line 558 "PrintPython.cpp"
   append(L".ParseException(begin, end, 1, -1, -1, True");
-                                                            #line 349 "PrintPython.cpp.template"
-                                                                if (tree)
-                                                                {
-                                                            #line 538 "PrintPython.cpp"
-  append(L", treeBuilder");
-                                                            #line 351 "PrintPython.cpp.template"
-                                                                }
-                                                            #line 542 "PrintPython.cpp"
-  append(L")");
-                                                            #line 352 "PrintPython.cpp.template"
-                                                              }
-                                                              else
-                                                              {
-                                                            #line 548 "PrintPython.cpp"
-  append(L"\n");
-  append(L"def resolve(self, thread, other):");
                                                             #line 356 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 554 "PrintPython.cpp"
+                                                            #line 563 "PrintPython.cpp"
+  append(L", treeBuilder");
+                                                            #line 358 "PrintPython.cpp.template"
+                                                                }
+                                                            #line 567 "PrintPython.cpp"
+  append(L")");
+                                                            #line 359 "PrintPython.cpp.template"
+                                                              }
+                                                              else
+                                                              {
+                                                            #line 573 "PrintPython.cpp"
+  append(L"\n");
+  append(L"def resolve(self, thread, other):");
+                                                            #line 363 "PrintPython.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 579 "PrintPython.cpp"
   append(L"\n");
   append(L"  a = thread.stack\n");
   append(L"  b = other.stack\n");
@@ -559,14 +584,14 @@
   append(L"    begin = a.pos\n");
   append(L"    a = a.link\n");
   append(L"    b = b.link");
-                                                            #line 365 "PrintPython.cpp.template"
+                                                            #line 372 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 565 "PrintPython.cpp"
+                                                            #line 590 "PrintPython.cpp"
   append(L"\n");
-                                                            #line 367 "PrintPython.cpp.template"
+                                                            #line 374 "PrintPython.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 570 "PrintPython.cpp"
+                                                            #line 595 "PrintPython.cpp"
   append(L"\n");
   append(L"  ea = thread.deferredEvent\n");
   append(L"  eb = other.deferredEvent\n");
@@ -586,102 +611,102 @@
   append(L"      thread = other\n");
   append(L"  elif other.eventCount < thread.eventCount:\n");
   append(L"    thread = other");
-                                                            #line 387 "PrintPython.cpp.template"
+                                                            #line 394 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 594 "PrintPython.cpp"
+                                                            #line 619 "PrintPython.cpp"
   append(L"\n");
   append(L"  if other.eventCount < thread.eventCount:\n");
   append(L"    thread = other");
-                                                            #line 392 "PrintPython.cpp.template"
+                                                            #line 399 "PrintPython.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 602 "PrintPython.cpp"
+                                                            #line 627 "PrintPython.cpp"
   append(L"\n");
   append(L"  thread.addAmbiguity(begin, thread.e0)");
-                                                            #line 396 "PrintPython.cpp.template"
+                                                            #line 403 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 607 "PrintPython.cpp"
+                                                            #line 632 "PrintPython.cpp"
   append(L"\n");
   append(L"  return thread");
-                                                            #line 398 "PrintPython.cpp.template"
+                                                            #line 405 "PrintPython.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintPython::openThread()
                                                             {
-                                                            #line 616 "PrintPython.cpp"
+                                                            #line 641 "PrintPython.cpp"
   append(L"\n");
   append(L"class ParsingThread:\n");
   append(L"\n");
   append(L"  def open(self, initialState");
-                                                            #line 406 "PrintPython.cpp.template"
+                                                            #line 413 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 624 "PrintPython.cpp"
+                                                            #line 649 "PrintPython.cpp"
   append(L", eh");
-                                                            #line 408 "PrintPython.cpp.template"
+                                                            #line 415 "PrintPython.cpp.template"
                                                               }
-                                                            #line 628 "PrintPython.cpp"
+                                                            #line 653 "PrintPython.cpp"
   append(L", t):\n");
   append(L"    self.accepted = False\n");
   append(L"    self.target = t");
-                                                            #line 411 "PrintPython.cpp.template"
+                                                            #line 418 "PrintPython.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 635 "PrintPython.cpp"
+                                                            #line 660 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.eventCount = 0");
-                                                            #line 414 "PrintPython.cpp.template"
+                                                            #line 421 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 642 "PrintPython.cpp"
+                                                            #line 667 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.eventHandler = eh\n");
   append(L"    if self.eventHandler != None:\n");
   append(L"      self.eventHandler.reset(self.parser.input)\n");
   append(L"    self.deferredEvent = None");
-                                                            #line 421 "PrintPython.cpp.template"
+                                                            #line 428 "PrintPython.cpp.template"
                                                               }
                                                               if (hasCustomCode && useGlr)
                                                               {
-                                                            #line 652 "PrintPython.cpp"
+                                                            #line 677 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.deferredCode = None");
-                                                            #line 425 "PrintPython.cpp.template"
+                                                            #line 432 "PrintPython.cpp.template"
                                                               }
-                                                            #line 657 "PrintPython.cpp"
+                                                            #line 682 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.stack = ");
-                                                            #line 427 "PrintPython.cpp.template"
+                                                            #line 434 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 662 "PrintPython.cpp"
+                                                            #line 687 "PrintPython.cpp"
   append(L".StackNode(-1, ");
-                                                            #line 428 "PrintPython.cpp.template"
+                                                            #line 435 "PrintPython.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 667 "PrintPython.cpp"
+                                                            #line 692 "PrintPython.cpp"
   append(L"0, ");
-                                                            #line 430 "PrintPython.cpp.template"
+                                                            #line 437 "PrintPython.cpp.template"
                                                               }
-                                                            #line 671 "PrintPython.cpp"
+                                                            #line 696 "PrintPython.cpp"
   append(L"self.e0, None)\n");
   append(L"    self.state = initialState\n");
   append(L"    self.action = self.predict(initialState)");
-                                                            #line 433 "PrintPython.cpp.template"
+                                                            #line 440 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 678 "PrintPython.cpp"
+                                                            #line 703 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.bw = self.e0\n");
   append(L"    self.bs = self.e0\n");
   append(L"    self.es = self.e0");
-                                                            #line 438 "PrintPython.cpp.template"
+                                                            #line 445 "PrintPython.cpp.template"
                                                               }
-                                                            #line 685 "PrintPython.cpp"
+                                                            #line 710 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.threads = [(False, self.e0, self.id, self)]\n");
   append(L"    return self.threads\n");
@@ -691,33 +716,33 @@
   append(L"    self.accepted = other.accepted\n");
   append(L"    self.target = other.target\n");
   append(L"    self.parser = other.parser");
-                                                            #line 447 "PrintPython.cpp.template"
+                                                            #line 454 "PrintPython.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 698 "PrintPython.cpp"
+                                                            #line 723 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.eventCount = other.eventCount");
-                                                            #line 450 "PrintPython.cpp.template"
+                                                            #line 457 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 705 "PrintPython.cpp"
+                                                            #line 730 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.bs = other.bs\n");
   append(L"    self.es = other.es\n");
   append(L"    self.bw = other.bw\n");
   append(L"    self.eventHandler = other.eventHandler\n");
   append(L"    self.deferredEvent = other.deferredEvent");
-                                                            #line 458 "PrintPython.cpp.template"
+                                                            #line 465 "PrintPython.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 716 "PrintPython.cpp"
+                                                            #line 741 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.deferredCode = other.deferredCode");
-                                                            #line 462 "PrintPython.cpp.template"
+                                                            #line 469 "PrintPython.cpp.template"
                                                               }
-                                                            #line 721 "PrintPython.cpp"
+                                                            #line 746 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.parser.maxId += 1\n");
   append(L"    self.id = self.parser.maxId\n");
@@ -726,57 +751,57 @@
   append(L"    self.stack = other.stack\n");
   append(L"    self.b0 = other.b0\n");
   append(L"    self.e0 = other.e0");
-                                                            #line 470 "PrintPython.cpp.template"
+                                                            #line 477 "PrintPython.cpp.template"
                                                               for (size_t i = 1; i <= grammar->k; ++i)
                                                               {
                                                                 const wchar_t *iString = format.toString<wchar_t>(i);
-                                                            #line 734 "PrintPython.cpp"
+                                                            #line 759 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.l");
-                                                            #line 474 "PrintPython.cpp.template"
-                                                                print(iString);
-                                                            #line 739 "PrintPython.cpp"
-  append(L" = other.l");
-                                                            #line 475 "PrintPython.cpp.template"
-                                                                print(iString);
-                                                            #line 743 "PrintPython.cpp"
-  append(L"\n");
-  append(L"    self.b");
-                                                            #line 477 "PrintPython.cpp.template"
-                                                                print(iString);
-                                                            #line 748 "PrintPython.cpp"
-  append(L" = other.b");
-                                                            #line 478 "PrintPython.cpp.template"
-                                                                print(iString);
-                                                            #line 752 "PrintPython.cpp"
-  append(L"\n");
-  append(L"    self.e");
-                                                            #line 480 "PrintPython.cpp.template"
-                                                                print(iString);
-                                                            #line 757 "PrintPython.cpp"
-  append(L" = other.e");
                                                             #line 481 "PrintPython.cpp.template"
                                                                 print(iString);
+                                                            #line 764 "PrintPython.cpp"
+  append(L" = other.l");
+                                                            #line 482 "PrintPython.cpp.template"
+                                                                print(iString);
+                                                            #line 768 "PrintPython.cpp"
+  append(L"\n");
+  append(L"    self.b");
+                                                            #line 484 "PrintPython.cpp.template"
+                                                                print(iString);
+                                                            #line 773 "PrintPython.cpp"
+  append(L" = other.b");
+                                                            #line 485 "PrintPython.cpp.template"
+                                                                print(iString);
+                                                            #line 777 "PrintPython.cpp"
+  append(L"\n");
+  append(L"    self.e");
+                                                            #line 487 "PrintPython.cpp.template"
+                                                                print(iString);
+                                                            #line 782 "PrintPython.cpp"
+  append(L" = other.e");
+                                                            #line 488 "PrintPython.cpp.template"
+                                                                print(iString);
                                                               }
-                                                            #line 762 "PrintPython.cpp"
+                                                            #line 787 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.end = other.end\n");
   append(L"    return self\n");
-                                                            #line 486 "PrintPython.cpp.template"
+                                                            #line 493 "PrintPython.cpp.template"
                                                               if (resolvesAmbiguity && tree)
                                                               {
-                                                            #line 769 "PrintPython.cpp"
+                                                            #line 794 "PrintPython.cpp"
   append(L"\n");
   append(L"  def addAmbiguity(self, begin, end):\n");
   append(L"    if self.eventHandler != None:\n");
   append(L"      self.deferredEvent = ");
-                                                            #line 491 "PrintPython.cpp.template"
+                                                            #line 498 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 776 "PrintPython.cpp"
+                                                            #line 801 "PrintPython.cpp"
   append(L".AmbiguityEvent(self.deferredEvent, begin, end)\n");
-                                                            #line 493 "PrintPython.cpp.template"
+                                                            #line 500 "PrintPython.cpp.template"
                                                               }
-                                                            #line 780 "PrintPython.cpp"
+                                                            #line 805 "PrintPython.cpp"
   append(L"\n");
   append(L"  def equals(self, other):\n");
   append(L"    if self.accepted != other.accepted:\n");
@@ -796,7 +821,7 @@
   append(L"    return True\n");
   append(L"\n");
   append(L"  def parse(self):");
-                                                            #line 512 "PrintPython.cpp.template"
+                                                            #line 519 "PrintPython.cpp.template"
                                                               increaseIndent();
                                                               beginPublic();
                                                             }
@@ -806,13 +831,13 @@
                                                               if (trace)
                                                               {
                                                                 increaseIndent(i);
-                                                            #line 810 "PrintPython.cpp"
+                                                            #line 835 "PrintPython.cpp"
   append(L"\n");
-                                                            #line 522 "PrintPython.cpp.template"
+                                                            #line 529 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 814 "PrintPython.cpp"
+                                                            #line 839 "PrintPython.cpp"
   append(L".flushTrace()");
-                                                            #line 523 "PrintPython.cpp.template"
+                                                            #line 530 "PrintPython.cpp.template"
                                                                 decreaseIndent(i);
                                                               }
                                                             }
@@ -824,24 +849,24 @@
                                                                                          bool constant,
                                                                                          const wchar_t *clazz)
                                                             {
-                                                            #line 828 "PrintPython.cpp"
+                                                            #line 853 "PrintPython.cpp"
   append(L"\n");
   append(L"def ");
-                                                            #line 535 "PrintPython.cpp.template"
+                                                            #line 542 "PrintPython.cpp.template"
                                                               print(name);
-                                                            #line 833 "PrintPython.cpp"
+                                                            #line 858 "PrintPython.cpp"
   append(L"(self");
-                                                            #line 536 "PrintPython.cpp.template"
+                                                            #line 543 "PrintPython.cpp.template"
                                                               if (*args != 0)
                                                               {
-                                                            #line 838 "PrintPython.cpp"
+                                                            #line 863 "PrintPython.cpp"
   append(L", ");
-                                                            #line 538 "PrintPython.cpp.template"
+                                                            #line 545 "PrintPython.cpp.template"
                                                                 printArgNamesOnly(args);
                                                               }
-                                                            #line 843 "PrintPython.cpp"
+                                                            #line 868 "PrintPython.cpp"
   append(L"):");
-                                                            #line 540 "PrintPython.cpp.template"
+                                                            #line 547 "PrintPython.cpp.template"
                                                             }
 
                                                             void PrintPython::privateVars()
@@ -849,68 +874,68 @@
                                                               if (trace)
                                                               {
                                                                 increaseIndent();
-                                                            #line 853 "PrintPython.cpp"
+                                                            #line 878 "PrintPython.cpp"
   append(L"\n");
   append(L"def lookaheadString(self):\n");
   append(L"  result = \"\"");
-                                                            #line 549 "PrintPython.cpp.template"
+                                                            #line 556 "PrintPython.cpp.template"
                                                                 for (size_t i = 1; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 860 "PrintPython.cpp"
+                                                            #line 885 "PrintPython.cpp"
   append(L"\n");
   append(L"  if self.l");
-                                                            #line 552 "PrintPython.cpp.template"
+                                                            #line 559 "PrintPython.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 865 "PrintPython.cpp"
+                                                            #line 890 "PrintPython.cpp"
   append(L" > 0:\n");
   append(L"    result += ");
-                                                            #line 554 "PrintPython.cpp.template"
+                                                            #line 561 "PrintPython.cpp.template"
                                                                   if (i != 1)
                                                                   {
-                                                            #line 871 "PrintPython.cpp"
+                                                            #line 896 "PrintPython.cpp"
   append(L"\" \" + ");
-                                                            #line 556 "PrintPython.cpp.template"
+                                                            #line 563 "PrintPython.cpp.template"
                                                                   }
                                                                   print(className.c_str());
-                                                            #line 876 "PrintPython.cpp"
+                                                            #line 901 "PrintPython.cpp"
   append(L".TOKEN[self.l");
-                                                            #line 558 "PrintPython.cpp.template"
+                                                            #line 565 "PrintPython.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 880 "PrintPython.cpp"
+                                                            #line 905 "PrintPython.cpp"
   append(L"]");
-                                                            #line 559 "PrintPython.cpp.template"
+                                                            #line 566 "PrintPython.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 for (size_t i = 1; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
                                                                 }
-                                                            #line 889 "PrintPython.cpp"
+                                                            #line 914 "PrintPython.cpp"
   append(L"\n");
   append(L"  return result\n");
-                                                            #line 567 "PrintPython.cpp.template"
+                                                            #line 574 "PrintPython.cpp.template"
                                                                 decreaseIndent();
                                                               }
                                                               if (memoization)
                                                               {
                                                                 increaseIndent();
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 899 "PrintPython.cpp"
+                                                            #line 924 "PrintPython.cpp"
   append(L"\n");
   append(L"def memoize(self, i, e, v):\n");
   append(L"  self.memo[(e << ");
-                                                            #line 575 "PrintPython.cpp.template"
+                                                            #line 582 "PrintPython.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 905 "PrintPython.cpp"
+                                                            #line 930 "PrintPython.cpp"
   append(L") + i] = v\n");
   append(L"\n");
   append(L"def memoized(self, i, e):\n");
   append(L"  return self.memo.get((e << ");
-                                                            #line 579 "PrintPython.cpp.template"
+                                                            #line 586 "PrintPython.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 912 "PrintPython.cpp"
+                                                            #line 937 "PrintPython.cpp"
   append(L") + i, 0)\n");
-                                                            #line 581 "PrintPython.cpp.template"
+                                                            #line 588 "PrintPython.cpp.template"
                                                                 decreaseIndent();
                                                               }
                                                               if (useGlr)
@@ -923,7 +948,7 @@
                                                             {
                                                               if (tree)
                                                               {
-                                                            #line 927 "PrintPython.cpp"
+                                                            #line 952 "PrintPython.cpp"
   append(L"\n");
   append(L"class ContentCounter:\n");
   append(L"  def getLength(self):\n");
@@ -932,72 +957,72 @@
   append(L"  def reset(self, _):\n");
   append(L"    self.length = 0\n");
   append(L"\n");
-  append(L"  def startNonterminal(self, name, begin):\n");
+  append(L"  def startNonterminal(self, id, begin):\n");
   append(L"    pass\n");
   append(L"\n");
-  append(L"  def endNonterminal(self, name, end):\n");
+  append(L"  def endNonterminal(self, id, end):\n");
   append(L"    pass\n");
   append(L"\n");
-  append(L"  def terminal(self, _, begin, end):\n");
+  append(L"  def terminal(self, id, begin, end):\n");
   append(L"    self.length += end - begin\n");
   append(L"\n");
   append(L"  def whitespace(self, begin, end):\n");
   append(L"    self.length += end - begin\n");
-                                                            #line 612 "PrintPython.cpp.template"
+                                                            #line 619 "PrintPython.cpp.template"
                                                               }
-                                                            #line 949 "PrintPython.cpp"
+                                                            #line 974 "PrintPython.cpp"
   append(L"\n");
   append(L"class ParseJob:\n");
   append(L"\n");
   append(L"  def __init__(self, name, parser");
-                                                            #line 616 "PrintPython.cpp.template"
+                                                            #line 623 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 959 "PrintPython.cpp"
+                                                            #line 984 "PrintPython.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 620 "PrintPython.cpp.template"
+                                                            #line 627 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 965 "PrintPython.cpp"
+                                                            #line 990 "PrintPython.cpp"
   append(L", contentCounter");
-                                                            #line 623 "PrintPython.cpp.template"
+                                                            #line 630 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 970 "PrintPython.cpp"
+                                                            #line 995 "PrintPython.cpp"
   append(L"):\n");
   append(L"    self.name = name\n");
   append(L"    self.parser = parser");
-                                                            #line 627 "PrintPython.cpp.template"
+                                                            #line 634 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 979 "PrintPython.cpp"
+                                                            #line 1004 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.parseTreeBuilder = parseTreeBuilder\n");
   append(L"    self.contentCounter = ContentCounter()");
-                                                            #line 633 "PrintPython.cpp.template"
+                                                            #line 640 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 987 "PrintPython.cpp"
+                                                            #line 1012 "PrintPython.cpp"
   append(L"\n");
   append(L"    self.contentCounter = contentCounter");
-                                                            #line 637 "PrintPython.cpp.template"
+                                                            #line 644 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 993 "PrintPython.cpp"
+                                                            #line 1018 "PrintPython.cpp"
   append(L"\n");
   append(L"\n");
   append(L"def main(args):\n");
   append(L"  if len(args) < 2:\n");
   append(L"    sys.stderr.write(\"Usage: python ");
-                                                            #line 643 "PrintPython.cpp.template"
+                                                            #line 650 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1001 "PrintPython.cpp"
+                                                            #line 1026 "PrintPython.cpp"
   append(L".py [-q] [-r N] [-t N] ENDING...\\n\")\n");
   append(L"    sys.stderr.write(\"\\n\")\n");
   append(L"    sys.stderr.write(\"  parse all files that have names ending with ENDING, in current dir and below,\\n\")\n");
@@ -1039,68 +1064,68 @@
   append(L"        if path.endswith(args[i]):\n");
   append(L"          if not quiet:\n");
   append(L"            print(\"loading \" + path)");
-                                                            #line 684 "PrintPython.cpp.template"
+                                                            #line 691 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1046 "PrintPython.cpp"
+                                                            #line 1071 "PrintPython.cpp"
   append(L"\n");
   append(L"          contentCounter = ContentCounter()");
-                                                            #line 687 "PrintPython.cpp.template"
+                                                            #line 694 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1052 "PrintPython.cpp"
+                                                            #line 1077 "PrintPython.cpp"
   append(L"\n");
   append(L"          parseTreeBuilder = ");
-                                                            #line 690 "PrintPython.cpp.template"
+                                                            #line 697 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1057 "PrintPython.cpp"
+                                                            #line 1082 "PrintPython.cpp"
   append(L".ParseTreeBuilder()");
-                                                            #line 691 "PrintPython.cpp.template"
+                                                            #line 698 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1062 "PrintPython.cpp"
+                                                            #line 1087 "PrintPython.cpp"
   append(L"\n");
   append(L"          content = read(path)\n");
   append(L"          parsers.append(ParseJob(path, ");
-                                                            #line 695 "PrintPython.cpp.template"
+                                                            #line 702 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1068 "PrintPython.cpp"
-  append(L"(content");
-                                                            #line 696 "PrintPython.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                                if (isLrParser)
-                                                                {
-                                                            #line 1075 "PrintPython.cpp"
-  append(L", parseTreeBuilder");
-                                                            #line 700 "PrintPython.cpp.template"
-                                                                }
-                                                                else
-                                                                {
-                                                            #line 1081 "PrintPython.cpp"
-  append(L", contentCounter");
-                                                            #line 703 "PrintPython.cpp.template"
-                                                                }
-                                                              }
-                                                            #line 1086 "PrintPython.cpp"
-  append(L")");
-                                                            #line 705 "PrintPython.cpp.template"
-                                                              if (tree)
-                                                              {
-                                                                if (isLrParser)
-                                                                {
                                                             #line 1093 "PrintPython.cpp"
+  append(L"(content");
+                                                            #line 703 "PrintPython.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                            #line 1100 "PrintPython.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 709 "PrintPython.cpp.template"
+                                                            #line 707 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1099 "PrintPython.cpp"
+                                                            #line 1106 "PrintPython.cpp"
   append(L", contentCounter");
-                                                            #line 712 "PrintPython.cpp.template"
+                                                            #line 710 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1104 "PrintPython.cpp"
+                                                            #line 1111 "PrintPython.cpp"
+  append(L")");
+                                                            #line 712 "PrintPython.cpp.template"
+                                                              if (tree)
+                                                              {
+                                                                if (isLrParser)
+                                                                {
+                                                            #line 1118 "PrintPython.cpp"
+  append(L", parseTreeBuilder");
+                                                            #line 716 "PrintPython.cpp.template"
+                                                                }
+                                                                else
+                                                                {
+                                                            #line 1124 "PrintPython.cpp"
+  append(L", contentCounter");
+                                                            #line 719 "PrintPython.cpp.template"
+                                                                }
+                                                              }
+                                                            #line 1129 "PrintPython.cpp"
   append(L"))\n");
   append(L"      i += 1\n");
   append(L"\n");
@@ -1128,25 +1153,25 @@
   append(L"            if not quiet:\n");
   append(L"              print(\"parsing \" + job.name, end=\"\")\n");
   append(L"            job.parser");
-                                                            #line 740 "PrintPython.cpp.template"
+                                                            #line 747 "PrintPython.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1135 "PrintPython.cpp"
+                                                            #line 1160 "PrintPython.cpp"
   append(L".thread");
-                                                            #line 742 "PrintPython.cpp.template"
+                                                            #line 749 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1139 "PrintPython.cpp"
+                                                            #line 1164 "PrintPython.cpp"
   append(L".reset(0, 0, 0)\n");
   append(L"            try:\n");
   append(L"              pe = job.parser.parse_");
-                                                            #line 745 "PrintPython.cpp.template"
+                                                            #line 752 "PrintPython.cpp.template"
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1145 "PrintPython.cpp"
+                                                            #line 1170 "PrintPython.cpp"
   append(L"()\n");
   append(L"            except ");
-                                                            #line 747 "PrintPython.cpp.template"
+                                                            #line 754 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1150 "PrintPython.cpp"
+                                                            #line 1175 "PrintPython.cpp"
   append(L".ParseException as pe:\n");
   append(L"              errorCount += 1\n");
   append(L"              if quiet:\n");
@@ -1155,23 +1180,23 @@
   append(L"              job.parser = None\n");
   append(L"            if not quiet:\n");
   append(L"              print()");
-                                                            #line 755 "PrintPython.cpp.template"
+                                                            #line 762 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1164 "PrintPython.cpp"
+                                                            #line 1189 "PrintPython.cpp"
   append(L"\n");
   append(L"            job.parseTreeBuilder.serialize(job.contentCounter)");
-                                                            #line 760 "PrintPython.cpp.template"
+                                                            #line 767 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 1169 "PrintPython.cpp"
+                                                            #line 1194 "PrintPython.cpp"
   append(L"\n");
   append(L"            if job.contentCounter.getLength() != len(job.parser.input):\n");
   append(L"              raise Exception(\"content counter saw \" + str(job.contentCounter.getLength()) + \", but input length is \" + str(len(job.parser.input)))");
-                                                            #line 764 "PrintPython.cpp.template"
+                                                            #line 771 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1175 "PrintPython.cpp"
+                                                            #line 1200 "PrintPython.cpp"
   append(L"\n");
   append(L"            parsed += len(job.parser.input)\n");
   append(L"        i += 1\n");
@@ -1193,12 +1218,12 @@
   append(L"\n");
   append(L"if __name__ == '__main__':\n");
   append(L"  sys.exit(main(sys.argv))\n");
-                                                            #line 786 "PrintPython.cpp.template"
+                                                            #line 793 "PrintPython.cpp.template"
                                                             }
 
                                                             void PrintPython::printReadMethod()
                                                             {
-                                                            #line 1202 "PrintPython.cpp"
+                                                            #line 1227 "PrintPython.cpp"
   append(L"\n");
   append(L"def read(arg):\n");
   append(L"  if arg.startswith(\"{\") and arg.endswith(\"}\"):\n");
@@ -1209,171 +1234,171 @@
   append(L"    if len(content) > 0 and content[0] == \"\\ufeff\":\n");
   append(L"      content = content[1:]\n");
   append(L"    return content\n");
-                                                            #line 800 "PrintPython.cpp.template"
+                                                            #line 807 "PrintPython.cpp.template"
                                                             }
 
                                                             void PrintPython::printInterface()
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 1220 "PrintPython.cpp"
+                                                            #line 1245 "PrintPython.cpp"
   append(L"\n");
   append(L"package ");
-                                                            #line 807 "PrintPython.cpp.template"
+                                                            #line 814 "PrintPython.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 1225 "PrintPython.cpp"
+                                                            #line 1250 "PrintPython.cpp"
   append(L";\n");
-                                                            #line 809 "PrintPython.cpp.template"
+                                                            #line 816 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 1233 "PrintPython.cpp"
+                                                            #line 1258 "PrintPython.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
-                                                            #line 817 "PrintPython.cpp.template"
+                                                            #line 824 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 1239 "PrintPython.cpp"
+                                                            #line 1264 "PrintPython.cpp"
   append(L"\n");
   append(L"import java.util.Arrays;");
-                                                            #line 819 "PrintPython.cpp.template"
+                                                            #line 826 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1244 "PrintPython.cpp"
+                                                            #line 1269 "PrintPython.cpp"
   append(L"\n");
   append(L"public interface ");
-                                                            #line 821 "PrintPython.cpp.template"
+                                                            #line 828 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1249 "PrintPython.cpp"
+                                                            #line 1274 "PrintPython.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  public void initialize(CharSequence input");
-                                                            #line 824 "PrintPython.cpp.template"
+                                                            #line 831 "PrintPython.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1256 "PrintPython.cpp"
+                                                            #line 1281 "PrintPython.cpp"
   append(L", Lexer l");
-                                                            #line 826 "PrintPython.cpp.template"
+                                                            #line 833 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1262 "PrintPython.cpp"
+                                                            #line 1287 "PrintPython.cpp"
   append(L", ");
-                                                            #line 829 "PrintPython.cpp.template"
+                                                            #line 836 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1267 "PrintPython.cpp"
+                                                            #line 1292 "PrintPython.cpp"
   append(L"BottomUp");
-                                                            #line 831 "PrintPython.cpp.template"
+                                                            #line 838 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 1271 "PrintPython.cpp"
+                                                            #line 1296 "PrintPython.cpp"
   append(L"EventHandler eh");
-                                                            #line 833 "PrintPython.cpp.template"
+                                                            #line 840 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1275 "PrintPython.cpp"
+                                                            #line 1300 "PrintPython.cpp"
   append(L");\n");
   append(L"  public void parse();\n");
   append(L"  public void Reset();\n");
   append(L"  public String getErrorMessage(ParseException e);\n");
-                                                            #line 838 "PrintPython.cpp.template"
+                                                            #line 845 "PrintPython.cpp.template"
                                                               printParseException();
                                                               printEventHandlerImplementation();
-                                                            #line 1283 "PrintPython.cpp"
+                                                            #line 1308 "PrintPython.cpp"
   append(L"}\n");
-                                                            #line 841 "PrintPython.cpp.template"
+                                                            #line 848 "PrintPython.cpp.template"
                                                             }
 
                                                             void PrintPython::printParseException()
                                                             {
-                                                            #line 1290 "PrintPython.cpp"
+                                                            #line 1315 "PrintPython.cpp"
   append(L"\n");
   append(L"class ParseException(Exception):\n");
-                                                            #line 847 "PrintPython.cpp.template"
+                                                            #line 854 "PrintPython.cpp.template"
                                                               increaseIndent();
-                                                            #line 1295 "PrintPython.cpp"
+                                                            #line 1320 "PrintPython.cpp"
   append(L"\n");
   append(L"def __init__(self, b, e, s, o, x");
-                                                            #line 849 "PrintPython.cpp.template"
+                                                            #line 856 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1301 "PrintPython.cpp"
+                                                            #line 1326 "PrintPython.cpp"
   append(L", ambiguousInput = False");
-                                                            #line 851 "PrintPython.cpp.template"
+                                                            #line 858 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1306 "PrintPython.cpp"
+                                                            #line 1331 "PrintPython.cpp"
   append(L", ambiguityDescriptor = None");
-                                                            #line 853 "PrintPython.cpp.template"
+                                                            #line 860 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1311 "PrintPython.cpp"
+                                                            #line 1336 "PrintPython.cpp"
   append(L"):\n");
   append(L"  self.begin = b\n");
   append(L"  self.end = e\n");
   append(L"  self.state = s\n");
   append(L"  self.offending = o\n");
   append(L"  self.expected = x");
-                                                            #line 860 "PrintPython.cpp.template"
+                                                            #line 867 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1321 "PrintPython.cpp"
+                                                            #line 1346 "PrintPython.cpp"
   append(L"\n");
   append(L"  self.ambiguousInput = ambiguousInput");
-                                                            #line 863 "PrintPython.cpp.template"
+                                                            #line 870 "PrintPython.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1327 "PrintPython.cpp"
+                                                            #line 1352 "PrintPython.cpp"
   append(L"\n");
   append(L"  self.ambiguityDescriptor = ambiguityDescriptor");
-                                                            #line 866 "PrintPython.cpp.template"
+                                                            #line 873 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1333 "PrintPython.cpp"
+                                                            #line 1358 "PrintPython.cpp"
   append(L"\n");
   append(L"\n");
   append(L"def error(self):\n");
   append(L"  if ");
-                                                            #line 871 "PrintPython.cpp.template"
+                                                            #line 878 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1341 "PrintPython.cpp"
+                                                            #line 1366 "PrintPython.cpp"
   append(L"self.ambiguousInput:\n");
   append(L"    return \"ambiguous input\"\n");
   append(L"  elif ");
-                                                            #line 875 "PrintPython.cpp.template"
+                                                            #line 882 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1347 "PrintPython.cpp"
+                                                            #line 1372 "PrintPython.cpp"
   append(L"self.offending < 0:\n");
   append(L"    return \"lexical analysis failed\"\n");
   append(L"  else:\n");
   append(L"    return \"syntax error\"\n");
-                                                            #line 880 "PrintPython.cpp.template"
+                                                            #line 887 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1355 "PrintPython.cpp"
+                                                            #line 1380 "PrintPython.cpp"
   append(L"\n");
   append(L"def serialize(self, eventHandler):");
-                                                            #line 883 "PrintPython.cpp.template"
+                                                            #line 890 "PrintPython.cpp.template"
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 1361 "PrintPython.cpp"
+                                                            #line 1386 "PrintPython.cpp"
   append(L"\n");
   append(L"  self.ambiguityDescriptor.serialize(eventHandler)");
-                                                            #line 886 "PrintPython.cpp.template"
+                                                            #line 893 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1368 "PrintPython.cpp"
+                                                            #line 1393 "PrintPython.cpp"
   append(L"\n");
   append(L"  pass");
-                                                            #line 890 "PrintPython.cpp.template"
+                                                            #line 897 "PrintPython.cpp.template"
                                                                 }
-                                                            #line 1373 "PrintPython.cpp"
+                                                            #line 1398 "PrintPython.cpp"
   append(L"\n");
-                                                            #line 892 "PrintPython.cpp.template"
+                                                            #line 899 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1377 "PrintPython.cpp"
+                                                            #line 1402 "PrintPython.cpp"
   append(L"\n");
   append(L"def getBegin(self):\n");
   append(L"  return self.begin\n");
@@ -1392,26 +1417,26 @@
   append(L"\n");
   append(L"def isAmbiguousInput(self):\n");
   append(L"  return ");
-                                                            #line 910 "PrintPython.cpp.template"
+                                                            #line 917 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1399 "PrintPython.cpp"
+                                                            #line 1424 "PrintPython.cpp"
   append(L"self.ambiguousInput");
-                                                            #line 912 "PrintPython.cpp.template"
+                                                            #line 919 "PrintPython.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1405 "PrintPython.cpp"
+                                                            #line 1430 "PrintPython.cpp"
   append(L"False");
-                                                            #line 915 "PrintPython.cpp.template"
+                                                            #line 922 "PrintPython.cpp.template"
                                                               }
                                                               decreaseIndent();
-                                                            #line 1410 "PrintPython.cpp"
+                                                            #line 1435 "PrintPython.cpp"
   append(L"\n");
-                                                            #line 918 "PrintPython.cpp.template"
+                                                            #line 925 "PrintPython.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1415 "PrintPython.cpp"
+                                                            #line 1440 "PrintPython.cpp"
   append(L"\n");
   append(L"  public static class Token\n");
   append(L"  {\n");
@@ -1425,28 +1450,28 @@
   append(L"    void Reset(CharSequence input);\n");
   append(L"    void match(int tokenset, Token token);\n");
   append(L"  }\n");
-                                                            #line 933 "PrintPython.cpp.template"
+                                                            #line 940 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1433 "PrintPython.cpp"
+                                                            #line 1458 "PrintPython.cpp"
   append(L"\n");
   append(L"class TopDownTreeBuilder:\n");
-                                                            #line 938 "PrintPython.cpp.template"
+                                                            #line 945 "PrintPython.cpp.template"
                                                                 increaseIndent();
-                                                            #line 1438 "PrintPython.cpp"
+                                                            #line 1463 "PrintPython.cpp"
   append(L"\n");
   append(L"def reset(self, inputString):\n");
   append(L"  self.input = inputString\n");
   append(L"  self.stack = []\n");
   append(L"  self.top = -1\n");
   append(L"\n");
-  append(L"def startNonterminal(self, name, begin):\n");
+  append(L"def startNonterminal(self, id, begin):\n");
   append(L"  nonterminal = ");
-                                                            #line 946 "PrintPython.cpp.template"
+                                                            #line 953 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1449 "PrintPython.cpp"
-  append(L".Nonterminal(name, begin, begin)\n");
+                                                            #line 1474 "PrintPython.cpp"
+  append(L".Nonterminal(id, begin, begin)\n");
   append(L"  if self.top >= 0:\n");
   append(L"    self.addChild(nonterminal)\n");
   append(L"  self.top += 1\n");
@@ -1457,12 +1482,12 @@
   append(L"  if self.top > 0:\n");
   append(L"    self.top -= 1\n");
   append(L"\n");
-  append(L"def terminal(self, name, begin, end):\n");
+  append(L"def terminal(self, id, begin, end):\n");
   append(L"  self.addChild(");
-                                                            #line 959 "PrintPython.cpp.template"
+                                                            #line 966 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1465 "PrintPython.cpp"
-  append(L".Terminal(name, begin, end))\n");
+                                                            #line 1490 "PrintPython.cpp"
+  append(L".Terminal(id, begin, end))\n");
   append(L"\n");
   append(L"def whitespace(self, begin, end):\n");
   append(L"  pass\n");
@@ -1474,46 +1499,58 @@
   append(L"def serialize(self, e):\n");
   append(L"  e.reset(self.input)\n");
   append(L"  self.stack[0].send(e)\n");
-                                                            #line 972 "PrintPython.cpp.template"
+                                                            #line 979 "PrintPython.cpp.template"
                                                                 decreaseIndent();
-                                                            #line 1480 "PrintPython.cpp"
+                                                            #line 1505 "PrintPython.cpp"
   append(L"\n");
   append(L"class Symbol:\n");
-                                                            #line 975 "PrintPython.cpp.template"
+                                                            #line 982 "PrintPython.cpp.template"
                                                                 increaseIndent();
-                                                            #line 1485 "PrintPython.cpp"
+                                                            #line 1510 "PrintPython.cpp"
   append(L"\n");
-  append(L"def __init__(self, name, begin, end):\n");
-  append(L"  self.name = name\n");
+  append(L"def __init__(self, id, begin, end):\n");
+  append(L"  self.id = id\n");
   append(L"  self.begin = begin\n");
   append(L"  self.end = end\n");
   append(L"\n");
-  append(L"def getName(self):\n");
-  append(L"  return self.name\n");
+  append(L"def getId(self):\n");
+  append(L"  return self.id\n");
   append(L"\n");
   append(L"def getBegin(self):\n");
   append(L"  return self.begin\n");
   append(L"\n");
   append(L"def getEnd(self):\n");
   append(L"  return self.end\n");
-                                                            #line 990 "PrintPython.cpp.template"
+                                                            #line 997 "PrintPython.cpp.template"
                                                                 decreaseIndent();
-                                                            #line 1502 "PrintPython.cpp"
+                                                            #line 1527 "PrintPython.cpp"
   append(L"\n");
   append(L"class Nonterminal(Symbol):\n");
-                                                            #line 993 "PrintPython.cpp.template"
+                                                            #line 1000 "PrintPython.cpp.template"
                                                                 increaseIndent();
-                                                            #line 1507 "PrintPython.cpp"
+                                                            #line 1532 "PrintPython.cpp"
   append(L"\n");
-  append(L"def __init__(self, name, begin, end, children):\n");
-  append(L"  super().__init__(name, begin, end)\n");
+  append(L"def __init__(self, id, begin, end, children):\n");
+  append(L"  super().__init__(id, begin, end)\n");
   append(L"  self.children = children\n");
+  append(L"\n");
+  append(L"def getName(self):\n");
+  append(L"  return ");
+                                                            #line 1007 "PrintPython.cpp.template"
+                                                                printSyntheticNamePrefix(false, L"self.id");
+                                                                print(className.c_str());
+                                                            #line 1543 "PrintPython.cpp"
+  append(L".NONTERMINAL[self.id]");
+                                                            #line 1009 "PrintPython.cpp.template"
+                                                                printSyntheticNameSuffix(false, L"self.id");
+                                                            #line 1547 "PrintPython.cpp"
+  append(L"\n");
   append(L"\n");
   append(L"def addChild(self, s):\n");
   append(L"  self.children = self.children.append(s)\n");
   append(L"\n");
   append(L"def send(self, e):\n");
-  append(L"  e.startNonterminal(self.getName(), self.getBegin())\n");
+  append(L"  e.startNonterminal(self.id, self.getBegin())\n");
   append(L"  pos = self.getBegin()\n");
   append(L"  for c in self.children:\n");
   append(L"    if pos < c.getBegin():\n");
@@ -1522,22 +1559,29 @@
   append(L"    pos = c.getEnd()\n");
   append(L"  if pos < self.getEnd():\n");
   append(L"    e.whitespace(pos, self.getEnd())\n");
-  append(L"  e.endNonterminal(self.getName(), self.getEnd())\n");
-                                                            #line 1013 "PrintPython.cpp.template"
+  append(L"  e.endNonterminal(self.id, self.getEnd())\n");
+                                                            #line 1026 "PrintPython.cpp.template"
                                                                 decreaseIndent();
-                                                            #line 1529 "PrintPython.cpp"
+                                                            #line 1566 "PrintPython.cpp"
   append(L"\n");
   append(L"class Terminal(Symbol):\n");
-                                                            #line 1016 "PrintPython.cpp.template"
+                                                            #line 1029 "PrintPython.cpp.template"
                                                                 increaseIndent();
-                                                            #line 1534 "PrintPython.cpp"
+                                                            #line 1571 "PrintPython.cpp"
   append(L"\n");
-  append(L"def __init__(self, name, begin, end):\n");
-  append(L"  super().__init__(name, begin, end)\n");
+  append(L"def __init__(self, id, begin, end):\n");
+  append(L"  super().__init__(id, begin, end)\n");
+  append(L"\n");
+  append(L"def getName(self):\n");
+  append(L"  return ");
+                                                            #line 1035 "PrintPython.cpp.template"
+                                                                print(className.c_str());
+                                                            #line 1580 "PrintPython.cpp"
+  append(L".TOKEN[self.id]\n");
   append(L"\n");
   append(L"def send(self, e):\n");
-  append(L"  e.terminal(self.getName(), self.getBegin(), self.getEnd())\n");
-                                                            #line 1023 "PrintPython.cpp.template"
+  append(L"  e.terminal(self.id, self.getBegin(), self.getEnd())\n");
+                                                            #line 1040 "PrintPython.cpp.template"
                                                                 decreaseIndent();
                                                               }
                                                             }
@@ -1548,12 +1592,12 @@
                                                               {
                                                                 if (main || useGlr)
                                                                 {
-                                                            #line 1552 "PrintPython.cpp"
+                                                            #line 1596 "PrintPython.cpp"
   append(L"\n");
   append(L"class XmlSerializer:\n");
-                                                            #line 1035 "PrintPython.cpp.template"
+                                                            #line 1052 "PrintPython.cpp.template"
                                                                   increaseIndent();
-                                                            #line 1557 "PrintPython.cpp"
+                                                            #line 1601 "PrintPython.cpp"
   append(L"\n");
   append(L"def reset(self, inputString):\n");
   append(L"  sys.stdout.reconfigure(encoding=\"utf-8\")\n");
@@ -1563,7 +1607,14 @@
   append(L"  self.hasChildElement = False\n");
   append(L"  self.depth = 0\n");
   append(L"\n");
-  append(L"def startNonterminal(self, tag, _):\n");
+  append(L"def startNonterminal(self, id, _):\n");
+  append(L"  self.startElement(");
+                                                            #line 1063 "PrintPython.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 1615 "PrintPython.cpp"
+  append(L".getNonterminalName(id))\n");
+  append(L"\n");
+  append(L"def startElement(self, tag):\n");
   append(L"  if self.delayedTag != None:\n");
   append(L"    print(\"<\", end=\"\")\n");
   append(L"    print(self.delayedTag, end=\"\")\n");
@@ -1576,7 +1627,14 @@
   append(L"  self.hasChildElement = False\n");
   append(L"  self.depth += 1\n");
   append(L"\n");
-  append(L"def endNonterminal(self, tag, _):\n");
+  append(L"def endNonterminal(self, id, _):\n");
+  append(L"  self.endElement(");
+                                                            #line 1080 "PrintPython.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 1635 "PrintPython.cpp"
+  append(L".getNonterminalName(id))\n");
+  append(L"\n");
+  append(L"def endElement(self, tag):\n");
   append(L"  self.depth -= 1\n");
   append(L"  if self.delayedTag != None:\n");
   append(L"    self.delayedTag = None\n");
@@ -1617,70 +1675,79 @@
   append(L"      else:\n");
   append(L"        print(str(c), end=\"\")\n");
   append(L"\n");
-  append(L"def terminal(self, tag, b, e):\n");
+  append(L"def terminal(self, id, b, e):\n");
+  append(L"  tag = ");
+                                                            #line 1125 "PrintPython.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 1683 "PrintPython.cpp"
+  append(L".getTerminalName(id)\n");
   append(L"  if tag[0] == '\\'':\n");
   append(L"    tag = \"TOKEN\"\n");
-  append(L"  self.startNonterminal(tag, b)\n");
+  append(L"  self.startElement(tag)\n");
   append(L"  self.characters(b, e)\n");
-  append(L"  self.endNonterminal(tag, e)\n");
-                                                            #line 1105 "PrintPython.cpp.template"
+  append(L"  self.endElement(tag)\n");
+                                                            #line 1132 "PrintPython.cpp.template"
                                                                   decreaseIndent();
                                                                 }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1632 "PrintPython.cpp"
+                                                            #line 1695 "PrintPython.cpp"
   append(L"\n");
   append(L"class ParseTreeBuilder:\n");
-                                                            #line 1111 "PrintPython.cpp.template"
+                                                            #line 1138 "PrintPython.cpp.template"
                                                                   increaseIndent();
-                                                            #line 1637 "PrintPython.cpp"
+                                                            #line 1700 "PrintPython.cpp"
   append(L"\n");
   append(L"def reset(self, inputString):\n");
   append(L"  self.input = inputString\n");
   append(L"  self.stack = []\n");
   append(L"\n");
-  append(L"def nonterminal(self, name, begin, end, count):");
-                                                            #line 1117 "PrintPython.cpp.template"
+  append(L"def nonterminal(self, id, begin, end, count):");
+                                                            #line 1144 "PrintPython.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 1647 "PrintPython.cpp"
+                                                            #line 1710 "PrintPython.cpp"
   append(L"\n");
   append(L"  if count > len(self.stack):\n");
   append(L"    content = self.pop(len(self.stack))\n");
   append(L"    e = end\n");
   append(L"    if len(content) != 0:\n");
   append(L"      e = content[0].getBegin()\n");
-  append(L"    self.nonterminal(\"UNAMBIGUOUS\", begin, e, 0)\n");
+  append(L"    self.nonterminal(");
+                                                            #line 1152 "PrintPython.cpp.template"
+                                                                    print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                                                            #line 1720 "PrintPython.cpp"
+  append(L", begin, e, 0)\n");
   append(L"    for symbol in content:\n");
   append(L"      self.push(symbol)\n");
   append(L"    count = len(self.stack)");
-                                                            #line 1128 "PrintPython.cpp.template"
+                                                            #line 1156 "PrintPython.cpp.template"
                                                                   }
-                                                            #line 1660 "PrintPython.cpp"
+                                                            #line 1727 "PrintPython.cpp"
   append(L"\n");
   append(L"  self.push(");
-                                                            #line 1130 "PrintPython.cpp.template"
+                                                            #line 1158 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1665 "PrintPython.cpp"
-  append(L".Nonterminal(name, begin, end, self.pop(count)))\n");
+                                                            #line 1732 "PrintPython.cpp"
+  append(L".Nonterminal(id, begin, end, self.pop(count)))\n");
   append(L"\n");
-  append(L"def terminal(self, name, begin, end):\n");
+  append(L"def terminal(self, id, begin, end):\n");
   append(L"  self.push(");
-                                                            #line 1134 "PrintPython.cpp.template"
+                                                            #line 1162 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1672 "PrintPython.cpp"
-  append(L".Terminal(name, begin, end))\n");
-                                                            #line 1136 "PrintPython.cpp.template"
+                                                            #line 1739 "PrintPython.cpp"
+  append(L".Terminal(id, begin, end))\n");
+                                                            #line 1164 "PrintPython.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1677 "PrintPython.cpp"
+                                                            #line 1744 "PrintPython.cpp"
   append(L"\n");
   append(L"\n");
   append(L"def ambiguity(self, begin, end):\n");
   append(L"  pass\n");
-                                                            #line 1142 "PrintPython.cpp.template"
+                                                            #line 1170 "PrintPython.cpp.template"
                                                                   }
-                                                            #line 1684 "PrintPython.cpp"
+                                                            #line 1751 "PrintPython.cpp"
   append(L"\n");
   append(L"def serialize(self, e):\n");
   append(L"  e.reset(self.input)\n");
@@ -1697,7 +1764,7 @@
   append(L"    result = self.stack[-count:]\n");
   append(L"    self.stack = self.stack[: -count]\n");
   append(L"  return result\n");
-                                                            #line 1159 "PrintPython.cpp.template"
+                                                            #line 1187 "PrintPython.cpp.template"
                                                                   decreaseIndent();
                                                                 }
                                                               }
@@ -1705,62 +1772,62 @@
 
                                                             void PrintPython::printTokenVars()
                                                             {
-                                                            #line 1709 "PrintPython.cpp"
+                                                            #line 1776 "PrintPython.cpp"
   append(L"\n");
   append(L"  ");
-                                                            #line 1167 "PrintPython.cpp.template"
+                                                            #line 1195 "PrintPython.cpp.template"
                                                               if (! isLrParser && (grammar->k > 1 ||
                                                                                    memoization ||
                                                                                    ! grammar->decisionPoints.empty()))
                                                               {
-                                                            #line 1717 "PrintPython.cpp"
+                                                            #line 1784 "PrintPython.cpp"
   append(L"lk,");
-                                                            #line 1171 "PrintPython.cpp.template"
+                                                            #line 1199 "PrintPython.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1723 "PrintPython.cpp"
+                                                            #line 1790 "PrintPython.cpp"
   append(L"   ");
-                                                            #line 1174 "PrintPython.cpp.template"
+                                                            #line 1202 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1727 "PrintPython.cpp"
+                                                            #line 1794 "PrintPython.cpp"
   append(L" b0, e0 int");
-                                                            #line 1175 "PrintPython.cpp.template"
+                                                            #line 1203 "PrintPython.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 1734 "PrintPython.cpp"
+                                                            #line 1801 "PrintPython.cpp"
   append(L"\n");
   append(L"  l");
-                                                            #line 1180 "PrintPython.cpp.template"
+                                                            #line 1208 "PrintPython.cpp.template"
                                                                 print(asString);
-                                                            #line 1739 "PrintPython.cpp"
+                                                            #line 1806 "PrintPython.cpp"
   append(L", b");
-                                                            #line 1181 "PrintPython.cpp.template"
+                                                            #line 1209 "PrintPython.cpp.template"
                                                                 print(asString);
-                                                            #line 1743 "PrintPython.cpp"
+                                                            #line 1810 "PrintPython.cpp"
   append(L", e");
-                                                            #line 1182 "PrintPython.cpp.template"
+                                                            #line 1210 "PrintPython.cpp.template"
                                                                 print(asString);
-                                                            #line 1747 "PrintPython.cpp"
+                                                            #line 1814 "PrintPython.cpp"
   append(L" int");
-                                                            #line 1183 "PrintPython.cpp.template"
+                                                            #line 1211 "PrintPython.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 1753 "PrintPython.cpp"
+                                                            #line 1820 "PrintPython.cpp"
   append(L"\n");
   append(L"  bx, ex, sx, lx, tx int");
-                                                            #line 1187 "PrintPython.cpp.template"
+                                                            #line 1215 "PrintPython.cpp.template"
                                                               }
                                                               else if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 1760 "PrintPython.cpp"
+                                                            #line 1827 "PrintPython.cpp"
   append(L"\n");
   append(L"  iStack []int\n");
   append(L"  top int");
-                                                            #line 1192 "PrintPython.cpp.template"
+                                                            #line 1220 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
@@ -1768,203 +1835,203 @@
                                                                 {
                                                                   if (useGlr)
                                                                   {
-                                                            #line 1772 "PrintPython.cpp"
+                                                            #line 1839 "PrintPython.cpp"
   append(L"\n");
   append(L"  bw, bs, es int");
-                                                            #line 1200 "PrintPython.cpp.template"
+                                                            #line 1228 "PrintPython.cpp.template"
                                                                   }
-                                                            #line 1777 "PrintPython.cpp"
+                                                            #line 1844 "PrintPython.cpp"
   append(L"\n");
   append(L"  eventHandler BottomUpEventHandler");
-                                                            #line 1202 "PrintPython.cpp.template"
+                                                            #line 1230 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1784 "PrintPython.cpp"
+                                                            #line 1851 "PrintPython.cpp"
   append(L"\n");
   append(L"  eventHandler EventHandler");
-                                                            #line 1206 "PrintPython.cpp.template"
+                                                            #line 1234 "PrintPython.cpp.template"
                                                                 }
                                                               }
                                                             }
 
                                                             void PrintPython::printSimpleMain()
                                                             {
-                                                            #line 1794 "PrintPython.cpp"
+                                                            #line 1861 "PrintPython.cpp"
   append(L"\n");
   append(L"def main(args):\n");
   append(L"  if len(args) < 2:\n");
   append(L"    sys.stderr.write(\"Usage: python ");
-                                                            #line 1215 "PrintPython.cpp.template"
+                                                            #line 1243 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1801 "PrintPython.cpp"
+                                                            #line 1868 "PrintPython.cpp"
   append(L".py ");
-                                                            #line 1216 "PrintPython.cpp.template"
+                                                            #line 1244 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1806 "PrintPython.cpp"
+                                                            #line 1873 "PrintPython.cpp"
   append(L"[-i] ");
-                                                            #line 1218 "PrintPython.cpp.template"
+                                                            #line 1246 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1810 "PrintPython.cpp"
+                                                            #line 1877 "PrintPython.cpp"
   append(L"INPUT...\\n\")\n");
   append(L"    sys.stderr.write(\"\\n\")\n");
   append(L"    sys.stderr.write(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\")");
-                                                            #line 1222 "PrintPython.cpp.template"
+                                                            #line 1250 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1817 "PrintPython.cpp"
+                                                            #line 1884 "PrintPython.cpp"
   append(L"\n");
   append(L"    sys.stderr.write(\"\\n\")\n");
   append(L"    sys.stderr.write(\"  Option:\\n\")\n");
   append(L"    sys.stderr.write(\"    -i     indented parse tree\\n\")");
-                                                            #line 1227 "PrintPython.cpp.template"
+                                                            #line 1255 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1824 "PrintPython.cpp"
+                                                            #line 1891 "PrintPython.cpp"
   append(L"\n");
   append(L"  else:");
-                                                            #line 1229 "PrintPython.cpp.template"
+                                                            #line 1257 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1830 "PrintPython.cpp"
+                                                            #line 1897 "PrintPython.cpp"
   append(L"\n");
   append(L"    indent = False");
-                                                            #line 1232 "PrintPython.cpp.template"
+                                                            #line 1260 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1835 "PrintPython.cpp"
+                                                            #line 1902 "PrintPython.cpp"
   append(L"\n");
   append(L"    for arg in args[1:]:");
-                                                            #line 1234 "PrintPython.cpp.template"
+                                                            #line 1262 "PrintPython.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1841 "PrintPython.cpp"
+                                                            #line 1908 "PrintPython.cpp"
   append(L"\n");
   append(L"      if arg == \"-i\":\n");
   append(L"        indent = True\n");
   append(L"        continue\n");
   append(L"      s = ");
-                                                            #line 1240 "PrintPython.cpp.template"
+                                                            #line 1268 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1849 "PrintPython.cpp"
+                                                            #line 1916 "PrintPython.cpp"
   append(L".XmlSerializer()\n");
   append(L"      s.indent = indent");
-                                                            #line 1242 "PrintPython.cpp.template"
+                                                            #line 1270 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1855 "PrintPython.cpp"
+                                                            #line 1922 "PrintPython.cpp"
   append(L"\n");
   append(L"      b = ");
-                                                            #line 1245 "PrintPython.cpp.template"
+                                                            #line 1273 "PrintPython.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 1860 "PrintPython.cpp"
+                                                            #line 1927 "PrintPython.cpp"
   append(L".ParseTreeBuilder()");
-                                                            #line 1246 "PrintPython.cpp.template"
+                                                            #line 1274 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1865 "PrintPython.cpp"
+                                                            #line 1932 "PrintPython.cpp"
   append(L"\n");
   append(L"      inputString = read(arg)\n");
   append(L"      parser = ");
-                                                            #line 1250 "PrintPython.cpp.template"
+                                                            #line 1278 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1871 "PrintPython.cpp"
+                                                            #line 1938 "PrintPython.cpp"
   append(L"(inputString");
-                                                            #line 1251 "PrintPython.cpp.template"
+                                                            #line 1279 "PrintPython.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1876 "PrintPython.cpp"
+                                                            #line 1943 "PrintPython.cpp"
   append(L", ");
-                                                            #line 1253 "PrintPython.cpp.template"
+                                                            #line 1281 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1880 "PrintPython.cpp"
+                                                            #line 1947 "PrintPython.cpp"
   append(L"Lexer()");
-                                                            #line 1254 "PrintPython.cpp.template"
+                                                            #line 1282 "PrintPython.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1886 "PrintPython.cpp"
+                                                            #line 1953 "PrintPython.cpp"
   append(L", ");
-                                                            #line 1257 "PrintPython.cpp.template"
+                                                            #line 1285 "PrintPython.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1891 "PrintPython.cpp"
+                                                            #line 1958 "PrintPython.cpp"
   append(L"b");
-                                                            #line 1259 "PrintPython.cpp.template"
+                                                            #line 1287 "PrintPython.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1897 "PrintPython.cpp"
+                                                            #line 1964 "PrintPython.cpp"
   append(L"s");
-                                                            #line 1262 "PrintPython.cpp.template"
+                                                            #line 1290 "PrintPython.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1902 "PrintPython.cpp"
+                                                            #line 1969 "PrintPython.cpp"
   append(L")");
-                                                            #line 1264 "PrintPython.cpp.template"
+                                                            #line 1292 "PrintPython.cpp.template"
                                                               if (trace)
                                                               {
-                                                            #line 1907 "PrintPython.cpp"
+                                                            #line 1974 "PrintPython.cpp"
   append(L"\n");
   append(L"      sys.stderr.reconfigure(encoding=\"utf-8\")\n");
   append(L"      ");
-                                                            #line 1268 "PrintPython.cpp.template"
+                                                            #line 1296 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1913 "PrintPython.cpp"
+                                                            #line 1980 "PrintPython.cpp"
   append(L".writeTrace(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?\" + \">\\n<trace>\\n\")");
-                                                            #line 1270 "PrintPython.cpp.template"
+                                                            #line 1298 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1917 "PrintPython.cpp"
+                                                            #line 1984 "PrintPython.cpp"
   append(L"\n");
   append(L"      try:\n");
   append(L"        parser.");
-                                                            #line 1273 "PrintPython.cpp.template"
+                                                            #line 1301 "PrintPython.cpp.template"
                                                               print(visibilityMethodPrefix());
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1924 "PrintPython.cpp"
+                                                            #line 1991 "PrintPython.cpp"
   append(L"()");
-                                                            #line 1275 "PrintPython.cpp.template"
+                                                            #line 1303 "PrintPython.cpp.template"
                                                               if (trace)
                                                               {
-                                                            #line 1929 "PrintPython.cpp"
+                                                            #line 1996 "PrintPython.cpp"
   append(L"\n");
   append(L"        ");
-                                                            #line 1278 "PrintPython.cpp.template"
+                                                            #line 1306 "PrintPython.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1934 "PrintPython.cpp"
+                                                            #line 2001 "PrintPython.cpp"
   append(L".writeTrace(\"</trace>\\n\")");
-                                                            #line 1279 "PrintPython.cpp.template"
+                                                            #line 1307 "PrintPython.cpp.template"
                                                               }
                                                               if (tree && isLrParser)
                                                               {
-                                                            #line 1940 "PrintPython.cpp"
+                                                            #line 2007 "PrintPython.cpp"
   append(L"\n");
   append(L"        b.serialize(s)");
-                                                            #line 1283 "PrintPython.cpp.template"
+                                                            #line 1311 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1945 "PrintPython.cpp"
+                                                            #line 2012 "PrintPython.cpp"
   append(L"\n");
   append(L"      except ");
-                                                            #line 1285 "PrintPython.cpp.template"
+                                                            #line 1313 "PrintPython.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1950 "PrintPython.cpp"
+                                                            #line 2017 "PrintPython.cpp"
   append(L".ParseException as pe:");
-                                                            #line 1286 "PrintPython.cpp.template"
+                                                            #line 1314 "PrintPython.cpp.template"
                                                               if (rejectsAmbiguity() && tree)
                                                               {
-                                                            #line 1955 "PrintPython.cpp"
+                                                            #line 2022 "PrintPython.cpp"
   append(L"\n");
   append(L"        if pe.isAmbiguousInput():\n");
   append(L"          pe.serialize(s)\n");
   append(L"          print()");
-                                                            #line 1291 "PrintPython.cpp.template"
+                                                            #line 1319 "PrintPython.cpp.template"
                                                               }
-                                                            #line 1962 "PrintPython.cpp"
+                                                            #line 2029 "PrintPython.cpp"
   append(L"\n");
   append(L"        raise Exception (\"ParseException while processing \" + arg + \":\\n\" + parser.getErrorMessage(pe)) from pe\n");
   append(L"\n");
   append(L"if __name__ == '__main__':\n");
   append(L"  sys.exit(main(sys.argv))\n");
-                                                            #line 1297 "PrintPython.cpp.template"
+                                                            #line 1325 "PrintPython.cpp.template"
                                                             }
 
 // End

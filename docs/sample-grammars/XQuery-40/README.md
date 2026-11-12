@@ -22,9 +22,9 @@ Additionally, the transformation is integrated into a GitHub workflow: [rexify-x
 
 The prerequisites for running the transformation in the rexify script are:
 
- - Java 17 or higher,
- - [BaseX 11.9](https://basex.org/download/) or higher,
- - [REx 6.1](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher.
+ - Java 21 or higher,
+ - [BaseX 13.0](https://basex.org/download/) or higher,
+ - [REx 7.0](https://github.com/GuntherRademacher/rex-parser-generator/releases) or higher.
 
 ## Transformation Logic
 

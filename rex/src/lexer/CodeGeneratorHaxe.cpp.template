@@ -597,11 +597,12 @@
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
+                                                                bool isPublic = variable("tree").boolean() || variable("useGlr").boolean() || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
 ~
 
-  ~                                                             print(visibility);
+  ~                                                             print(isPublic ? "public" : "private");
   ~ static var ~                                                print(a->longName);
-               ~ =
+                    ~ =
   [
 ~                                                               for (size_t j = 0; j < a->size; ++j)
                                                                 {

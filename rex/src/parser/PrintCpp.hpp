@@ -73,6 +73,7 @@ public:
   virtual const wchar_t *endClass() const {return L"};";}
   virtual const wchar_t *lineCommentPrefix() const {return L"#";}
   virtual const wchar_t *stringType() const {return parseChars ? L"const char *" : L"const wchar_t *";}
+  virtual const wchar_t *stringLiteralPrefix() const {return parseChars ? L"" : L"L";}
   virtual const wchar_t *boolType() const {return L"bool ";}
   virtual const wchar_t *intType() const {return L"int ";}
   virtual const wchar_t *voidType() const {return L"void ";}

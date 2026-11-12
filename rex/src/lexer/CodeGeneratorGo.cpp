@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorGo.cpp.template
                                                             #line 1 "CodeGeneratorGo.cpp.template"
                                                             // generate CodeGeneratorGo.cpp using this command:
@@ -346,14 +346,18 @@
                                                                 {
                                                             #line 348 "CodeGeneratorGo.cpp"
   append(L"\n");
-  append(L"      writeTrace(\" result=\\\"\" + xmlEscape(token[((result >> ");
+  append(L"      writeTrace(\" result=\\\"\" + xmlEscape(");
                                                             #line 210 "CodeGeneratorGo.cpp.template"
-                                                                  print(variable("stateCodeBits").integer());
+                                                                  print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
                                                             #line 353 "CodeGeneratorGo.cpp"
+  append(L"[((result >> ");
+                                                            #line 211 "CodeGeneratorGo.cpp.template"
+                                                                  print(variable("stateCodeBits").integer());
+                                                            #line 357 "CodeGeneratorGo.cpp"
   append(L") & ");
                                                             #line 212 "CodeGeneratorGo.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
-                                                            #line 357 "CodeGeneratorGo.cpp"
+                                                            #line 361 "CodeGeneratorGo.cpp"
   append(L") - 1]) + \"\\\"\")");
                                                             #line 214 "CodeGeneratorGo.cpp.template"
                                                                   if (lookahead || hasFixedTokenLength)
@@ -364,56 +368,56 @@
                                                                                    + (hasFixedTokenLength ? 1 : 0);
                                                                     if (hasFixedTokenLength)
                                                                     {
-                                                            #line 368 "CodeGeneratorGo.cpp"
+                                                            #line 372 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"      if result & ");
                                                             #line 223 "CodeGeneratorGo.cpp.template"
                                                                       print(Math::powerof(2, contextOffset));
-                                                            #line 373 "CodeGeneratorGo.cpp"
+                                                            #line 377 "CodeGeneratorGo.cpp"
   append(L" > 0 {\n");
   append(L"        writeTrace(\" token-size=\\\"\" + strconv.Itoa(result >> ");
                                                             #line 225 "CodeGeneratorGo.cpp.template"
                                                                       print(sizeOffset);
-                                                            #line 378 "CodeGeneratorGo.cpp"
+                                                            #line 382 "CodeGeneratorGo.cpp"
   append(L") + \"\\\"\")\n");
   append(L"      } else ");
                                                             #line 227 "CodeGeneratorGo.cpp.template"
                                                                     }
                                                                     else
                                                                     {
-                                                            #line 385 "CodeGeneratorGo.cpp"
+                                                            #line 389 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"      ");
                                                             #line 231 "CodeGeneratorGo.cpp.template"
                                                                     }
-                                                            #line 390 "CodeGeneratorGo.cpp"
+                                                            #line 394 "CodeGeneratorGo.cpp"
   append(L"if (result >> ");
                                                             #line 232 "CodeGeneratorGo.cpp.template"
                                                                     print(sizeOffset);
-                                                            #line 394 "CodeGeneratorGo.cpp"
+                                                            #line 398 "CodeGeneratorGo.cpp"
   append(L") > 0 {\n");
   append(L"        writeTrace(\" trailing-context-size=\\\"\" + strconv.Itoa(result >> ");
                                                             #line 235 "CodeGeneratorGo.cpp.template"
                                                                     print(sizeOffset);
-                                                            #line 399 "CodeGeneratorGo.cpp"
+                                                            #line 403 "CodeGeneratorGo.cpp"
   append(L") + \"\\\"\")\n");
   append(L"      }");
                                                             #line 237 "CodeGeneratorGo.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 405 "CodeGeneratorGo.cpp"
+                                                            #line 409 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"      code &= ");
                                                             #line 240 "CodeGeneratorGo.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 410 "CodeGeneratorGo.cpp"
+                                                            #line 414 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"      this.end = current\n");
   append(L"    }");
                                                             #line 243 "CodeGeneratorGo.cpp.template"
                                                                 if (variable("trace").boolean())
                                                                 {
-                                                            #line 417 "CodeGeneratorGo.cpp"
+                                                            #line 421 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    writeTrace(\"/>\\n\")\n");
   append(L"    if code != 0 {\n");
@@ -421,25 +425,25 @@
   append(L"    }");
                                                             #line 249 "CodeGeneratorGo.cpp.template"
                                                                 }
-                                                            #line 425 "CodeGeneratorGo.cpp"
+                                                            #line 429 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  }\n");
   append(L"\n");
   append(L"  result >>= ");
                                                             #line 253 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("stateCodeBits").integer());
-                                                            #line 432 "CodeGeneratorGo.cpp"
+                                                            #line 436 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  if result == 0 {\n");
   append(L"    if this.end < ");
                                                             #line 256 "CodeGeneratorGo.cpp.template"
                                                                 print(prefix);
-                                                            #line 438 "CodeGeneratorGo.cpp"
+                                                            #line 442 "CodeGeneratorGo.cpp"
   append(L"size {\n");
   append(L"      _, s := utf8.DecodeLastRuneInString(");
                                                             #line 258 "CodeGeneratorGo.cpp.template"
                                                                 print(prefix);
-                                                            #line 443 "CodeGeneratorGo.cpp"
+                                                            #line 447 "CodeGeneratorGo.cpp"
   append(L"input[:current])\n");
   append(L"      this.end = current - s\n");
   append(L"    } else {\n");
@@ -448,7 +452,7 @@
                                                             #line 263 "CodeGeneratorGo.cpp.template"
                                                                 if (variable("trace").boolean())
                                                                 {
-                                                            #line 452 "CodeGeneratorGo.cpp"
+                                                            #line 456 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    writeTrace(\"    <fail begin=\\\"\" + strconv.Itoa(this.begin) + \"\\\" end=\\\"\" + strconv.Itoa(this.end) + \"\\\" state=\\\"\" + strconv.Itoa(state) + \"\\\"/>\\n\")\n");
   append(L"    writeTrace(\"  </tokenize>\\n\")");
@@ -458,7 +462,7 @@
                                                                 {
                                                                   if (variable("useGlr").boolean())
                                                                   {
-                                                            #line 462 "CodeGeneratorGo.cpp"
+                                                            #line 466 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    this.end = this.begin\n");
   append(L"    return -1");
@@ -466,25 +470,25 @@
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 470 "CodeGeneratorGo.cpp"
+                                                            #line 474 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    return this.error(this.begin, this.end, state, -1, -1)");
                                                             #line 278 "CodeGeneratorGo.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 476 "CodeGeneratorGo.cpp"
+                                                            #line 480 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  }");
                                                             #line 281 "CodeGeneratorGo.cpp.template"
                                                                 lowBits = variable("tokencodeBits").integer();
                                                                 if (hasFixedTokenLength && ! lookahead)
                                                                 {
-                                                            #line 483 "CodeGeneratorGo.cpp"
+                                                            #line 487 "CodeGeneratorGo.cpp"
   append(L" else if (result & ");
                                                             #line 284 "CodeGeneratorGo.cpp.template"
                                                                   print(Math::powerof(2, lowBits));
                                                                   ++lowBits;
-                                                            #line 488 "CodeGeneratorGo.cpp"
+                                                            #line 492 "CodeGeneratorGo.cpp"
   append(L") != 0 {\n");
   append(L"    this.end = this.begin\n");
   append(L"  }");
@@ -494,31 +498,31 @@
                                                                 {
                                                                   if (hasFixedTokenLength)
                                                                   {
-                                                            #line 498 "CodeGeneratorGo.cpp"
+                                                            #line 502 "CodeGeneratorGo.cpp"
   append(L" else if (result & ");
                                                             #line 293 "CodeGeneratorGo.cpp.template"
                                                                     print(Math::powerof(2, lowBits));
                                                                     ++lowBits;
-                                                            #line 503 "CodeGeneratorGo.cpp"
+                                                            #line 507 "CodeGeneratorGo.cpp"
   append(L") != 0 {\n");
   append(L"    this.end = this.begin\n");
   append(L"    if (nonbmp) {\n");
   append(L"      for i := result >> ");
                                                             #line 298 "CodeGeneratorGo.cpp.template"
                                                                     print(lowBits);
-                                                            #line 510 "CodeGeneratorGo.cpp"
+                                                            #line 514 "CodeGeneratorGo.cpp"
   append(L"; i > 0; i-- {\n");
   append(L"        if this.end >= ");
                                                             #line 300 "CodeGeneratorGo.cpp.template"
                                                                     print(prefix);
-                                                            #line 515 "CodeGeneratorGo.cpp"
+                                                            #line 519 "CodeGeneratorGo.cpp"
   append(L"size {\n");
   append(L"          this.end++\n");
   append(L"        } else {\n");
   append(L"          _, s := utf8.DecodeRuneInString(");
                                                             #line 304 "CodeGeneratorGo.cpp.template"
                                                                     print(prefix);
-                                                            #line 522 "CodeGeneratorGo.cpp"
+                                                            #line 526 "CodeGeneratorGo.cpp"
   append(L"input[this.end:])\n");
   append(L"          this.end += s\n");
   append(L"        }\n");
@@ -527,7 +531,7 @@
   append(L"      this.end += (result >> ");
                                                             #line 310 "CodeGeneratorGo.cpp.template"
                                                                     print(lowBits);
-                                                            #line 531 "CodeGeneratorGo.cpp"
+                                                            #line 535 "CodeGeneratorGo.cpp"
   append(L");\n");
   append(L"    }\n");
   append(L"  }");
@@ -535,24 +539,24 @@
                                                                   }
                                                                   if (lookahead)
                                                                   {
-                                                            #line 539 "CodeGeneratorGo.cpp"
+                                                            #line 543 "CodeGeneratorGo.cpp"
   append(L" else if nonbmp {\n");
   append(L"    for i := result >> ");
                                                             #line 317 "CodeGeneratorGo.cpp.template"
                                                                     print(lowBits);
-                                                            #line 544 "CodeGeneratorGo.cpp"
+                                                            #line 548 "CodeGeneratorGo.cpp"
   append(L"; i > 0; i-- {\n");
   append(L"      if this.end >= ");
                                                             #line 319 "CodeGeneratorGo.cpp.template"
                                                                     print(prefix);
-                                                            #line 549 "CodeGeneratorGo.cpp"
+                                                            #line 553 "CodeGeneratorGo.cpp"
   append(L"size {\n");
   append(L"        this.end--\n");
   append(L"      } else {\n");
   append(L"        _, s := utf8.DecodeLastRuneInString(");
                                                             #line 323 "CodeGeneratorGo.cpp.template"
                                                                     print(prefix);
-                                                            #line 556 "CodeGeneratorGo.cpp"
+                                                            #line 560 "CodeGeneratorGo.cpp"
   append(L"input[:this.end - 1])\n");
   append(L"        this.end -= s\n");
   append(L"      }\n");
@@ -561,91 +565,95 @@
   append(L"    this.end -= result >> ");
                                                             #line 329 "CodeGeneratorGo.cpp.template"
                                                                     print(lowBits);
-                                                            #line 565 "CodeGeneratorGo.cpp"
+                                                            #line 569 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  }");
                                                             #line 331 "CodeGeneratorGo.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 571 "CodeGeneratorGo.cpp"
+                                                            #line 575 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  if this.end > ");
                                                             #line 336 "CodeGeneratorGo.cpp.template"
                                                                 print(prefix);
-                                                            #line 577 "CodeGeneratorGo.cpp"
+                                                            #line 581 "CodeGeneratorGo.cpp"
   append(L"size {\n");
   append(L"    this.end = ");
                                                             #line 338 "CodeGeneratorGo.cpp.template"
                                                                 print(prefix);
-                                                            #line 582 "CodeGeneratorGo.cpp"
+                                                            #line 586 "CodeGeneratorGo.cpp"
   append(L"size\n");
   append(L"  }");
                                                             #line 340 "CodeGeneratorGo.cpp.template"
                                                                 if (variable("trace").boolean())
                                                                 {
-                                                            #line 588 "CodeGeneratorGo.cpp"
+                                                            #line 592 "CodeGeneratorGo.cpp"
   append(L"\n");
-  append(L"  writeTrace(\"    <done result=\\\"\" + xmlEscape(token[(result & ");
+  append(L"  writeTrace(\"    <done result=\\\"\" + xmlEscape(");
                                                             #line 343 "CodeGeneratorGo.cpp.template"
+                                                                  print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
+                                                            #line 597 "CodeGeneratorGo.cpp"
+  append(L"[(result & ");
+                                                            #line 344 "CodeGeneratorGo.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
-                                                            #line 593 "CodeGeneratorGo.cpp"
+                                                            #line 601 "CodeGeneratorGo.cpp"
   append(L") - 1]) + \"\\\" begin=\\\"\" + strconv.Itoa(this.begin) + \"\\\" end=\\\"\" + strconv.Itoa(this.end) + \"\\\"/>\\n\")\n");
   append(L"  writeTrace(\"  </tokenize>\\n\")");
-                                                            #line 345 "CodeGeneratorGo.cpp.template"
+                                                            #line 346 "CodeGeneratorGo.cpp.template"
                                                                 }
                                                                 if (hack)
                                                                 {
-                                                            #line 600 "CodeGeneratorGo.cpp"
+                                                            #line 608 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  return hack((result & ");
-                                                            #line 349 "CodeGeneratorGo.cpp.template"
+                                                            #line 350 "CodeGeneratorGo.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
-                                                            #line 605 "CodeGeneratorGo.cpp"
+                                                            #line 613 "CodeGeneratorGo.cpp"
   append(L") - 1);\n");
   append(L"}\n");
-                                                            #line 352 "CodeGeneratorGo.cpp.template"
+                                                            #line 353 "CodeGeneratorGo.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 612 "CodeGeneratorGo.cpp"
+                                                            #line 620 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  return (result & ");
-                                                            #line 356 "CodeGeneratorGo.cpp.template"
+                                                            #line 357 "CodeGeneratorGo.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()) - 1);
-                                                            #line 617 "CodeGeneratorGo.cpp"
+                                                            #line 625 "CodeGeneratorGo.cpp"
   append(L") - 1\n");
   append(L"}\n");
-                                                            #line 359 "CodeGeneratorGo.cpp.template"
+                                                            #line 360 "CodeGeneratorGo.cpp.template"
                                                                 }
                                                               }
                                                               if (defined("gtbits"))
                                                               {
-                                                            #line 625 "CodeGeneratorGo.cpp"
+                                                            #line 633 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"func reduceAction(nonterminalId int, state int) int {\n");
-                                                            #line 365 "CodeGeneratorGo.cpp.template"
+                                                            #line 366 "CodeGeneratorGo.cpp.template"
                                                                 compressedMap2dAccessor("nonterminalId", "state", variable("gtcols").integer(),
                                                                                         2, "i", "return ", "goTo", &variable("gtbits").integer());
-                                                            #line 631 "CodeGeneratorGo.cpp"
+                                                            #line 639 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 369 "CodeGeneratorGo.cpp.template"
+                                                            #line 370 "CodeGeneratorGo.cpp.template"
                                                               }
 
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 639 "CodeGeneratorGo.cpp"
+                                                            #line 647 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  public String[] getExpectedTokenSet()\n");
   append(L"  {\n");
   append(L"    return getTokenSet(- state);\n");
   append(L"  }\n");
-                                                            #line 378 "CodeGeneratorGo.cpp.template"
+                                                            #line 379 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               if (variable("trace").boolean())
                                                               {
-                                                            #line 649 "CodeGeneratorGo.cpp"
+                                                            #line 657 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"func xmlEscape(s string) string {\n");
   append(L"  var sb strings.Builder\n");
@@ -665,100 +673,104 @@
   append(L"func writeTrace(content string) {\n");
   append(L"  os.Stderr.WriteString(content)\n");
   append(L"}\n");
-                                                            #line 400 "CodeGeneratorGo.cpp.template"
+                                                            #line 401 "CodeGeneratorGo.cpp.template"
                                                                 if (variable("embedded").boolean())
                                                                 {
-                                                            #line 672 "CodeGeneratorGo.cpp"
+                                                            #line 680 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"func flushTrace() {\n");
   append(L"  os.Stderr.Sync()\n");
   append(L"}\n");
-                                                            #line 406 "CodeGeneratorGo.cpp.template"
+                                                            #line 407 "CodeGeneratorGo.cpp.template"
                                                                 }
                                                               }
                                                               if (variable("nolexer").boolean())
                                                               {
-                                                            #line 682 "CodeGeneratorGo.cpp"
+                                                            #line 690 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  public static int getTokenCount() {return ");
-                                                            #line 411 "CodeGeneratorGo.cpp.template"
+                                                            #line 412 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("t1").size);
-                                                            #line 687 "CodeGeneratorGo.cpp"
+                                                            #line 695 "CodeGeneratorGo.cpp"
   append(L";}\n");
   append(L"  public static String getTokenName(int code) {return code >= 0 && code < ");
-                                                            #line 414 "CodeGeneratorGo.cpp.template"
+                                                            #line 415 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("t1").size);
-                                                            #line 692 "CodeGeneratorGo.cpp"
-  append(L" ? token[code] : null;}\n");
+                                                            #line 700 "CodeGeneratorGo.cpp"
+  append(L" ? TOKEN[code] : null;}\n");
   append(L"  public static int getTokenSetCount() {return ");
-                                                            #line 416 "CodeGeneratorGo.cpp.template"
+                                                            #line 417 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("entrycount").integer());
-                                                            #line 697 "CodeGeneratorGo.cpp"
+                                                            #line 705 "CodeGeneratorGo.cpp"
   append(L";}\n");
   append(L"\n");
   append(L"func GetTokenSet(tokenSetId int) []string {");
-                                                            #line 419 "CodeGeneratorGo.cpp.template"
+                                                            #line 420 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 705 "CodeGeneratorGo.cpp"
+                                                            #line 713 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"func getTokenSet(tokenSetId int) []string {");
-                                                            #line 423 "CodeGeneratorGo.cpp.template"
+                                                            #line 424 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               if (! variable("nolexer").boolean())
                                                               {
-                                                            #line 712 "CodeGeneratorGo.cpp"
+                                                            #line 720 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  var s int\n");
   append(L"  if tokenSetId < 0 {\n");
   append(L"    s = - tokenSetId\n");
   append(L"  } else {\n");
   append(L"    s = initial[tokenSetId] & ");
-                                                            #line 431 "CodeGeneratorGo.cpp.template"
+                                                            #line 432 "CodeGeneratorGo.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 721 "CodeGeneratorGo.cpp"
+                                                            #line 729 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  }");
-                                                            #line 433 "CodeGeneratorGo.cpp.template"
+                                                            #line 434 "CodeGeneratorGo.cpp.template"
                                                               }
-                                                            #line 726 "CodeGeneratorGo.cpp"
+                                                            #line 734 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  set := []string {}\n");
   append(L"  size := 0\n");
   append(L"  for i := 0; i < ");
-                                                            #line 437 "CodeGeneratorGo.cpp.template"
+                                                            #line 438 "CodeGeneratorGo.cpp.template"
                                                               print(variable("t1").size);
-                                                            #line 733 "CodeGeneratorGo.cpp"
+                                                            #line 741 "CodeGeneratorGo.cpp"
   append(L"; i += 32 {\n");
   append(L"    j := i\n");
   append(L"    i0 := (i >> 5) * ");
-                                                            #line 440 "CodeGeneratorGo.cpp.template"
-                                                              print(variable("transitionStateCount").integer());
-                                                            #line 739 "CodeGeneratorGo.cpp"
-  append(L" + ");
                                                             #line 441 "CodeGeneratorGo.cpp.template"
+                                                              print(variable("transitionStateCount").integer());
+                                                            #line 747 "CodeGeneratorGo.cpp"
+  append(L" + ");
+                                                            #line 442 "CodeGeneratorGo.cpp.template"
                                                               if (variable("nolexer").boolean())
                                                               {
-                                                            #line 744 "CodeGeneratorGo.cpp"
+                                                            #line 752 "CodeGeneratorGo.cpp"
   append(L"tokenSetId");
-                                                            #line 443 "CodeGeneratorGo.cpp.template"
+                                                            #line 444 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 750 "CodeGeneratorGo.cpp"
-  append(L"s - 1");
-                                                            #line 446 "CodeGeneratorGo.cpp.template"
-                                                              }
-                                                            #line 754 "CodeGeneratorGo.cpp"
-  append(L"\n");
-                                                            #line 448 "CodeGeneratorGo.cpp.template"
-                                                              compressedMapAccessor(4, "i", "f := uint32(", "expected", &variable("t0bits").integer());
                                                             #line 758 "CodeGeneratorGo.cpp"
+  append(L"s - 1");
+                                                            #line 447 "CodeGeneratorGo.cpp.template"
+                                                              }
+                                                            #line 762 "CodeGeneratorGo.cpp"
+  append(L"\n");
+                                                            #line 449 "CodeGeneratorGo.cpp.template"
+                                                              compressedMapAccessor(4, "i", "f := uint32(", "expected", &variable("t0bits").integer());
+                                                            #line 766 "CodeGeneratorGo.cpp"
   append(L")\n");
   append(L"    for ; f != 0; f >>= 1 {\n");
   append(L"      if (f & 1) != 0 {\n");
-  append(L"        set = append(set, token[j])\n");
+  append(L"        set = append(set, ");
+                                                            #line 453 "CodeGeneratorGo.cpp.template"
+                                                              print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
+                                                            #line 773 "CodeGeneratorGo.cpp"
+  append(L"[j])\n");
   append(L"        size++\n");
   append(L"      }\n");
   append(L"      j++\n");
@@ -766,50 +778,50 @@
   append(L"  }\n");
   append(L"  return set[:size]\n");
   append(L"}");
-                                                            #line 459 "CodeGeneratorGo.cpp.template"
+                                                            #line 461 "CodeGeneratorGo.cpp.template"
                                                               generateData();
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 774 "CodeGeneratorGo.cpp"
+                                                            #line 786 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public enum Token\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 466 "CodeGeneratorGo.cpp.template"
+                                                            #line 468 "CodeGeneratorGo.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
                                                                 {
                                                                   if (i)
                                                                   {
-                                                            #line 787 "CodeGeneratorGo.cpp"
+                                                            #line 799 "CodeGeneratorGo.cpp"
   append(L",\n");
   append(L"    ");
-                                                            #line 473 "CodeGeneratorGo.cpp.template"
-                                                                  }
-                                                            #line 792 "CodeGeneratorGo.cpp"
-  append(L"/* ");
-                                                            #line 474 "CodeGeneratorGo.cpp.template"
-                                                                  print(format.toString<char>(i, 10, w));
-                                                            #line 796 "CodeGeneratorGo.cpp"
-  append(L" */ ");
                                                             #line 475 "CodeGeneratorGo.cpp.template"
+                                                                  }
+                                                            #line 804 "CodeGeneratorGo.cpp"
+  append(L"/* ");
+                                                            #line 476 "CodeGeneratorGo.cpp.template"
+                                                                  print(format.toString<char>(i, 10, w));
+                                                            #line 808 "CodeGeneratorGo.cpp"
+  append(L" */ ");
+                                                            #line 477 "CodeGeneratorGo.cpp.template"
                                                                   print(token.string(i));
                                                                 }
-                                                            #line 801 "CodeGeneratorGo.cpp"
+                                                            #line 813 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 478 "CodeGeneratorGo.cpp.template"
+                                                            #line 480 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               if (variable("selfTest").boolean())
                                                               {
-                                                            #line 808 "CodeGeneratorGo.cpp"
+                                                            #line 820 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private void selfTest(int set, int tokenId)\n");
   append(L"  {\n");
-  append(L"    String tokenString = token[tokenId];\n");
+  append(L"    String tokenString = TOKEN[tokenId];\n");
   append(L"    if (tokenString.startsWith(\"'\"))\n");
   append(L"    {\n");
   append(L"      System.out.print(\"testing(\" + set + \", \" + tokenId + \")...\");\n");
@@ -841,40 +853,40 @@
   append(L"  public static void main(String[] args)\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 516 "CodeGeneratorGo.cpp.template"
+                                                            #line 518 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 847 "CodeGeneratorGo.cpp"
+                                                            #line 859 "CodeGeneratorGo.cpp"
   append(L" testee = new ");
-                                                            #line 517 "CodeGeneratorGo.cpp.template"
+                                                            #line 519 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 851 "CodeGeneratorGo.cpp"
+                                                            #line 863 "CodeGeneratorGo.cpp"
   append(L"();\n");
   append(L"    for (int e = 0; e < ");
-                                                            #line 519 "CodeGeneratorGo.cpp.template"
+                                                            #line 521 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("a0").size);
-                                                            #line 856 "CodeGeneratorGo.cpp"
+                                                            #line 868 "CodeGeneratorGo.cpp"
   append(L"; ++e)\n");
   append(L"    {\n");
   append(L"      int s = INITIAL[e] & ");
-                                                            #line 522 "CodeGeneratorGo.cpp.template"
+                                                            #line 524 "CodeGeneratorGo.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 862 "CodeGeneratorGo.cpp"
+                                                            #line 874 "CodeGeneratorGo.cpp"
   append(L";\n");
   append(L"      for (int i = 0; i < ");
-                                                            #line 524 "CodeGeneratorGo.cpp.template"
+                                                            #line 526 "CodeGeneratorGo.cpp.template"
                                                                 print(variable("t1").size);
-                                                            #line 867 "CodeGeneratorGo.cpp"
+                                                            #line 879 "CodeGeneratorGo.cpp"
   append(L"; i += 32)\n");
   append(L"      {\n");
   append(L"        int j = i;\n");
   append(L"        int i0 = (i >> 5) * ");
-                                                            #line 528 "CodeGeneratorGo.cpp.template"
-                                                                print(variable("transitionStateCount").integer());
-                                                            #line 874 "CodeGeneratorGo.cpp"
-  append(L" + s - 1;\n");
                                                             #line 530 "CodeGeneratorGo.cpp.template"
+                                                                print(variable("transitionStateCount").integer());
+                                                            #line 886 "CodeGeneratorGo.cpp"
+  append(L" + s - 1;\n");
+                                                            #line 532 "CodeGeneratorGo.cpp.template"
                                                                 compressedMapAccessor(8, "i", "f := ", "expected", &variable("t0bits").integer());
-                                                            #line 878 "CodeGeneratorGo.cpp"
+                                                            #line 890 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"        for ( ; f != 0; f >>>= 1, ++j)\n");
   append(L"        {\n");
@@ -886,54 +898,54 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }");
-                                                            #line 541 "CodeGeneratorGo.cpp.template"
-                                                              }
-                                                            #line 892 "CodeGeneratorGo.cpp"
-  append(L"\n");
                                                             #line 543 "CodeGeneratorGo.cpp.template"
+                                                              }
+                                                            #line 904 "CodeGeneratorGo.cpp"
+  append(L"\n");
+                                                            #line 545 "CodeGeneratorGo.cpp.template"
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 897 "CodeGeneratorGo.cpp"
+                                                            #line 909 "CodeGeneratorGo.cpp"
   append(L"}\n");
-                                                            #line 546 "CodeGeneratorGo.cpp.template"
+                                                            #line 548 "CodeGeneratorGo.cpp.template"
                                                               }
                                                             }
 
                                                             void CodeGeneratorGo::generateCompressedMap()
                                                             {
-                                                            #line 905 "CodeGeneratorGo.cpp"
+                                                            #line 917 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"public class ");
-                                                            #line 552 "CodeGeneratorGo.cpp.template"
+                                                            #line 554 "CodeGeneratorGo.cpp.template"
                                                               print(variable("classname").string());
-                                                            #line 910 "CodeGeneratorGo.cpp"
+                                                            #line 922 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  public static int get(int i0)\n");
   append(L"  {\n");
   append(L"    if (i0 < 0x30000)\n");
   append(L"    {\n");
-                                                            #line 559 "CodeGeneratorGo.cpp.template"
+                                                            #line 561 "CodeGeneratorGo.cpp.template"
                                                               compressedMapAccessor(6, "i", "return ", "low", &variable("dtbits").integer());
-                                                            #line 919 "CodeGeneratorGo.cpp"
+                                                            #line 931 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    else\n");
   append(L"    {");
-                                                            #line 563 "CodeGeneratorGo.cpp.template"
+                                                            #line 565 "CodeGeneratorGo.cpp.template"
                                                               indent += 3;
                                                               generateBinarySearch("i0", "return ", "", "HIGH", variable("rm").size);
                                                               indent -= 3;
-                                                            #line 928 "CodeGeneratorGo.cpp"
+                                                            #line 940 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"  }");
-                                                            #line 568 "CodeGeneratorGo.cpp.template"
+                                                            #line 570 "CodeGeneratorGo.cpp.template"
                                                               generateData();
-                                                            #line 934 "CodeGeneratorGo.cpp"
+                                                            #line 946 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 571 "CodeGeneratorGo.cpp.template"
+                                                            #line 573 "CodeGeneratorGo.cpp.template"
                                                             }
 
                                                             void CodeGeneratorGo::generateData()
@@ -946,11 +958,11 @@
                                                                     && (a->hasType(CGVariable::INTEGER) || a->hasType(CGVariable::UNSIGNED))
                                                                     && strlen(a->name) == 2)
                                                               {
-                                                            #line 950 "CodeGeneratorGo.cpp"
+                                                            #line 962 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"\n");
   append(L"var ");
-                                                            #line 585 "CodeGeneratorGo.cpp.template"
+                                                            #line 587 "CodeGeneratorGo.cpp.template"
                                                                 if (strcmp(a->longName, "GOTO") == 0)
                                                                 {
                                                                   print("goTo");
@@ -964,38 +976,38 @@
                                                                     print(name);
                                                                   }
                                                                 }
-                                                            #line 968 "CodeGeneratorGo.cpp"
+                                                            #line 980 "CodeGeneratorGo.cpp"
   append(L" = [...]");
-                                                            #line 598 "CodeGeneratorGo.cpp.template"
+                                                            #line 600 "CodeGeneratorGo.cpp.template"
                                                                 if ( a->hasType(CGVariable::UNSIGNED))
                                                                 {
-                                                            #line 973 "CodeGeneratorGo.cpp"
+                                                            #line 985 "CodeGeneratorGo.cpp"
   append(L"u");
-                                                            #line 600 "CodeGeneratorGo.cpp.template"
+                                                            #line 602 "CodeGeneratorGo.cpp.template"
                                                                 }
-                                                            #line 977 "CodeGeneratorGo.cpp"
+                                                            #line 989 "CodeGeneratorGo.cpp"
   append(L"int {");
-                                                            #line 601 "CodeGeneratorGo.cpp.template"
+                                                            #line 603 "CodeGeneratorGo.cpp.template"
                                                                 int w = (int) Format::width(a->size);
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j == 0 || lineLength() + Format::width(a->integer(j)) + 2 > limit)
                                                                   {
                                                                     if (j) print(",");
-                                                            #line 986 "CodeGeneratorGo.cpp"
+                                                            #line 998 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"/* ");
-                                                            #line 608 "CodeGeneratorGo.cpp.template"
+                                                            #line 610 "CodeGeneratorGo.cpp.template"
                                                                     print(format.toString<char>(j, 10, w));
-                                                            #line 991 "CodeGeneratorGo.cpp"
+                                                            #line 1003 "CodeGeneratorGo.cpp"
   append(L" */ ");
-                                                            #line 609 "CodeGeneratorGo.cpp.template"
+                                                            #line 611 "CodeGeneratorGo.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 997 "CodeGeneratorGo.cpp"
+                                                            #line 1009 "CodeGeneratorGo.cpp"
   append(L", ");
-                                                            #line 612 "CodeGeneratorGo.cpp.template"
+                                                            #line 614 "CodeGeneratorGo.cpp.template"
                                                                   }
                                                                   if (a->hasType(CGVariable::UNSIGNED))
                                                                   {
@@ -1006,39 +1018,41 @@
                                                                     print(a->integer(j));
                                                                   }
                                                                 }
-                                                            #line 1010 "CodeGeneratorGo.cpp"
+                                                            #line 1022 "CodeGeneratorGo.cpp"
   append(L"}");
-                                                            #line 622 "CodeGeneratorGo.cpp.template"
+                                                            #line 624 "CodeGeneratorGo.cpp.template"
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1018 "CodeGeneratorGo.cpp"
+                                                            #line 1030 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"\n");
   append(L"var ");
-                                                            #line 629 "CodeGeneratorGo.cpp.template"
-                                                                char name[] = {0, 0};
-                                                                for (const char *p = a->longName; *p; ++p)
+                                                            #line 631 "CodeGeneratorGo.cpp.template"
+                                                                if (strcmp(a->longName, "TOKEN") == 0)
                                                                 {
-                                                                  name[0] = tolower(*p);
-                                                                  print(name);
+                                                                  print(variable("tree").boolean() || variable("nolexer").boolean() ? "TOKEN" : "token");
                                                                 }
-                                                            #line 1029 "CodeGeneratorGo.cpp"
+                                                                else
+                                                                {
+                                                                  print(variable("tree").boolean() ? "NONTERMINAL" : "nonterminal");
+                                                                }
+                                                            #line 1043 "CodeGeneratorGo.cpp"
   append(L" = [...]string {\n");
-                                                            #line 636 "CodeGeneratorGo.cpp.template"
+                                                            #line 640 "CodeGeneratorGo.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 1036 "CodeGeneratorGo.cpp"
+                                                            #line 1050 "CodeGeneratorGo.cpp"
   append(L",\n");
-                                                            #line 641 "CodeGeneratorGo.cpp.template"
+                                                            #line 645 "CodeGeneratorGo.cpp.template"
                                                                   }
-                                                            #line 1040 "CodeGeneratorGo.cpp"
+                                                            #line 1054 "CodeGeneratorGo.cpp"
   append(L"    \"");
-                                                            #line 642 "CodeGeneratorGo.cpp.template"
+                                                            #line 646 "CodeGeneratorGo.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1051,78 +1065,78 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 1055 "CodeGeneratorGo.cpp"
+                                                            #line 1069 "CodeGeneratorGo.cpp"
   append(L"\"");
-                                                            #line 654 "CodeGeneratorGo.cpp.template"
+                                                            #line 658 "CodeGeneratorGo.cpp.template"
                                                                 }
-                                                            #line 1059 "CodeGeneratorGo.cpp"
+                                                            #line 1073 "CodeGeneratorGo.cpp"
   append(L"}");
-                                                            #line 655 "CodeGeneratorGo.cpp.template"
+                                                            #line 659 "CodeGeneratorGo.cpp.template"
                                                               }
                                                             }
 
                                                             void CodeGeneratorGo::generateBinarySearch(const char *input, const char *outputPrefix, const char *outputSuffix, const char *map, size_t size)
                                                             {
-                                                            #line 1067 "CodeGeneratorGo.cpp"
+                                                            #line 1081 "CodeGeneratorGo.cpp"
   append(L"\n");
   append(L"int lo = 0, hi = ");
-                                                            #line 661 "CodeGeneratorGo.cpp.template"
+                                                            #line 665 "CodeGeneratorGo.cpp.template"
                                                               print(size / 3 - 1);
-                                                            #line 1072 "CodeGeneratorGo.cpp"
+                                                            #line 1086 "CodeGeneratorGo.cpp"
   append(L";\n");
   append(L"for (int m = ");
-                                                            #line 663 "CodeGeneratorGo.cpp.template"
+                                                            #line 667 "CodeGeneratorGo.cpp.template"
                                                               print((size / 3) >> 1);
-                                                            #line 1077 "CodeGeneratorGo.cpp"
+                                                            #line 1091 "CodeGeneratorGo.cpp"
   append(L"; ; m = (hi + lo) >> 1)\n");
   append(L"{\n");
   append(L"  if (");
-                                                            #line 666 "CodeGeneratorGo.cpp.template"
-                                                              print(map);
-                                                            #line 1083 "CodeGeneratorGo.cpp"
-  append(L"[m] > ");
-                                                            #line 667 "CodeGeneratorGo.cpp.template"
-                                                              print(input);
-                                                            #line 1087 "CodeGeneratorGo.cpp"
-  append(L") {hi = m - 1;}\n");
-  append(L"  else if (");
-                                                            #line 669 "CodeGeneratorGo.cpp.template"
-                                                              print(map);
-                                                            #line 1092 "CodeGeneratorGo.cpp"
-  append(L"[");
                                                             #line 670 "CodeGeneratorGo.cpp.template"
-                                                              print(size / 3);
-                                                            #line 1096 "CodeGeneratorGo.cpp"
-  append(L" + m] < ");
+                                                              print(map);
+                                                            #line 1097 "CodeGeneratorGo.cpp"
+  append(L"[m] > ");
                                                             #line 671 "CodeGeneratorGo.cpp.template"
                                                               print(input);
-                                                            #line 1100 "CodeGeneratorGo.cpp"
-  append(L") {lo = m + 1;}\n");
-  append(L"  else {");
+                                                            #line 1101 "CodeGeneratorGo.cpp"
+  append(L") {hi = m - 1;}\n");
+  append(L"  else if (");
                                                             #line 673 "CodeGeneratorGo.cpp.template"
-                                                              print(outputPrefix);
                                                               print(map);
                                                             #line 1106 "CodeGeneratorGo.cpp"
   append(L"[");
-                                                            #line 675 "CodeGeneratorGo.cpp.template"
-                                                              print(size / 3 * 2);
+                                                            #line 674 "CodeGeneratorGo.cpp.template"
+                                                              print(size / 3);
                                                             #line 1110 "CodeGeneratorGo.cpp"
-  append(L" + m]");
-                                                            #line 676 "CodeGeneratorGo.cpp.template"
-                                                              print(outputSuffix);
+  append(L" + m] < ");
+                                                            #line 675 "CodeGeneratorGo.cpp.template"
+                                                              print(input);
                                                             #line 1114 "CodeGeneratorGo.cpp"
+  append(L") {lo = m + 1;}\n");
+  append(L"  else {");
+                                                            #line 677 "CodeGeneratorGo.cpp.template"
+                                                              print(outputPrefix);
+                                                              print(map);
+                                                            #line 1120 "CodeGeneratorGo.cpp"
+  append(L"[");
+                                                            #line 679 "CodeGeneratorGo.cpp.template"
+                                                              print(size / 3 * 2);
+                                                            #line 1124 "CodeGeneratorGo.cpp"
+  append(L" + m]");
+                                                            #line 680 "CodeGeneratorGo.cpp.template"
+                                                              print(outputSuffix);
+                                                            #line 1128 "CodeGeneratorGo.cpp"
   append(L";}\n");
   append(L"  if (lo > hi) {");
-                                                            #line 678 "CodeGeneratorGo.cpp.template"
+                                                            #line 682 "CodeGeneratorGo.cpp.template"
                                                               print(outputPrefix);
-                                                            #line 1119 "CodeGeneratorGo.cpp"
+                                                            #line 1133 "CodeGeneratorGo.cpp"
   append(L"0");
-                                                            #line 679 "CodeGeneratorGo.cpp.template"
+                                                            #line 683 "CodeGeneratorGo.cpp.template"
                                                               print(outputSuffix);
-                                                            #line 1123 "CodeGeneratorGo.cpp"
+                                                            #line 1137 "CodeGeneratorGo.cpp"
   append(L";}\n");
   append(L"}");
-                                                            #line 681 "CodeGeneratorGo.cpp.template"
+                                                            #line 685 "CodeGeneratorGo.cpp.template"
                                                             }
 
 // End

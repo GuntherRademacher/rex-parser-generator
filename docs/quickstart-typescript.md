@@ -164,12 +164,16 @@ When looking at the generated TypeScript code, you will find this interface, tha
   export interface ParsingEventHandler
   {
     reset(source: string): void;
-    startNonterminal(name: string, begin: number): void;
-    endNonterminal(name: string, end: number): void;
-    terminal(name: string, begin: number, end: number): void;
+    startNonterminal(id: number, begin: number): void;
+    endNonterminal(id: number, end: number): void;
+    terminal(id: number, begin: number, end: number): void;
     whitespace(begin: number, end: number): void;
   }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the public static arrays `NONTERMINAL` and `TOKEN` of the generated `Parser` class, or by 
+calling its static `getNonterminalName(number)` and `getTerminalName(number)` methods.
 
 Applications could implement and use a `ParsingEventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `ParsingEventHandler` implementation doing just that:
 

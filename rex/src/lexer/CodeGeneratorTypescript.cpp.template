@@ -512,13 +512,9 @@
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
+                                                                bool isPublic = variable("tree").boolean() || variable("useGlr").boolean() || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
 ~
-  ~                                                             if (variable("useGlr").boolean())
-                                                                {
-  ~public~                                                      }
-                                                                else
-                                                                {
-  ~private~                                                     }
+  ~                                                             print(isPublic ? "public" : "private");
   ~ static ~                                                    print(a->getLongName());
            ~: string [] =
   [

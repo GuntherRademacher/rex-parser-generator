@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintScala.cpp.template
                                                             #line 1 "PrintScala.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -204,7 +204,7 @@
                                                               {
                                                             #line 206 "PrintScala.cpp"
   append(L"\n");
-  append(L"abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begin: Int, val end: Int) {");
+  append(L"abstract class DeferredEvent(var link: DeferredEvent, val id: Int, val begin: Int, val end: Int) {");
                                                             #line 123 "PrintScala.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
@@ -257,15 +257,15 @@
   append(L"  }\n");
   append(L"}\n");
   append(L"\n");
-  append(L"private class TerminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int) extends DeferredEvent(link, name, begin, end) {\n");
+  append(L"private class TerminalEvent(link: DeferredEvent, id: Int, begin: Int, end: Int) extends DeferredEvent(link, id, begin, end) {\n");
   append(L"  override def execute(eventHandler: BottomUpEventHandler): Unit = {\n");
-  append(L"    eventHandler.terminal(name, begin, end)\n");
+  append(L"    eventHandler.terminal(id, begin, end)\n");
   append(L"  }\n");
   append(L"}\n");
   append(L"\n");
-  append(L"private class NonterminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int) extends DeferredEvent(link, name, begin, end) {\n");
+  append(L"private class NonterminalEvent(link: DeferredEvent, id: Int, begin: Int, end: Int, count: Int) extends DeferredEvent(link, id, begin, end) {\n");
   append(L"  override def execute(eventHandler: BottomUpEventHandler): Unit = {\n");
-  append(L"    eventHandler.nonterminal(name, begin, end, count)\n");
+  append(L"    eventHandler.nonterminal(id, begin, end, count)\n");
   append(L"  }\n");
   append(L"}\n");
                                                             #line 175 "PrintScala.cpp.template"
@@ -274,7 +274,7 @@
                                                             #line 275 "PrintScala.cpp"
   append(L"\n");
   append(L"\n");
-  append(L"private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, null, begin, end) {\n");
+  append(L"private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, -1, begin, end) {\n");
   append(L"  override def execute(eventHandler: BottomUpEventHandler): Unit = {\n");
   append(L"    eventHandler.ambiguity(begin, end)\n");
   append(L"  }\n");
@@ -555,56 +555,68 @@
   append(L".ParseTreeBuilder\n");
   append(L"  treeBuilder.reset(input)\n");
   append(L"  second.show(treeBuilder)\n");
-  append(L"  treeBuilder.nonterminal(\"ALTERNATIVE\", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)\n");
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 335 "PrintScala.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 562 "PrintScala.cpp"
+  append(L", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)\n");
   append(L"  val secondTree = treeBuilder.pop(1)(0)\n");
   append(L"  first.show(treeBuilder)\n");
-  append(L"  treeBuilder.nonterminal(\"ALTERNATIVE\", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)\n");
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 339 "PrintScala.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                                                            #line 569 "PrintScala.cpp"
+  append(L", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)\n");
   append(L"  treeBuilder.push(secondTree)\n");
-  append(L"  treeBuilder.nonterminal(\"AMBIGUOUS\", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)");
-                                                            #line 341 "PrintScala.cpp.template"
+  append(L"  treeBuilder.nonterminal(");
+                                                            #line 342 "PrintScala.cpp.template"
+                                                                  print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                                                            #line 575 "PrintScala.cpp"
+  append(L", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)");
+                                                            #line 344 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 567 "PrintScala.cpp"
+                                                            #line 579 "PrintScala.cpp"
   append(L"\n");
   append(L"  val exception = new ");
-                                                            #line 343 "PrintScala.cpp.template"
+                                                            #line 346 "PrintScala.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 572 "PrintScala.cpp"
+                                                            #line 584 "PrintScala.cpp"
   append(L".ParseException(begin, end, -1, -1, -1)\n");
   append(L"  exception.setAmbiguousInput(");
-                                                            #line 345 "PrintScala.cpp.template"
+                                                            #line 348 "PrintScala.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 578 "PrintScala.cpp"
+                                                            #line 590 "PrintScala.cpp"
   append(L"treeBuilder");
-                                                            #line 347 "PrintScala.cpp.template"
+                                                            #line 350 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 582 "PrintScala.cpp"
+                                                            #line 594 "PrintScala.cpp"
   append(L")\n");
   append(L"  throw exception\n");
   append(L"}");
-                                                            #line 350 "PrintScala.cpp.template"
+                                                            #line 353 "PrintScala.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 590 "PrintScala.cpp"
+                                                            #line 602 "PrintScala.cpp"
   append(L"\n");
   append(L"def resolve(thread: ");
-                                                            #line 354 "PrintScala.cpp.template"
+                                                            #line 357 "PrintScala.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 595 "PrintScala.cpp"
+                                                            #line 607 "PrintScala.cpp"
   append(L".ParsingThread, other: ");
-                                                            #line 355 "PrintScala.cpp.template"
-                                                                print(className.c_str());
-                                                            #line 599 "PrintScala.cpp"
-  append(L".ParsingThread): ");
-                                                            #line 356 "PrintScala.cpp.template"
-                                                                print(className.c_str());
-                                                            #line 603 "PrintScala.cpp"
-  append(L".ParsingThread = {");
                                                             #line 358 "PrintScala.cpp.template"
+                                                                print(className.c_str());
+                                                            #line 611 "PrintScala.cpp"
+  append(L".ParsingThread): ");
+                                                            #line 359 "PrintScala.cpp.template"
+                                                                print(className.c_str());
+                                                            #line 615 "PrintScala.cpp"
+  append(L".ParsingThread = {");
+                                                            #line 361 "PrintScala.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 608 "PrintScala.cpp"
+                                                            #line 620 "PrintScala.cpp"
   append(L"\n");
   append(L"  var a = thread.stack\n");
   append(L"  var b = other.stack\n");
@@ -614,26 +626,26 @@
   append(L"    a = a.link\n");
   append(L"    b = b.link\n");
   append(L"  }");
-                                                            #line 368 "PrintScala.cpp.template"
+                                                            #line 371 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 620 "PrintScala.cpp"
+                                                            #line 632 "PrintScala.cpp"
   append(L"\n");
-                                                            #line 370 "PrintScala.cpp.template"
+                                                            #line 373 "PrintScala.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 625 "PrintScala.cpp"
+                                                            #line 637 "PrintScala.cpp"
   append(L"\n");
   append(L"  var ea = thread.deferredEvent\n");
   append(L"  var eb = other.deferredEvent\n");
   append(L"  var ua: ");
-                                                            #line 375 "PrintScala.cpp.template"
+                                                            #line 378 "PrintScala.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 632 "PrintScala.cpp"
+                                                            #line 644 "PrintScala.cpp"
   append(L".DeferredEvent = null\n");
   append(L"  var ub: ");
-                                                            #line 377 "PrintScala.cpp.template"
+                                                            #line 380 "PrintScala.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 637 "PrintScala.cpp"
+                                                            #line 649 "PrintScala.cpp"
   append(L".DeferredEvent = null\n");
   append(L"  while (ea != eb) {\n");
   append(L"    if ((if (ea == null) 0 else ea.depth) >= (if (eb == null) 0 else eb.depth)) {\n");
@@ -646,49 +658,49 @@
   append(L"    }\n");
   append(L"  }\n");
   append(L"  val sa = ua != null && ua.isInstanceOf[");
-                                                            #line 389 "PrintScala.cpp.template"
+                                                            #line 392 "PrintScala.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 652 "PrintScala.cpp"
+                                                            #line 664 "PrintScala.cpp"
   append(L".TerminalEvent]\n");
   append(L"  val sb = ub != null && ub.isInstanceOf[");
-                                                            #line 391 "PrintScala.cpp.template"
+                                                            #line 394 "PrintScala.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 657 "PrintScala.cpp"
+                                                            #line 669 "PrintScala.cpp"
   append(L".TerminalEvent]\n");
   append(L"  val result = if (sa != sb) (if (sb) other else thread) else if (other.eventCount < thread.eventCount) other else thread");
-                                                            #line 394 "PrintScala.cpp.template"
+                                                            #line 397 "PrintScala.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 664 "PrintScala.cpp"
+                                                            #line 676 "PrintScala.cpp"
   append(L"\n");
   append(L"  val result = if (other.eventCount < thread.eventCount) other else thread");
-                                                            #line 399 "PrintScala.cpp.template"
+                                                            #line 402 "PrintScala.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 671 "PrintScala.cpp"
+                                                            #line 683 "PrintScala.cpp"
   append(L"\n");
   append(L"  result.addAmbiguity(begin, result.e0)");
-                                                            #line 403 "PrintScala.cpp.template"
+                                                            #line 406 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 676 "PrintScala.cpp"
+                                                            #line 688 "PrintScala.cpp"
   append(L"\n");
   append(L"  result\n");
   append(L"}");
-                                                            #line 406 "PrintScala.cpp.template"
+                                                            #line 409 "PrintScala.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintScala::openThread()
                                                             {
-                                                            #line 686 "PrintScala.cpp"
+                                                            #line 698 "PrintScala.cpp"
   append(L"\n");
   append(L"class ParsingThread extends Ordered[ParsingThread] {\n");
   append(L"  var parser: ");
-                                                            #line 413 "PrintScala.cpp.template"
+                                                            #line 416 "PrintScala.cpp.template"
                                                               print(className.c_str());
-                                                            #line 692 "PrintScala.cpp"
+                                                            #line 704 "PrintScala.cpp"
   append(L" = null\n");
   append(L"  var threads: PriorityQueue[ParsingThread] = null\n");
   append(L"  var accepted: Boolean = false\n");
@@ -696,101 +708,101 @@
   append(L"  var state = 0\n");
   append(L"  var action = 0\n");
   append(L"  var target = 0");
-                                                            #line 420 "PrintScala.cpp.template"
+                                                            #line 423 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 703 "PrintScala.cpp"
+                                                            #line 715 "PrintScala.cpp"
   append(L"\n");
   append(L"  var deferredEvent: DeferredEvent = null");
-                                                            #line 423 "PrintScala.cpp.template"
+                                                            #line 426 "PrintScala.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 710 "PrintScala.cpp"
+                                                            #line 722 "PrintScala.cpp"
   append(L"\n");
   append(L"  var deferredCode: DeferredCode = null");
-                                                            #line 427 "PrintScala.cpp.template"
+                                                            #line 430 "PrintScala.cpp.template"
                                                               }
-                                                            #line 715 "PrintScala.cpp"
+                                                            #line 727 "PrintScala.cpp"
   append(L"\n");
   append(L"  var id = 0");
-                                                            #line 429 "PrintScala.cpp.template"
+                                                            #line 432 "PrintScala.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 721 "PrintScala.cpp"
+                                                            #line 733 "PrintScala.cpp"
   append(L"\n");
   append(L"  var eventCount = 0");
-                                                            #line 432 "PrintScala.cpp.template"
+                                                            #line 435 "PrintScala.cpp.template"
                                                               }
-                                                            #line 726 "PrintScala.cpp"
+                                                            #line 738 "PrintScala.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  def open(initialState: Int");
-                                                            #line 435 "PrintScala.cpp.template"
+                                                            #line 438 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 733 "PrintScala.cpp"
+                                                            #line 745 "PrintScala.cpp"
   append(L", eh: BottomUpEventHandler");
-                                                            #line 437 "PrintScala.cpp.template"
+                                                            #line 440 "PrintScala.cpp.template"
                                                               }
-                                                            #line 737 "PrintScala.cpp"
+                                                            #line 749 "PrintScala.cpp"
   append(L", t: Int): PriorityQueue[ParsingThread] = {\n");
   append(L"    accepted = false");
-                                                            #line 439 "PrintScala.cpp.template"
+                                                            #line 442 "PrintScala.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 743 "PrintScala.cpp"
+                                                            #line 755 "PrintScala.cpp"
   append(L"\n");
   append(L"    eventCount = 0");
-                                                            #line 442 "PrintScala.cpp.template"
+                                                            #line 445 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 750 "PrintScala.cpp"
+                                                            #line 762 "PrintScala.cpp"
   append(L"\n");
   append(L"    eventHandler = eh\n");
   append(L"    if (eventHandler != null) {\n");
   append(L"      eventHandler.reset(parser.input)\n");
   append(L"    }\n");
   append(L"    deferredEvent = null");
-                                                            #line 450 "PrintScala.cpp.template"
+                                                            #line 453 "PrintScala.cpp.template"
                                                               }
-                                                            #line 759 "PrintScala.cpp"
+                                                            #line 771 "PrintScala.cpp"
   append(L"\n");
   append(L"    target = t");
-                                                            #line 452 "PrintScala.cpp.template"
+                                                            #line 455 "PrintScala.cpp.template"
                                                               if (hasCustomCode && useGlr)
                                                               {
-                                                            #line 765 "PrintScala.cpp"
+                                                            #line 777 "PrintScala.cpp"
   append(L"\n");
   append(L"    deferredCode = null");
-                                                            #line 455 "PrintScala.cpp.template"
+                                                            #line 458 "PrintScala.cpp.template"
                                                               }
-                                                            #line 770 "PrintScala.cpp"
+                                                            #line 782 "PrintScala.cpp"
   append(L"\n");
   append(L"    stack = new StackNode(-1, ");
-                                                            #line 457 "PrintScala.cpp.template"
+                                                            #line 460 "PrintScala.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 776 "PrintScala.cpp"
+                                                            #line 788 "PrintScala.cpp"
   append(L"0, ");
-                                                            #line 459 "PrintScala.cpp.template"
+                                                            #line 462 "PrintScala.cpp.template"
                                                               }
-                                                            #line 780 "PrintScala.cpp"
+                                                            #line 792 "PrintScala.cpp"
   append(L"e0, null)\n");
   append(L"    state = initialState\n");
   append(L"    action = predict(initialState)");
-                                                            #line 462 "PrintScala.cpp.template"
+                                                            #line 465 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 787 "PrintScala.cpp"
+                                                            #line 799 "PrintScala.cpp"
   append(L"\n");
   append(L"    bw = e0\n");
   append(L"    bs = e0\n");
   append(L"    es = e0");
-                                                            #line 467 "PrintScala.cpp.template"
+                                                            #line 470 "PrintScala.cpp.template"
                                                               }
-                                                            #line 794 "PrintScala.cpp"
+                                                            #line 806 "PrintScala.cpp"
   append(L"\n");
   append(L"    threads = PriorityQueue()\n");
   append(L"    threads += this\n");
@@ -801,37 +813,37 @@
   append(L"    this.action = action\n");
   append(L"    accepted = other.accepted\n");
   append(L"    parser = other.parser");
-                                                            #line 477 "PrintScala.cpp.template"
+                                                            #line 480 "PrintScala.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 808 "PrintScala.cpp"
+                                                            #line 820 "PrintScala.cpp"
   append(L"\n");
   append(L"    eventCount = other.eventCount");
-                                                            #line 480 "PrintScala.cpp.template"
+                                                            #line 483 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 815 "PrintScala.cpp"
+                                                            #line 827 "PrintScala.cpp"
   append(L"\n");
   append(L"    bs = other.bs\n");
   append(L"    bw = other.bw\n");
   append(L"    es = other.es\n");
   append(L"    eventHandler = other.eventHandler\n");
   append(L"    deferredEvent = other.deferredEvent");
-                                                            #line 488 "PrintScala.cpp.template"
+                                                            #line 491 "PrintScala.cpp.template"
                                                               }
-                                                            #line 824 "PrintScala.cpp"
+                                                            #line 836 "PrintScala.cpp"
   append(L"\n");
   append(L"    target = other.target");
-                                                            #line 490 "PrintScala.cpp.template"
+                                                            #line 493 "PrintScala.cpp.template"
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 830 "PrintScala.cpp"
+                                                            #line 842 "PrintScala.cpp"
   append(L"\n");
   append(L"    deferredCode = other.deferredCode");
-                                                            #line 493 "PrintScala.cpp.template"
+                                                            #line 496 "PrintScala.cpp.template"
                                                               }
-                                                            #line 835 "PrintScala.cpp"
+                                                            #line 847 "PrintScala.cpp"
   append(L"\n");
   append(L"    parser.maxId += 1\n");
   append(L"    id = parser.maxId\n");
@@ -840,39 +852,39 @@
   append(L"    stack = other.stack\n");
   append(L"    b0 = other.b0\n");
   append(L"    e0 = other.e0");
-                                                            #line 501 "PrintScala.cpp.template"
+                                                            #line 504 "PrintScala.cpp.template"
                                                               for (size_t i = 1; i <= grammar->k; ++i)
                                                               {
                                                                 const wchar_t *iString = format.toString<wchar_t>(i);
-                                                            #line 848 "PrintScala.cpp"
+                                                            #line 860 "PrintScala.cpp"
   append(L"\n");
   append(L"    l");
-                                                            #line 505 "PrintScala.cpp.template"
-                                                                print(iString);
-                                                            #line 853 "PrintScala.cpp"
-  append(L" = other.l");
-                                                            #line 506 "PrintScala.cpp.template"
-                                                                print(iString);
-                                                            #line 857 "PrintScala.cpp"
-  append(L"\n");
-  append(L"    b");
                                                             #line 508 "PrintScala.cpp.template"
                                                                 print(iString);
-                                                            #line 862 "PrintScala.cpp"
-  append(L" = other.b");
+                                                            #line 865 "PrintScala.cpp"
+  append(L" = other.l");
                                                             #line 509 "PrintScala.cpp.template"
                                                                 print(iString);
-                                                            #line 866 "PrintScala.cpp"
+                                                            #line 869 "PrintScala.cpp"
   append(L"\n");
-  append(L"    e");
+  append(L"    b");
                                                             #line 511 "PrintScala.cpp.template"
                                                                 print(iString);
-                                                            #line 871 "PrintScala.cpp"
-  append(L" = other.e");
+                                                            #line 874 "PrintScala.cpp"
+  append(L" = other.b");
                                                             #line 512 "PrintScala.cpp.template"
                                                                 print(iString);
+                                                            #line 878 "PrintScala.cpp"
+  append(L"\n");
+  append(L"    e");
+                                                            #line 514 "PrintScala.cpp.template"
+                                                                print(iString);
+                                                            #line 883 "PrintScala.cpp"
+  append(L" = other.e");
+                                                            #line 515 "PrintScala.cpp.template"
+                                                                print(iString);
                                                               }
-                                                            #line 876 "PrintScala.cpp"
+                                                            #line 888 "PrintScala.cpp"
   append(L"\n");
   append(L"    end = other.end\n");
   append(L"    this\n");
@@ -891,19 +903,19 @@
   append(L"    comp\n");
   append(L"  }\n");
   append(L"\n");
-                                                            #line 532 "PrintScala.cpp.template"
+                                                            #line 535 "PrintScala.cpp.template"
                                                               if (resolvesAmbiguity && tree)
                                                               {
-                                                            #line 898 "PrintScala.cpp"
+                                                            #line 910 "PrintScala.cpp"
   append(L"\n");
   append(L"  def addAmbiguity(begin: Int, end: Int): Unit = {\n");
   append(L"    if (eventHandler != null)\n");
   append(L"      deferredEvent = new AmbiguityEvent(deferredEvent, begin, end)\n");
   append(L"  }\n");
   append(L"\n");
-                                                            #line 540 "PrintScala.cpp.template"
+                                                            #line 543 "PrintScala.cpp.template"
                                                               }
-                                                            #line 907 "PrintScala.cpp"
+                                                            #line 919 "PrintScala.cpp"
   append(L"  override def equals(other: Any): Boolean =\n");
   append(L"    other match {\n");
   append(L"      case other: ParsingThread =>\n");
@@ -919,7 +931,7 @@
   append(L"    }\n");
   append(L"\n");
   append(L"  def parse : Int = {");
-                                                            #line 555 "PrintScala.cpp.template"
+                                                            #line 558 "PrintScala.cpp.template"
                                                               increaseIndent();
                                                               beginPublic();
                                                             }
@@ -929,18 +941,18 @@
                                                               increaseIndent(i);
                                                               if (trace)
                                                               {
-                                                            #line 933 "PrintScala.cpp"
+                                                            #line 945 "PrintScala.cpp"
   append(L"\n");
-                                                            #line 565 "PrintScala.cpp.template"
+                                                            #line 568 "PrintScala.cpp.template"
                                                                 if (useGlr && withinThread)
                                                                 {
-                                                            #line 938 "PrintScala.cpp"
+                                                            #line 950 "PrintScala.cpp"
   append(L"parser.");
-                                                            #line 567 "PrintScala.cpp.template"
+                                                            #line 570 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 942 "PrintScala.cpp"
+                                                            #line 954 "PrintScala.cpp"
   append(L"flushTrace");
-                                                            #line 568 "PrintScala.cpp.template"
+                                                            #line 571 "PrintScala.cpp.template"
                                                               }
                                                               decreaseIndent(i);
                                                             }
@@ -952,249 +964,249 @@
                                                                                         bool constant,
                                                                                         const wchar_t *clazz)
                                                             {
-                                                            #line 956 "PrintScala.cpp"
+                                                            #line 968 "PrintScala.cpp"
   append(L"\n");
-                                                            #line 580 "PrintScala.cpp.template"
+                                                            #line 583 "PrintScala.cpp.template"
                                                               print(visibility);
-                                                            #line 960 "PrintScala.cpp"
+                                                            #line 972 "PrintScala.cpp"
   append(L"def ");
-                                                            #line 581 "PrintScala.cpp.template"
+                                                            #line 584 "PrintScala.cpp.template"
                                                               print(name);
                                                               if (args[0])
                                                               {
-                                                            #line 966 "PrintScala.cpp"
+                                                            #line 978 "PrintScala.cpp"
   append(L"(");
-                                                            #line 584 "PrintScala.cpp.template"
+                                                            #line 587 "PrintScala.cpp.template"
                                                                 printArgs(args);
-                                                            #line 970 "PrintScala.cpp"
+                                                            #line 982 "PrintScala.cpp"
   append(L")");
-                                                            #line 586 "PrintScala.cpp.template"
+                                                            #line 589 "PrintScala.cpp.template"
                                                               }
                                                               if (wcscmp(type, voidType()) == 0)
                                                               {
                                                                 type = L"Unit ";
                                                               }
-                                                            #line 978 "PrintScala.cpp"
+                                                            #line 990 "PrintScala.cpp"
   append(L": ");
-                                                            #line 591 "PrintScala.cpp.template"
+                                                            #line 594 "PrintScala.cpp.template"
                                                               print(type);
-                                                            #line 982 "PrintScala.cpp"
+                                                            #line 994 "PrintScala.cpp"
   append(L"=");
-                                                            #line 592 "PrintScala.cpp.template"
+                                                            #line 595 "PrintScala.cpp.template"
                                                             }
 
                                                             void PrintScala::privateVars()
                                                             {
                                                               if (trace)
                                                               {
-                                                            #line 991 "PrintScala.cpp"
+                                                            #line 1003 "PrintScala.cpp"
   append(L"\n");
   append(L"  def lookaheadString: String = {\n");
   append(L"    var result = \"\"\n");
   append(L"    if (l1 > 0) {\n");
   append(L"      result += ");
-                                                            #line 602 "PrintScala.cpp.template"
+                                                            #line 605 "PrintScala.cpp.template"
                                                                 print(staticPrefix());
-                                                            #line 999 "PrintScala.cpp"
+                                                            #line 1011 "PrintScala.cpp"
   append(L"TOKEN(l1)");
-                                                            #line 603 "PrintScala.cpp.template"
+                                                            #line 606 "PrintScala.cpp.template"
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 1004 "PrintScala.cpp"
+                                                            #line 1016 "PrintScala.cpp"
   append(L"\n");
   append(L"      if (l");
-                                                            #line 606 "PrintScala.cpp.template"
-                                                                  print(format.toString<wchar_t>(i));
-                                                            #line 1009 "PrintScala.cpp"
-  append(L" > 0) {\n");
-  append(L"        result += \" \" + ");
-                                                            #line 608 "PrintScala.cpp.template"
-                                                                  print(staticPrefix());
-                                                            #line 1014 "PrintScala.cpp"
-  append(L"TOKEN(l");
                                                             #line 609 "PrintScala.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1018 "PrintScala.cpp"
+                                                            #line 1021 "PrintScala.cpp"
+  append(L" > 0) {\n");
+  append(L"        result += \" \" + ");
+                                                            #line 611 "PrintScala.cpp.template"
+                                                                  print(staticPrefix());
+                                                            #line 1026 "PrintScala.cpp"
+  append(L"TOKEN(l");
+                                                            #line 612 "PrintScala.cpp.template"
+                                                                  print(format.toString<wchar_t>(i));
+                                                            #line 1030 "PrintScala.cpp"
   append(L")");
-                                                            #line 610 "PrintScala.cpp.template"
+                                                            #line 613 "PrintScala.cpp.template"
                                                                   increaseIndent();
                                                                 }
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 1026 "PrintScala.cpp"
+                                                            #line 1038 "PrintScala.cpp"
   append(L"\n");
   append(L"      }");
-                                                            #line 616 "PrintScala.cpp.template"
+                                                            #line 619 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1031 "PrintScala.cpp"
+                                                            #line 1043 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    result\n");
   append(L"  }\n");
-                                                            #line 621 "PrintScala.cpp.template"
+                                                            #line 624 "PrintScala.cpp.template"
                                                               }
 
                                                               if (grammar->k > 1 || memoization || ! grammar->decisionPoints.empty())
                                                               {
-                                                            #line 1041 "PrintScala.cpp"
+                                                            #line 1053 "PrintScala.cpp"
   append(L"\n");
   append(L"  var lk = 0");
-                                                            #line 626 "PrintScala.cpp.template"
+                                                            #line 629 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1046 "PrintScala.cpp"
+                                                            #line 1058 "PrintScala.cpp"
   append(L"\n");
   append(L"  var b0 = 0\n");
   append(L"  var e0 = 0");
-                                                            #line 629 "PrintScala.cpp.template"
+                                                            #line 632 "PrintScala.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 1055 "PrintScala.cpp"
+                                                            #line 1067 "PrintScala.cpp"
   append(L"\n");
   append(L"  var l");
-                                                            #line 634 "PrintScala.cpp.template"
+                                                            #line 637 "PrintScala.cpp.template"
                                                                 print(asString);
-                                                            #line 1060 "PrintScala.cpp"
+                                                            #line 1072 "PrintScala.cpp"
   append(L" = 0\n");
   append(L"  var b");
-                                                            #line 636 "PrintScala.cpp.template"
+                                                            #line 639 "PrintScala.cpp.template"
                                                                 print(asString);
-                                                            #line 1065 "PrintScala.cpp"
+                                                            #line 1077 "PrintScala.cpp"
   append(L" = 0\n");
   append(L"  var e");
-                                                            #line 638 "PrintScala.cpp.template"
+                                                            #line 641 "PrintScala.cpp.template"
                                                                 print(asString);
-                                                            #line 1070 "PrintScala.cpp"
+                                                            #line 1082 "PrintScala.cpp"
   append(L" = 0");
-                                                            #line 639 "PrintScala.cpp.template"
+                                                            #line 642 "PrintScala.cpp.template"
                                                               }
                                                               if (tree && useGlr)
                                                               {
-                                                            #line 1076 "PrintScala.cpp"
+                                                            #line 1088 "PrintScala.cpp"
   append(L"\n");
   append(L"  var bw = 0\n");
   append(L"  var bs = 0\n");
   append(L"  var es = 0");
-                                                            #line 645 "PrintScala.cpp.template"
+                                                            #line 648 "PrintScala.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 1085 "PrintScala.cpp"
+                                                            #line 1097 "PrintScala.cpp"
   append(L"\n");
   append(L"  var bx = 0\n");
   append(L"  var ex = 0\n");
   append(L"  var sx = 0\n");
   append(L"  var lx = 0\n");
   append(L"  var tx = 0");
-                                                            #line 653 "PrintScala.cpp.template"
+                                                            #line 656 "PrintScala.cpp.template"
                                                               }
                                                               if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 1096 "PrintScala.cpp"
+                                                            #line 1108 "PrintScala.cpp"
   append(L"\n");
   append(L"  var iStack = new Array[Int](");
-                                                            #line 657 "PrintScala.cpp.template"
+                                                            #line 660 "PrintScala.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1102 "PrintScala.cpp"
+                                                            #line 1114 "PrintScala.cpp"
   append(L"192");
-                                                            #line 659 "PrintScala.cpp.template"
+                                                            #line 662 "PrintScala.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1108 "PrintScala.cpp"
+                                                            #line 1120 "PrintScala.cpp"
   append(L"128");
-                                                            #line 662 "PrintScala.cpp.template"
+                                                            #line 665 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1112 "PrintScala.cpp"
+                                                            #line 1124 "PrintScala.cpp"
   append(L")\n");
   append(L"  var top = -1");
-                                                            #line 664 "PrintScala.cpp.template"
+                                                            #line 667 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1119 "PrintScala.cpp"
+                                                            #line 1131 "PrintScala.cpp"
   append(L"\n");
   append(L"  var eventHandler: ");
-                                                            #line 668 "PrintScala.cpp.template"
+                                                            #line 671 "PrintScala.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1124 "PrintScala.cpp"
+                                                            #line 1136 "PrintScala.cpp"
   append(L".");
-                                                            #line 669 "PrintScala.cpp.template"
+                                                            #line 672 "PrintScala.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1129 "PrintScala.cpp"
+                                                            #line 1141 "PrintScala.cpp"
   append(L"BottomUp");
-                                                            #line 671 "PrintScala.cpp.template"
+                                                            #line 674 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1133 "PrintScala.cpp"
+                                                            #line 1145 "PrintScala.cpp"
   append(L"EventHandler = null");
-                                                            #line 672 "PrintScala.cpp.template"
+                                                            #line 675 "PrintScala.cpp.template"
                                                               }
                                                               if (memoization)
                                                               {
-                                                            #line 1139 "PrintScala.cpp"
+                                                            #line 1151 "PrintScala.cpp"
   append(L"\n");
   append(L"  val memo = new HashMap[Int, Int]");
-                                                            #line 676 "PrintScala.cpp.template"
+                                                            #line 679 "PrintScala.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1145 "PrintScala.cpp"
+                                                            #line 1157 "PrintScala.cpp"
   append(L"\n");
   append(L"  var viable = false");
-                                                            #line 679 "PrintScala.cpp.template"
+                                                            #line 682 "PrintScala.cpp.template"
                                                                 }
                                                               }
                                                               if (useGlr)
                                                               {
-                                                            #line 1153 "PrintScala.cpp"
+                                                            #line 1165 "PrintScala.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 685 "PrintScala.cpp.template"
+                                                            #line 688 "PrintScala.cpp.template"
                                                               }
                                                             }
 
                                                             void PrintScala::printSimpleMain()
                                                             {
-                                                            #line 1162 "PrintScala.cpp"
+                                                            #line 1174 "PrintScala.cpp"
   append(L"\n");
   append(L"  def main(args: Array[String]): Unit = {\n");
   append(L"    if (args.length == 0) {\n");
   append(L"      println(\"Usage: scala ");
-                                                            #line 693 "PrintScala.cpp.template"
+                                                            #line 696 "PrintScala.cpp.template"
                                                               print(className.c_str());
                                                               if (tree)
                                                               {
-                                                            #line 1171 "PrintScala.cpp"
+                                                            #line 1183 "PrintScala.cpp"
   append(L" [-i]");
-                                                            #line 696 "PrintScala.cpp.template"
+                                                            #line 699 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1175 "PrintScala.cpp"
+                                                            #line 1187 "PrintScala.cpp"
   append(L" INPUT...\")\n");
   append(L"      println()\n");
   append(L"      println(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\\n\")");
-                                                            #line 700 "PrintScala.cpp.template"
+                                                            #line 703 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1182 "PrintScala.cpp"
+                                                            #line 1194 "PrintScala.cpp"
   append(L"\n");
   append(L"      println()\n");
   append(L"      println(\"  Option:\")\n");
   append(L"      println(\"    -i     indented parse tree\")");
-                                                            #line 705 "PrintScala.cpp.template"
+                                                            #line 708 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1189 "PrintScala.cpp"
+                                                            #line 1201 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    else {\n");
   append(L"      var indent = false\n");
   append(L"      for (arg <- args) {");
-                                                            #line 710 "PrintScala.cpp.template"
+                                                            #line 713 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1198 "PrintScala.cpp"
+                                                            #line 1210 "PrintScala.cpp"
   append(L"\n");
   append(L"        if (arg == \"-i\") {\n");
   append(L"          indent = true\n");
@@ -1202,186 +1214,186 @@
   append(L"        else {\n");
   append(L"          val w = new OutputStreamWriter(System.out, \"utf-8\")\n");
   append(L"          val s = new XmlSerializer(w, indent)");
-                                                            #line 718 "PrintScala.cpp.template"
+                                                            #line 721 "PrintScala.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1209 "PrintScala.cpp"
+                                                            #line 1221 "PrintScala.cpp"
   append(L"\n");
   append(L"          val b = new ParseTreeBuilder");
-                                                            #line 721 "PrintScala.cpp.template"
+                                                            #line 724 "PrintScala.cpp.template"
                                                                 }
                                                                 increaseIndent();
                                                               }
-                                                            #line 1216 "PrintScala.cpp"
+                                                            #line 1228 "PrintScala.cpp"
   append(L"\n");
   append(L"        val parser = new ");
-                                                            #line 725 "PrintScala.cpp.template"
+                                                            #line 728 "PrintScala.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1221 "PrintScala.cpp"
+                                                            #line 1233 "PrintScala.cpp"
   append(L"(read(arg)");
-                                                            #line 726 "PrintScala.cpp.template"
+                                                            #line 729 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1228 "PrintScala.cpp"
+                                                            #line 1240 "PrintScala.cpp"
   append(L", b");
-                                                            #line 730 "PrintScala.cpp.template"
+                                                            #line 733 "PrintScala.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1234 "PrintScala.cpp"
+                                                            #line 1246 "PrintScala.cpp"
   append(L", s");
-                                                            #line 733 "PrintScala.cpp.template"
+                                                            #line 736 "PrintScala.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1239 "PrintScala.cpp"
+                                                            #line 1251 "PrintScala.cpp"
   append(L")\n");
   append(L"        try {");
-                                                            #line 736 "PrintScala.cpp.template"
+                                                            #line 739 "PrintScala.cpp.template"
                                                               if (trace)
                                                               {
-                                                            #line 1245 "PrintScala.cpp"
+                                                            #line 1257 "PrintScala.cpp"
   append(L"\n");
   append(L"          parser.writeTrace(\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?\" + \">\\n<trace>\\n\")");
-                                                            #line 740 "PrintScala.cpp.template"
+                                                            #line 743 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1250 "PrintScala.cpp"
+                                                            #line 1262 "PrintScala.cpp"
   append(L"\n");
   append(L"          parser.");
-                                                            #line 742 "PrintScala.cpp.template"
+                                                            #line 745 "PrintScala.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
                                                               if (trace)
                                                               {
-                                                            #line 1258 "PrintScala.cpp"
+                                                            #line 1270 "PrintScala.cpp"
   append(L"\n");
   append(L"          parser.writeTrace(\"</trace>\\n\")");
-                                                            #line 747 "PrintScala.cpp.template"
+                                                            #line 750 "PrintScala.cpp.template"
                                                               }
                                                               if (tree && isLrParser)
                                                               {
-                                                            #line 1265 "PrintScala.cpp"
+                                                            #line 1277 "PrintScala.cpp"
   append(L"\n");
   append(L"          b.serialize(s)");
-                                                            #line 751 "PrintScala.cpp.template"
+                                                            #line 754 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1270 "PrintScala.cpp"
+                                                            #line 1282 "PrintScala.cpp"
   append(L"\n");
   append(L"        }\n");
   append(L"        catch {\n");
   append(L"          case pe: ParseException =>");
-                                                            #line 755 "PrintScala.cpp.template"
+                                                            #line 758 "PrintScala.cpp.template"
                                                               if (rejectsAmbiguity() && tree)
                                                               {
-                                                            #line 1278 "PrintScala.cpp"
+                                                            #line 1290 "PrintScala.cpp"
   append(L"\n");
   append(L"            if (pe.isAmbiguousInput) {\n");
   append(L"              pe.serialize(s)\n");
   append(L"              w.write(\"\\n\")\n");
   append(L"              w.flush()\n");
   append(L"            }");
-                                                            #line 762 "PrintScala.cpp.template"
+                                                            #line 765 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1287 "PrintScala.cpp"
+                                                            #line 1299 "PrintScala.cpp"
   append(L"\n");
   append(L"            throw new RuntimeException(\"ParseException while processing \" + arg + \":\\n\" + parser.getErrorMessage(pe))\n");
   append(L"        }");
-                                                            #line 765 "PrintScala.cpp.template"
+                                                            #line 768 "PrintScala.cpp.template"
                                                               if (tree || trace)
                                                               {
-                                                            #line 1294 "PrintScala.cpp"
+                                                            #line 1306 "PrintScala.cpp"
   append(L"\n");
   append(L"        finally {");
-                                                            #line 768 "PrintScala.cpp.template"
+                                                            #line 771 "PrintScala.cpp.template"
                                                               }
                                                               if (trace)
                                                               {
-                                                            #line 1301 "PrintScala.cpp"
+                                                            #line 1313 "PrintScala.cpp"
   append(L"\n");
   append(L"          parser.flushTrace");
-                                                            #line 772 "PrintScala.cpp.template"
+                                                            #line 775 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1308 "PrintScala.cpp"
+                                                            #line 1320 "PrintScala.cpp"
   append(L"\n");
   append(L"          w.close");
-                                                            #line 776 "PrintScala.cpp.template"
+                                                            #line 779 "PrintScala.cpp.template"
                                                               }
                                                               if (tree || trace)
                                                               {
-                                                            #line 1315 "PrintScala.cpp"
+                                                            #line 1327 "PrintScala.cpp"
   append(L"\n");
   append(L"        }");
-                                                            #line 780 "PrintScala.cpp.template"
+                                                            #line 783 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1322 "PrintScala.cpp"
+                                                            #line 1334 "PrintScala.cpp"
   append(L"\n");
   append(L"      }");
-                                                            #line 784 "PrintScala.cpp.template"
+                                                            #line 787 "PrintScala.cpp.template"
                                                                 decreaseIndent();
                                                               }
-                                                            #line 1328 "PrintScala.cpp"
+                                                            #line 1340 "PrintScala.cpp"
   append(L"\n");
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 790 "PrintScala.cpp.template"
+                                                            #line 793 "PrintScala.cpp.template"
                                                             }
 
                                                             void PrintScala::printFileProcessor()
                                                             {
-                                                            #line 1338 "PrintScala.cpp"
+                                                            #line 1350 "PrintScala.cpp"
   append(L"\n");
   append(L"  private class ParseJob(val name: String, val input: String) {");
-                                                            #line 796 "PrintScala.cpp.template"
+                                                            #line 799 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1344 "PrintScala.cpp"
+                                                            #line 1356 "PrintScala.cpp"
   append(L"\n");
   append(L"    var contentCounter = new ContentCounter");
-                                                            #line 799 "PrintScala.cpp.template"
+                                                            #line 802 "PrintScala.cpp.template"
                                                               }
                                                               if (isLrParser)
                                                               {
-                                                            #line 1351 "PrintScala.cpp"
+                                                            #line 1363 "PrintScala.cpp"
   append(L"\n");
   append(L"    var parseTreeBuilder = new ParseTreeBuilder");
-                                                            #line 803 "PrintScala.cpp.template"
+                                                            #line 806 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1356 "PrintScala.cpp"
+                                                            #line 1368 "PrintScala.cpp"
   append(L"\n");
   append(L"    var parser = new ");
-                                                            #line 805 "PrintScala.cpp.template"
+                                                            #line 808 "PrintScala.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1361 "PrintScala.cpp"
+                                                            #line 1373 "PrintScala.cpp"
   append(L"(input");
-                                                            #line 806 "PrintScala.cpp.template"
+                                                            #line 809 "PrintScala.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1366 "PrintScala.cpp"
+                                                            #line 1378 "PrintScala.cpp"
   append(L", null");
-                                                            #line 808 "PrintScala.cpp.template"
+                                                            #line 811 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1374 "PrintScala.cpp"
+                                                            #line 1386 "PrintScala.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 813 "PrintScala.cpp.template"
+                                                            #line 816 "PrintScala.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1380 "PrintScala.cpp"
+                                                            #line 1392 "PrintScala.cpp"
   append(L", contentCounter");
-                                                            #line 816 "PrintScala.cpp.template"
+                                                            #line 819 "PrintScala.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1385 "PrintScala.cpp"
+                                                            #line 1397 "PrintScala.cpp"
   append(L")\n");
   append(L"  }\n");
   append(L"\n");
@@ -1404,9 +1416,9 @@
   append(L"  def main(args: Array[String]): Unit = {\n");
   append(L"    if (args.length == 0) {\n");
   append(L"      println(\"Usage: scala ");
-                                                            #line 839 "PrintScala.cpp.template"
+                                                            #line 842 "PrintScala.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1410 "PrintScala.cpp"
+                                                            #line 1422 "PrintScala.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\")\n");
   append(L"      println()\n");
   append(L"      println(\"  parse all files that have names ending with ENDING, in current dir and below,\")\n");
@@ -1473,40 +1485,40 @@
   append(L"                try {\n");
   append(L"                  if (! quiet) print(\"parsing \" + job.name)\n");
   append(L"                  job.parser");
-                                                            #line 905 "PrintScala.cpp.template"
+                                                            #line 908 "PrintScala.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1480 "PrintScala.cpp"
+                                                            #line 1492 "PrintScala.cpp"
   append(L".thread");
-                                                            #line 907 "PrintScala.cpp.template"
+                                                            #line 910 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1484 "PrintScala.cpp"
+                                                            #line 1496 "PrintScala.cpp"
   append(L".reset(0, 0, 0)\n");
   append(L"                  job.parser.");
-                                                            #line 909 "PrintScala.cpp.template"
+                                                            #line 912 "PrintScala.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1490 "PrintScala.cpp"
+                                                            #line 1502 "PrintScala.cpp"
   append(L"\n");
   append(L"                  if (! quiet) println()");
-                                                            #line 912 "PrintScala.cpp.template"
+                                                            #line 915 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1498 "PrintScala.cpp"
+                                                            #line 1510 "PrintScala.cpp"
   append(L"\n");
   append(L"                  job.parseTreeBuilder.serialize(job.contentCounter)");
-                                                            #line 918 "PrintScala.cpp.template"
+                                                            #line 921 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1503 "PrintScala.cpp"
+                                                            #line 1515 "PrintScala.cpp"
   append(L"\n");
   append(L"                  if (job.contentCounter.length != job.input.length) {\n");
   append(L"                    throw new RuntimeException(\"content counter saw \" + job.contentCounter.length + \", but input length is \" + job.input.length);\n");
   append(L"                  }");
-                                                            #line 922 "PrintScala.cpp.template"
+                                                            #line 925 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1510 "PrintScala.cpp"
+                                                            #line 1522 "PrintScala.cpp"
   append(L"\n");
   append(L"                  parsed += job.input.length\n");
   append(L"                }\n");
@@ -1537,12 +1549,12 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 953 "PrintScala.cpp.template"
+                                                            #line 956 "PrintScala.cpp.template"
                                                             }
 
                                                             void PrintScala::printReadMethod()
                                                             {
-                                                            #line 1546 "PrintScala.cpp"
+                                                            #line 1558 "PrintScala.cpp"
   append(L"\n");
   append(L"  private def read(fileName: String) = {\n");
   append(L"    if (fileName(0) == '{' && fileName(fileName.length - 1) == '}') {\n");
@@ -1555,157 +1567,157 @@
   append(L"      if (content(0) == '\\ufeff') content.substring(1) else content\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 969 "PrintScala.cpp.template"
+                                                            #line 972 "PrintScala.cpp.template"
                                                             }
 
                                                             void PrintScala::printInterface()
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 1566 "PrintScala.cpp"
+                                                            #line 1578 "PrintScala.cpp"
   append(L"\n");
   append(L"package ");
-                                                            #line 976 "PrintScala.cpp.template"
+                                                            #line 979 "PrintScala.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 1571 "PrintScala.cpp"
+                                                            #line 1583 "PrintScala.cpp"
   append(L";\n");
-                                                            #line 978 "PrintScala.cpp.template"
+                                                            #line 981 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
                                                                 if (main)
                                                                 {
-                                                            #line 1579 "PrintScala.cpp"
+                                                            #line 1591 "PrintScala.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
-                                                            #line 986 "PrintScala.cpp.template"
+                                                            #line 989 "PrintScala.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1586 "PrintScala.cpp"
+                                                            #line 1598 "PrintScala.cpp"
   append(L"\n");
   append(L"public interface ");
-                                                            #line 989 "PrintScala.cpp.template"
+                                                            #line 992 "PrintScala.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1591 "PrintScala.cpp"
+                                                            #line 1603 "PrintScala.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  def initialize(CharSequence input");
-                                                            #line 992 "PrintScala.cpp.template"
+                                                            #line 995 "PrintScala.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1598 "PrintScala.cpp"
+                                                            #line 1610 "PrintScala.cpp"
   append(L", EventHandler eh");
-                                                            #line 995 "PrintScala.cpp.template"
+                                                            #line 998 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1602 "PrintScala.cpp"
+                                                            #line 1614 "PrintScala.cpp"
   append(L"): Unit\n");
   append(L"  def parse: Unit\n");
   append(L"  def reset: Unit\n");
   append(L"  public String getErrorMessage(ParseException e): Unit\n");
-                                                            #line 1000 "PrintScala.cpp.template"
+                                                            #line 1003 "PrintScala.cpp.template"
                                                               printParseException();
-                                                            #line 1609 "PrintScala.cpp"
+                                                            #line 1621 "PrintScala.cpp"
   append(L"}\n");
-                                                            #line 1002 "PrintScala.cpp.template"
+                                                            #line 1005 "PrintScala.cpp.template"
                                                             }
 
                                                             void PrintScala::printParseException()
                                                             {
-                                                            #line 1616 "PrintScala.cpp"
-  append(L"\n");
-  append(L"  class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {\n");
-                                                            #line 1008 "PrintScala.cpp.template"
-                                                              if (rejectsAmbiguity())
-                                                              {
-                                                            #line 1622 "PrintScala.cpp"
-  append(L"\n");
-  append(L"    private var ambiguousInput = false");
-                                                            #line 1011 "PrintScala.cpp.template"
-                                                                if (tree)
-                                                                {
                                                             #line 1628 "PrintScala.cpp"
   append(L"\n");
-  append(L"    private var ambiguityDescriptor: ParseTreeBuilder = null");
+  append(L"  class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {\n");
+                                                            #line 1011 "PrintScala.cpp.template"
+                                                              if (rejectsAmbiguity())
+                                                              {
+                                                            #line 1634 "PrintScala.cpp"
+  append(L"\n");
+  append(L"    private var ambiguousInput = false");
                                                             #line 1014 "PrintScala.cpp.template"
-                                                                }
-                                                            #line 1633 "PrintScala.cpp"
-  append(L"\n");
-  append(L"\n");
-  append(L"    def setAmbiguousInput(");
-                                                            #line 1017 "PrintScala.cpp.template"
                                                                 if (tree)
                                                                 {
                                                             #line 1640 "PrintScala.cpp"
-  append(L"ambiguityDescriptor: ParseTreeBuilder");
-                                                            #line 1020 "PrintScala.cpp.template"
+  append(L"\n");
+  append(L"    private var ambiguityDescriptor: ParseTreeBuilder = null");
+                                                            #line 1017 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1644 "PrintScala.cpp"
-  append(L"): Unit = {\n");
-  append(L"      ambiguousInput = true");
-                                                            #line 1022 "PrintScala.cpp.template"
+                                                            #line 1645 "PrintScala.cpp"
+  append(L"\n");
+  append(L"\n");
+  append(L"    def setAmbiguousInput(");
+                                                            #line 1020 "PrintScala.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1650 "PrintScala.cpp"
+                                                            #line 1652 "PrintScala.cpp"
+  append(L"ambiguityDescriptor: ParseTreeBuilder");
+                                                            #line 1023 "PrintScala.cpp.template"
+                                                                }
+                                                            #line 1656 "PrintScala.cpp"
+  append(L"): Unit = {\n");
+  append(L"      ambiguousInput = true");
+                                                            #line 1025 "PrintScala.cpp.template"
+                                                                if (tree)
+                                                                {
+                                                            #line 1662 "PrintScala.cpp"
   append(L"\n");
   append(L"      this.ambiguityDescriptor = ambiguityDescriptor");
-                                                            #line 1025 "PrintScala.cpp.template"
+                                                            #line 1028 "PrintScala.cpp.template"
                                                                 }
-                                                            #line 1655 "PrintScala.cpp"
+                                                            #line 1667 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
-                                                            #line 1028 "PrintScala.cpp.template"
+                                                            #line 1031 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1660 "PrintScala.cpp"
+                                                            #line 1672 "PrintScala.cpp"
   append(L"\n");
   append(L"    override def getMessage = {\n");
   append(L"      ");
-                                                            #line 1031 "PrintScala.cpp.template"
+                                                            #line 1034 "PrintScala.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1667 "PrintScala.cpp"
+                                                            #line 1679 "PrintScala.cpp"
   append(L"if (ambiguousInput) \"ambiguous input\" else ");
-                                                            #line 1033 "PrintScala.cpp.template"
+                                                            #line 1036 "PrintScala.cpp.template"
                                                               }
-                                                            #line 1671 "PrintScala.cpp"
+                                                            #line 1683 "PrintScala.cpp"
   append(L"if (offending < 0) \"lexical analysis failed\" else \"syntax error\"\n");
   append(L"    }");
-                                                            #line 1035 "PrintScala.cpp.template"
+                                                            #line 1038 "PrintScala.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1677 "PrintScala.cpp"
+                                                            #line 1689 "PrintScala.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    def isAmbiguousInput: Boolean =\n");
   append(L"      ");
-                                                            #line 1040 "PrintScala.cpp.template"
+                                                            #line 1043 "PrintScala.cpp.template"
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 1685 "PrintScala.cpp"
+                                                            #line 1697 "PrintScala.cpp"
   append(L"ambiguousInput");
-                                                            #line 1042 "PrintScala.cpp.template"
+                                                            #line 1045 "PrintScala.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1691 "PrintScala.cpp"
+                                                            #line 1703 "PrintScala.cpp"
   append(L"false");
-                                                            #line 1045 "PrintScala.cpp.template"
+                                                            #line 1048 "PrintScala.cpp.template"
                                                                 }
                                                                 if (rejectsAmbiguity() && tree)
                                                                 {
-                                                            #line 1697 "PrintScala.cpp"
+                                                            #line 1709 "PrintScala.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    def serialize(eventHandler: EventHandler): Unit = {\n");
   append(L"      ambiguityDescriptor.serialize(eventHandler)\n");
   append(L"    }");
-                                                            #line 1052 "PrintScala.cpp.template"
+                                                            #line 1055 "PrintScala.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1706 "PrintScala.cpp"
+                                                            #line 1718 "PrintScala.cpp"
   append(L"\n");
   append(L"  }\n");
-                                                            #line 1056 "PrintScala.cpp.template"
+                                                            #line 1059 "PrintScala.cpp.template"
                                                               if (useGlr)
                                                               {
                                                                 openStackNode();
@@ -1716,7 +1728,7 @@
                                                                 printThreadBody1();
                                                                 decreaseIndent();
                                                               }
-                                                            #line 1720 "PrintScala.cpp"
+                                                            #line 1732 "PrintScala.cpp"
   append(L"\n");
   append(L"  def getExpectedTokenSet(e: ParseException) = {\n");
   append(L"    if (e.expected < 0) {\n");
@@ -1726,10 +1738,10 @@
   append(L"      Array(TOKEN(e.expected))\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1075 "PrintScala.cpp.template"
+                                                            #line 1078 "PrintScala.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1733 "PrintScala.cpp"
+                                                            #line 1745 "PrintScala.cpp"
   append(L"\n");
   append(L"  class Token(var code = 0, var begin = 0, var end = 0) {\n");
   append(L"  }\n");
@@ -1738,17 +1750,17 @@
   append(L"    def reset(input: String): Unit\n");
   append(L"    def matcher(tokenset: Int, token: Token)\n");
   append(L"  }\n");
-                                                            #line 1085 "PrintScala.cpp.template"
+                                                            #line 1088 "PrintScala.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1746 "PrintScala.cpp"
+                                                            #line 1758 "PrintScala.cpp"
   append(L"\n");
   append(L"  trait EventHandler {\n");
   append(L"    def reset(string: String): Unit\n");
-  append(L"    def startNonterminal(name: String, begin: Int): Unit\n");
-  append(L"    def endNonterminal(name: String, end: Int): Unit\n");
-  append(L"    def terminal(name: String, begin: Int, end: Int): Unit\n");
+  append(L"    def startNonterminal(id: Int, begin: Int): Unit\n");
+  append(L"    def endNonterminal(id: Int, end: Int): Unit\n");
+  append(L"    def terminal(id: Int, begin: Int, end: Int): Unit\n");
   append(L"    def whitespace(begin: Int, end: Int): Unit\n");
   append(L"  }\n");
   append(L"\n");
@@ -1762,21 +1774,21 @@
   append(L"      top = -1\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    override def startNonterminal(name: String, begin: Int): Unit = {\n");
-  append(L"      val nonterminal = new Nonterminal(name, begin, begin, ArrayBuffer[Symbol]())\n");
+  append(L"    override def startNonterminal(id: Int, begin: Int): Unit = {\n");
+  append(L"      val nonterminal = new Nonterminal(id, begin, begin, ArrayBuffer[Symbol]())\n");
   append(L"      if (top >= 0) addChild(nonterminal)\n");
   append(L"      top += 1\n");
   append(L"      if (top == stack.length) stack += nonterminal else stack(top) = nonterminal\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    override def endNonterminal(name: String, end: Int): Unit = {\n");
+  append(L"    override def endNonterminal(id: Int, end: Int): Unit = {\n");
   append(L"      var nonterminal = stack(top)\n");
   append(L"      nonterminal.end = end\n");
   append(L"      if (top > 0) top -= 1\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    override def terminal(name: String, begin: Int, end: Int): Unit = {\n");
-  append(L"      addChild(new Terminal(name, begin, end))\n");
+  append(L"    override def terminal(id: Int, begin: Int, end: Int): Unit = {\n");
+  append(L"      addChild(new Terminal(id, begin, end))\n");
   append(L"    }\n");
   append(L"\n");
   append(L"    override def whitespace(begin: Int, end: Int): Unit = {\n");
@@ -1793,25 +1805,43 @@
   append(L"    }\n");
   append(L"  }\n");
   append(L"\n");
-  append(L"  abstract class Symbol(n: String, b: Int, e: Int) {\n");
-  append(L"    var name = n\n");
+  append(L"  abstract class Symbol(i: Int, b: Int, e: Int) {\n");
+  append(L"    var id = i\n");
   append(L"    var begin = b\n");
   append(L"    var end = e\n");
+  append(L"\n");
+  append(L"    def getName: String\n");
   append(L"\n");
   append(L"    def send(e: EventHandler): Unit\n");
   append(L"  }\n");
   append(L"\n");
-  append(L"  class Terminal(name: String, begin: Int, end: Int) extends Symbol(name, begin, end) {\n");
+  append(L"  class Terminal(id: Int, begin: Int, end: Int) extends Symbol(id, begin, end) {\n");
+  append(L"    override def getName: String = {\n");
+  append(L"      TOKEN(id)\n");
+  append(L"    }\n");
+  append(L"\n");
   append(L"    override def send(e: EventHandler): Unit = {\n");
-  append(L"      e.terminal(name, begin, end)\n");
+  append(L"      e.terminal(id, begin, end)\n");
   append(L"    }\n");
   append(L"  }\n");
   append(L"\n");
-  append(L"  class Nonterminal(name: String, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(name, begin, end) {\n");
+  append(L"  class Nonterminal(id: Int, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(id, begin, end) {\n");
   append(L"    var children = c\n");
   append(L"\n");
+  append(L"    override def getName: String = {\n");
+  append(L"      ");
+                                                            #line 1165 "PrintScala.cpp.template"
+                                                                printSyntheticNamePrefix();
+                                                            #line 1836 "PrintScala.cpp"
+  append(L"NONTERMINAL(id)");
+                                                            #line 1166 "PrintScala.cpp.template"
+                                                                printSyntheticNameSuffix();
+                                                            #line 1840 "PrintScala.cpp"
+  append(L"\n");
+  append(L"    }\n");
+  append(L"\n");
   append(L"    override def send(e: EventHandler): Unit = {\n");
-  append(L"      e.startNonterminal(name, begin)\n");
+  append(L"      e.startNonterminal(id, begin)\n");
   append(L"      var pos = begin\n");
   append(L"      for (c <- children) {\n");
   append(L"        if (pos < c.begin) e.whitespace(pos, c.begin)\n");
@@ -1819,35 +1849,35 @@
   append(L"        pos = c.end\n");
   append(L"      }\n");
   append(L"      if (pos < end) e.whitespace(pos, end)\n");
-  append(L"      e.endNonterminal(name, end)\n");
+  append(L"      e.endNonterminal(id, end)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1167 "PrintScala.cpp.template"
+                                                            #line 1182 "PrintScala.cpp.template"
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1829 "PrintScala.cpp"
+                                                            #line 1859 "PrintScala.cpp"
   append(L"\n");
   append(L"  trait BottomUpEventHandler {\n");
   append(L"    def reset(string: String): Unit\n");
-  append(L"    def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit\n");
-  append(L"    def terminal(name: String, begin: Int, end: Int): Unit");
-                                                            #line 1173 "PrintScala.cpp.template"
+  append(L"    def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit\n");
+  append(L"    def terminal(id: Int, begin: Int, end: Int): Unit");
+                                                            #line 1188 "PrintScala.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1838 "PrintScala.cpp"
+                                                            #line 1868 "PrintScala.cpp"
   append(L"\n");
   append(L"    def ambiguity(begin: Int, end: Int): Unit");
-                                                            #line 1176 "PrintScala.cpp.template"
+                                                            #line 1191 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 1843 "PrintScala.cpp"
+                                                            #line 1873 "PrintScala.cpp"
   append(L"\n");
   append(L"  }\n");
-                                                            #line 1179 "PrintScala.cpp.template"
+                                                            #line 1194 "PrintScala.cpp.template"
                                                                 }
 
                                                                 if (main)
                                                                 {
-                                                            #line 1851 "PrintScala.cpp"
+                                                            #line 1881 "PrintScala.cpp"
   append(L"\n");
   append(L"  class XmlSerializer(val out: Writer, val indent: Boolean) extends EventHandler {\n");
   append(L"    private var input: String = null\n");
@@ -1863,7 +1893,11 @@
   append(L"      depth = 0\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    def startNonterminal(name: String, begin: Int): Unit = {\n");
+  append(L"    def startNonterminal(id: Int, begin: Int): Unit = {\n");
+  append(L"      startElement(getNonterminalName(id))\n");
+  append(L"    }\n");
+  append(L"\n");
+  append(L"    private def startElement(name: String): Unit = {\n");
   append(L"      if (delayedTag != null) {\n");
   append(L"        writeOutput(\"<\")\n");
   append(L"        writeOutput(delayedTag)\n");
@@ -1881,7 +1915,11 @@
   append(L"      depth += 1\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    def endNonterminal(name: String, end: Int): Unit = {\n");
+  append(L"    def endNonterminal(id: Int, end: Int): Unit = {\n");
+  append(L"      endElement(getNonterminalName(id))\n");
+  append(L"    }\n");
+  append(L"\n");
+  append(L"    private def endElement(name: String): Unit = {\n");
   append(L"      depth -= 1\n");
   append(L"      if (delayedTag != null) {\n");
   append(L"        delayedTag = null\n");
@@ -1906,11 +1944,12 @@
   append(L"      hasChildElement = true\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    def terminal(name: String, begin: Int, end: Int): Unit = {\n");
+  append(L"    def terminal(id: Int, begin: Int, end: Int): Unit = {\n");
+  append(L"      val name = getTerminalName(id)\n");
   append(L"      val tag = if (name(0) == '\\'') \"TOKEN\" else name\n");
-  append(L"      startNonterminal(tag, begin)\n");
+  append(L"      startElement(tag)\n");
   append(L"      characters(begin, end)\n");
-  append(L"      endNonterminal(tag, end)\n");
+  append(L"      endElement(tag)\n");
   append(L"    }\n");
   append(L"\n");
   append(L"    def whitespace(begin: Int, end: Int): Unit = {\n");
@@ -1936,11 +1975,11 @@
   append(L"      out.write(content)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1271 "PrintScala.cpp.template"
+                                                            #line 1295 "PrintScala.cpp.template"
                                                                 }
                                                                 if (tree && isLrParser)
                                                                 {
-                                                            #line 1944 "PrintScala.cpp"
+                                                            #line 1983 "PrintScala.cpp"
   append(L"\n");
   append(L"  class ParseTreeBuilder extends BottomUpEventHandler {\n");
   append(L"    var input: String = null\n");
@@ -1952,48 +1991,52 @@
   append(L"      top = -1\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    override def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit = {");
-                                                            #line 1286 "PrintScala.cpp.template"
+  append(L"    override def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit = {");
+                                                            #line 1310 "PrintScala.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 1960 "PrintScala.cpp"
+                                                            #line 1999 "PrintScala.cpp"
   append(L"\n");
   append(L"      if (count > top + 1) {\n");
   append(L"        val content: ArrayBuffer[Symbol] = pop(top + 1)\n");
-  append(L"        nonterminal(\"UNAMBIGUOUS\", begin, if (content.length == 0) end else content(0).begin, 0)\n");
+  append(L"        nonterminal(");
+                                                            #line 1315 "PrintScala.cpp.template"
+                                                                    print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                                                            #line 2006 "PrintScala.cpp"
+  append(L", begin, if (content.length == 0) end else content(0).begin, 0)\n");
   append(L"        for (symbol <- content)\n");
   append(L"          push(symbol)\n");
-  append(L"        push(new Nonterminal(name, begin, end, pop(top + 1)))\n");
+  append(L"        push(new Nonterminal(id, begin, end, pop(top + 1)))\n");
   append(L"      }\n");
   append(L"      else {\n");
-  append(L"        push(new Nonterminal(name, begin, end, pop(count)))\n");
+  append(L"        push(new Nonterminal(id, begin, end, pop(count)))\n");
   append(L"      }");
-                                                            #line 1298 "PrintScala.cpp.template"
+                                                            #line 1323 "PrintScala.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 1976 "PrintScala.cpp"
+                                                            #line 2019 "PrintScala.cpp"
   append(L"\n");
-  append(L"      push(new Nonterminal(name, begin, end, pop(count)))");
-                                                            #line 1302 "PrintScala.cpp.template"
+  append(L"      push(new Nonterminal(id, begin, end, pop(count)))");
+                                                            #line 1327 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 1981 "PrintScala.cpp"
+                                                            #line 2024 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"\n");
-  append(L"    override def terminal(name: String, begin: Int, end: Int): Unit = {\n");
-  append(L"      push(new Terminal(name, begin, end))\n");
+  append(L"    override def terminal(id: Int, begin: Int, end: Int): Unit = {\n");
+  append(L"      push(new Terminal(id, begin, end))\n");
   append(L"    }\n");
-                                                            #line 1309 "PrintScala.cpp.template"
+                                                            #line 1334 "PrintScala.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1991 "PrintScala.cpp"
+                                                            #line 2034 "PrintScala.cpp"
   append(L"\n");
   append(L"    override def ambiguity(begin: Int, end: Int): Unit = {\n");
   append(L"    }\n");
-                                                            #line 1314 "PrintScala.cpp.template"
+                                                            #line 1339 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 1997 "PrintScala.cpp"
+                                                            #line 2040 "PrintScala.cpp"
   append(L"\n");
   append(L"    def serialize(e: EventHandler): Unit = {\n");
   append(L"      e.reset(input)\n");
@@ -2012,21 +2055,21 @@
   append(L"      stack.slice(top + 1, top + count + 1)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1333 "PrintScala.cpp.template"
+                                                            #line 1358 "PrintScala.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2020 "PrintScala.cpp"
+                                                            #line 2063 "PrintScala.cpp"
   append(L"\n");
   append(L"  private class ContentCounter extends EventHandler {\n");
   append(L"    var length = 0\n");
   append(L"    def reset(string: String): Unit = {length = 0}\n");
-  append(L"    def startNonterminal(name: String, begin: Int): Unit = {}\n");
-  append(L"    def endNonterminal(name: String, end: Int): Unit = {}\n");
-  append(L"    def terminal(name: String, begin: Int, end: Int): Unit = {length += end - begin}\n");
+  append(L"    def startNonterminal(id: Int, begin: Int): Unit = {}\n");
+  append(L"    def endNonterminal(id: Int, end: Int): Unit = {}\n");
+  append(L"    def terminal(id: Int, begin: Int, end: Int): Unit = {length += end - begin}\n");
   append(L"    def whitespace(begin: Int, end: Int): Unit = {length += end - begin}\n");
   append(L"  }\n");
-                                                            #line 1345 "PrintScala.cpp.template"
+                                                            #line 1370 "PrintScala.cpp.template"
                                                                 }
                                                               }
                                                             }

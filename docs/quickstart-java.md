@@ -11,7 +11,7 @@ This tutorial will guide you through creating and running a parser in Java for a
 
 A Java compiler will be used, so a **Java Development Kit (JDK)** is needed. Ensure you have a JDK installed on your machine, and if not installed, download a JDK and install it.
 
-These days REx generated parsers are tested with Java 17 and higher. They should work with newer versions, and they may or may not work with older versions. In any case it may be worth a try, if necessary.
+These days REx generated parsers are tested with Java 21 and higher. They should work with newer versions, and they may or may not work with older versions. In any case it may be worth a try, if necessary.
 
 ## Step 1: Define the Grammar
 
@@ -166,12 +166,16 @@ When looking at the generated Java code, you will find this interface, that is u
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the `public static` arrays `NONTERMINAL` and `TOKEN` of the generated parser class, or by 
+calling its `getNonterminalName(int)` and `getTerminalName(int)` methods.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

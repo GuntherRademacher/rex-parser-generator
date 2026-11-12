@@ -169,12 +169,16 @@ When looking at the generated Go code, you will find this interface, that is use
 ```go
 type EventHandler interface {
   Reset(input string)
-  StartNonterminal(name string, begin int)
-  EndNonterminal(name string, end int)
-  Terminal(name string, begin, end int)
+  StartNonterminal(id int, begin int)
+  EndNonterminal(id int, end int)
+  Terminal(id int, begin, end int)
   Whitespace(begin, end int)
 }
 ```
+
+Nonterminals and terminals are identified by their codes. The corresponding names can be obtained 
+from the exported package-level arrays `NONTERMINAL` and `TOKEN`, or by calling the functions 
+`GetNonterminalName(int)` and `GetTerminalName(int)`.
 
 Applications could implement and use an `EventHandler` for any processing of parsing events, e.g. building their own full or condensed parse trees. The generated code also contains a sample `EventHandler` implementation doing just that:
 

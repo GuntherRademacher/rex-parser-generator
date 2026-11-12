@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorScala.cpp.template
                                                             #line 1 "CodeGeneratorScala.cpp.template"
                                                             // generate CodeGeneratorScala.cpp using this command:
@@ -1158,26 +1158,31 @@
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1162 "CodeGeneratorScala.cpp"
+                                                                bool isPublic = variable("tree").boolean() || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
+                                                            #line 1163 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"\n");
-  append(L"  private final val ");
-                                                            #line 642 "CodeGeneratorScala.cpp.template"
-                                                                print(a->longName);
-                                                            #line 1168 "CodeGeneratorScala.cpp"
-  append(L" = Array(\n");
+  append(L"  ");
+                                                            #line 643 "CodeGeneratorScala.cpp.template"
+                                                                print(isPublic ? L"" : L"private ");
+                                                            #line 1169 "CodeGeneratorScala.cpp"
+  append(L"final val ");
                                                             #line 644 "CodeGeneratorScala.cpp.template"
+                                                                print(a->longName);
+                                                            #line 1173 "CodeGeneratorScala.cpp"
+  append(L" = Array(\n");
+                                                            #line 646 "CodeGeneratorScala.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 1175 "CodeGeneratorScala.cpp"
+                                                            #line 1180 "CodeGeneratorScala.cpp"
   append(L",\n");
-                                                            #line 649 "CodeGeneratorScala.cpp.template"
+                                                            #line 651 "CodeGeneratorScala.cpp.template"
                                                                   }
-                                                            #line 1179 "CodeGeneratorScala.cpp"
+                                                            #line 1184 "CodeGeneratorScala.cpp"
   append(L"    \"");
-                                                            #line 650 "CodeGeneratorScala.cpp.template"
+                                                            #line 652 "CodeGeneratorScala.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1190,52 +1195,52 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 1194 "CodeGeneratorScala.cpp"
+                                                            #line 1199 "CodeGeneratorScala.cpp"
   append(L"\"");
-                                                            #line 662 "CodeGeneratorScala.cpp.template"
+                                                            #line 664 "CodeGeneratorScala.cpp.template"
                                                                 }
-                                                            #line 1198 "CodeGeneratorScala.cpp"
+                                                            #line 1203 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"  )");
-                                                            #line 664 "CodeGeneratorScala.cpp.template"
+                                                            #line 666 "CodeGeneratorScala.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 1205 "CodeGeneratorScala.cpp"
+                                                            #line 1210 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public enum Token\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 671 "CodeGeneratorScala.cpp.template"
+                                                            #line 673 "CodeGeneratorScala.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
                                                                 {
                                                                   if (i)
                                                                   {
-                                                            #line 1218 "CodeGeneratorScala.cpp"
+                                                            #line 1223 "CodeGeneratorScala.cpp"
   append(L",\n");
   append(L"    ");
-                                                            #line 678 "CodeGeneratorScala.cpp.template"
-                                                                  }
-                                                            #line 1223 "CodeGeneratorScala.cpp"
-  append(L"/* ");
-                                                            #line 679 "CodeGeneratorScala.cpp.template"
-                                                                  print(format.toString<char>(i, 10, w));
-                                                            #line 1227 "CodeGeneratorScala.cpp"
-  append(L" */ ");
                                                             #line 680 "CodeGeneratorScala.cpp.template"
+                                                                  }
+                                                            #line 1228 "CodeGeneratorScala.cpp"
+  append(L"/* ");
+                                                            #line 681 "CodeGeneratorScala.cpp.template"
+                                                                  print(format.toString<char>(i, 10, w));
+                                                            #line 1232 "CodeGeneratorScala.cpp"
+  append(L" */ ");
+                                                            #line 682 "CodeGeneratorScala.cpp.template"
                                                                   print(token.string(i));
                                                                 }
-                                                            #line 1232 "CodeGeneratorScala.cpp"
+                                                            #line 1237 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 683 "CodeGeneratorScala.cpp.template"
+                                                            #line 685 "CodeGeneratorScala.cpp.template"
                                                               }
                                                               if (variable("selfTest").boolean())
                                                               {
-                                                            #line 1239 "CodeGeneratorScala.cpp"
+                                                            #line 1244 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private void selfTest(int set, int tokenId)\n");
@@ -1272,40 +1277,40 @@
   append(L"  public static void main(String[] args)\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 721 "CodeGeneratorScala.cpp.template"
+                                                            #line 723 "CodeGeneratorScala.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1278 "CodeGeneratorScala.cpp"
+                                                            #line 1283 "CodeGeneratorScala.cpp"
   append(L" testee = new ");
-                                                            #line 722 "CodeGeneratorScala.cpp.template"
+                                                            #line 724 "CodeGeneratorScala.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1282 "CodeGeneratorScala.cpp"
+                                                            #line 1287 "CodeGeneratorScala.cpp"
   append(L"();\n");
   append(L"    for (int e = 0; e < ");
-                                                            #line 724 "CodeGeneratorScala.cpp.template"
+                                                            #line 726 "CodeGeneratorScala.cpp.template"
                                                                 print(variable("a0").size);
-                                                            #line 1287 "CodeGeneratorScala.cpp"
+                                                            #line 1292 "CodeGeneratorScala.cpp"
   append(L"; ++e)\n");
   append(L"    {\n");
   append(L"      int s = INITIAL[e] & ");
-                                                            #line 727 "CodeGeneratorScala.cpp.template"
+                                                            #line 729 "CodeGeneratorScala.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 1293 "CodeGeneratorScala.cpp"
+                                                            #line 1298 "CodeGeneratorScala.cpp"
   append(L";\n");
   append(L"      for (int i = 0; i < ");
-                                                            #line 729 "CodeGeneratorScala.cpp.template"
+                                                            #line 731 "CodeGeneratorScala.cpp.template"
                                                                 print(variable("t1").size);
-                                                            #line 1298 "CodeGeneratorScala.cpp"
+                                                            #line 1303 "CodeGeneratorScala.cpp"
   append(L"; i += 32)\n");
   append(L"      {\n");
   append(L"        int j = i;\n");
   append(L"        int i0 = (i >> 5) * ");
-                                                            #line 733 "CodeGeneratorScala.cpp.template"
-                                                                print(variable("transitionStateCount").integer());
-                                                            #line 1305 "CodeGeneratorScala.cpp"
-  append(L" + s - 1;\n");
                                                             #line 735 "CodeGeneratorScala.cpp.template"
+                                                                print(variable("transitionStateCount").integer());
+                                                            #line 1310 "CodeGeneratorScala.cpp"
+  append(L" + s - 1;\n");
+                                                            #line 737 "CodeGeneratorScala.cpp.template"
                                                                 compressedMapAccessor(8, "i", "int f = ", "EXPECTED", &variable("t0bits").integer());
-                                                            #line 1309 "CodeGeneratorScala.cpp"
+                                                            #line 1314 "CodeGeneratorScala.cpp"
   append(L"\n");
   append(L"        for ( ; f != 0; f >>>= 1, ++j)\n");
   append(L"        {\n");
@@ -1317,16 +1322,16 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }");
-                                                            #line 746 "CodeGeneratorScala.cpp.template"
-                                                              }
-                                                            #line 1323 "CodeGeneratorScala.cpp"
-  append(L"\n");
                                                             #line 748 "CodeGeneratorScala.cpp.template"
+                                                              }
+                                                            #line 1328 "CodeGeneratorScala.cpp"
+  append(L"\n");
+                                                            #line 750 "CodeGeneratorScala.cpp.template"
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 1328 "CodeGeneratorScala.cpp"
+                                                            #line 1333 "CodeGeneratorScala.cpp"
   append(L"}\n");
-                                                            #line 751 "CodeGeneratorScala.cpp.template"
+                                                            #line 753 "CodeGeneratorScala.cpp.template"
                                                               }
                                                             }
 

@@ -119,7 +119,7 @@ class DeferredCode(var link: DeferredCode, val codeId: Int, val b0: Int, val e0:
                                                               if (tree)
                                                               {
 ~
-abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begin: Int, val end: Int) {~
+abstract class DeferredEvent(var link: DeferredEvent, val id: Int, val begin: Int, val end: Int) {~
                                                                 if (shiftAmbiguity)
                                                                 {
 ~
@@ -161,22 +161,22 @@ abstract class DeferredEvent(var link: DeferredEvent, val name: String, val begi
   }
 }
 
-private class TerminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int) extends DeferredEvent(link, name, begin, end) {
+private class TerminalEvent(link: DeferredEvent, id: Int, begin: Int, end: Int) extends DeferredEvent(link, id, begin, end) {
   override def execute(eventHandler: BottomUpEventHandler): Unit = {
-    eventHandler.terminal(name, begin, end)
+    eventHandler.terminal(id, begin, end)
   }
 }
 
-private class NonterminalEvent(link: DeferredEvent, name: String, begin: Int, end: Int, count: Int) extends DeferredEvent(link, name, begin, end) {
+private class NonterminalEvent(link: DeferredEvent, id: Int, begin: Int, end: Int, count: Int) extends DeferredEvent(link, id, begin, end) {
   override def execute(eventHandler: BottomUpEventHandler): Unit = {
-    eventHandler.nonterminal(name, begin, end, count)
+    eventHandler.nonterminal(id, begin, end, count)
   }
 }
 ~                                                               if (resolvesAmbiguity)
                                                                 {
 ~
 
-private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, null, begin, end) {
+private class AmbiguityEvent(link: DeferredEvent, begin: Int, end: Int) extends DeferredEvent(link, -1, begin, end) {
   override def execute(eventHandler: BottomUpEventHandler): Unit = {
     eventHandler.ambiguity(begin, end)
   }
@@ -332,12 +332,15 @@ def rejectAmbiguity(begin: Int, end: Int~                       if (tree)
                         ~.ParseTreeBuilder
   treeBuilder.reset(input)
   second.show(treeBuilder)
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
   val secondTree = treeBuilder.pop(1)(0)
   first.show(treeBuilder)
-  treeBuilder.nonterminal("ALTERNATIVE", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
+                          ~, treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, treeBuilder.top + 1)
   treeBuilder.push(secondTree)
-  treeBuilder.nonterminal("AMBIGUOUS", treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)~
+  treeBuilder.nonterminal(~                                       print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
+                          ~, treeBuilder.stack(0).begin, treeBuilder.stack(treeBuilder.top).end, 2)~
                                                                 }
 ~
   val exception = new ~                                         print(className.c_str());
@@ -1088,9 +1091,9 @@ public interface ~                                            print(className.c_
 ~
   trait EventHandler {
     def reset(string: String): Unit
-    def startNonterminal(name: String, begin: Int): Unit
-    def endNonterminal(name: String, end: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit
+    def startNonterminal(id: Int, begin: Int): Unit
+    def endNonterminal(id: Int, end: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit
     def whitespace(begin: Int, end: Int): Unit
   }
 
@@ -1104,21 +1107,21 @@ public interface ~                                            print(className.c_
       top = -1
     }
 
-    override def startNonterminal(name: String, begin: Int): Unit = {
-      val nonterminal = new Nonterminal(name, begin, begin, ArrayBuffer[Symbol]())
+    override def startNonterminal(id: Int, begin: Int): Unit = {
+      val nonterminal = new Nonterminal(id, begin, begin, ArrayBuffer[Symbol]())
       if (top >= 0) addChild(nonterminal)
       top += 1
       if (top == stack.length) stack += nonterminal else stack(top) = nonterminal
     }
 
-    override def endNonterminal(name: String, end: Int): Unit = {
+    override def endNonterminal(id: Int, end: Int): Unit = {
       var nonterminal = stack(top)
       nonterminal.end = end
       if (top > 0) top -= 1
     }
 
-    override def terminal(name: String, begin: Int, end: Int): Unit = {
-      addChild(new Terminal(name, begin, end))
+    override def terminal(id: Int, begin: Int, end: Int): Unit = {
+      addChild(new Terminal(id, begin, end))
     }
 
     override def whitespace(begin: Int, end: Int): Unit = {
@@ -1135,25 +1138,37 @@ public interface ~                                            print(className.c_
     }
   }
 
-  abstract class Symbol(n: String, b: Int, e: Int) {
-    var name = n
+  abstract class Symbol(i: Int, b: Int, e: Int) {
+    var id = i
     var begin = b
     var end = e
+
+    def getName: String
 
     def send(e: EventHandler): Unit
   }
 
-  class Terminal(name: String, begin: Int, end: Int) extends Symbol(name, begin, end) {
+  class Terminal(id: Int, begin: Int, end: Int) extends Symbol(id, begin, end) {
+    override def getName: String = {
+      TOKEN(id)
+    }
+
     override def send(e: EventHandler): Unit = {
-      e.terminal(name, begin, end)
+      e.terminal(id, begin, end)
     }
   }
 
-  class Nonterminal(name: String, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(name, begin, end) {
+  class Nonterminal(id: Int, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(id, begin, end) {
     var children = c
 
+    override def getName: String = {
+      ~                                                         printSyntheticNamePrefix();
+      ~NONTERMINAL(id)~                                         printSyntheticNameSuffix();
+                      ~
+    }
+
     override def send(e: EventHandler): Unit = {
-      e.startNonterminal(name, begin)
+      e.startNonterminal(id, begin)
       var pos = begin
       for (c <- children) {
         if (pos < c.begin) e.whitespace(pos, c.begin)
@@ -1161,7 +1176,7 @@ public interface ~                                            print(className.c_
         pos = c.end
       }
       if (pos < end) e.whitespace(pos, end)
-      e.endNonterminal(name, end)
+      e.endNonterminal(id, end)
     }
   }
 ~                                                               if (isLrParser)
@@ -1169,8 +1184,8 @@ public interface ~                                            print(className.c_
 ~
   trait BottomUpEventHandler {
     def reset(string: String): Unit
-    def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit
-    def terminal(name: String, begin: Int, end: Int): Unit~       if (resolvesAmbiguity)
+    def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit~            if (resolvesAmbiguity)
                                                                   {
 ~
     def ambiguity(begin: Int, end: Int): Unit~                    }
@@ -1195,7 +1210,11 @@ public interface ~                                            print(className.c_
       depth = 0
     }
 
-    def startNonterminal(name: String, begin: Int): Unit = {
+    def startNonterminal(id: Int, begin: Int): Unit = {
+      startElement(getNonterminalName(id))
+    }
+
+    private def startElement(name: String): Unit = {
       if (delayedTag != null) {
         writeOutput("<")
         writeOutput(delayedTag)
@@ -1213,7 +1232,11 @@ public interface ~                                            print(className.c_
       depth += 1
     }
 
-    def endNonterminal(name: String, end: Int): Unit = {
+    def endNonterminal(id: Int, end: Int): Unit = {
+      endElement(getNonterminalName(id))
+    }
+
+    private def endElement(name: String): Unit = {
       depth -= 1
       if (delayedTag != null) {
         delayedTag = null
@@ -1238,11 +1261,12 @@ public interface ~                                            print(className.c_
       hasChildElement = true
     }
 
-    def terminal(name: String, begin: Int, end: Int): Unit = {
+    def terminal(id: Int, begin: Int, end: Int): Unit = {
+      val name = getTerminalName(id)
       val tag = if (name(0) == '\'') "TOKEN" else name
-      startNonterminal(tag, begin)
+      startElement(tag)
       characters(begin, end)
-      endNonterminal(tag, end)
+      endElement(tag)
     }
 
     def whitespace(begin: Int, end: Int): Unit = {
@@ -1282,29 +1306,30 @@ public interface ~                                            print(className.c_
       top = -1
     }
 
-    override def nonterminal(name: String, begin: Int, end: Int, count: Int): Unit = {~
+    override def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit = {~
                                                                   if (rejectsAmbiguity())
                                                                   {
 ~
       if (count > top + 1) {
         val content: ArrayBuffer[Symbol] = pop(top + 1)
-        nonterminal("UNAMBIGUOUS", begin, if (content.length == 0) end else content(0).begin, 0)
+        nonterminal(~                                               print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+                    ~, begin, if (content.length == 0) end else content(0).begin, 0)
         for (symbol <- content)
           push(symbol)
-        push(new Nonterminal(name, begin, end, pop(top + 1)))
+        push(new Nonterminal(id, begin, end, pop(top + 1)))
       }
       else {
-        push(new Nonterminal(name, begin, end, pop(count)))
+        push(new Nonterminal(id, begin, end, pop(count)))
       }~                                                          }
                                                                   else
                                                                   {
 ~
-      push(new Nonterminal(name, begin, end, pop(count)))~        }
+      push(new Nonterminal(id, begin, end, pop(count)))~          }
 ~
     }
 
-    override def terminal(name: String, begin: Int, end: Int): Unit = {
-      push(new Terminal(name, begin, end))
+    override def terminal(id: Int, begin: Int, end: Int): Unit = {
+      push(new Terminal(id, begin, end))
     }
 ~                                                                 if (resolvesAmbiguity)
                                                                   {
@@ -1337,9 +1362,9 @@ public interface ~                                            print(className.c_
   private class ContentCounter extends EventHandler {
     var length = 0
     def reset(string: String): Unit = {length = 0}
-    def startNonterminal(name: String, begin: Int): Unit = {}
-    def endNonterminal(name: String, end: Int): Unit = {}
-    def terminal(name: String, begin: Int, end: Int): Unit = {length += end - begin}
+    def startNonterminal(id: Int, begin: Int): Unit = {}
+    def endNonterminal(id: Int, end: Int): Unit = {}
+    def terminal(id: Int, begin: Int, end: Int): Unit = {length += end - begin}
     def whitespace(begin: Int, end: Int): Unit = {length += end - begin}
   }
 ~                                                               }

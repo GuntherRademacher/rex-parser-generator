@@ -107,6 +107,9 @@ public:
   void printInterface();
   void printParseException();
   void printEventHandlerImplementation();
+  void printNameSupport();
+  void printNamesArgument();
+  void printNamesPrefix();
 
   // type of the parser input, and expression extracting input text from begin to end
   const wchar_t *inputType() const {return codepoints ? L"int[]" : L"CharSequence";}

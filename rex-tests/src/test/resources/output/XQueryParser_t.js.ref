@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 23:00 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryParser.ebnf -ll 2 -backtrack -tree -javascript -a xquery.rex -t -name XQueryParser_t
 
                                                             // line 2 "XQueryParser.ebnf"
@@ -108,6 +108,16 @@
     return o >= 0 ? XQueryParser_t.TOKEN[o] : null;
   };
 
+  this.getTerminalName = function(id)
+  {
+    return XQueryParser_t.TOKEN[id];
+  };
+
+  this.getNonterminalName = function(id)
+  {
+    return XQueryParser_t.NONTERMINAL[id];
+  };
+
   this.getExpectedTokenSet = function(e)
   {
     var expected;
@@ -145,7 +155,7 @@
 
   this.parse_XQuery = function()
   {
-    eventHandler.startNonterminal("XQuery", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1W(272);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | EOF | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' |
                                     // '..' | '/' | '//' | '<' | '<!--' | '<?' | '@' | '[' | 'after' | 'allowing' |
@@ -173,12 +183,12 @@
     whitespace();
     parse_Module();
     consume(90);                    // EOF
-    eventHandler.endNonterminal("XQuery", e0);
+    eventHandler.endNonterminal(0, e0);
   };
 
   function parse_Module()
   {
-    eventHandler.startNonterminal("Module", e0);
+    eventHandler.startNonterminal(1, e0);
     lk = predict(0);
     if (lk == 1)
     {
@@ -220,12 +230,12 @@
       whitespace();
       parse_MainModule();
     }
-    eventHandler.endNonterminal("Module", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   function parse_VersionDecl()
   {
-    eventHandler.startNonterminal("VersionDecl", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(282);                   // 'xquery'
     lookahead1W(116);               // S^WS | '(:' | 'encoding' | 'version'
     switch (l1)
@@ -250,22 +260,22 @@
     lookahead1W(28);                // S^WS | '(:' | ';'
     whitespace();
     parse_Separator();
-    eventHandler.endNonterminal("VersionDecl", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   function parse_LibraryModule()
   {
-    eventHandler.startNonterminal("LibraryModule", e0);
+    eventHandler.startNonterminal(3, e0);
     parse_ModuleDecl();
     lookahead1W(138);               // S^WS | EOF | '(:' | 'declare' | 'import'
     whitespace();
     parse_Prolog();
-    eventHandler.endNonterminal("LibraryModule", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   function parse_ModuleDecl()
   {
-    eventHandler.startNonterminal("ModuleDecl", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(230);                   // 'module'
     lookahead1W(61);                // S^WS | '(:' | 'namespace'
     consume(231);                   // 'namespace'
@@ -299,12 +309,12 @@
     lookahead1W(28);                // S^WS | '(:' | ';'
     whitespace();
     parse_Separator();
-    eventHandler.endNonterminal("ModuleDecl", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   function parse_Prolog()
   {
-    eventHandler.startNonterminal("Prolog", e0);
+    eventHandler.startNonterminal(5, e0);
     for (;;)
     {
       lookahead1W(272);             // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
@@ -436,19 +446,19 @@
       whitespace();
       parse_Separator();
     }
-    eventHandler.endNonterminal("Prolog", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   function parse_Separator()
   {
-    eventHandler.startNonterminal("Separator", e0);
+    eventHandler.startNonterminal(6, e0);
     consume(101);                   // ';'
-    eventHandler.endNonterminal("Separator", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   function parse_Setter()
   {
-    eventHandler.startNonterminal("Setter", e0);
+    eventHandler.startNonterminal(7, e0);
     lk = predict(6);
     if (lk == 9)
     {
@@ -513,12 +523,12 @@
     default:
       parse_DecimalFormatDecl();
     }
-    eventHandler.endNonterminal("Setter", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   function parse_BoundarySpaceDecl()
   {
-    eventHandler.startNonterminal("BoundarySpaceDecl", e0);
+    eventHandler.startNonterminal(8, e0);
     consume(180);                   // 'declare'
     lookahead1W(33);                // S^WS | '(:' | 'boundary-space'
     consume(163);                   // 'boundary-space'
@@ -531,12 +541,12 @@
     default:
       consume(78);                  // 'strip'
     }
-    eventHandler.endNonterminal("BoundarySpaceDecl", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   function parse_DefaultCollationDecl()
   {
-    eventHandler.startNonterminal("DefaultCollationDecl", e0);
+    eventHandler.startNonterminal(9, e0);
     consume(180);                   // 'declare'
     lookahead1W(46);                // S^WS | '(:' | 'default'
     consume(181);                   // 'default'
@@ -544,7 +554,7 @@
     consume(170);                   // 'collation'
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
-    eventHandler.endNonterminal("DefaultCollationDecl", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   function try_DefaultCollationDecl()
@@ -560,18 +570,18 @@
 
   function parse_BaseURIDecl()
   {
-    eventHandler.startNonterminal("BaseURIDecl", e0);
+    eventHandler.startNonterminal(10, e0);
     consume(180);                   // 'declare'
     lookahead1W(32);                // S^WS | '(:' | 'base-uri'
     consume(161);                   // 'base-uri'
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
-    eventHandler.endNonterminal("BaseURIDecl", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   function parse_ConstructionDecl()
   {
-    eventHandler.startNonterminal("ConstructionDecl", e0);
+    eventHandler.startNonterminal(11, e0);
     consume(180);                   // 'declare'
     lookahead1W(41);                // S^WS | '(:' | 'construction'
     consume(173);                   // 'construction'
@@ -584,12 +594,12 @@
     default:
       consume(72);                  // 'preserve'
     }
-    eventHandler.endNonterminal("ConstructionDecl", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   function parse_OrderingModeDecl()
   {
-    eventHandler.startNonterminal("OrderingModeDecl", e0);
+    eventHandler.startNonterminal(12, e0);
     consume(180);                   // 'declare'
     lookahead1W(68);                // S^WS | '(:' | 'ordering'
     consume(243);                   // 'ordering'
@@ -602,12 +612,12 @@
     default:
       consume(273);                 // 'unordered'
     }
-    eventHandler.endNonterminal("OrderingModeDecl", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   function parse_EmptyOrderDecl()
   {
-    eventHandler.startNonterminal("EmptyOrderDecl", e0);
+    eventHandler.startNonterminal(13, e0);
     consume(180);                   // 'declare'
     lookahead1W(46);                // S^WS | '(:' | 'default'
     consume(181);                   // 'default'
@@ -624,7 +634,7 @@
     default:
       consume(54);                  // 'least'
     }
-    eventHandler.endNonterminal("EmptyOrderDecl", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   function try_EmptyOrderDecl()
@@ -649,7 +659,7 @@
 
   function parse_CopyNamespacesDecl()
   {
-    eventHandler.startNonterminal("CopyNamespacesDecl", e0);
+    eventHandler.startNonterminal(14, e0);
     consume(180);                   // 'declare'
     lookahead1W(44);                // S^WS | '(:' | 'copy-namespaces'
     consume(177);                   // 'copy-namespaces'
@@ -661,12 +671,12 @@
     lookahead1W(123);               // S^WS | '(:' | 'inherit' | 'no-inherit'
     whitespace();
     parse_InheritMode();
-    eventHandler.endNonterminal("CopyNamespacesDecl", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   function parse_PreserveMode()
   {
-    eventHandler.startNonterminal("PreserveMode", e0);
+    eventHandler.startNonterminal(15, e0);
     switch (l1)
     {
     case 72:                        // 'preserve'
@@ -675,12 +685,12 @@
     default:
       consume(61);                  // 'no-preserve'
     }
-    eventHandler.endNonterminal("PreserveMode", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   function parse_InheritMode()
   {
-    eventHandler.startNonterminal("InheritMode", e0);
+    eventHandler.startNonterminal(16, e0);
     switch (l1)
     {
     case 50:                        // 'inherit'
@@ -689,12 +699,12 @@
     default:
       consume(60);                  // 'no-inherit'
     }
-    eventHandler.endNonterminal("InheritMode", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   function parse_DecimalFormatDecl()
   {
-    eventHandler.startNonterminal("DecimalFormatDecl", e0);
+    eventHandler.startNonterminal(17, e0);
     consume(180);                   // 'declare'
     lookahead1W(114);               // S^WS | '(:' | 'decimal-format' | 'default'
     switch (l1)
@@ -746,12 +756,12 @@
       lookahead1W(17);              // StringLiteral | S^WS | '(:'
       consume(144);                 // StringLiteral
     }
-    eventHandler.endNonterminal("DecimalFormatDecl", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   function parse_DFPropertyName()
   {
-    eventHandler.startNonterminal("DFPropertyName", e0);
+    eventHandler.startNonterminal(18, e0);
     switch (l1)
     {
     case 40:                        // 'decimal-separator'
@@ -784,12 +794,12 @@
     default:
       consume(67);                  // 'pattern-separator'
     }
-    eventHandler.endNonterminal("DFPropertyName", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   function parse_Import()
   {
-    eventHandler.startNonterminal("Import", e0);
+    eventHandler.startNonterminal(19, e0);
     lk = predict(7);
     switch (lk)
     {
@@ -799,12 +809,12 @@
     default:
       parse_ModuleImport();
     }
-    eventHandler.endNonterminal("Import", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   function parse_SchemaImport()
   {
-    eventHandler.startNonterminal("SchemaImport", e0);
+    eventHandler.startNonterminal(20, e0);
     consume(211);                   // 'import'
     lookahead1W(73);                // S^WS | '(:' | 'schema'
     consume(254);                   // 'schema'
@@ -834,12 +844,12 @@
         consume(5);                 // URILiteral
       }
     }
-    eventHandler.endNonterminal("SchemaImport", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   function parse_SchemaPrefix()
   {
-    eventHandler.startNonterminal("SchemaPrefix", e0);
+    eventHandler.startNonterminal(21, e0);
     switch (l1)
     {
     case 231:                       // 'namespace'
@@ -877,12 +887,12 @@
       lookahead1W(61);              // S^WS | '(:' | 'namespace'
       consume(231);                 // 'namespace'
     }
-    eventHandler.endNonterminal("SchemaPrefix", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   function parse_ModuleImport()
   {
-    eventHandler.startNonterminal("ModuleImport", e0);
+    eventHandler.startNonterminal(22, e0);
     consume(211);                   // 'import'
     lookahead1W(60);                // S^WS | '(:' | 'module'
     consume(230);                   // 'module'
@@ -936,12 +946,12 @@
         consume(5);                 // URILiteral
       }
     }
-    eventHandler.endNonterminal("ModuleImport", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   function parse_NamespaceDecl()
   {
-    eventHandler.startNonterminal("NamespaceDecl", e0);
+    eventHandler.startNonterminal(23, e0);
     consume(180);                   // 'declare'
     lookahead1W(61);                // S^WS | '(:' | 'namespace'
     consume(231);                   // 'namespace'
@@ -972,12 +982,12 @@
     consume(107);                   // '='
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
-    eventHandler.endNonterminal("NamespaceDecl", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   function parse_DefaultNamespaceDecl()
   {
-    eventHandler.startNonterminal("DefaultNamespaceDecl", e0);
+    eventHandler.startNonterminal(24, e0);
     consume(180);                   // 'declare'
     lookahead1W(46);                // S^WS | '(:' | 'default'
     consume(181);                   // 'default'
@@ -994,7 +1004,7 @@
     consume(231);                   // 'namespace'
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
-    eventHandler.endNonterminal("DefaultNamespaceDecl", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   function try_DefaultNamespaceDecl()
@@ -1019,19 +1029,19 @@
 
   function parse_FTOptionDecl()
   {
-    eventHandler.startNonterminal("FTOptionDecl", e0);
+    eventHandler.startNonterminal(25, e0);
     consume(180);                   // 'declare'
     lookahead1W(52);                // S^WS | '(:' | 'ft-option'
     consume(204);                   // 'ft-option'
     lookahead1W(81);                // S^WS | '(:' | 'using'
     whitespace();
     parse_FTMatchOptions();
-    eventHandler.endNonterminal("FTOptionDecl", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   function parse_AnnotatedDecl()
   {
-    eventHandler.startNonterminal("AnnotatedDecl", e0);
+    eventHandler.startNonterminal(26, e0);
     consume(180);                   // 'declare'
     for (;;)
     {
@@ -1075,19 +1085,19 @@
       whitespace();
       parse_ICDecl();
     }
-    eventHandler.endNonterminal("AnnotatedDecl", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   function parse_CompatibilityAnnotation()
   {
-    eventHandler.startNonterminal("CompatibilityAnnotation", e0);
+    eventHandler.startNonterminal(27, e0);
     consume(274);                   // 'updating'
-    eventHandler.endNonterminal("CompatibilityAnnotation", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   function parse_Annotation()
   {
-    eventHandler.startNonterminal("Annotation", e0);
+    eventHandler.startNonterminal(28, e0);
     consume(147);                   // '%'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -1134,7 +1144,7 @@
       }
       consume(94);                  // ')'
     }
-    eventHandler.endNonterminal("Annotation", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   function try_Annotation()
@@ -1186,7 +1196,7 @@
 
   function parse_VarDecl()
   {
-    eventHandler.startNonterminal("VarDecl", e0);
+    eventHandler.startNonterminal(29, e0);
     consume(277);                   // 'variable'
     lookahead1W(21);                // S^WS | '$' | '(:'
     consume(146);                   // '$'
@@ -1285,26 +1295,26 @@
         parse_VarDefaultValue();
       }
     }
-    eventHandler.endNonterminal("VarDecl", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   function parse_VarValue()
   {
-    eventHandler.startNonterminal("VarValue", e0);
+    eventHandler.startNonterminal(30, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("VarValue", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   function parse_VarDefaultValue()
   {
-    eventHandler.startNonterminal("VarDefaultValue", e0);
+    eventHandler.startNonterminal(31, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("VarDefaultValue", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   function parse_ContextItemDecl()
   {
-    eventHandler.startNonterminal("ContextItemDecl", e0);
+    eventHandler.startNonterminal(32, e0);
     consume(180);                   // 'declare'
     lookahead1W(43);                // S^WS | '(:' | 'context'
     consume(174);                   // 'context'
@@ -1405,12 +1415,12 @@
         parse_VarDefaultValue();
       }
     }
-    eventHandler.endNonterminal("ContextItemDecl", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   function parse_ParamList()
   {
-    eventHandler.startNonterminal("ParamList", e0);
+    eventHandler.startNonterminal(33, e0);
     parse_Param();
     for (;;)
     {
@@ -1424,7 +1434,7 @@
       whitespace();
       parse_Param();
     }
-    eventHandler.endNonterminal("ParamList", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   function try_ParamList()
@@ -1445,7 +1455,7 @@
 
   function parse_Param()
   {
-    eventHandler.startNonterminal("Param", e0);
+    eventHandler.startNonterminal(34, e0);
     consume(146);                   // '$'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -1476,7 +1486,7 @@
       whitespace();
       parse_TypeDeclaration();
     }
-    eventHandler.endNonterminal("Param", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   function try_Param()
@@ -1513,9 +1523,9 @@
 
   function parse_FunctionBody()
   {
-    eventHandler.startNonterminal("FunctionBody", e0);
+    eventHandler.startNonterminal(35, e0);
     parse_EnclosedExpr();
-    eventHandler.endNonterminal("FunctionBody", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   function try_FunctionBody()
@@ -1525,7 +1535,7 @@
 
   function parse_EnclosedExpr()
   {
-    eventHandler.startNonterminal("EnclosedExpr", e0);
+    eventHandler.startNonterminal(36, e0);
     consume(283);                   // '{'
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -1554,7 +1564,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("EnclosedExpr", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   function try_EnclosedExpr()
@@ -1590,7 +1600,7 @@
 
   function parse_OptionDecl()
   {
-    eventHandler.startNonterminal("OptionDecl", e0);
+    eventHandler.startNonterminal(37, e0);
     consume(180);                   // 'declare'
     lookahead1W(66);                // S^WS | '(:' | 'option'
     consume(239);                   // 'option'
@@ -1619,12 +1629,12 @@
     parse_EQName();
     lookahead1W(17);                // StringLiteral | S^WS | '(:'
     consume(144);                   // StringLiteral
-    eventHandler.endNonterminal("OptionDecl", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   function parse_Expr()
   {
-    eventHandler.startNonterminal("Expr", e0);
+    eventHandler.startNonterminal(38, e0);
     parse_ExprSingle();
     for (;;)
     {
@@ -1660,7 +1670,7 @@
       whitespace();
       parse_ExprSingle();
     }
-    eventHandler.endNonterminal("Expr", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   function try_Expr()
@@ -1703,7 +1713,7 @@
 
   function parse_FLWORExpr()
   {
-    eventHandler.startNonterminal("FLWORExpr", e0);
+    eventHandler.startNonterminal(39, e0);
     parse_InitialClause();
     for (;;)
     {
@@ -1718,7 +1728,7 @@
     }
     whitespace();
     parse_ReturnClause();
-    eventHandler.endNonterminal("FLWORExpr", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   function try_FLWORExpr()
@@ -1739,7 +1749,7 @@
 
   function parse_InitialClause()
   {
-    eventHandler.startNonterminal("InitialClause", e0);
+    eventHandler.startNonterminal(40, e0);
     lk = predict(8);
     switch (lk)
     {
@@ -1752,7 +1762,7 @@
     default:
       parse_WindowClause();
     }
-    eventHandler.endNonterminal("InitialClause", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   function try_InitialClause()
@@ -1773,7 +1783,7 @@
 
   function parse_IntermediateClause()
   {
-    eventHandler.startNonterminal("IntermediateClause", e0);
+    eventHandler.startNonterminal(41, e0);
     switch (l1)
     {
     case 203:                       // 'for'
@@ -1792,7 +1802,7 @@
     default:
       parse_OrderByClause();
     }
-    eventHandler.endNonterminal("IntermediateClause", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   function try_IntermediateClause()
@@ -1819,7 +1829,7 @@
 
   function parse_ForClause()
   {
-    eventHandler.startNonterminal("ForClause", e0);
+    eventHandler.startNonterminal(42, e0);
     consume(203);                   // 'for'
     lookahead1W(21);                // S^WS | '$' | '(:'
     whitespace();
@@ -1835,7 +1845,7 @@
       whitespace();
       parse_ForBinding();
     }
-    eventHandler.endNonterminal("ForClause", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   function try_ForClause()
@@ -1857,7 +1867,7 @@
 
   function parse_ForBinding()
   {
-    eventHandler.startNonterminal("ForBinding", e0);
+    eventHandler.startNonterminal(43, e0);
     consume(146);                   // '$'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -1934,7 +1944,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ForBinding", e0);
+    eventHandler.endNonterminal(43, e0);
   }
 
   function try_ForBinding()
@@ -2013,11 +2023,11 @@
 
   function parse_AllowingEmpty()
   {
-    eventHandler.startNonterminal("AllowingEmpty", e0);
+    eventHandler.startNonterminal(44, e0);
     consume(152);                   // 'allowing'
     lookahead1W(49);                // S^WS | '(:' | 'empty'
     consume(191);                   // 'empty'
-    eventHandler.endNonterminal("AllowingEmpty", e0);
+    eventHandler.endNonterminal(44, e0);
   }
 
   function try_AllowingEmpty()
@@ -2029,7 +2039,7 @@
 
   function parse_PositionalVar()
   {
-    eventHandler.startNonterminal("PositionalVar", e0);
+    eventHandler.startNonterminal(45, e0);
     consume(159);                   // 'at'
     lookahead1W(21);                // S^WS | '$' | '(:'
     consume(146);                   // '$'
@@ -2056,7 +2066,7 @@
                                     // 'xquery'
     whitespace();
     parse_VarName();
-    eventHandler.endNonterminal("PositionalVar", e0);
+    eventHandler.endNonterminal(45, e0);
   }
 
   function try_PositionalVar()
@@ -2090,7 +2100,7 @@
 
   function parse_FTScoreVar()
   {
-    eventHandler.startNonterminal("FTScoreVar", e0);
+    eventHandler.startNonterminal(46, e0);
     consume(257);                   // 'score'
     lookahead1W(21);                // S^WS | '$' | '(:'
     consume(146);                   // '$'
@@ -2117,7 +2127,7 @@
                                     // 'xquery'
     whitespace();
     parse_VarName();
-    eventHandler.endNonterminal("FTScoreVar", e0);
+    eventHandler.endNonterminal(46, e0);
   }
 
   function try_FTScoreVar()
@@ -2151,7 +2161,7 @@
 
   function parse_LetClause()
   {
-    eventHandler.startNonterminal("LetClause", e0);
+    eventHandler.startNonterminal(47, e0);
     consume(225);                   // 'let'
     lookahead1W(96);                // S^WS | '$' | '(:' | 'score'
     whitespace();
@@ -2167,7 +2177,7 @@
       whitespace();
       parse_LetBinding();
     }
-    eventHandler.endNonterminal("LetClause", e0);
+    eventHandler.endNonterminal(47, e0);
   }
 
   function try_LetClause()
@@ -2189,7 +2199,7 @@
 
   function parse_LetBinding()
   {
-    eventHandler.startNonterminal("LetBinding", e0);
+    eventHandler.startNonterminal(48, e0);
     switch (l1)
     {
     case 146:                       // '$'
@@ -2255,7 +2265,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("LetBinding", e0);
+    eventHandler.endNonterminal(48, e0);
   }
 
   function try_LetBinding()
@@ -2326,7 +2336,7 @@
 
   function parse_WindowClause()
   {
-    eventHandler.startNonterminal("WindowClause", e0);
+    eventHandler.startNonterminal(49, e0);
     consume(203);                   // 'for'
     lookahead1W(135);               // S^WS | '(:' | 'sliding' | 'tumbling'
     switch (l1)
@@ -2339,7 +2349,7 @@
       whitespace();
       parse_SlidingWindowClause();
     }
-    eventHandler.endNonterminal("WindowClause", e0);
+    eventHandler.endNonterminal(49, e0);
   }
 
   function try_WindowClause()
@@ -2358,7 +2368,7 @@
 
   function parse_TumblingWindowClause()
   {
-    eventHandler.startNonterminal("TumblingWindowClause", e0);
+    eventHandler.startNonterminal(50, e0);
     consume(269);                   // 'tumbling'
     lookahead1W(85);                // S^WS | '(:' | 'window'
     consume(132);                   // 'window'
@@ -2429,7 +2439,7 @@
       whitespace();
       parse_WindowEndCondition();
     }
-    eventHandler.endNonterminal("TumblingWindowClause", e0);
+    eventHandler.endNonterminal(50, e0);
   }
 
   function try_TumblingWindowClause()
@@ -2503,7 +2513,7 @@
 
   function parse_SlidingWindowClause()
   {
-    eventHandler.startNonterminal("SlidingWindowClause", e0);
+    eventHandler.startNonterminal(51, e0);
     consume(259);                   // 'sliding'
     lookahead1W(85);                // S^WS | '(:' | 'window'
     consume(132);                   // 'window'
@@ -2570,7 +2580,7 @@
     parse_WindowStartCondition();
     whitespace();
     parse_WindowEndCondition();
-    eventHandler.endNonterminal("SlidingWindowClause", e0);
+    eventHandler.endNonterminal(51, e0);
   }
 
   function try_SlidingWindowClause()
@@ -2640,7 +2650,7 @@
 
   function parse_WindowStartCondition()
   {
-    eventHandler.startNonterminal("WindowStartCondition", e0);
+    eventHandler.startNonterminal(52, e0);
     consume(262);                   // 'start'
     lookahead1W(163);               // S^WS | '$' | '(:' | 'at' | 'next' | 'previous' | 'when'
     whitespace();
@@ -2673,7 +2683,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("WindowStartCondition", e0);
+    eventHandler.endNonterminal(52, e0);
   }
 
   function try_WindowStartCondition()
@@ -2712,7 +2722,7 @@
 
   function parse_WindowEndCondition()
   {
-    eventHandler.startNonterminal("WindowEndCondition", e0);
+    eventHandler.startNonterminal(53, e0);
     if (l1 == 238)                  // 'only'
     {
       consume(238);                 // 'only'
@@ -2750,7 +2760,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("WindowEndCondition", e0);
+    eventHandler.endNonterminal(53, e0);
   }
 
   function try_WindowEndCondition()
@@ -2794,7 +2804,7 @@
 
   function parse_WindowVars()
   {
-    eventHandler.startNonterminal("WindowVars", e0);
+    eventHandler.startNonterminal(54, e0);
     if (l1 == 146)                  // '$'
     {
       consume(146);                 // '$'
@@ -2888,7 +2898,7 @@
       whitespace();
       parse_NextItem();
     }
-    eventHandler.endNonterminal("WindowVars", e0);
+    eventHandler.endNonterminal(54, e0);
   }
 
   function try_WindowVars()
@@ -2986,9 +2996,9 @@
 
   function parse_CurrentItem()
   {
-    eventHandler.startNonterminal("CurrentItem", e0);
+    eventHandler.startNonterminal(55, e0);
     parse_EQName();
-    eventHandler.endNonterminal("CurrentItem", e0);
+    eventHandler.endNonterminal(55, e0);
   }
 
   function try_CurrentItem()
@@ -2998,9 +3008,9 @@
 
   function parse_PreviousItem()
   {
-    eventHandler.startNonterminal("PreviousItem", e0);
+    eventHandler.startNonterminal(56, e0);
     parse_EQName();
-    eventHandler.endNonterminal("PreviousItem", e0);
+    eventHandler.endNonterminal(56, e0);
   }
 
   function try_PreviousItem()
@@ -3010,9 +3020,9 @@
 
   function parse_NextItem()
   {
-    eventHandler.startNonterminal("NextItem", e0);
+    eventHandler.startNonterminal(57, e0);
     parse_EQName();
-    eventHandler.endNonterminal("NextItem", e0);
+    eventHandler.endNonterminal(57, e0);
   }
 
   function try_NextItem()
@@ -3022,7 +3032,7 @@
 
   function parse_CountClause()
   {
-    eventHandler.startNonterminal("CountClause", e0);
+    eventHandler.startNonterminal(58, e0);
     consume(178);                   // 'count'
     lookahead1W(21);                // S^WS | '$' | '(:'
     consume(146);                   // '$'
@@ -3049,7 +3059,7 @@
                                     // 'xquery'
     whitespace();
     parse_VarName();
-    eventHandler.endNonterminal("CountClause", e0);
+    eventHandler.endNonterminal(58, e0);
   }
 
   function try_CountClause()
@@ -3083,7 +3093,7 @@
 
   function parse_WhereClause()
   {
-    eventHandler.startNonterminal("WhereClause", e0);
+    eventHandler.startNonterminal(59, e0);
     consume(279);                   // 'where'
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -3111,7 +3121,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("WhereClause", e0);
+    eventHandler.endNonterminal(59, e0);
   }
 
   function try_WhereClause()
@@ -3146,14 +3156,14 @@
 
   function parse_GroupByClause()
   {
-    eventHandler.startNonterminal("GroupByClause", e0);
+    eventHandler.startNonterminal(60, e0);
     consume(207);                   // 'group'
     lookahead1W(34);                // S^WS | '(:' | 'by'
     consume(114);                   // 'by'
     lookahead1W(21);                // S^WS | '$' | '(:'
     whitespace();
     parse_GroupingSpecList();
-    eventHandler.endNonterminal("GroupByClause", e0);
+    eventHandler.endNonterminal(60, e0);
   }
 
   function try_GroupByClause()
@@ -3167,7 +3177,7 @@
 
   function parse_GroupingSpecList()
   {
-    eventHandler.startNonterminal("GroupingSpecList", e0);
+    eventHandler.startNonterminal(61, e0);
     parse_GroupingSpec();
     for (;;)
     {
@@ -3182,7 +3192,7 @@
       whitespace();
       parse_GroupingSpec();
     }
-    eventHandler.endNonterminal("GroupingSpecList", e0);
+    eventHandler.endNonterminal(61, e0);
   }
 
   function try_GroupingSpecList()
@@ -3204,7 +3214,7 @@
 
   function parse_GroupingSpec()
   {
-    eventHandler.startNonterminal("GroupingSpec", e0);
+    eventHandler.startNonterminal(62, e0);
     consume(146);                   // '$'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -3274,7 +3284,7 @@
       lookahead1W(15);              // URILiteral | S^WS | '(:'
       consume(5);                   // URILiteral
     }
-    eventHandler.endNonterminal("GroupingSpec", e0);
+    eventHandler.endNonterminal(62, e0);
   }
 
   function try_GroupingSpec()
@@ -3349,7 +3359,7 @@
 
   function parse_OrderByClause()
   {
-    eventHandler.startNonterminal("OrderByClause", e0);
+    eventHandler.startNonterminal(63, e0);
     switch (l1)
     {
     case 241:                       // 'order'
@@ -3390,7 +3400,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_OrderSpecList();
-    eventHandler.endNonterminal("OrderByClause", e0);
+    eventHandler.endNonterminal(63, e0);
   }
 
   function try_OrderByClause()
@@ -3438,7 +3448,7 @@
 
   function parse_OrderSpecList()
   {
-    eventHandler.startNonterminal("OrderSpecList", e0);
+    eventHandler.startNonterminal(64, e0);
     parse_OrderSpec();
     for (;;)
     {
@@ -3476,7 +3486,7 @@
       whitespace();
       parse_OrderSpec();
     }
-    eventHandler.endNonterminal("OrderSpecList", e0);
+    eventHandler.endNonterminal(64, e0);
   }
 
   function try_OrderSpecList()
@@ -3521,11 +3531,11 @@
 
   function parse_OrderSpec()
   {
-    eventHandler.startNonterminal("OrderSpec", e0);
+    eventHandler.startNonterminal(65, e0);
     parse_ExprSingle();
     whitespace();
     parse_OrderModifier();
-    eventHandler.endNonterminal("OrderSpec", e0);
+    eventHandler.endNonterminal(65, e0);
   }
 
   function try_OrderSpec()
@@ -3536,7 +3546,7 @@
 
   function parse_OrderModifier()
   {
-    eventHandler.startNonterminal("OrderModifier", e0);
+    eventHandler.startNonterminal(66, e0);
     if (l1 == 158                   // 'ascending'
      || l1 == 185)                  // 'descending'
     {
@@ -3572,7 +3582,7 @@
       lookahead1W(15);              // URILiteral | S^WS | '(:'
       consume(5);                   // URILiteral
     }
-    eventHandler.endNonterminal("OrderModifier", e0);
+    eventHandler.endNonterminal(66, e0);
   }
 
   function try_OrderModifier()
@@ -3616,7 +3626,7 @@
 
   function parse_ReturnClause()
   {
-    eventHandler.startNonterminal("ReturnClause", e0);
+    eventHandler.startNonterminal(67, e0);
     consume(250);                   // 'return'
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -3644,7 +3654,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ReturnClause", e0);
+    eventHandler.endNonterminal(67, e0);
   }
 
   function try_ReturnClause()
@@ -3679,7 +3689,7 @@
 
   function parse_QuantifiedExpr()
   {
-    eventHandler.startNonterminal("QuantifiedExpr", e0);
+    eventHandler.startNonterminal(68, e0);
     switch (l1)
     {
     case 260:                       // 'some'
@@ -3841,7 +3851,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("QuantifiedExpr", e0);
+    eventHandler.endNonterminal(68, e0);
   }
 
   function try_QuantifiedExpr()
@@ -4004,7 +4014,7 @@
 
   function parse_SwitchExpr()
   {
-    eventHandler.startNonterminal("SwitchExpr", e0);
+    eventHandler.startNonterminal(69, e0);
     consume(264);                   // 'switch'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -4074,7 +4084,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("SwitchExpr", e0);
+    eventHandler.endNonterminal(69, e0);
   }
 
   function try_SwitchExpr()
@@ -4149,7 +4159,7 @@
 
   function parse_SwitchCaseClause()
   {
-    eventHandler.startNonterminal("SwitchCaseClause", e0);
+    eventHandler.startNonterminal(70, e0);
     for (;;)
     {
       consume(165);                 // 'case'
@@ -4211,7 +4221,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("SwitchCaseClause", e0);
+    eventHandler.endNonterminal(70, e0);
   }
 
   function try_SwitchCaseClause()
@@ -4279,9 +4289,9 @@
 
   function parse_SwitchCaseOperand()
   {
-    eventHandler.startNonterminal("SwitchCaseOperand", e0);
+    eventHandler.startNonterminal(71, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("SwitchCaseOperand", e0);
+    eventHandler.endNonterminal(71, e0);
   }
 
   function try_SwitchCaseOperand()
@@ -4291,7 +4301,7 @@
 
   function parse_TypeswitchExpr()
   {
-    eventHandler.startNonterminal("TypeswitchExpr", e0);
+    eventHandler.startNonterminal(72, e0);
     consume(271);                   // 'typeswitch'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -4389,7 +4399,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("TypeswitchExpr", e0);
+    eventHandler.endNonterminal(72, e0);
   }
 
   function try_TypeswitchExpr()
@@ -4491,7 +4501,7 @@
 
   function parse_CaseClause()
   {
-    eventHandler.startNonterminal("CaseClause", e0);
+    eventHandler.startNonterminal(73, e0);
     consume(165);                   // 'case'
     lookahead1W(261);               // EQName^Token | S^WS | '$' | '%' | '(' | '(:' | 'after' | 'allowing' |
                                     // 'ancestor' | 'ancestor-or-self' | 'and' | 'array' | 'as' | 'ascending' | 'at' |
@@ -4595,7 +4605,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("CaseClause", e0);
+    eventHandler.endNonterminal(73, e0);
   }
 
   function try_CaseClause()
@@ -4704,7 +4714,7 @@
 
   function parse_SequenceTypeUnion()
   {
-    eventHandler.startNonterminal("SequenceTypeUnion", e0);
+    eventHandler.startNonterminal(74, e0);
     parse_SequenceType();
     for (;;)
     {
@@ -4739,7 +4749,7 @@
       whitespace();
       parse_SequenceType();
     }
-    eventHandler.endNonterminal("SequenceTypeUnion", e0);
+    eventHandler.endNonterminal(74, e0);
   }
 
   function try_SequenceTypeUnion()
@@ -4781,7 +4791,7 @@
 
   function parse_IfExpr()
   {
-    eventHandler.startNonterminal("IfExpr", e0);
+    eventHandler.startNonterminal(75, e0);
     consume(210);                   // 'if'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -4867,7 +4877,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("IfExpr", e0);
+    eventHandler.endNonterminal(75, e0);
   }
 
   function try_IfExpr()
@@ -4958,7 +4968,7 @@
 
   function parse_TryCatchExpr()
   {
-    eventHandler.startNonterminal("TryCatchExpr", e0);
+    eventHandler.startNonterminal(76, e0);
     parse_TryClause();
     for (;;)
     {
@@ -4975,7 +4985,7 @@
         break;
       }
     }
-    eventHandler.endNonterminal("TryCatchExpr", e0);
+    eventHandler.endNonterminal(76, e0);
   }
 
   function try_TryCatchExpr()
@@ -4999,7 +5009,7 @@
 
   function parse_TryClause()
   {
-    eventHandler.startNonterminal("TryClause", e0);
+    eventHandler.startNonterminal(77, e0);
     consume(268);                   // 'try'
     lookahead1W(87);                // S^WS | '(:' | '{'
     consume(283);                   // '{'
@@ -5030,7 +5040,7 @@
     whitespace();
     parse_TryTargetExpr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("TryClause", e0);
+    eventHandler.endNonterminal(77, e0);
   }
 
   function try_TryClause()
@@ -5068,9 +5078,9 @@
 
   function parse_TryTargetExpr()
   {
-    eventHandler.startNonterminal("TryTargetExpr", e0);
+    eventHandler.startNonterminal(78, e0);
     parse_Expr();
-    eventHandler.endNonterminal("TryTargetExpr", e0);
+    eventHandler.endNonterminal(78, e0);
   }
 
   function try_TryTargetExpr()
@@ -5080,7 +5090,7 @@
 
   function parse_CatchClause()
   {
-    eventHandler.startNonterminal("CatchClause", e0);
+    eventHandler.startNonterminal(79, e0);
     consume(168);                   // 'catch'
     lookahead1W(251);               // Wildcard | EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -5133,7 +5143,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("CatchClause", e0);
+    eventHandler.endNonterminal(79, e0);
   }
 
   function try_CatchClause()
@@ -5192,7 +5202,7 @@
 
   function parse_CatchErrorList()
   {
-    eventHandler.startNonterminal("CatchErrorList", e0);
+    eventHandler.startNonterminal(80, e0);
     parse_NameTest();
     for (;;)
     {
@@ -5226,7 +5236,7 @@
       whitespace();
       parse_NameTest();
     }
-    eventHandler.endNonterminal("CatchErrorList", e0);
+    eventHandler.endNonterminal(80, e0);
   }
 
   function try_CatchErrorList()
@@ -5267,7 +5277,7 @@
 
   function parse_OrExpr()
   {
-    eventHandler.startNonterminal("OrExpr", e0);
+    eventHandler.startNonterminal(81, e0);
     parse_AndExpr();
     for (;;)
     {
@@ -5303,7 +5313,7 @@
       whitespace();
       parse_AndExpr();
     }
-    eventHandler.endNonterminal("OrExpr", e0);
+    eventHandler.endNonterminal(81, e0);
   }
 
   function try_OrExpr()
@@ -5346,7 +5356,7 @@
 
   function parse_AndExpr()
   {
-    eventHandler.startNonterminal("AndExpr", e0);
+    eventHandler.startNonterminal(82, e0);
     parse_ComparisonExpr();
     for (;;)
     {
@@ -5382,7 +5392,7 @@
       whitespace();
       parse_ComparisonExpr();
     }
-    eventHandler.endNonterminal("AndExpr", e0);
+    eventHandler.endNonterminal(82, e0);
   }
 
   function try_AndExpr()
@@ -5425,7 +5435,7 @@
 
   function parse_ComparisonExpr()
   {
-    eventHandler.startNonterminal("ComparisonExpr", e0);
+    eventHandler.startNonterminal(83, e0);
     parse_FTContainsExpr();
     if (l1 == 91                    // '!='
      || l1 == 102                   // '<'
@@ -5491,7 +5501,7 @@
       whitespace();
       parse_FTContainsExpr();
     }
-    eventHandler.endNonterminal("ComparisonExpr", e0);
+    eventHandler.endNonterminal(83, e0);
   }
 
   function try_ComparisonExpr()
@@ -5561,7 +5571,7 @@
 
   function parse_FTContainsExpr()
   {
-    eventHandler.startNonterminal("FTContainsExpr", e0);
+    eventHandler.startNonterminal(84, e0);
     parse_StringConcatExpr();
     if (l1 == 115)                  // 'contains'
     {
@@ -5577,7 +5587,7 @@
         parse_FTIgnoreOption();
       }
     }
-    eventHandler.endNonterminal("FTContainsExpr", e0);
+    eventHandler.endNonterminal(84, e0);
   }
 
   function try_FTContainsExpr()
@@ -5599,7 +5609,7 @@
 
   function parse_StringConcatExpr()
   {
-    eventHandler.startNonterminal("StringConcatExpr", e0);
+    eventHandler.startNonterminal(85, e0);
     parse_RangeExpr();
     for (;;)
     {
@@ -5635,7 +5645,7 @@
       whitespace();
       parse_RangeExpr();
     }
-    eventHandler.endNonterminal("StringConcatExpr", e0);
+    eventHandler.endNonterminal(85, e0);
   }
 
   function try_StringConcatExpr()
@@ -5678,7 +5688,7 @@
 
   function parse_RangeExpr()
   {
-    eventHandler.startNonterminal("RangeExpr", e0);
+    eventHandler.startNonterminal(86, e0);
     parse_AdditiveExpr();
     if (l1 == 266)                  // 'to'
     {
@@ -5710,7 +5720,7 @@
       whitespace();
       parse_AdditiveExpr();
     }
-    eventHandler.endNonterminal("RangeExpr", e0);
+    eventHandler.endNonterminal(86, e0);
   }
 
   function try_RangeExpr()
@@ -5749,7 +5759,7 @@
 
   function parse_AdditiveExpr()
   {
-    eventHandler.startNonterminal("AdditiveExpr", e0);
+    eventHandler.startNonterminal(87, e0);
     parse_MultiplicativeExpr();
     for (;;)
     {
@@ -5793,7 +5803,7 @@
       whitespace();
       parse_MultiplicativeExpr();
     }
-    eventHandler.endNonterminal("AdditiveExpr", e0);
+    eventHandler.endNonterminal(87, e0);
   }
 
   function try_AdditiveExpr()
@@ -5844,7 +5854,7 @@
 
   function parse_MultiplicativeExpr()
   {
-    eventHandler.startNonterminal("MultiplicativeExpr", e0);
+    eventHandler.startNonterminal(88, e0);
     parse_UnionExpr();
     for (;;)
     {
@@ -5896,7 +5906,7 @@
       whitespace();
       parse_UnionExpr();
     }
-    eventHandler.endNonterminal("MultiplicativeExpr", e0);
+    eventHandler.endNonterminal(88, e0);
   }
 
   function try_MultiplicativeExpr()
@@ -5955,7 +5965,7 @@
 
   function parse_UnionExpr()
   {
-    eventHandler.startNonterminal("UnionExpr", e0);
+    eventHandler.startNonterminal(89, e0);
     parse_IntersectExceptExpr();
     for (;;)
     {
@@ -5999,7 +6009,7 @@
       whitespace();
       parse_IntersectExceptExpr();
     }
-    eventHandler.endNonterminal("UnionExpr", e0);
+    eventHandler.endNonterminal(89, e0);
   }
 
   function try_UnionExpr()
@@ -6050,7 +6060,7 @@
 
   function parse_IntersectExceptExpr()
   {
-    eventHandler.startNonterminal("IntersectExceptExpr", e0);
+    eventHandler.startNonterminal(90, e0);
     parse_InstanceofExpr();
     for (;;)
     {
@@ -6102,7 +6112,7 @@
       whitespace();
       parse_InstanceofExpr();
     }
-    eventHandler.endNonterminal("IntersectExceptExpr", e0);
+    eventHandler.endNonterminal(90, e0);
   }
 
   function try_IntersectExceptExpr()
@@ -6161,7 +6171,7 @@
 
   function parse_InstanceofExpr()
   {
-    eventHandler.startNonterminal("InstanceofExpr", e0);
+    eventHandler.startNonterminal(91, e0);
     parse_TreatExpr();
     lookahead1W(223);               // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | ':' | ';' | '<' | '<<' |
                                     // '<=' | '=' | '>' | '>=' | '>>' | ']' | 'after' | 'and' | 'as' | 'ascending' |
@@ -6201,7 +6211,7 @@
       whitespace();
       parse_SequenceType();
     }
-    eventHandler.endNonterminal("InstanceofExpr", e0);
+    eventHandler.endNonterminal(91, e0);
   }
 
   function try_InstanceofExpr()
@@ -6248,7 +6258,7 @@
 
   function parse_TreatExpr()
   {
-    eventHandler.startNonterminal("TreatExpr", e0);
+    eventHandler.startNonterminal(92, e0);
     parse_CastableExpr();
     lookahead1W(224);               // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | ':' | ';' | '<' | '<<' |
                                     // '<=' | '=' | '>' | '>=' | '>>' | ']' | 'after' | 'and' | 'as' | 'ascending' |
@@ -6289,7 +6299,7 @@
       whitespace();
       parse_SequenceType();
     }
-    eventHandler.endNonterminal("TreatExpr", e0);
+    eventHandler.endNonterminal(92, e0);
   }
 
   function try_TreatExpr()
@@ -6337,7 +6347,7 @@
 
   function parse_CastableExpr()
   {
-    eventHandler.startNonterminal("CastableExpr", e0);
+    eventHandler.startNonterminal(93, e0);
     parse_CastExpr();
     lookahead1W(225);               // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | ':' | ';' | '<' | '<<' |
                                     // '<=' | '=' | '>' | '>=' | '>>' | ']' | 'after' | 'and' | 'as' | 'ascending' |
@@ -6377,7 +6387,7 @@
       whitespace();
       parse_SingleType();
     }
-    eventHandler.endNonterminal("CastableExpr", e0);
+    eventHandler.endNonterminal(93, e0);
   }
 
   function try_CastableExpr()
@@ -6424,7 +6434,7 @@
 
   function parse_CastExpr()
   {
-    eventHandler.startNonterminal("CastExpr", e0);
+    eventHandler.startNonterminal(94, e0);
     parse_UnaryExpr();
     lookahead1W(227);               // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | ':' | ';' | '<' | '<<' |
                                     // '<=' | '=' | '>' | '>=' | '>>' | ']' | 'after' | 'and' | 'as' | 'ascending' |
@@ -6464,7 +6474,7 @@
       whitespace();
       parse_SingleType();
     }
-    eventHandler.endNonterminal("CastExpr", e0);
+    eventHandler.endNonterminal(94, e0);
   }
 
   function try_CastExpr()
@@ -6511,7 +6521,7 @@
 
   function parse_UnaryExpr()
   {
-    eventHandler.startNonterminal("UnaryExpr", e0);
+    eventHandler.startNonterminal(95, e0);
     for (;;)
     {
       lookahead1W(266);             // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
@@ -6554,7 +6564,7 @@
     }
     whitespace();
     parse_ValueExpr();
-    eventHandler.endNonterminal("UnaryExpr", e0);
+    eventHandler.endNonterminal(95, e0);
   }
 
   function try_UnaryExpr()
@@ -6604,7 +6614,7 @@
 
   function parse_ValueExpr()
   {
-    eventHandler.startNonterminal("ValueExpr", e0);
+    eventHandler.startNonterminal(96, e0);
     lk = predict(9);
     switch (lk)
     {
@@ -6617,7 +6627,7 @@
     default:
       parse_SimpleMapExpr();
     }
-    eventHandler.endNonterminal("ValueExpr", e0);
+    eventHandler.endNonterminal(96, e0);
   }
 
   function try_ValueExpr()
@@ -6638,7 +6648,7 @@
 
   function parse_SimpleMapExpr()
   {
-    eventHandler.startNonterminal("SimpleMapExpr", e0);
+    eventHandler.startNonterminal(97, e0);
     parse_PathExpr();
     for (;;)
     {
@@ -6674,7 +6684,7 @@
       whitespace();
       parse_PathExpr();
     }
-    eventHandler.endNonterminal("SimpleMapExpr", e0);
+    eventHandler.endNonterminal(97, e0);
   }
 
   function try_SimpleMapExpr()
@@ -6717,7 +6727,7 @@
 
   function parse_GeneralComp()
   {
-    eventHandler.startNonterminal("GeneralComp", e0);
+    eventHandler.startNonterminal(98, e0);
     switch (l1)
     {
     case 107:                       // '='
@@ -6738,7 +6748,7 @@
     default:
       consume(109);                 // '>='
     }
-    eventHandler.endNonterminal("GeneralComp", e0);
+    eventHandler.endNonterminal(98, e0);
   }
 
   function try_GeneralComp()
@@ -6767,7 +6777,7 @@
 
   function parse_ValueComp()
   {
-    eventHandler.startNonterminal("ValueComp", e0);
+    eventHandler.startNonterminal(99, e0);
     switch (l1)
     {
     case 195:                       // 'eq'
@@ -6788,7 +6798,7 @@
     default:
       consume(206);                 // 'ge'
     }
-    eventHandler.endNonterminal("ValueComp", e0);
+    eventHandler.endNonterminal(99, e0);
   }
 
   function try_ValueComp()
@@ -6817,7 +6827,7 @@
 
   function parse_NodeComp()
   {
-    eventHandler.startNonterminal("NodeComp", e0);
+    eventHandler.startNonterminal(100, e0);
     switch (l1)
     {
     case 219:                       // 'is'
@@ -6829,7 +6839,7 @@
     default:
       consume(110);                 // '>>'
     }
-    eventHandler.endNonterminal("NodeComp", e0);
+    eventHandler.endNonterminal(100, e0);
   }
 
   function try_NodeComp()
@@ -6849,7 +6859,7 @@
 
   function parse_ValidateExpr()
   {
-    eventHandler.startNonterminal("ValidateExpr", e0);
+    eventHandler.startNonterminal(101, e0);
     consume(275);                   // 'validate'
     lookahead1W(160);               // S^WS | '(:' | 'lax' | 'strict' | 'type' | '{'
     if (l1 != 283)                  // '{'
@@ -6916,7 +6926,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("ValidateExpr", e0);
+    eventHandler.endNonterminal(101, e0);
   }
 
   function try_ValidateExpr()
@@ -6988,7 +6998,7 @@
 
   function parse_ValidationMode()
   {
-    eventHandler.startNonterminal("ValidationMode", e0);
+    eventHandler.startNonterminal(102, e0);
     switch (l1)
     {
     case 223:                       // 'lax'
@@ -6997,7 +7007,7 @@
     default:
       consume(263);                 // 'strict'
     }
-    eventHandler.endNonterminal("ValidationMode", e0);
+    eventHandler.endNonterminal(102, e0);
   }
 
   function try_ValidationMode()
@@ -7014,7 +7024,7 @@
 
   function parse_ExtensionExpr()
   {
-    eventHandler.startNonterminal("ExtensionExpr", e0);
+    eventHandler.startNonterminal(103, e0);
     for (;;)
     {
       whitespace();
@@ -7056,7 +7066,7 @@
       parse_Expr();
     }
     consume(138);                   // '}'
-    eventHandler.endNonterminal("ExtensionExpr", e0);
+    eventHandler.endNonterminal(103, e0);
   }
 
   function try_ExtensionExpr()
@@ -7104,7 +7114,7 @@
 
   function parse_Pragma()
   {
-    eventHandler.startNonterminal("Pragma", e0);
+    eventHandler.startNonterminal(104, e0);
     consume(93);                    // '(#'
     lookahead1(248);                // EQName^Token | S | 'after' | 'allowing' | 'ancestor' | 'ancestor-or-self' |
                                     // 'and' | 'as' | 'ascending' | 'at' | 'attribute' | 'base-uri' | 'before' |
@@ -7141,7 +7151,7 @@
     }
     lookahead1(5);                  // '#)'
     consume(21);                    // '#)'
-    eventHandler.endNonterminal("Pragma", e0);
+    eventHandler.endNonterminal(104, e0);
   }
 
   function try_Pragma()
@@ -7186,7 +7196,7 @@
 
   function parse_PathExpr()
   {
-    eventHandler.startNonterminal("PathExpr", e0);
+    eventHandler.startNonterminal(105, e0);
     switch (l1)
     {
     case 150:                       // '/'
@@ -7283,7 +7293,7 @@
     default:
       parse_RelativePathExpr();
     }
-    eventHandler.endNonterminal("PathExpr", e0);
+    eventHandler.endNonterminal(105, e0);
   }
 
   function try_PathExpr()
@@ -7386,7 +7396,7 @@
 
   function parse_RelativePathExpr()
   {
-    eventHandler.startNonterminal("RelativePathExpr", e0);
+    eventHandler.startNonterminal(106, e0);
     parse_StepExpr();
     for (;;)
     {
@@ -7490,7 +7500,7 @@
       whitespace();
       parse_StepExpr();
     }
-    eventHandler.endNonterminal("RelativePathExpr", e0);
+    eventHandler.endNonterminal(106, e0);
   }
 
   function try_RelativePathExpr()
@@ -7602,7 +7612,7 @@
 
   function parse_StepExpr()
   {
-    eventHandler.startNonterminal("StepExpr", e0);
+    eventHandler.startNonterminal(107, e0);
     lk = predict(11);
     if (lk == 2)
     {
@@ -7636,7 +7646,7 @@
     default:
       parse_AxisStep();
     }
-    eventHandler.endNonterminal("StepExpr", e0);
+    eventHandler.endNonterminal(107, e0);
   }
 
   function try_StepExpr()
@@ -7681,7 +7691,7 @@
 
   function parse_AxisStep()
   {
-    eventHandler.startNonterminal("AxisStep", e0);
+    eventHandler.startNonterminal(108, e0);
     lk = predict(12);
     switch (lk)
     {
@@ -7702,7 +7712,7 @@
                                     // 'union' | 'where' | 'with' | 'words' | '|' | '||' | '|}' | '}'
     whitespace();
     parse_PredicateList();
-    eventHandler.endNonterminal("AxisStep", e0);
+    eventHandler.endNonterminal(108, e0);
   }
 
   function try_AxisStep()
@@ -7730,7 +7740,7 @@
 
   function parse_ForwardStep()
   {
-    eventHandler.startNonterminal("ForwardStep", e0);
+    eventHandler.startNonterminal(109, e0);
     lk = predict(13);
     switch (lk)
     {
@@ -7764,7 +7774,7 @@
     default:
       parse_AbbrevForwardStep();
     }
-    eventHandler.endNonterminal("ForwardStep", e0);
+    eventHandler.endNonterminal(109, e0);
   }
 
   function try_ForwardStep()
@@ -7805,7 +7815,7 @@
 
   function parse_ForwardAxis()
   {
-    eventHandler.startNonterminal("ForwardAxis", e0);
+    eventHandler.startNonterminal(110, e0);
     switch (l1)
     {
     case 169:                       // 'child'
@@ -7843,7 +7853,7 @@
       lookahead1W(26);              // S^WS | '(:' | '::'
       consume(28);                  // '::'
     }
-    eventHandler.endNonterminal("ForwardAxis", e0);
+    eventHandler.endNonterminal(110, e0);
   }
 
   function try_ForwardAxis()
@@ -7889,7 +7899,7 @@
 
   function parse_AbbrevForwardStep()
   {
-    eventHandler.startNonterminal("AbbrevForwardStep", e0);
+    eventHandler.startNonterminal(111, e0);
     if (l1 == 33)                   // '@'
     {
       consume(33);                  // '@'
@@ -7918,7 +7928,7 @@
                                     // 'xquery'
     whitespace();
     parse_NodeTest();
-    eventHandler.endNonterminal("AbbrevForwardStep", e0);
+    eventHandler.endNonterminal(111, e0);
   }
 
   function try_AbbrevForwardStep()
@@ -7954,7 +7964,7 @@
 
   function parse_ReverseStep()
   {
-    eventHandler.startNonterminal("ReverseStep", e0);
+    eventHandler.startNonterminal(112, e0);
     switch (l1)
     {
     case 149:                       // '..'
@@ -7987,7 +7997,7 @@
       whitespace();
       parse_NodeTest();
     }
-    eventHandler.endNonterminal("ReverseStep", e0);
+    eventHandler.endNonterminal(112, e0);
   }
 
   function try_ReverseStep()
@@ -8027,7 +8037,7 @@
 
   function parse_ReverseAxis()
   {
-    eventHandler.startNonterminal("ReverseAxis", e0);
+    eventHandler.startNonterminal(113, e0);
     switch (l1)
     {
     case 244:                       // 'parent'
@@ -8055,7 +8065,7 @@
       lookahead1W(26);              // S^WS | '(:' | '::'
       consume(28);                  // '::'
     }
-    eventHandler.endNonterminal("ReverseAxis", e0);
+    eventHandler.endNonterminal(113, e0);
   }
 
   function try_ReverseAxis()
@@ -8091,9 +8101,9 @@
 
   function parse_AbbrevReverseStep()
   {
-    eventHandler.startNonterminal("AbbrevReverseStep", e0);
+    eventHandler.startNonterminal(114, e0);
     consume(149);                   // '..'
-    eventHandler.endNonterminal("AbbrevReverseStep", e0);
+    eventHandler.endNonterminal(114, e0);
   }
 
   function try_AbbrevReverseStep()
@@ -8103,7 +8113,7 @@
 
   function parse_NodeTest()
   {
-    eventHandler.startNonterminal("NodeTest", e0);
+    eventHandler.startNonterminal(115, e0);
     lk = predict(14);
     switch (lk)
     {
@@ -8113,7 +8123,7 @@
     default:
       parse_NameTest();
     }
-    eventHandler.endNonterminal("NodeTest", e0);
+    eventHandler.endNonterminal(115, e0);
   }
 
   function try_NodeTest()
@@ -8131,7 +8141,7 @@
 
   function parse_NameTest()
   {
-    eventHandler.startNonterminal("NameTest", e0);
+    eventHandler.startNonterminal(116, e0);
     switch (l1)
     {
     case 139:                       // Wildcard
@@ -8140,7 +8150,7 @@
     default:
       parse_EQName();
     }
-    eventHandler.endNonterminal("NameTest", e0);
+    eventHandler.endNonterminal(116, e0);
   }
 
   function try_NameTest()
@@ -8157,7 +8167,7 @@
 
   function parse_PostfixExpr()
   {
-    eventHandler.startNonterminal("PostfixExpr", e0);
+    eventHandler.startNonterminal(117, e0);
     parse_PrimaryExpr();
     for (;;)
     {
@@ -8186,7 +8196,7 @@
         parse_ArgumentList();
       }
     }
-    eventHandler.endNonterminal("PostfixExpr", e0);
+    eventHandler.endNonterminal(117, e0);
   }
 
   function try_PostfixExpr()
@@ -8221,7 +8231,7 @@
 
   function parse_ArgumentList()
   {
-    eventHandler.startNonterminal("ArgumentList", e0);
+    eventHandler.startNonterminal(118, e0);
     consume(92);                    // '('
     lookahead1W(279);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | ')' | '+' | '-' | '.' |
@@ -8288,7 +8298,7 @@
       }
     }
     consume(94);                    // ')'
-    eventHandler.endNonterminal("ArgumentList", e0);
+    eventHandler.endNonterminal(118, e0);
   }
 
   function try_ArgumentList()
@@ -8361,7 +8371,7 @@
 
   function parse_PredicateList()
   {
-    eventHandler.startNonterminal("PredicateList", e0);
+    eventHandler.startNonterminal(119, e0);
     for (;;)
     {
       lookahead1W(236);             // S^WS | EOF | '!' | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | '/' | '//' | ':' |
@@ -8380,7 +8390,7 @@
       whitespace();
       parse_Predicate();
     }
-    eventHandler.endNonterminal("PredicateList", e0);
+    eventHandler.endNonterminal(119, e0);
   }
 
   function try_PredicateList()
@@ -8406,7 +8416,7 @@
 
   function parse_Predicate()
   {
-    eventHandler.startNonterminal("Predicate", e0);
+    eventHandler.startNonterminal(120, e0);
     consume(111);                   // '['
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -8435,7 +8445,7 @@
     whitespace();
     parse_Expr();
     consume(112);                   // ']'
-    eventHandler.endNonterminal("Predicate", e0);
+    eventHandler.endNonterminal(120, e0);
   }
 
   function try_Predicate()
@@ -8471,7 +8481,7 @@
 
   function parse_Literal()
   {
-    eventHandler.startNonterminal("Literal", e0);
+    eventHandler.startNonterminal(121, e0);
     switch (l1)
     {
     case 144:                       // StringLiteral
@@ -8480,7 +8490,7 @@
     default:
       parse_NumericLiteral();
     }
-    eventHandler.endNonterminal("Literal", e0);
+    eventHandler.endNonterminal(121, e0);
   }
 
   function try_Literal()
@@ -8497,7 +8507,7 @@
 
   function parse_NumericLiteral()
   {
-    eventHandler.startNonterminal("NumericLiteral", e0);
+    eventHandler.startNonterminal(122, e0);
     switch (l1)
     {
     case 141:                       // IntegerLiteral
@@ -8509,7 +8519,7 @@
     default:
       consume(143);                 // DoubleLiteral
     }
-    eventHandler.endNonterminal("NumericLiteral", e0);
+    eventHandler.endNonterminal(122, e0);
   }
 
   function try_NumericLiteral()
@@ -8529,7 +8539,7 @@
 
   function parse_VarRef()
   {
-    eventHandler.startNonterminal("VarRef", e0);
+    eventHandler.startNonterminal(123, e0);
     consume(146);                   // '$'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -8554,7 +8564,7 @@
                                     // 'xquery'
     whitespace();
     parse_VarName();
-    eventHandler.endNonterminal("VarRef", e0);
+    eventHandler.endNonterminal(123, e0);
   }
 
   function try_VarRef()
@@ -8586,9 +8596,9 @@
 
   function parse_VarName()
   {
-    eventHandler.startNonterminal("VarName", e0);
+    eventHandler.startNonterminal(124, e0);
     parse_EQName();
-    eventHandler.endNonterminal("VarName", e0);
+    eventHandler.endNonterminal(124, e0);
   }
 
   function try_VarName()
@@ -8598,7 +8608,7 @@
 
   function parse_ParenthesizedExpr()
   {
-    eventHandler.startNonterminal("ParenthesizedExpr", e0);
+    eventHandler.startNonterminal(125, e0);
     consume(92);                    // '('
     lookahead1W(273);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | ')' | '+' | '-' | '.' |
@@ -8630,7 +8640,7 @@
       parse_Expr();
     }
     consume(94);                    // ')'
-    eventHandler.endNonterminal("ParenthesizedExpr", e0);
+    eventHandler.endNonterminal(125, e0);
   }
 
   function try_ParenthesizedExpr()
@@ -8669,9 +8679,9 @@
 
   function parse_ContextItemExpr()
   {
-    eventHandler.startNonterminal("ContextItemExpr", e0);
+    eventHandler.startNonterminal(126, e0);
     consume(148);                   // '.'
-    eventHandler.endNonterminal("ContextItemExpr", e0);
+    eventHandler.endNonterminal(126, e0);
   }
 
   function try_ContextItemExpr()
@@ -8681,7 +8691,7 @@
 
   function parse_OrderedExpr()
   {
-    eventHandler.startNonterminal("OrderedExpr", e0);
+    eventHandler.startNonterminal(127, e0);
     consume(242);                   // 'ordered'
     lookahead1W(87);                // S^WS | '(:' | '{'
     consume(283);                   // '{'
@@ -8712,7 +8722,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("OrderedExpr", e0);
+    eventHandler.endNonterminal(127, e0);
   }
 
   function try_OrderedExpr()
@@ -8750,7 +8760,7 @@
 
   function parse_UnorderedExpr()
   {
-    eventHandler.startNonterminal("UnorderedExpr", e0);
+    eventHandler.startNonterminal(128, e0);
     consume(273);                   // 'unordered'
     lookahead1W(87);                // S^WS | '(:' | '{'
     consume(283);                   // '{'
@@ -8781,7 +8791,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("UnorderedExpr", e0);
+    eventHandler.endNonterminal(128, e0);
   }
 
   function try_UnorderedExpr()
@@ -8819,12 +8829,12 @@
 
   function parse_FunctionCall()
   {
-    eventHandler.startNonterminal("FunctionCall", e0);
+    eventHandler.startNonterminal(129, e0);
     parse_FunctionName();
     lookahead1W(22);                // S^WS | '(' | '(:'
     whitespace();
     parse_ArgumentList();
-    eventHandler.endNonterminal("FunctionCall", e0);
+    eventHandler.endNonterminal(129, e0);
   }
 
   function try_FunctionCall()
@@ -8836,7 +8846,7 @@
 
   function parse_Argument()
   {
-    eventHandler.startNonterminal("Argument", e0);
+    eventHandler.startNonterminal(130, e0);
     switch (l1)
     {
     case 31:                        // '?'
@@ -8845,7 +8855,7 @@
     default:
       parse_ExprSingle();
     }
-    eventHandler.endNonterminal("Argument", e0);
+    eventHandler.endNonterminal(130, e0);
   }
 
   function try_Argument()
@@ -8862,9 +8872,9 @@
 
   function parse_ArgumentPlaceholder()
   {
-    eventHandler.startNonterminal("ArgumentPlaceholder", e0);
+    eventHandler.startNonterminal(131, e0);
     consume(31);                    // '?'
-    eventHandler.endNonterminal("ArgumentPlaceholder", e0);
+    eventHandler.endNonterminal(131, e0);
   }
 
   function try_ArgumentPlaceholder()
@@ -8874,7 +8884,7 @@
 
   function parse_Constructor()
   {
-    eventHandler.startNonterminal("Constructor", e0);
+    eventHandler.startNonterminal(132, e0);
     switch (l1)
     {
     case 102:                       // '<'
@@ -8885,7 +8895,7 @@
     default:
       parse_ComputedConstructor();
     }
-    eventHandler.endNonterminal("Constructor", e0);
+    eventHandler.endNonterminal(132, e0);
   }
 
   function try_Constructor()
@@ -8904,7 +8914,7 @@
 
   function parse_DirectConstructor()
   {
-    eventHandler.startNonterminal("DirectConstructor", e0);
+    eventHandler.startNonterminal(133, e0);
     switch (l1)
     {
     case 102:                       // '<'
@@ -8916,7 +8926,7 @@
     default:
       parse_DirPIConstructor();
     }
-    eventHandler.endNonterminal("DirectConstructor", e0);
+    eventHandler.endNonterminal(133, e0);
   }
 
   function try_DirectConstructor()
@@ -8936,7 +8946,7 @@
 
   function parse_DirElemConstructor()
   {
-    eventHandler.startNonterminal("DirElemConstructor", e0);
+    eventHandler.startNonterminal(134, e0);
     consume(102);                   // '<'
     lookahead1(4);                  // QName
     consume(14);                    // QName
@@ -8969,7 +8979,7 @@
       lookahead1(8);                // '>'
       consume(108);                 // '>'
     }
-    eventHandler.endNonterminal("DirElemConstructor", e0);
+    eventHandler.endNonterminal(134, e0);
   }
 
   function try_DirElemConstructor()
@@ -9010,7 +9020,7 @@
 
   function parse_DirAttributeList()
   {
-    eventHandler.startNonterminal("DirAttributeList", e0);
+    eventHandler.startNonterminal(135, e0);
     for (;;)
     {
       lookahead1(19);               // S | '/>' | '>'
@@ -9038,7 +9048,7 @@
         parse_DirAttributeValue();
       }
     }
-    eventHandler.endNonterminal("DirAttributeList", e0);
+    eventHandler.endNonterminal(135, e0);
   }
 
   function try_DirAttributeList()
@@ -9074,7 +9084,7 @@
 
   function parse_DirAttributeValue()
   {
-    eventHandler.startNonterminal("DirAttributeValue", e0);
+    eventHandler.startNonterminal(136, e0);
     lookahead1(14);                 // '"' | "'"
     switch (l1)
     {
@@ -9120,7 +9130,7 @@
       }
       consume(22);                  // "'"
     }
-    eventHandler.endNonterminal("DirAttributeValue", e0);
+    eventHandler.endNonterminal(136, e0);
   }
 
   function try_DirAttributeValue()
@@ -9174,7 +9184,7 @@
 
   function parse_QuotAttrValueContent()
   {
-    eventHandler.startNonterminal("QuotAttrValueContent", e0);
+    eventHandler.startNonterminal(137, e0);
     switch (l1)
     {
     case 10:                        // QuotAttrContentChar
@@ -9183,7 +9193,7 @@
     default:
       parse_CommonContent();
     }
-    eventHandler.endNonterminal("QuotAttrValueContent", e0);
+    eventHandler.endNonterminal(137, e0);
   }
 
   function try_QuotAttrValueContent()
@@ -9200,7 +9210,7 @@
 
   function parse_AposAttrValueContent()
   {
-    eventHandler.startNonterminal("AposAttrValueContent", e0);
+    eventHandler.startNonterminal(138, e0);
     switch (l1)
     {
     case 11:                        // AposAttrContentChar
@@ -9209,7 +9219,7 @@
     default:
       parse_CommonContent();
     }
-    eventHandler.endNonterminal("AposAttrValueContent", e0);
+    eventHandler.endNonterminal(138, e0);
   }
 
   function try_AposAttrValueContent()
@@ -9226,7 +9236,7 @@
 
   function parse_DirElemContent()
   {
-    eventHandler.startNonterminal("DirElemContent", e0);
+    eventHandler.startNonterminal(139, e0);
     switch (l1)
     {
     case 102:                       // '<'
@@ -9243,7 +9253,7 @@
     default:
       parse_CommonContent();
     }
-    eventHandler.endNonterminal("DirElemContent", e0);
+    eventHandler.endNonterminal(139, e0);
   }
 
   function try_DirElemContent()
@@ -9268,13 +9278,13 @@
 
   function parse_DirCommentConstructor()
   {
-    eventHandler.startNonterminal("DirCommentConstructor", e0);
+    eventHandler.startNonterminal(140, e0);
     consume(103);                   // '<!--'
     lookahead1(1);                  // DirCommentContents
     consume(2);                     // DirCommentContents
     lookahead1(6);                  // '-->'
     consume(25);                    // '-->'
-    eventHandler.endNonterminal("DirCommentConstructor", e0);
+    eventHandler.endNonterminal(140, e0);
   }
 
   function try_DirCommentConstructor()
@@ -9288,7 +9298,7 @@
 
   function parse_DirPIConstructor()
   {
-    eventHandler.startNonterminal("DirPIConstructor", e0);
+    eventHandler.startNonterminal(141, e0);
     consume(106);                   // '<?'
     lookahead1(3);                  // PITarget
     consume(12);                    // PITarget
@@ -9301,7 +9311,7 @@
     }
     lookahead1(9);                  // '?>'
     consume(32);                    // '?>'
-    eventHandler.endNonterminal("DirPIConstructor", e0);
+    eventHandler.endNonterminal(141, e0);
   }
 
   function try_DirPIConstructor()
@@ -9322,7 +9332,7 @@
 
   function parse_ComputedConstructor()
   {
-    eventHandler.startNonterminal("ComputedConstructor", e0);
+    eventHandler.startNonterminal(142, e0);
     switch (l1)
     {
     case 187:                       // 'document'
@@ -9346,7 +9356,7 @@
     default:
       parse_CompPIConstructor();
     }
-    eventHandler.endNonterminal("ComputedConstructor", e0);
+    eventHandler.endNonterminal(142, e0);
   }
 
   function try_ComputedConstructor()
@@ -9378,7 +9388,7 @@
 
   function parse_CompElemConstructor()
   {
-    eventHandler.startNonterminal("CompElemConstructor", e0);
+    eventHandler.startNonterminal(143, e0);
     consume(189);                   // 'element'
     lookahead1W(252);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -9469,7 +9479,7 @@
       parse_ContentExpr();
     }
     consume(138);                   // '}'
-    eventHandler.endNonterminal("CompElemConstructor", e0);
+    eventHandler.endNonterminal(143, e0);
   }
 
   function try_CompElemConstructor()
@@ -9565,7 +9575,7 @@
 
   function parse_CompNamespaceConstructor()
   {
-    eventHandler.startNonterminal("CompNamespaceConstructor", e0);
+    eventHandler.startNonterminal(144, e0);
     consume(231);                   // 'namespace'
     lookahead1W(253);               // NCName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -9653,7 +9663,7 @@
     whitespace();
     parse_URIExpr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("CompNamespaceConstructor", e0);
+    eventHandler.endNonterminal(144, e0);
   }
 
   function try_CompNamespaceConstructor()
@@ -9746,9 +9756,9 @@
 
   function parse_Prefix()
   {
-    eventHandler.startNonterminal("Prefix", e0);
+    eventHandler.startNonterminal(145, e0);
     parse_NCName();
-    eventHandler.endNonterminal("Prefix", e0);
+    eventHandler.endNonterminal(145, e0);
   }
 
   function try_Prefix()
@@ -9758,9 +9768,9 @@
 
   function parse_PrefixExpr()
   {
-    eventHandler.startNonterminal("PrefixExpr", e0);
+    eventHandler.startNonterminal(146, e0);
     parse_Expr();
-    eventHandler.endNonterminal("PrefixExpr", e0);
+    eventHandler.endNonterminal(146, e0);
   }
 
   function try_PrefixExpr()
@@ -9770,9 +9780,9 @@
 
   function parse_URIExpr()
   {
-    eventHandler.startNonterminal("URIExpr", e0);
+    eventHandler.startNonterminal(147, e0);
     parse_Expr();
-    eventHandler.endNonterminal("URIExpr", e0);
+    eventHandler.endNonterminal(147, e0);
   }
 
   function try_URIExpr()
@@ -9782,7 +9792,7 @@
 
   function parse_FunctionItemExpr()
   {
-    eventHandler.startNonterminal("FunctionItemExpr", e0);
+    eventHandler.startNonterminal(148, e0);
     lk = predict(15);
     switch (lk)
     {
@@ -9792,7 +9802,7 @@
     default:
       parse_NamedFunctionRef();
     }
-    eventHandler.endNonterminal("FunctionItemExpr", e0);
+    eventHandler.endNonterminal(148, e0);
   }
 
   function try_FunctionItemExpr()
@@ -9810,13 +9820,13 @@
 
   function parse_NamedFunctionRef()
   {
-    eventHandler.startNonterminal("NamedFunctionRef", e0);
+    eventHandler.startNonterminal(149, e0);
     parse_EQName();
     lookahead1W(20);                // S^WS | '#' | '(:'
     consume(20);                    // '#'
     lookahead1W(16);                // IntegerLiteral | S^WS | '(:'
     consume(141);                   // IntegerLiteral
-    eventHandler.endNonterminal("NamedFunctionRef", e0);
+    eventHandler.endNonterminal(149, e0);
   }
 
   function try_NamedFunctionRef()
@@ -9830,7 +9840,7 @@
 
   function parse_InlineFunctionExpr()
   {
-    eventHandler.startNonterminal("InlineFunctionExpr", e0);
+    eventHandler.startNonterminal(150, e0);
     for (;;)
     {
       lookahead1W(97);              // S^WS | '%' | '(:' | 'function'
@@ -9883,7 +9893,7 @@
     lookahead1W(87);                // S^WS | '(:' | '{'
     whitespace();
     parse_FunctionBody();
-    eventHandler.endNonterminal("InlineFunctionExpr", e0);
+    eventHandler.endNonterminal(150, e0);
   }
 
   function try_InlineFunctionExpr()
@@ -9940,7 +9950,7 @@
 
   function parse_SingleType()
   {
-    eventHandler.startNonterminal("SingleType", e0);
+    eventHandler.startNonterminal(151, e0);
     parse_SimpleTypeName();
     lookahead1W(226);               // S^WS | EOF | '!=' | '(:' | ')' | '*' | '+' | ',' | '-' | ':' | ';' | '<' | '<<' |
                                     // '<=' | '=' | '>' | '>=' | '>>' | '?' | ']' | 'after' | 'and' | 'as' |
@@ -9955,7 +9965,7 @@
     {
       consume(31);                  // '?'
     }
-    eventHandler.endNonterminal("SingleType", e0);
+    eventHandler.endNonterminal(151, e0);
   }
 
   function try_SingleType()
@@ -9978,7 +9988,7 @@
 
   function parse_TypeDeclaration()
   {
-    eventHandler.startNonterminal("TypeDeclaration", e0);
+    eventHandler.startNonterminal(152, e0);
     consume(157);                   // 'as'
     lookahead1W(260);               // EQName^Token | S^WS | '%' | '(' | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'array' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -10004,7 +10014,7 @@
                                     // 'with' | 'xquery'
     whitespace();
     parse_SequenceType();
-    eventHandler.endNonterminal("TypeDeclaration", e0);
+    eventHandler.endNonterminal(152, e0);
   }
 
   function try_TypeDeclaration()
@@ -10037,7 +10047,7 @@
 
   function parse_SequenceType()
   {
-    eventHandler.startNonterminal("SequenceType", e0);
+    eventHandler.startNonterminal(153, e0);
     lk = predict(16);
     switch (lk)
     {
@@ -10071,7 +10081,7 @@
         break;
       }
     }
-    eventHandler.endNonterminal("SequenceType", e0);
+    eventHandler.endNonterminal(153, e0);
   }
 
   function try_SequenceType()
@@ -10112,7 +10122,7 @@
 
   function parse_OccurrenceIndicator()
   {
-    eventHandler.startNonterminal("OccurrenceIndicator", e0);
+    eventHandler.startNonterminal(154, e0);
     switch (l1)
     {
     case 31:                        // '?'
@@ -10124,7 +10134,7 @@
     default:
       consume(96);                  // '+'
     }
-    eventHandler.endNonterminal("OccurrenceIndicator", e0);
+    eventHandler.endNonterminal(154, e0);
   }
 
   function try_OccurrenceIndicator()
@@ -10144,7 +10154,7 @@
 
   function parse_ItemType()
   {
-    eventHandler.startNonterminal("ItemType", e0);
+    eventHandler.startNonterminal(155, e0);
     lk = predict(17);
     if (lk == 7)
     {
@@ -10197,7 +10207,7 @@
     default:
       parse_AtomicOrUnionType();
     }
-    eventHandler.endNonterminal("ItemType", e0);
+    eventHandler.endNonterminal(155, e0);
   }
 
   function try_ItemType()
@@ -10261,7 +10271,7 @@
 
   function parse_JSONTest()
   {
-    eventHandler.startNonterminal("JSONTest", e0);
+    eventHandler.startNonterminal(156, e0);
     switch (l1)
     {
     case 221:                       // 'json-item'
@@ -10273,7 +10283,7 @@
     default:
       parse_JSONArrayTest();
     }
-    eventHandler.endNonterminal("JSONTest", e0);
+    eventHandler.endNonterminal(156, e0);
   }
 
   function try_JSONTest()
@@ -10293,13 +10303,13 @@
 
   function parse_StructuredItemTest()
   {
-    eventHandler.startNonterminal("StructuredItemTest", e0);
+    eventHandler.startNonterminal(157, e0);
     consume(128);                   // 'structured-item'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("StructuredItemTest", e0);
+    eventHandler.endNonterminal(157, e0);
   }
 
   function try_StructuredItemTest()
@@ -10313,13 +10323,13 @@
 
   function parse_JSONItemTest()
   {
-    eventHandler.startNonterminal("JSONItemTest", e0);
+    eventHandler.startNonterminal(158, e0);
     consume(221);                   // 'json-item'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("JSONItemTest", e0);
+    eventHandler.endNonterminal(158, e0);
   }
 
   function try_JSONItemTest()
@@ -10333,13 +10343,13 @@
 
   function parse_JSONObjectTest()
   {
-    eventHandler.startNonterminal("JSONObjectTest", e0);
+    eventHandler.startNonterminal(159, e0);
     consume(237);                   // 'object'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("JSONObjectTest", e0);
+    eventHandler.endNonterminal(159, e0);
   }
 
   function try_JSONObjectTest()
@@ -10353,13 +10363,13 @@
 
   function parse_JSONArrayTest()
   {
-    eventHandler.startNonterminal("JSONArrayTest", e0);
+    eventHandler.startNonterminal(160, e0);
     consume(156);                   // 'array'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("JSONArrayTest", e0);
+    eventHandler.endNonterminal(160, e0);
   }
 
   function try_JSONArrayTest()
@@ -10373,9 +10383,9 @@
 
   function parse_AtomicOrUnionType()
   {
-    eventHandler.startNonterminal("AtomicOrUnionType", e0);
+    eventHandler.startNonterminal(161, e0);
     parse_EQName();
-    eventHandler.endNonterminal("AtomicOrUnionType", e0);
+    eventHandler.endNonterminal(161, e0);
   }
 
   function try_AtomicOrUnionType()
@@ -10385,7 +10395,7 @@
 
   function parse_KindTest()
   {
-    eventHandler.startNonterminal("KindTest", e0);
+    eventHandler.startNonterminal(162, e0);
     switch (l1)
     {
     case 188:                       // 'document-node'
@@ -10421,7 +10431,7 @@
     default:
       parse_JSONTest();
     }
-    eventHandler.endNonterminal("KindTest", e0);
+    eventHandler.endNonterminal(162, e0);
   }
 
   function try_KindTest()
@@ -10465,13 +10475,13 @@
 
   function parse_AnyKindTest()
   {
-    eventHandler.startNonterminal("AnyKindTest", e0);
+    eventHandler.startNonterminal(163, e0);
     consume(235);                   // 'node'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("AnyKindTest", e0);
+    eventHandler.endNonterminal(163, e0);
   }
 
   function try_AnyKindTest()
@@ -10485,7 +10495,7 @@
 
   function parse_DocumentTest()
   {
-    eventHandler.startNonterminal("DocumentTest", e0);
+    eventHandler.startNonterminal(164, e0);
     consume(188);                   // 'document-node'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -10505,7 +10515,7 @@
     }
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("DocumentTest", e0);
+    eventHandler.endNonterminal(164, e0);
   }
 
   function try_DocumentTest()
@@ -10531,13 +10541,13 @@
 
   function parse_TextTest()
   {
-    eventHandler.startNonterminal("TextTest", e0);
+    eventHandler.startNonterminal(165, e0);
     consume(265);                   // 'text'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("TextTest", e0);
+    eventHandler.endNonterminal(165, e0);
   }
 
   function try_TextTest()
@@ -10551,13 +10561,13 @@
 
   function parse_CommentTest()
   {
-    eventHandler.startNonterminal("CommentTest", e0);
+    eventHandler.startNonterminal(166, e0);
     consume(171);                   // 'comment'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("CommentTest", e0);
+    eventHandler.endNonterminal(166, e0);
   }
 
   function try_CommentTest()
@@ -10571,13 +10581,13 @@
 
   function parse_NamespaceNodeTest()
   {
-    eventHandler.startNonterminal("NamespaceNodeTest", e0);
+    eventHandler.startNonterminal(167, e0);
     consume(232);                   // 'namespace-node'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("NamespaceNodeTest", e0);
+    eventHandler.endNonterminal(167, e0);
   }
 
   function try_NamespaceNodeTest()
@@ -10591,7 +10601,7 @@
 
   function parse_PITest()
   {
-    eventHandler.startNonterminal("PITest", e0);
+    eventHandler.startNonterminal(168, e0);
     consume(247);                   // 'processing-instruction'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -10631,7 +10641,7 @@
     }
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("PITest", e0);
+    eventHandler.endNonterminal(168, e0);
   }
 
   function try_PITest()
@@ -10678,7 +10688,7 @@
 
   function parse_AttributeTest()
   {
-    eventHandler.startNonterminal("AttributeTest", e0);
+    eventHandler.startNonterminal(169, e0);
     consume(160);                   // 'attribute'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -10738,7 +10748,7 @@
     }
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("AttributeTest", e0);
+    eventHandler.endNonterminal(169, e0);
   }
 
   function try_AttributeTest()
@@ -10804,7 +10814,7 @@
 
   function parse_AttribNameOrWildcard()
   {
-    eventHandler.startNonterminal("AttribNameOrWildcard", e0);
+    eventHandler.startNonterminal(170, e0);
     switch (l1)
     {
     case 95:                        // '*'
@@ -10813,7 +10823,7 @@
     default:
       parse_AttributeName();
     }
-    eventHandler.endNonterminal("AttribNameOrWildcard", e0);
+    eventHandler.endNonterminal(170, e0);
   }
 
   function try_AttribNameOrWildcard()
@@ -10830,7 +10840,7 @@
 
   function parse_SchemaAttributeTest()
   {
-    eventHandler.startNonterminal("SchemaAttributeTest", e0);
+    eventHandler.startNonterminal(171, e0);
     consume(255);                   // 'schema-attribute'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -10859,7 +10869,7 @@
     parse_AttributeDeclaration();
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("SchemaAttributeTest", e0);
+    eventHandler.endNonterminal(171, e0);
   }
 
   function try_SchemaAttributeTest()
@@ -10895,9 +10905,9 @@
 
   function parse_AttributeDeclaration()
   {
-    eventHandler.startNonterminal("AttributeDeclaration", e0);
+    eventHandler.startNonterminal(172, e0);
     parse_AttributeName();
-    eventHandler.endNonterminal("AttributeDeclaration", e0);
+    eventHandler.endNonterminal(172, e0);
   }
 
   function try_AttributeDeclaration()
@@ -10907,7 +10917,7 @@
 
   function parse_ElementTest()
   {
-    eventHandler.startNonterminal("ElementTest", e0);
+    eventHandler.startNonterminal(173, e0);
     consume(189);                   // 'element'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -10972,7 +10982,7 @@
     }
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("ElementTest", e0);
+    eventHandler.endNonterminal(173, e0);
   }
 
   function try_ElementTest()
@@ -11043,7 +11053,7 @@
 
   function parse_ElementNameOrWildcard()
   {
-    eventHandler.startNonterminal("ElementNameOrWildcard", e0);
+    eventHandler.startNonterminal(174, e0);
     switch (l1)
     {
     case 95:                        // '*'
@@ -11052,7 +11062,7 @@
     default:
       parse_ElementName();
     }
-    eventHandler.endNonterminal("ElementNameOrWildcard", e0);
+    eventHandler.endNonterminal(174, e0);
   }
 
   function try_ElementNameOrWildcard()
@@ -11069,7 +11079,7 @@
 
   function parse_SchemaElementTest()
   {
-    eventHandler.startNonterminal("SchemaElementTest", e0);
+    eventHandler.startNonterminal(175, e0);
     consume(256);                   // 'schema-element'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -11098,7 +11108,7 @@
     parse_ElementDeclaration();
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("SchemaElementTest", e0);
+    eventHandler.endNonterminal(175, e0);
   }
 
   function try_SchemaElementTest()
@@ -11134,9 +11144,9 @@
 
   function parse_ElementDeclaration()
   {
-    eventHandler.startNonterminal("ElementDeclaration", e0);
+    eventHandler.startNonterminal(176, e0);
     parse_ElementName();
-    eventHandler.endNonterminal("ElementDeclaration", e0);
+    eventHandler.endNonterminal(176, e0);
   }
 
   function try_ElementDeclaration()
@@ -11146,9 +11156,9 @@
 
   function parse_AttributeName()
   {
-    eventHandler.startNonterminal("AttributeName", e0);
+    eventHandler.startNonterminal(177, e0);
     parse_EQName();
-    eventHandler.endNonterminal("AttributeName", e0);
+    eventHandler.endNonterminal(177, e0);
   }
 
   function try_AttributeName()
@@ -11158,9 +11168,9 @@
 
   function parse_ElementName()
   {
-    eventHandler.startNonterminal("ElementName", e0);
+    eventHandler.startNonterminal(178, e0);
     parse_EQName();
-    eventHandler.endNonterminal("ElementName", e0);
+    eventHandler.endNonterminal(178, e0);
   }
 
   function try_ElementName()
@@ -11170,9 +11180,9 @@
 
   function parse_SimpleTypeName()
   {
-    eventHandler.startNonterminal("SimpleTypeName", e0);
+    eventHandler.startNonterminal(179, e0);
     parse_TypeName();
-    eventHandler.endNonterminal("SimpleTypeName", e0);
+    eventHandler.endNonterminal(179, e0);
   }
 
   function try_SimpleTypeName()
@@ -11182,9 +11192,9 @@
 
   function parse_TypeName()
   {
-    eventHandler.startNonterminal("TypeName", e0);
+    eventHandler.startNonterminal(180, e0);
     parse_EQName();
-    eventHandler.endNonterminal("TypeName", e0);
+    eventHandler.endNonterminal(180, e0);
   }
 
   function try_TypeName()
@@ -11194,7 +11204,7 @@
 
   function parse_FunctionTest()
   {
-    eventHandler.startNonterminal("FunctionTest", e0);
+    eventHandler.startNonterminal(181, e0);
     for (;;)
     {
       lookahead1W(97);              // S^WS | '%' | '(:' | 'function'
@@ -11236,7 +11246,7 @@
       whitespace();
       parse_TypedFunctionTest();
     }
-    eventHandler.endNonterminal("FunctionTest", e0);
+    eventHandler.endNonterminal(181, e0);
   }
 
   function try_FunctionTest()
@@ -11286,7 +11296,7 @@
 
   function parse_AnyFunctionTest()
   {
-    eventHandler.startNonterminal("AnyFunctionTest", e0);
+    eventHandler.startNonterminal(182, e0);
     consume(205);                   // 'function'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -11294,7 +11304,7 @@
     consume(95);                    // '*'
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("AnyFunctionTest", e0);
+    eventHandler.endNonterminal(182, e0);
   }
 
   function try_AnyFunctionTest()
@@ -11310,7 +11320,7 @@
 
   function parse_TypedFunctionTest()
   {
-    eventHandler.startNonterminal("TypedFunctionTest", e0);
+    eventHandler.startNonterminal(183, e0);
     consume(205);                   // 'function'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -11401,7 +11411,7 @@
                                     // 'with' | 'xquery'
     whitespace();
     parse_SequenceType();
-    eventHandler.endNonterminal("TypedFunctionTest", e0);
+    eventHandler.endNonterminal(183, e0);
   }
 
   function try_TypedFunctionTest()
@@ -11497,7 +11507,7 @@
 
   function parse_ParenthesizedItemType()
   {
-    eventHandler.startNonterminal("ParenthesizedItemType", e0);
+    eventHandler.startNonterminal(184, e0);
     consume(92);                    // '('
     lookahead1W(260);               // EQName^Token | S^WS | '%' | '(' | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'array' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -11525,7 +11535,7 @@
     parse_ItemType();
     lookahead1W(23);                // S^WS | '(:' | ')'
     consume(94);                    // ')'
-    eventHandler.endNonterminal("ParenthesizedItemType", e0);
+    eventHandler.endNonterminal(184, e0);
   }
 
   function try_ParenthesizedItemType()
@@ -11560,7 +11570,7 @@
 
   function parse_RevalidationDecl()
   {
-    eventHandler.startNonterminal("RevalidationDecl", e0);
+    eventHandler.startNonterminal(185, e0);
     consume(180);                   // 'declare'
     lookahead1W(72);                // S^WS | '(:' | 'revalidation'
     consume(252);                   // 'revalidation'
@@ -11576,12 +11586,12 @@
     default:
       consume(77);                  // 'skip'
     }
-    eventHandler.endNonterminal("RevalidationDecl", e0);
+    eventHandler.endNonterminal(185, e0);
   }
 
   function parse_InsertExprTargetChoice()
   {
-    eventHandler.startNonterminal("InsertExprTargetChoice", e0);
+    eventHandler.startNonterminal(186, e0);
     switch (l1)
     {
     case 151:                       // 'after'
@@ -11607,7 +11617,7 @@
       lookahead1W(54);              // S^WS | '(:' | 'into'
       consume(218);                 // 'into'
     }
-    eventHandler.endNonterminal("InsertExprTargetChoice", e0);
+    eventHandler.endNonterminal(186, e0);
   }
 
   function try_InsertExprTargetChoice()
@@ -11641,7 +11651,7 @@
 
   function parse_InsertExpr()
   {
-    eventHandler.startNonterminal("InsertExpr", e0);
+    eventHandler.startNonterminal(187, e0);
     consume(214);                   // 'insert'
     lookahead1W(129);               // S^WS | '(:' | 'node' | 'nodes'
     switch (l1)
@@ -11706,7 +11716,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_TargetExpr();
-    eventHandler.endNonterminal("InsertExpr", e0);
+    eventHandler.endNonterminal(187, e0);
   }
 
   function try_InsertExpr()
@@ -11776,7 +11786,7 @@
 
   function parse_DeleteExpr()
   {
-    eventHandler.startNonterminal("DeleteExpr", e0);
+    eventHandler.startNonterminal(188, e0);
     consume(182);                   // 'delete'
     lookahead1W(129);               // S^WS | '(:' | 'node' | 'nodes'
     switch (l1)
@@ -11813,7 +11823,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_TargetExpr();
-    eventHandler.endNonterminal("DeleteExpr", e0);
+    eventHandler.endNonterminal(188, e0);
   }
 
   function try_DeleteExpr()
@@ -11857,7 +11867,7 @@
 
   function parse_ReplaceExpr()
   {
-    eventHandler.startNonterminal("ReplaceExpr", e0);
+    eventHandler.startNonterminal(189, e0);
     consume(249);                   // 'replace'
     lookahead1W(130);               // S^WS | '(:' | 'node' | 'value'
     if (l1 == 276)                  // 'value'
@@ -11921,7 +11931,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ReplaceExpr", e0);
+    eventHandler.endNonterminal(189, e0);
   }
 
   function try_ReplaceExpr()
@@ -11991,7 +12001,7 @@
 
   function parse_RenameExpr()
   {
-    eventHandler.startNonterminal("RenameExpr", e0);
+    eventHandler.startNonterminal(190, e0);
     consume(248);                   // 'rename'
     lookahead1W(62);                // S^WS | '(:' | 'node'
     consume(235);                   // 'node'
@@ -12048,7 +12058,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_NewNameExpr();
-    eventHandler.endNonterminal("RenameExpr", e0);
+    eventHandler.endNonterminal(190, e0);
   }
 
   function try_RenameExpr()
@@ -12111,9 +12121,9 @@
 
   function parse_SourceExpr()
   {
-    eventHandler.startNonterminal("SourceExpr", e0);
+    eventHandler.startNonterminal(191, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("SourceExpr", e0);
+    eventHandler.endNonterminal(191, e0);
   }
 
   function try_SourceExpr()
@@ -12123,9 +12133,9 @@
 
   function parse_TargetExpr()
   {
-    eventHandler.startNonterminal("TargetExpr", e0);
+    eventHandler.startNonterminal(192, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("TargetExpr", e0);
+    eventHandler.endNonterminal(192, e0);
   }
 
   function try_TargetExpr()
@@ -12135,9 +12145,9 @@
 
   function parse_NewNameExpr()
   {
-    eventHandler.startNonterminal("NewNameExpr", e0);
+    eventHandler.startNonterminal(193, e0);
     parse_ExprSingle();
-    eventHandler.endNonterminal("NewNameExpr", e0);
+    eventHandler.endNonterminal(193, e0);
   }
 
   function try_NewNameExpr()
@@ -12147,7 +12157,7 @@
 
   function parse_TransformExpr()
   {
-    eventHandler.startNonterminal("TransformExpr", e0);
+    eventHandler.startNonterminal(194, e0);
     consume(176);                   // 'copy'
     lookahead1W(21);                // S^WS | '$' | '(:'
     consume(146);                   // '$'
@@ -12317,7 +12327,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("TransformExpr", e0);
+    eventHandler.endNonterminal(194, e0);
   }
 
   function try_TransformExpr()
@@ -12489,7 +12499,7 @@
 
   function parse_FTSelection()
   {
-    eventHandler.startNonterminal("FTSelection", e0);
+    eventHandler.startNonterminal(195, e0);
     parse_FTOr();
     for (;;)
     {
@@ -12508,7 +12518,7 @@
       whitespace();
       parse_FTPosFilter();
     }
-    eventHandler.endNonterminal("FTSelection", e0);
+    eventHandler.endNonterminal(195, e0);
   }
 
   function try_FTSelection()
@@ -12534,7 +12544,7 @@
 
   function parse_FTWeight()
   {
-    eventHandler.startNonterminal("FTWeight", e0);
+    eventHandler.startNonterminal(196, e0);
     consume(83);                    // 'weight'
     lookahead1W(87);                // S^WS | '(:' | '{'
     consume(283);                   // '{'
@@ -12565,7 +12575,7 @@
     whitespace();
     parse_Expr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("FTWeight", e0);
+    eventHandler.endNonterminal(196, e0);
   }
 
   function try_FTWeight()
@@ -12603,7 +12613,7 @@
 
   function parse_FTOr()
   {
-    eventHandler.startNonterminal("FTOr", e0);
+    eventHandler.startNonterminal(197, e0);
     parse_FTAnd();
     for (;;)
     {
@@ -12616,7 +12626,7 @@
       whitespace();
       parse_FTAnd();
     }
-    eventHandler.endNonterminal("FTOr", e0);
+    eventHandler.endNonterminal(197, e0);
   }
 
   function try_FTOr()
@@ -12636,7 +12646,7 @@
 
   function parse_FTAnd()
   {
-    eventHandler.startNonterminal("FTAnd", e0);
+    eventHandler.startNonterminal(198, e0);
     parse_FTMildNot();
     for (;;)
     {
@@ -12649,7 +12659,7 @@
       whitespace();
       parse_FTMildNot();
     }
-    eventHandler.endNonterminal("FTAnd", e0);
+    eventHandler.endNonterminal(198, e0);
   }
 
   function try_FTAnd()
@@ -12669,7 +12679,7 @@
 
   function parse_FTMildNot()
   {
-    eventHandler.startNonterminal("FTMildNot", e0);
+    eventHandler.startNonterminal(199, e0);
     parse_FTUnaryNot();
     for (;;)
     {
@@ -12692,7 +12702,7 @@
       whitespace();
       parse_FTUnaryNot();
     }
-    eventHandler.endNonterminal("FTMildNot", e0);
+    eventHandler.endNonterminal(199, e0);
   }
 
   function try_FTMildNot()
@@ -12722,7 +12732,7 @@
 
   function parse_FTUnaryNot()
   {
-    eventHandler.startNonterminal("FTUnaryNot", e0);
+    eventHandler.startNonterminal(200, e0);
     if (l1 == 45)                   // 'ftnot'
     {
       consume(45);                  // 'ftnot'
@@ -12730,7 +12740,7 @@
     lookahead1W(155);               // StringLiteral | S^WS | '(' | '(#' | '(:' | '{'
     whitespace();
     parse_FTPrimaryWithOptions();
-    eventHandler.endNonterminal("FTUnaryNot", e0);
+    eventHandler.endNonterminal(200, e0);
   }
 
   function try_FTUnaryNot()
@@ -12745,7 +12755,7 @@
 
   function parse_FTPrimaryWithOptions()
   {
-    eventHandler.startNonterminal("FTPrimaryWithOptions", e0);
+    eventHandler.startNonterminal(201, e0);
     parse_FTPrimary();
     lookahead1W(214);               // S^WS | EOF | '!=' | '(:' | ')' | ',' | ':' | ';' | '<' | '<<' | '<=' | '=' |
                                     // '>' | '>=' | '>>' | ']' | 'after' | 'and' | 'as' | 'ascending' | 'at' |
@@ -12765,7 +12775,7 @@
       whitespace();
       parse_FTWeight();
     }
-    eventHandler.endNonterminal("FTPrimaryWithOptions", e0);
+    eventHandler.endNonterminal(201, e0);
   }
 
   function try_FTPrimaryWithOptions()
@@ -12791,7 +12801,7 @@
 
   function parse_FTPrimary()
   {
-    eventHandler.startNonterminal("FTPrimary", e0);
+    eventHandler.startNonterminal(202, e0);
     switch (l1)
     {
     case 92:                        // '('
@@ -12820,7 +12830,7 @@
         parse_FTTimes();
       }
     }
-    eventHandler.endNonterminal("FTPrimary", e0);
+    eventHandler.endNonterminal(202, e0);
   }
 
   function try_FTPrimary()
@@ -12855,7 +12865,7 @@
 
   function parse_FTWords()
   {
-    eventHandler.startNonterminal("FTWords", e0);
+    eventHandler.startNonterminal(203, e0);
     parse_FTWordsValue();
     lookahead1W(221);               // S^WS | EOF | '!=' | '(:' | ')' | ',' | ':' | ';' | '<' | '<<' | '<=' | '=' |
                                     // '>' | '>=' | '>>' | ']' | 'after' | 'all' | 'and' | 'any' | 'as' | 'ascending' |
@@ -12872,7 +12882,7 @@
       whitespace();
       parse_FTAnyallOption();
     }
-    eventHandler.endNonterminal("FTWords", e0);
+    eventHandler.endNonterminal(203, e0);
   }
 
   function try_FTWords()
@@ -12896,7 +12906,7 @@
 
   function parse_FTWordsValue()
   {
-    eventHandler.startNonterminal("FTWordsValue", e0);
+    eventHandler.startNonterminal(204, e0);
     switch (l1)
     {
     case 144:                       // StringLiteral
@@ -12932,7 +12942,7 @@
       parse_Expr();
       consume(138);                 // '}'
     }
-    eventHandler.endNonterminal("FTWordsValue", e0);
+    eventHandler.endNonterminal(204, e0);
   }
 
   function try_FTWordsValue()
@@ -12975,7 +12985,7 @@
 
   function parse_FTExtensionSelection()
   {
-    eventHandler.startNonterminal("FTExtensionSelection", e0);
+    eventHandler.startNonterminal(205, e0);
     for (;;)
     {
       whitespace();
@@ -12994,7 +13004,7 @@
       parse_FTSelection();
     }
     consume(138);                   // '}'
-    eventHandler.endNonterminal("FTExtensionSelection", e0);
+    eventHandler.endNonterminal(205, e0);
   }
 
   function try_FTExtensionSelection()
@@ -13019,7 +13029,7 @@
 
   function parse_FTAnyallOption()
   {
-    eventHandler.startNonterminal("FTAnyallOption", e0);
+    eventHandler.startNonterminal(206, e0);
     switch (l1)
     {
     case 36:                        // 'any'
@@ -13055,7 +13065,7 @@
     default:
       consume(70);                  // 'phrase'
     }
-    eventHandler.endNonterminal("FTAnyallOption", e0);
+    eventHandler.endNonterminal(206, e0);
   }
 
   function try_FTAnyallOption()
@@ -13099,13 +13109,13 @@
 
   function parse_FTTimes()
   {
-    eventHandler.startNonterminal("FTTimes", e0);
+    eventHandler.startNonterminal(207, e0);
     consume(63);                    // 'occurs'
     lookahead1W(149);               // S^WS | '(:' | 'at' | 'exactly' | 'from'
     whitespace();
     parse_FTRange();
     consume(130);                   // 'times'
-    eventHandler.endNonterminal("FTTimes", e0);
+    eventHandler.endNonterminal(207, e0);
   }
 
   function try_FTTimes()
@@ -13118,7 +13128,7 @@
 
   function parse_FTRange()
   {
-    eventHandler.startNonterminal("FTRange", e0);
+    eventHandler.startNonterminal(208, e0);
     switch (l1)
     {
     case 120:                       // 'exactly'
@@ -13270,7 +13280,7 @@
       whitespace();
       parse_AdditiveExpr();
     }
-    eventHandler.endNonterminal("FTRange", e0);
+    eventHandler.endNonterminal(208, e0);
   }
 
   function try_FTRange()
@@ -13425,7 +13435,7 @@
 
   function parse_FTPosFilter()
   {
-    eventHandler.startNonterminal("FTPosFilter", e0);
+    eventHandler.startNonterminal(209, e0);
     switch (l1)
     {
     case 242:                       // 'ordered'
@@ -13444,7 +13454,7 @@
     default:
       parse_FTContent();
     }
-    eventHandler.endNonterminal("FTPosFilter", e0);
+    eventHandler.endNonterminal(209, e0);
   }
 
   function try_FTPosFilter()
@@ -13471,9 +13481,9 @@
 
   function parse_FTOrder()
   {
-    eventHandler.startNonterminal("FTOrder", e0);
+    eventHandler.startNonterminal(210, e0);
     consume(242);                   // 'ordered'
-    eventHandler.endNonterminal("FTOrder", e0);
+    eventHandler.endNonterminal(210, e0);
   }
 
   function try_FTOrder()
@@ -13483,7 +13493,7 @@
 
   function parse_FTWindow()
   {
-    eventHandler.startNonterminal("FTWindow", e0);
+    eventHandler.startNonterminal(211, e0);
     consume(132);                   // 'window'
     lookahead1W(266);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -13513,7 +13523,7 @@
     parse_AdditiveExpr();
     whitespace();
     parse_FTUnit();
-    eventHandler.endNonterminal("FTWindow", e0);
+    eventHandler.endNonterminal(211, e0);
   }
 
   function try_FTWindow()
@@ -13549,14 +13559,14 @@
 
   function parse_FTDistance()
   {
-    eventHandler.startNonterminal("FTDistance", e0);
+    eventHandler.startNonterminal(212, e0);
     consume(118);                   // 'distance'
     lookahead1W(149);               // S^WS | '(:' | 'at' | 'exactly' | 'from'
     whitespace();
     parse_FTRange();
     whitespace();
     parse_FTUnit();
-    eventHandler.endNonterminal("FTDistance", e0);
+    eventHandler.endNonterminal(212, e0);
   }
 
   function try_FTDistance()
@@ -13569,7 +13579,7 @@
 
   function parse_FTUnit()
   {
-    eventHandler.startNonterminal("FTUnit", e0);
+    eventHandler.startNonterminal(213, e0);
     switch (l1)
     {
     case 133:                       // 'words'
@@ -13581,7 +13591,7 @@
     default:
       consume(123);                 // 'paragraphs'
     }
-    eventHandler.endNonterminal("FTUnit", e0);
+    eventHandler.endNonterminal(213, e0);
   }
 
   function try_FTUnit()
@@ -13601,7 +13611,7 @@
 
   function parse_FTScope()
   {
-    eventHandler.startNonterminal("FTScope", e0);
+    eventHandler.startNonterminal(214, e0);
     switch (l1)
     {
     case 124:                       // 'same'
@@ -13613,7 +13623,7 @@
     lookahead1W(132);               // S^WS | '(:' | 'paragraph' | 'sentence'
     whitespace();
     parse_FTBigUnit();
-    eventHandler.endNonterminal("FTScope", e0);
+    eventHandler.endNonterminal(214, e0);
   }
 
   function try_FTScope()
@@ -13632,7 +13642,7 @@
 
   function parse_FTBigUnit()
   {
-    eventHandler.startNonterminal("FTBigUnit", e0);
+    eventHandler.startNonterminal(215, e0);
     switch (l1)
     {
     case 76:                        // 'sentence'
@@ -13641,7 +13651,7 @@
     default:
       consume(66);                  // 'paragraph'
     }
-    eventHandler.endNonterminal("FTBigUnit", e0);
+    eventHandler.endNonterminal(215, e0);
   }
 
   function try_FTBigUnit()
@@ -13658,7 +13668,7 @@
 
   function parse_FTContent()
   {
-    eventHandler.startNonterminal("FTContent", e0);
+    eventHandler.startNonterminal(216, e0);
     switch (l1)
     {
     case 159:                       // 'at'
@@ -13678,7 +13688,7 @@
       lookahead1W(42);              // S^WS | '(:' | 'content'
       consume(39);                  // 'content'
     }
-    eventHandler.endNonterminal("FTContent", e0);
+    eventHandler.endNonterminal(216, e0);
   }
 
   function try_FTContent()
@@ -13706,7 +13716,7 @@
 
   function parse_FTMatchOptions()
   {
-    eventHandler.startNonterminal("FTMatchOptions", e0);
+    eventHandler.startNonterminal(217, e0);
     for (;;)
     {
       consume(82);                  // 'using'
@@ -13727,7 +13737,7 @@
         break;
       }
     }
-    eventHandler.endNonterminal("FTMatchOptions", e0);
+    eventHandler.endNonterminal(217, e0);
   }
 
   function try_FTMatchOptions()
@@ -13755,7 +13765,7 @@
 
   function parse_FTMatchOption()
   {
-    eventHandler.startNonterminal("FTMatchOption", e0);
+    eventHandler.startNonterminal(218, e0);
     lk = predict(20);
     switch (lk)
     {
@@ -13783,7 +13793,7 @@
     default:
       parse_FTCaseOption();
     }
-    eventHandler.endNonterminal("FTMatchOption", e0);
+    eventHandler.endNonterminal(218, e0);
   }
 
   function try_FTMatchOption()
@@ -13819,7 +13829,7 @@
 
   function parse_FTCaseOption()
   {
-    eventHandler.startNonterminal("FTCaseOption", e0);
+    eventHandler.startNonterminal(219, e0);
     switch (l1)
     {
     case 165:                       // 'case'
@@ -13840,7 +13850,7 @@
     default:
       consume(81);                  // 'uppercase'
     }
-    eventHandler.endNonterminal("FTCaseOption", e0);
+    eventHandler.endNonterminal(219, e0);
   }
 
   function try_FTCaseOption()
@@ -13869,7 +13879,7 @@
 
   function parse_FTDiacriticsOption()
   {
-    eventHandler.startNonterminal("FTDiacriticsOption", e0);
+    eventHandler.startNonterminal(220, e0);
     consume(116);                   // 'diacritics'
     lookahead1W(124);               // S^WS | '(:' | 'insensitive' | 'sensitive'
     switch (l1)
@@ -13880,7 +13890,7 @@
     default:
       consume(75);                  // 'sensitive'
     }
-    eventHandler.endNonterminal("FTDiacriticsOption", e0);
+    eventHandler.endNonterminal(220, e0);
   }
 
   function try_FTDiacriticsOption()
@@ -13899,7 +13909,7 @@
 
   function parse_FTStemOption()
   {
-    eventHandler.startNonterminal("FTStemOption", e0);
+    eventHandler.startNonterminal(221, e0);
     switch (l1)
     {
     case 126:                       // 'stemming'
@@ -13910,7 +13920,7 @@
       lookahead1W(74);              // S^WS | '(:' | 'stemming'
       consume(126);                 // 'stemming'
     }
-    eventHandler.endNonterminal("FTStemOption", e0);
+    eventHandler.endNonterminal(221, e0);
   }
 
   function try_FTStemOption()
@@ -13929,7 +13939,7 @@
 
   function parse_FTThesaurusOption()
   {
-    eventHandler.startNonterminal("FTThesaurusOption", e0);
+    eventHandler.startNonterminal(222, e0);
     switch (l1)
     {
     case 129:                       // 'thesaurus'
@@ -13976,7 +13986,7 @@
       lookahead1W(78);              // S^WS | '(:' | 'thesaurus'
       consume(129);                 // 'thesaurus'
     }
-    eventHandler.endNonterminal("FTThesaurusOption", e0);
+    eventHandler.endNonterminal(222, e0);
   }
 
   function try_FTThesaurusOption()
@@ -14028,7 +14038,7 @@
 
   function parse_FTThesaurusID()
   {
-    eventHandler.startNonterminal("FTThesaurusID", e0);
+    eventHandler.startNonterminal(223, e0);
     consume(159);                   // 'at'
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
@@ -14063,7 +14073,7 @@
       lookahead1W(58);              // S^WS | '(:' | 'levels'
       consume(55);                  // 'levels'
     }
-    eventHandler.endNonterminal("FTThesaurusID", e0);
+    eventHandler.endNonterminal(223, e0);
   }
 
   function try_FTThesaurusID()
@@ -14105,7 +14115,7 @@
 
   function parse_FTLiteralRange()
   {
-    eventHandler.startNonterminal("FTLiteralRange", e0);
+    eventHandler.startNonterminal(224, e0);
     switch (l1)
     {
     case 120:                       // 'exactly'
@@ -14138,7 +14148,7 @@
       lookahead1W(16);              // IntegerLiteral | S^WS | '(:'
       consume(141);                 // IntegerLiteral
     }
-    eventHandler.endNonterminal("FTLiteralRange", e0);
+    eventHandler.endNonterminal(224, e0);
   }
 
   function try_FTLiteralRange()
@@ -14179,7 +14189,7 @@
 
   function parse_FTStopWordOption()
   {
-    eventHandler.startNonterminal("FTStopWordOption", e0);
+    eventHandler.startNonterminal(225, e0);
     switch (l1)
     {
     case 127:                       // 'stop'
@@ -14240,7 +14250,7 @@
       lookahead1W(86);              // S^WS | '(:' | 'words'
       consume(133);                 // 'words'
     }
-    eventHandler.endNonterminal("FTStopWordOption", e0);
+    eventHandler.endNonterminal(225, e0);
   }
 
   function try_FTStopWordOption()
@@ -14306,7 +14316,7 @@
 
   function parse_FTStopWords()
   {
-    eventHandler.startNonterminal("FTStopWords", e0);
+    eventHandler.startNonterminal(226, e0);
     switch (l1)
     {
     case 159:                       // 'at'
@@ -14331,7 +14341,7 @@
       }
       consume(94);                  // ')'
     }
-    eventHandler.endNonterminal("FTStopWords", e0);
+    eventHandler.endNonterminal(226, e0);
   }
 
   function try_FTStopWords()
@@ -14364,7 +14374,7 @@
 
   function parse_FTStopWordsInclExcl()
   {
-    eventHandler.startNonterminal("FTStopWordsInclExcl", e0);
+    eventHandler.startNonterminal(227, e0);
     switch (l1)
     {
     case 272:                       // 'union'
@@ -14376,7 +14386,7 @@
     lookahead1W(99);                // S^WS | '(' | '(:' | 'at'
     whitespace();
     parse_FTStopWords();
-    eventHandler.endNonterminal("FTStopWordsInclExcl", e0);
+    eventHandler.endNonterminal(227, e0);
   }
 
   function try_FTStopWordsInclExcl()
@@ -14395,11 +14405,11 @@
 
   function parse_FTLanguageOption()
   {
-    eventHandler.startNonterminal("FTLanguageOption", e0);
+    eventHandler.startNonterminal(228, e0);
     consume(122);                   // 'language'
     lookahead1W(17);                // StringLiteral | S^WS | '(:'
     consume(144);                   // StringLiteral
-    eventHandler.endNonterminal("FTLanguageOption", e0);
+    eventHandler.endNonterminal(228, e0);
   }
 
   function try_FTLanguageOption()
@@ -14411,7 +14421,7 @@
 
   function parse_FTWildCardOption()
   {
-    eventHandler.startNonterminal("FTWildCardOption", e0);
+    eventHandler.startNonterminal(229, e0);
     switch (l1)
     {
     case 131:                       // 'wildcards'
@@ -14422,7 +14432,7 @@
       lookahead1W(84);              // S^WS | '(:' | 'wildcards'
       consume(131);                 // 'wildcards'
     }
-    eventHandler.endNonterminal("FTWildCardOption", e0);
+    eventHandler.endNonterminal(229, e0);
   }
 
   function try_FTWildCardOption()
@@ -14441,7 +14451,7 @@
 
   function parse_FTExtensionOption()
   {
-    eventHandler.startNonterminal("FTExtensionOption", e0);
+    eventHandler.startNonterminal(230, e0);
     consume(239);                   // 'option'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -14468,7 +14478,7 @@
     parse_EQName();
     lookahead1W(17);                // StringLiteral | S^WS | '(:'
     consume(144);                   // StringLiteral
-    eventHandler.endNonterminal("FTExtensionOption", e0);
+    eventHandler.endNonterminal(230, e0);
   }
 
   function try_FTExtensionOption()
@@ -14502,7 +14512,7 @@
 
   function parse_FTIgnoreOption()
   {
-    eventHandler.startNonterminal("FTIgnoreOption", e0);
+    eventHandler.startNonterminal(231, e0);
     consume(85);                    // 'without'
     lookahead1W(42);                // S^WS | '(:' | 'content'
     consume(39);                    // 'content'
@@ -14532,7 +14542,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_UnionExpr();
-    eventHandler.endNonterminal("FTIgnoreOption", e0);
+    eventHandler.endNonterminal(231, e0);
   }
 
   function try_FTIgnoreOption()
@@ -14569,7 +14579,7 @@
 
   function parse_CollectionDecl()
   {
-    eventHandler.startNonterminal("CollectionDecl", e0);
+    eventHandler.startNonterminal(232, e0);
     consume(38);                    // 'collection'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -14600,12 +14610,12 @@
       whitespace();
       parse_CollectionTypeDecl();
     }
-    eventHandler.endNonterminal("CollectionDecl", e0);
+    eventHandler.endNonterminal(232, e0);
   }
 
   function parse_CollectionTypeDecl()
   {
-    eventHandler.startNonterminal("CollectionTypeDecl", e0);
+    eventHandler.startNonterminal(233, e0);
     consume(157);                   // 'as'
     lookahead1W(183);               // S^WS | '(:' | 'array' | 'attribute' | 'comment' | 'document-node' | 'element' |
                                     // 'json-item' | 'namespace-node' | 'node' | 'object' | 'processing-instruction' |
@@ -14618,26 +14628,26 @@
       whitespace();
       parse_OccurrenceIndicator();
     }
-    eventHandler.endNonterminal("CollectionTypeDecl", e0);
+    eventHandler.endNonterminal(233, e0);
   }
 
   function parse_IndexName()
   {
-    eventHandler.startNonterminal("IndexName", e0);
+    eventHandler.startNonterminal(234, e0);
     parse_EQName();
-    eventHandler.endNonterminal("IndexName", e0);
+    eventHandler.endNonterminal(234, e0);
   }
 
   function parse_IndexDomainExpr()
   {
-    eventHandler.startNonterminal("IndexDomainExpr", e0);
+    eventHandler.startNonterminal(235, e0);
     parse_PathExpr();
-    eventHandler.endNonterminal("IndexDomainExpr", e0);
+    eventHandler.endNonterminal(235, e0);
   }
 
   function parse_IndexKeySpec()
   {
-    eventHandler.startNonterminal("IndexKeySpec", e0);
+    eventHandler.startNonterminal(236, e0);
     parse_IndexKeyExpr();
     if (l1 == 157)                  // 'as'
     {
@@ -14650,19 +14660,19 @@
       whitespace();
       parse_IndexKeyCollation();
     }
-    eventHandler.endNonterminal("IndexKeySpec", e0);
+    eventHandler.endNonterminal(236, e0);
   }
 
   function parse_IndexKeyExpr()
   {
-    eventHandler.startNonterminal("IndexKeyExpr", e0);
+    eventHandler.startNonterminal(237, e0);
     parse_PathExpr();
-    eventHandler.endNonterminal("IndexKeyExpr", e0);
+    eventHandler.endNonterminal(237, e0);
   }
 
   function parse_IndexKeyTypeDecl()
   {
-    eventHandler.startNonterminal("IndexKeyTypeDecl", e0);
+    eventHandler.startNonterminal(238, e0);
     consume(157);                   // 'as'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -14695,28 +14705,28 @@
       whitespace();
       parse_OccurrenceIndicator();
     }
-    eventHandler.endNonterminal("IndexKeyTypeDecl", e0);
+    eventHandler.endNonterminal(238, e0);
   }
 
   function parse_AtomicType()
   {
-    eventHandler.startNonterminal("AtomicType", e0);
+    eventHandler.startNonterminal(239, e0);
     parse_EQName();
-    eventHandler.endNonterminal("AtomicType", e0);
+    eventHandler.endNonterminal(239, e0);
   }
 
   function parse_IndexKeyCollation()
   {
-    eventHandler.startNonterminal("IndexKeyCollation", e0);
+    eventHandler.startNonterminal(240, e0);
     consume(170);                   // 'collation'
     lookahead1W(15);                // URILiteral | S^WS | '(:'
     consume(5);                     // URILiteral
-    eventHandler.endNonterminal("IndexKeyCollation", e0);
+    eventHandler.endNonterminal(240, e0);
   }
 
   function parse_IndexDecl()
   {
-    eventHandler.startNonterminal("IndexDecl", e0);
+    eventHandler.startNonterminal(241, e0);
     consume(213);                   // 'index'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -14833,12 +14843,12 @@
       whitespace();
       parse_IndexKeySpec();
     }
-    eventHandler.endNonterminal("IndexDecl", e0);
+    eventHandler.endNonterminal(241, e0);
   }
 
   function parse_ICDecl()
   {
-    eventHandler.startNonterminal("ICDecl", e0);
+    eventHandler.startNonterminal(242, e0);
     consume(216);                   // 'integrity'
     lookahead1W(40);                // S^WS | '(:' | 'constraint'
     consume(172);                   // 'constraint'
@@ -14876,12 +14886,12 @@
       whitespace();
       parse_ICForeignKey();
     }
-    eventHandler.endNonterminal("ICDecl", e0);
+    eventHandler.endNonterminal(242, e0);
   }
 
   function parse_ICCollection()
   {
-    eventHandler.startNonterminal("ICCollection", e0);
+    eventHandler.startNonterminal(243, e0);
     consume(65);                    // 'on'
     lookahead1W(39);                // S^WS | '(:' | 'collection'
     consume(38);                    // 'collection'
@@ -14923,12 +14933,12 @@
       whitespace();
       parse_ICCollNode();
     }
-    eventHandler.endNonterminal("ICCollection", e0);
+    eventHandler.endNonterminal(243, e0);
   }
 
   function parse_ICCollSequence()
   {
-    eventHandler.startNonterminal("ICCollSequence", e0);
+    eventHandler.startNonterminal(244, e0);
     parse_VarRef();
     lookahead1W(37);                // S^WS | '(:' | 'check'
     consume(37);                    // 'check'
@@ -14958,12 +14968,12 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ICCollSequence", e0);
+    eventHandler.endNonterminal(244, e0);
   }
 
   function parse_ICCollSequenceUnique()
   {
-    eventHandler.startNonterminal("ICCollSequenceUnique", e0);
+    eventHandler.startNonterminal(245, e0);
     consume(235);                   // 'node'
     lookahead1W(21);                // S^WS | '$' | '(:'
     whitespace();
@@ -15000,12 +15010,12 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_PathExpr();
-    eventHandler.endNonterminal("ICCollSequenceUnique", e0);
+    eventHandler.endNonterminal(245, e0);
   }
 
   function parse_ICCollNode()
   {
-    eventHandler.startNonterminal("ICCollNode", e0);
+    eventHandler.startNonterminal(246, e0);
     consume(42);                    // 'foreach'
     lookahead1W(62);                // S^WS | '(:' | 'node'
     consume(235);                   // 'node'
@@ -15040,12 +15050,12 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("ICCollNode", e0);
+    eventHandler.endNonterminal(246, e0);
   }
 
   function parse_ICForeignKey()
   {
-    eventHandler.startNonterminal("ICForeignKey", e0);
+    eventHandler.startNonterminal(247, e0);
     consume(43);                    // 'foreign'
     lookahead1W(57);                // S^WS | '(:' | 'key'
     consume(53);                    // 'key'
@@ -15054,32 +15064,32 @@
     parse_ICForeignKeySource();
     whitespace();
     parse_ICForeignKeyTarget();
-    eventHandler.endNonterminal("ICForeignKey", e0);
+    eventHandler.endNonterminal(247, e0);
   }
 
   function parse_ICForeignKeySource()
   {
-    eventHandler.startNonterminal("ICForeignKeySource", e0);
+    eventHandler.startNonterminal(248, e0);
     consume(121);                   // 'from'
     lookahead1W(39);                // S^WS | '(:' | 'collection'
     whitespace();
     parse_ICForeignKeyValues();
-    eventHandler.endNonterminal("ICForeignKeySource", e0);
+    eventHandler.endNonterminal(248, e0);
   }
 
   function parse_ICForeignKeyTarget()
   {
-    eventHandler.startNonterminal("ICForeignKeyTarget", e0);
+    eventHandler.startNonterminal(249, e0);
     consume(266);                   // 'to'
     lookahead1W(39);                // S^WS | '(:' | 'collection'
     whitespace();
     parse_ICForeignKeyValues();
-    eventHandler.endNonterminal("ICForeignKeyTarget", e0);
+    eventHandler.endNonterminal(249, e0);
   }
 
   function parse_ICForeignKeyValues()
   {
-    eventHandler.startNonterminal("ICForeignKeyValues", e0);
+    eventHandler.startNonterminal(250, e0);
     consume(38);                    // 'collection'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -15137,7 +15147,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_PathExpr();
-    eventHandler.endNonterminal("ICForeignKeyValues", e0);
+    eventHandler.endNonterminal(250, e0);
   }
 
   function try_Comment()
@@ -15176,7 +15186,7 @@
 
   function parse_EQName()
   {
-    eventHandler.startNonterminal("EQName", e0);
+    eventHandler.startNonterminal(253, e0);
     lookahead1(247);                // EQName^Token | 'after' | 'allowing' | 'ancestor' | 'ancestor-or-self' | 'and' |
                                     // 'as' | 'ascending' | 'at' | 'attribute' | 'base-uri' | 'before' |
                                     // 'boundary-space' | 'break' | 'case' | 'cast' | 'castable' | 'catch' | 'child' |
@@ -15251,7 +15261,7 @@
     default:
       parse_FunctionName();
     }
-    eventHandler.endNonterminal("EQName", e0);
+    eventHandler.endNonterminal(253, e0);
   }
 
   function try_EQName()
@@ -15334,7 +15344,7 @@
 
   function parse_FunctionName()
   {
-    eventHandler.startNonterminal("FunctionName", e0);
+    eventHandler.startNonterminal(254, e0);
     switch (l1)
     {
     case 140:                       // EQName^Token
@@ -15676,7 +15686,7 @@
     default:
       consume(251);                 // 'returning'
     }
-    eventHandler.endNonterminal("FunctionName", e0);
+    eventHandler.endNonterminal(254, e0);
   }
 
   function try_FunctionName()
@@ -16026,7 +16036,7 @@
 
   function parse_NCName()
   {
-    eventHandler.startNonterminal("NCName", e0);
+    eventHandler.startNonterminal(255, e0);
     switch (l1)
     {
     case 13:                        // NCName^Token
@@ -16416,7 +16426,7 @@
     default:
       consume(251);                 // 'returning'
     }
-    eventHandler.endNonterminal("NCName", e0);
+    eventHandler.endNonterminal(255, e0);
   }
 
   function try_NCName()
@@ -16814,23 +16824,23 @@
 
   function parse_MainModule()
   {
-    eventHandler.startNonterminal("MainModule", e0);
+    eventHandler.startNonterminal(256, e0);
     parse_Prolog();
     whitespace();
     parse_Program();
-    eventHandler.endNonterminal("MainModule", e0);
+    eventHandler.endNonterminal(256, e0);
   }
 
   function parse_Program()
   {
-    eventHandler.startNonterminal("Program", e0);
+    eventHandler.startNonterminal(257, e0);
     parse_StatementsAndOptionalExpr();
-    eventHandler.endNonterminal("Program", e0);
+    eventHandler.endNonterminal(257, e0);
   }
 
   function parse_Statements()
   {
-    eventHandler.startNonterminal("Statements", e0);
+    eventHandler.startNonterminal(258, e0);
     for (;;)
     {
       lookahead1W(278);             // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
@@ -16889,7 +16899,7 @@
       whitespace();
       parse_Statement();
     }
-    eventHandler.endNonterminal("Statements", e0);
+    eventHandler.endNonterminal(258, e0);
   }
 
   function try_Statements()
@@ -16956,11 +16966,11 @@
 
   function parse_StatementsAndExpr()
   {
-    eventHandler.startNonterminal("StatementsAndExpr", e0);
+    eventHandler.startNonterminal(259, e0);
     parse_Statements();
     whitespace();
     parse_Expr();
-    eventHandler.endNonterminal("StatementsAndExpr", e0);
+    eventHandler.endNonterminal(259, e0);
   }
 
   function try_StatementsAndExpr()
@@ -16971,7 +16981,7 @@
 
   function parse_StatementsAndOptionalExpr()
   {
-    eventHandler.startNonterminal("StatementsAndOptionalExpr", e0);
+    eventHandler.startNonterminal(260, e0);
     parse_Statements();
     if (l1 != 90                    // EOF
      && l1 != 138)                  // '}'
@@ -16979,7 +16989,7 @@
       whitespace();
       parse_Expr();
     }
-    eventHandler.endNonterminal("StatementsAndOptionalExpr", e0);
+    eventHandler.endNonterminal(260, e0);
   }
 
   function try_StatementsAndOptionalExpr()
@@ -16994,7 +17004,7 @@
 
   function parse_Statement()
   {
-    eventHandler.startNonterminal("Statement", e0);
+    eventHandler.startNonterminal(261, e0);
     lk = predict(23);
     if (lk == 13)
     {
@@ -17094,7 +17104,7 @@
     default:
       parse_ApplyStatement();
     }
-    eventHandler.endNonterminal("Statement", e0);
+    eventHandler.endNonterminal(261, e0);
   }
 
   function try_Statement()
@@ -17208,10 +17218,10 @@
 
   function parse_ApplyStatement()
   {
-    eventHandler.startNonterminal("ApplyStatement", e0);
+    eventHandler.startNonterminal(262, e0);
     parse_ExprSimple();
     consume(101);                   // ';'
-    eventHandler.endNonterminal("ApplyStatement", e0);
+    eventHandler.endNonterminal(262, e0);
   }
 
   function try_ApplyStatement()
@@ -17222,7 +17232,7 @@
 
   function parse_AssignStatement()
   {
-    eventHandler.startNonterminal("AssignStatement", e0);
+    eventHandler.startNonterminal(263, e0);
     consume(146);                   // '$'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -17276,7 +17286,7 @@
     whitespace();
     parse_ExprSingle();
     consume(101);                   // ';'
-    eventHandler.endNonterminal("AssignStatement", e0);
+    eventHandler.endNonterminal(263, e0);
   }
 
   function try_AssignStatement()
@@ -17336,7 +17346,7 @@
 
   function parse_BlockStatement()
   {
-    eventHandler.startNonterminal("BlockStatement", e0);
+    eventHandler.startNonterminal(264, e0);
     consume(283);                   // '{'
     lookahead1W(277);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -17365,7 +17375,7 @@
     whitespace();
     parse_Statements();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("BlockStatement", e0);
+    eventHandler.endNonterminal(264, e0);
   }
 
   function try_BlockStatement()
@@ -17401,13 +17411,13 @@
 
   function parse_BreakStatement()
   {
-    eventHandler.startNonterminal("BreakStatement", e0);
+    eventHandler.startNonterminal(265, e0);
     consume(164);                   // 'break'
     lookahead1W(59);                // S^WS | '(:' | 'loop'
     consume(226);                   // 'loop'
     lookahead1W(28);                // S^WS | '(:' | ';'
     consume(101);                   // ';'
-    eventHandler.endNonterminal("BreakStatement", e0);
+    eventHandler.endNonterminal(265, e0);
   }
 
   function try_BreakStatement()
@@ -17421,13 +17431,13 @@
 
   function parse_ContinueStatement()
   {
-    eventHandler.startNonterminal("ContinueStatement", e0);
+    eventHandler.startNonterminal(266, e0);
     consume(175);                   // 'continue'
     lookahead1W(59);                // S^WS | '(:' | 'loop'
     consume(226);                   // 'loop'
     lookahead1W(28);                // S^WS | '(:' | ';'
     consume(101);                   // ';'
-    eventHandler.endNonterminal("ContinueStatement", e0);
+    eventHandler.endNonterminal(266, e0);
   }
 
   function try_ContinueStatement()
@@ -17441,7 +17451,7 @@
 
   function parse_ExitStatement()
   {
-    eventHandler.startNonterminal("ExitStatement", e0);
+    eventHandler.startNonterminal(267, e0);
     consume(198);                   // 'exit'
     lookahead1W(71);                // S^WS | '(:' | 'returning'
     consume(251);                   // 'returning'
@@ -17472,7 +17482,7 @@
     whitespace();
     parse_ExprSingle();
     consume(101);                   // ';'
-    eventHandler.endNonterminal("ExitStatement", e0);
+    eventHandler.endNonterminal(267, e0);
   }
 
   function try_ExitStatement()
@@ -17510,7 +17520,7 @@
 
   function parse_FLWORStatement()
   {
-    eventHandler.startNonterminal("FLWORStatement", e0);
+    eventHandler.startNonterminal(268, e0);
     parse_InitialClause();
     for (;;)
     {
@@ -17525,7 +17535,7 @@
     }
     whitespace();
     parse_ReturnStatement();
-    eventHandler.endNonterminal("FLWORStatement", e0);
+    eventHandler.endNonterminal(268, e0);
   }
 
   function try_FLWORStatement()
@@ -17546,7 +17556,7 @@
 
   function parse_ReturnStatement()
   {
-    eventHandler.startNonterminal("ReturnStatement", e0);
+    eventHandler.startNonterminal(269, e0);
     consume(250);                   // 'return'
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -17574,7 +17584,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("ReturnStatement", e0);
+    eventHandler.endNonterminal(269, e0);
   }
 
   function try_ReturnStatement()
@@ -17609,7 +17619,7 @@
 
   function parse_IfStatement()
   {
-    eventHandler.startNonterminal("IfStatement", e0);
+    eventHandler.startNonterminal(270, e0);
     consume(210);                   // 'if'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -17696,7 +17706,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("IfStatement", e0);
+    eventHandler.endNonterminal(270, e0);
   }
 
   function try_IfStatement()
@@ -17788,7 +17798,7 @@
 
   function parse_SwitchStatement()
   {
-    eventHandler.startNonterminal("SwitchStatement", e0);
+    eventHandler.startNonterminal(271, e0);
     consume(264);                   // 'switch'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -17859,7 +17869,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("SwitchStatement", e0);
+    eventHandler.endNonterminal(271, e0);
   }
 
   function try_SwitchStatement()
@@ -17935,7 +17945,7 @@
 
   function parse_SwitchCaseStatement()
   {
-    eventHandler.startNonterminal("SwitchCaseStatement", e0);
+    eventHandler.startNonterminal(272, e0);
     for (;;)
     {
       consume(165);                 // 'case'
@@ -17997,7 +18007,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("SwitchCaseStatement", e0);
+    eventHandler.endNonterminal(272, e0);
   }
 
   function try_SwitchCaseStatement()
@@ -18065,7 +18075,7 @@
 
   function parse_TryCatchStatement()
   {
-    eventHandler.startNonterminal("TryCatchStatement", e0);
+    eventHandler.startNonterminal(273, e0);
     consume(268);                   // 'try'
     lookahead1W(87);                // S^WS | '(:' | '{'
     whitespace();
@@ -18177,7 +18187,7 @@
         break;
       }
     }
-    eventHandler.endNonterminal("TryCatchStatement", e0);
+    eventHandler.endNonterminal(273, e0);
   }
 
   function try_TryCatchStatement()
@@ -18320,7 +18330,7 @@
 
   function parse_TypeswitchStatement()
   {
-    eventHandler.startNonterminal("TypeswitchStatement", e0);
+    eventHandler.startNonterminal(274, e0);
     consume(271);                   // 'typeswitch'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -18419,7 +18429,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("TypeswitchStatement", e0);
+    eventHandler.endNonterminal(274, e0);
   }
 
   function try_TypeswitchStatement()
@@ -18522,7 +18532,7 @@
 
   function parse_CaseStatement()
   {
-    eventHandler.startNonterminal("CaseStatement", e0);
+    eventHandler.startNonterminal(275, e0);
     consume(165);                   // 'case'
     lookahead1W(261);               // EQName^Token | S^WS | '$' | '%' | '(' | '(:' | 'after' | 'allowing' |
                                     // 'ancestor' | 'ancestor-or-self' | 'and' | 'array' | 'as' | 'ascending' | 'at' |
@@ -18627,7 +18637,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("CaseStatement", e0);
+    eventHandler.endNonterminal(275, e0);
   }
 
   function try_CaseStatement()
@@ -18737,7 +18747,7 @@
 
   function parse_VarDeclStatement()
   {
-    eventHandler.startNonterminal("VarDeclStatement", e0);
+    eventHandler.startNonterminal(276, e0);
     for (;;)
     {
       lookahead1W(98);              // S^WS | '%' | '(:' | 'variable'
@@ -18882,7 +18892,7 @@
       }
     }
     consume(101);                   // ';'
-    eventHandler.endNonterminal("VarDeclStatement", e0);
+    eventHandler.endNonterminal(276, e0);
   }
 
   function try_VarDeclStatement()
@@ -19028,7 +19038,7 @@
 
   function parse_WhileStatement()
   {
-    eventHandler.startNonterminal("WhileStatement", e0);
+    eventHandler.startNonterminal(277, e0);
     consume(280);                   // 'while'
     lookahead1W(22);                // S^WS | '(' | '(:'
     consume(92);                    // '('
@@ -19085,7 +19095,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_Statement();
-    eventHandler.endNonterminal("WhileStatement", e0);
+    eventHandler.endNonterminal(277, e0);
   }
 
   function try_WhileStatement()
@@ -19148,7 +19158,7 @@
 
   function parse_ExprSingle()
   {
-    eventHandler.startNonterminal("ExprSingle", e0);
+    eventHandler.startNonterminal(278, e0);
     lk = predict(25);
     switch (lk)
     {
@@ -19170,7 +19180,7 @@
     default:
       parse_ExprSimple();
     }
-    eventHandler.endNonterminal("ExprSingle", e0);
+    eventHandler.endNonterminal(278, e0);
   }
 
   function try_ExprSingle()
@@ -19200,7 +19210,7 @@
 
   function parse_ExprSimple()
   {
-    eventHandler.startNonterminal("ExprSimple", e0);
+    eventHandler.startNonterminal(279, e0);
     lk = predict(26);
     switch (lk)
     {
@@ -19240,7 +19250,7 @@
     default:
       parse_OrExpr();
     }
-    eventHandler.endNonterminal("ExprSimple", e0);
+    eventHandler.endNonterminal(279, e0);
   }
 
   function try_ExprSimple()
@@ -19288,7 +19298,7 @@
 
   function parse_JSONDeleteExpr()
   {
-    eventHandler.startNonterminal("JSONDeleteExpr", e0);
+    eventHandler.startNonterminal(280, e0);
     consume(182);                   // 'delete'
     lookahead1W(56);                // S^WS | '(:' | 'json'
     consume(52);                    // 'json'
@@ -19317,7 +19327,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_PostfixExpr();
-    eventHandler.endNonterminal("JSONDeleteExpr", e0);
+    eventHandler.endNonterminal(280, e0);
   }
 
   function try_JSONDeleteExpr()
@@ -19353,7 +19363,7 @@
 
   function parse_JSONInsertExpr()
   {
-    eventHandler.startNonterminal("JSONInsertExpr", e0);
+    eventHandler.startNonterminal(281, e0);
     consume(214);                   // 'insert'
     lookahead1W(56);                // S^WS | '(:' | 'json'
     consume(52);                    // 'json'
@@ -19493,7 +19503,7 @@
       whitespace();
       parse_ExprSingle();
     }
-    eventHandler.endNonterminal("JSONInsertExpr", e0);
+    eventHandler.endNonterminal(281, e0);
   }
 
   function try_JSONInsertExpr()
@@ -19638,7 +19648,7 @@
 
   function parse_JSONRenameExpr()
   {
-    eventHandler.startNonterminal("JSONRenameExpr", e0);
+    eventHandler.startNonterminal(282, e0);
     consume(248);                   // 'rename'
     lookahead1W(56);                // S^WS | '(:' | 'json'
     consume(52);                    // 'json'
@@ -19694,7 +19704,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("JSONRenameExpr", e0);
+    eventHandler.endNonterminal(282, e0);
   }
 
   function try_JSONRenameExpr()
@@ -19756,7 +19766,7 @@
 
   function parse_JSONReplaceExpr()
   {
-    eventHandler.startNonterminal("JSONReplaceExpr", e0);
+    eventHandler.startNonterminal(283, e0);
     consume(249);                   // 'replace'
     lookahead1W(56);                // S^WS | '(:' | 'json'
     consume(52);                    // 'json'
@@ -19816,7 +19826,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("JSONReplaceExpr", e0);
+    eventHandler.endNonterminal(283, e0);
   }
 
   function try_JSONReplaceExpr()
@@ -19882,7 +19892,7 @@
 
   function parse_JSONAppendExpr()
   {
-    eventHandler.startNonterminal("JSONAppendExpr", e0);
+    eventHandler.startNonterminal(284, e0);
     consume(113);                   // 'append'
     lookahead1W(56);                // S^WS | '(:' | 'json'
     consume(52);                    // 'json'
@@ -19939,7 +19949,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("JSONAppendExpr", e0);
+    eventHandler.endNonterminal(284, e0);
   }
 
   function try_JSONAppendExpr()
@@ -20002,7 +20012,7 @@
 
   function parse_CommonContent()
   {
-    eventHandler.startNonterminal("CommonContent", e0);
+    eventHandler.startNonterminal(285, e0);
     switch (l1)
     {
     case 6:                         // PredefinedEntityRef
@@ -20020,7 +20030,7 @@
     default:
       parse_BlockExpr();
     }
-    eventHandler.endNonterminal("CommonContent", e0);
+    eventHandler.endNonterminal(285, e0);
   }
 
   function try_CommonContent()
@@ -20046,9 +20056,9 @@
 
   function parse_ContentExpr()
   {
-    eventHandler.startNonterminal("ContentExpr", e0);
+    eventHandler.startNonterminal(286, e0);
     parse_StatementsAndExpr();
-    eventHandler.endNonterminal("ContentExpr", e0);
+    eventHandler.endNonterminal(286, e0);
   }
 
   function try_ContentExpr()
@@ -20058,12 +20068,12 @@
 
   function parse_CompDocConstructor()
   {
-    eventHandler.startNonterminal("CompDocConstructor", e0);
+    eventHandler.startNonterminal(287, e0);
     consume(187);                   // 'document'
     lookahead1W(87);                // S^WS | '(:' | '{'
     whitespace();
     parse_BlockExpr();
-    eventHandler.endNonterminal("CompDocConstructor", e0);
+    eventHandler.endNonterminal(287, e0);
   }
 
   function try_CompDocConstructor()
@@ -20075,7 +20085,7 @@
 
   function parse_CompAttrConstructor()
   {
-    eventHandler.startNonterminal("CompAttrConstructor", e0);
+    eventHandler.startNonterminal(288, e0);
     consume(160);                   // 'attribute'
     lookahead1W(252);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -20172,7 +20182,7 @@
       whitespace();
       parse_BlockExpr();
     }
-    eventHandler.endNonterminal("CompAttrConstructor", e0);
+    eventHandler.endNonterminal(288, e0);
   }
 
   function try_CompAttrConstructor()
@@ -20277,7 +20287,7 @@
 
   function parse_CompPIConstructor()
   {
-    eventHandler.startNonterminal("CompPIConstructor", e0);
+    eventHandler.startNonterminal(289, e0);
     consume(247);                   // 'processing-instruction'
     lookahead1W(253);               // NCName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -20374,7 +20384,7 @@
       whitespace();
       parse_BlockExpr();
     }
-    eventHandler.endNonterminal("CompPIConstructor", e0);
+    eventHandler.endNonterminal(289, e0);
   }
 
   function try_CompPIConstructor()
@@ -20479,12 +20489,12 @@
 
   function parse_CompCommentConstructor()
   {
-    eventHandler.startNonterminal("CompCommentConstructor", e0);
+    eventHandler.startNonterminal(290, e0);
     consume(171);                   // 'comment'
     lookahead1W(87);                // S^WS | '(:' | '{'
     whitespace();
     parse_BlockExpr();
-    eventHandler.endNonterminal("CompCommentConstructor", e0);
+    eventHandler.endNonterminal(290, e0);
   }
 
   function try_CompCommentConstructor()
@@ -20496,12 +20506,12 @@
 
   function parse_CompTextConstructor()
   {
-    eventHandler.startNonterminal("CompTextConstructor", e0);
+    eventHandler.startNonterminal(291, e0);
     consume(265);                   // 'text'
     lookahead1W(87);                // S^WS | '(:' | '{'
     whitespace();
     parse_BlockExpr();
-    eventHandler.endNonterminal("CompTextConstructor", e0);
+    eventHandler.endNonterminal(291, e0);
   }
 
   function try_CompTextConstructor()
@@ -20513,7 +20523,7 @@
 
   function parse_PrimaryExpr()
   {
-    eventHandler.startNonterminal("PrimaryExpr", e0);
+    eventHandler.startNonterminal(292, e0);
     lk = predict(30);
     if (lk == 13)
     {
@@ -20579,7 +20589,7 @@
     default:
       parse_Constructor();
     }
-    eventHandler.endNonterminal("PrimaryExpr", e0);
+    eventHandler.endNonterminal(292, e0);
   }
 
   function try_PrimaryExpr()
@@ -20656,7 +20666,7 @@
 
   function parse_JSONSimpleObjectUnion()
   {
-    eventHandler.startNonterminal("JSONSimpleObjectUnion", e0);
+    eventHandler.startNonterminal(293, e0);
     consume(134);                   // '{|'
     lookahead1W(276);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -20688,7 +20698,7 @@
       parse_Expr();
     }
     consume(137);                   // '|}'
-    eventHandler.endNonterminal("JSONSimpleObjectUnion", e0);
+    eventHandler.endNonterminal(293, e0);
   }
 
   function try_JSONSimpleObjectUnion()
@@ -20727,7 +20737,7 @@
 
   function parse_ObjectConstructor()
   {
-    eventHandler.startNonterminal("ObjectConstructor", e0);
+    eventHandler.startNonterminal(294, e0);
     consume(283);                   // '{'
     lookahead1W(277);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -20793,7 +20803,7 @@
       }
     }
     consume(138);                   // '}'
-    eventHandler.endNonterminal("ObjectConstructor", e0);
+    eventHandler.endNonterminal(294, e0);
   }
 
   function try_ObjectConstructor()
@@ -20865,7 +20875,7 @@
 
   function parse_PairConstructor()
   {
-    eventHandler.startNonterminal("PairConstructor", e0);
+    eventHandler.startNonterminal(295, e0);
     parse_ExprSingle();
     consume(100);                   // ':'
     lookahead1W(270);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
@@ -20894,7 +20904,7 @@
                                     // 'xquery' | '{' | '{|'
     whitespace();
     parse_ExprSingle();
-    eventHandler.endNonterminal("PairConstructor", e0);
+    eventHandler.endNonterminal(295, e0);
   }
 
   function try_PairConstructor()
@@ -20930,7 +20940,7 @@
 
   function parse_ArrayConstructor()
   {
-    eventHandler.startNonterminal("ArrayConstructor", e0);
+    eventHandler.startNonterminal(296, e0);
     consume(111);                   // '['
     lookahead1W(275);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -20962,7 +20972,7 @@
       parse_Expr();
     }
     consume(112);                   // ']'
-    eventHandler.endNonterminal("ArrayConstructor", e0);
+    eventHandler.endNonterminal(296, e0);
   }
 
   function try_ArrayConstructor()
@@ -21001,7 +21011,7 @@
 
   function parse_BlockExpr()
   {
-    eventHandler.startNonterminal("BlockExpr", e0);
+    eventHandler.startNonterminal(297, e0);
     consume(283);                   // '{'
     lookahead1W(277);               // Wildcard | EQName^Token | IntegerLiteral | DecimalLiteral | DoubleLiteral |
                                     // StringLiteral | S^WS | '$' | '%' | '(' | '(#' | '(:' | '+' | '-' | '.' | '..' |
@@ -21030,7 +21040,7 @@
     whitespace();
     parse_StatementsAndOptionalExpr();
     consume(138);                   // '}'
-    eventHandler.endNonterminal("BlockExpr", e0);
+    eventHandler.endNonterminal(297, e0);
   }
 
   function try_BlockExpr()
@@ -21066,7 +21076,7 @@
 
   function parse_FunctionDecl()
   {
-    eventHandler.startNonterminal("FunctionDecl", e0);
+    eventHandler.startNonterminal(298, e0);
     consume(205);                   // 'function'
     lookahead1W(249);               // EQName^Token | S^WS | '(:' | 'after' | 'allowing' | 'ancestor' |
                                     // 'ancestor-or-self' | 'and' | 'as' | 'ascending' | 'at' | 'attribute' |
@@ -21165,7 +21175,7 @@
     default:
       consume(199);                 // 'external'
     }
-    eventHandler.endNonterminal("FunctionDecl", e0);
+    eventHandler.endNonterminal(298, e0);
   }
 
   function consume(t)
@@ -21173,7 +21183,7 @@
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(XQueryParser_t.TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -21423,7 +21433,12 @@ XQueryParser_t.XmlSerializer = function(log, indent)
     depth = 0;
   };
 
-  this.startNonterminal = function(tag, begin)
+  this.startNonterminal = function(id, begin)
+  {
+    startElement(XQueryParser_t.NONTERMINAL[id]);
+  };
+
+  function startElement(tag)
   {
     if (delayedTag != null)
     {
@@ -21442,9 +21457,14 @@ XQueryParser_t.XmlSerializer = function(log, indent)
     }
     hasChildElement = false;
     ++depth;
+  }
+
+  this.endNonterminal = function(id, end)
+  {
+    endElement(XQueryParser_t.NONTERMINAL[id]);
   };
 
-  this.endNonterminal = function(tag, end)
+  function endElement(tag)
   {
     --depth;
     if (delayedTag != null)
@@ -21472,14 +21492,15 @@ XQueryParser_t.XmlSerializer = function(log, indent)
       log(">");
     }
     hasChildElement = true;
-  };
+  }
 
-  this.terminal = function(tag, begin, end)
+  this.terminal = function(id, begin, end)
   {
+    var tag = XQueryParser_t.TOKEN[id];
     if (tag.charAt(0) == '\'') tag = "TOKEN";
-    this.startNonterminal(tag, begin);
+    startElement(tag);
     characters(begin, end);
-    this.endNonterminal(tag, end);
+    endElement(tag);
   };
 
   this.whitespace = function(begin, end)
@@ -21539,22 +21560,22 @@ XQueryParser_t.TopDownTreeBuilder = function()
     stack = [];
   };
 
-  this.startNonterminal = function(name, begin)
+  this.startNonterminal = function(id, begin)
   {
-    var nonterminal = new XQueryParser_t.Nonterminal(name, begin, begin, []);
+    var nonterminal = new XQueryParser_t.Nonterminal(id, begin, begin, []);
     if (stack.length > 0) addChild(nonterminal);
     stack.push(nonterminal);
   };
 
-  this.endNonterminal = function(name, end)
+  this.endNonterminal = function(id, end)
   {
     stack[stack.length - 1].end = end;
     if (stack.length > 1) stack.pop();
   };
 
-  this.terminal = function(name, begin, end)
+  this.terminal = function(id, begin, end)
   {
-    addChild(new XQueryParser_t.Terminal(name, begin, end));
+    addChild(new XQueryParser_t.Terminal(id, begin, end));
   };
 
   this.whitespace = function(begin, end)
@@ -21574,25 +21595,37 @@ XQueryParser_t.TopDownTreeBuilder = function()
   };
 };
 
-XQueryParser_t.Terminal = function(name, begin, end)
+XQueryParser_t.Terminal = function(id, begin, end)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return XQueryParser_t.TOKEN[id];
+  };
+
   this.send = function(e)
   {
-    e.terminal(name, begin, end);
+    e.terminal(id, begin, end);
   };
 };
 
-XQueryParser_t.Nonterminal = function(name, begin, end, children)
+XQueryParser_t.Nonterminal = function(id, begin, end, children)
 {
+  this.id = id;
   this.begin = begin;
   this.end = end;
 
+  this.getName = function()
+  {
+    return XQueryParser_t.NONTERMINAL[id];
+  };
+
   this.send = function(e)
   {
-    e.startNonterminal(name, begin);
+    e.startNonterminal(id, begin);
     var pos = begin;
     children.forEach
     (
@@ -21604,7 +21637,7 @@ XQueryParser_t.Nonterminal = function(name, begin, end, children)
       }
     );
     if (pos < end) e.whitespace(pos, end);
-    e.endNonterminal(name, end);
+    e.endNonterminal(id, end);
   };
 };
 
@@ -25780,7 +25813,310 @@ XQueryParser_t.TOKEN =
   "'{'"
 ];
 
+XQueryParser_t.NONTERMINAL =
+[
+  "XQuery",
+  "Module",
+  "VersionDecl",
+  "LibraryModule",
+  "ModuleDecl",
+  "Prolog",
+  "Separator",
+  "Setter",
+  "BoundarySpaceDecl",
+  "DefaultCollationDecl",
+  "BaseURIDecl",
+  "ConstructionDecl",
+  "OrderingModeDecl",
+  "EmptyOrderDecl",
+  "CopyNamespacesDecl",
+  "PreserveMode",
+  "InheritMode",
+  "DecimalFormatDecl",
+  "DFPropertyName",
+  "Import",
+  "SchemaImport",
+  "SchemaPrefix",
+  "ModuleImport",
+  "NamespaceDecl",
+  "DefaultNamespaceDecl",
+  "FTOptionDecl",
+  "AnnotatedDecl",
+  "CompatibilityAnnotation",
+  "Annotation",
+  "VarDecl",
+  "VarValue",
+  "VarDefaultValue",
+  "ContextItemDecl",
+  "ParamList",
+  "Param",
+  "FunctionBody",
+  "EnclosedExpr",
+  "OptionDecl",
+  "Expr",
+  "FLWORExpr",
+  "InitialClause",
+  "IntermediateClause",
+  "ForClause",
+  "ForBinding",
+  "AllowingEmpty",
+  "PositionalVar",
+  "FTScoreVar",
+  "LetClause",
+  "LetBinding",
+  "WindowClause",
+  "TumblingWindowClause",
+  "SlidingWindowClause",
+  "WindowStartCondition",
+  "WindowEndCondition",
+  "WindowVars",
+  "CurrentItem",
+  "PreviousItem",
+  "NextItem",
+  "CountClause",
+  "WhereClause",
+  "GroupByClause",
+  "GroupingSpecList",
+  "GroupingSpec",
+  "OrderByClause",
+  "OrderSpecList",
+  "OrderSpec",
+  "OrderModifier",
+  "ReturnClause",
+  "QuantifiedExpr",
+  "SwitchExpr",
+  "SwitchCaseClause",
+  "SwitchCaseOperand",
+  "TypeswitchExpr",
+  "CaseClause",
+  "SequenceTypeUnion",
+  "IfExpr",
+  "TryCatchExpr",
+  "TryClause",
+  "TryTargetExpr",
+  "CatchClause",
+  "CatchErrorList",
+  "OrExpr",
+  "AndExpr",
+  "ComparisonExpr",
+  "FTContainsExpr",
+  "StringConcatExpr",
+  "RangeExpr",
+  "AdditiveExpr",
+  "MultiplicativeExpr",
+  "UnionExpr",
+  "IntersectExceptExpr",
+  "InstanceofExpr",
+  "TreatExpr",
+  "CastableExpr",
+  "CastExpr",
+  "UnaryExpr",
+  "ValueExpr",
+  "SimpleMapExpr",
+  "GeneralComp",
+  "ValueComp",
+  "NodeComp",
+  "ValidateExpr",
+  "ValidationMode",
+  "ExtensionExpr",
+  "Pragma",
+  "PathExpr",
+  "RelativePathExpr",
+  "StepExpr",
+  "AxisStep",
+  "ForwardStep",
+  "ForwardAxis",
+  "AbbrevForwardStep",
+  "ReverseStep",
+  "ReverseAxis",
+  "AbbrevReverseStep",
+  "NodeTest",
+  "NameTest",
+  "PostfixExpr",
+  "ArgumentList",
+  "PredicateList",
+  "Predicate",
+  "Literal",
+  "NumericLiteral",
+  "VarRef",
+  "VarName",
+  "ParenthesizedExpr",
+  "ContextItemExpr",
+  "OrderedExpr",
+  "UnorderedExpr",
+  "FunctionCall",
+  "Argument",
+  "ArgumentPlaceholder",
+  "Constructor",
+  "DirectConstructor",
+  "DirElemConstructor",
+  "DirAttributeList",
+  "DirAttributeValue",
+  "QuotAttrValueContent",
+  "AposAttrValueContent",
+  "DirElemContent",
+  "DirCommentConstructor",
+  "DirPIConstructor",
+  "ComputedConstructor",
+  "CompElemConstructor",
+  "CompNamespaceConstructor",
+  "Prefix",
+  "PrefixExpr",
+  "URIExpr",
+  "FunctionItemExpr",
+  "NamedFunctionRef",
+  "InlineFunctionExpr",
+  "SingleType",
+  "TypeDeclaration",
+  "SequenceType",
+  "OccurrenceIndicator",
+  "ItemType",
+  "JSONTest",
+  "StructuredItemTest",
+  "JSONItemTest",
+  "JSONObjectTest",
+  "JSONArrayTest",
+  "AtomicOrUnionType",
+  "KindTest",
+  "AnyKindTest",
+  "DocumentTest",
+  "TextTest",
+  "CommentTest",
+  "NamespaceNodeTest",
+  "PITest",
+  "AttributeTest",
+  "AttribNameOrWildcard",
+  "SchemaAttributeTest",
+  "AttributeDeclaration",
+  "ElementTest",
+  "ElementNameOrWildcard",
+  "SchemaElementTest",
+  "ElementDeclaration",
+  "AttributeName",
+  "ElementName",
+  "SimpleTypeName",
+  "TypeName",
+  "FunctionTest",
+  "AnyFunctionTest",
+  "TypedFunctionTest",
+  "ParenthesizedItemType",
+  "RevalidationDecl",
+  "InsertExprTargetChoice",
+  "InsertExpr",
+  "DeleteExpr",
+  "ReplaceExpr",
+  "RenameExpr",
+  "SourceExpr",
+  "TargetExpr",
+  "NewNameExpr",
+  "TransformExpr",
+  "FTSelection",
+  "FTWeight",
+  "FTOr",
+  "FTAnd",
+  "FTMildNot",
+  "FTUnaryNot",
+  "FTPrimaryWithOptions",
+  "FTPrimary",
+  "FTWords",
+  "FTWordsValue",
+  "FTExtensionSelection",
+  "FTAnyallOption",
+  "FTTimes",
+  "FTRange",
+  "FTPosFilter",
+  "FTOrder",
+  "FTWindow",
+  "FTDistance",
+  "FTUnit",
+  "FTScope",
+  "FTBigUnit",
+  "FTContent",
+  "FTMatchOptions",
+  "FTMatchOption",
+  "FTCaseOption",
+  "FTDiacriticsOption",
+  "FTStemOption",
+  "FTThesaurusOption",
+  "FTThesaurusID",
+  "FTLiteralRange",
+  "FTStopWordOption",
+  "FTStopWords",
+  "FTStopWordsInclExcl",
+  "FTLanguageOption",
+  "FTWildCardOption",
+  "FTExtensionOption",
+  "FTIgnoreOption",
+  "CollectionDecl",
+  "CollectionTypeDecl",
+  "IndexName",
+  "IndexDomainExpr",
+  "IndexKeySpec",
+  "IndexKeyExpr",
+  "IndexKeyTypeDecl",
+  "AtomicType",
+  "IndexKeyCollation",
+  "IndexDecl",
+  "ICDecl",
+  "ICCollection",
+  "ICCollSequence",
+  "ICCollSequenceUnique",
+  "ICCollNode",
+  "ICForeignKey",
+  "ICForeignKeySource",
+  "ICForeignKeyTarget",
+  "ICForeignKeyValues",
+  "Comment",
+  "Whitespace",
+  "EQName",
+  "FunctionName",
+  "NCName",
+  "MainModule",
+  "Program",
+  "Statements",
+  "StatementsAndExpr",
+  "StatementsAndOptionalExpr",
+  "Statement",
+  "ApplyStatement",
+  "AssignStatement",
+  "BlockStatement",
+  "BreakStatement",
+  "ContinueStatement",
+  "ExitStatement",
+  "FLWORStatement",
+  "ReturnStatement",
+  "IfStatement",
+  "SwitchStatement",
+  "SwitchCaseStatement",
+  "TryCatchStatement",
+  "TypeswitchStatement",
+  "CaseStatement",
+  "VarDeclStatement",
+  "WhileStatement",
+  "ExprSingle",
+  "ExprSimple",
+  "JSONDeleteExpr",
+  "JSONInsertExpr",
+  "JSONRenameExpr",
+  "JSONReplaceExpr",
+  "JSONAppendExpr",
+  "CommonContent",
+  "ContentExpr",
+  "CompDocConstructor",
+  "CompAttrConstructor",
+  "CompPIConstructor",
+  "CompCommentConstructor",
+  "CompTextConstructor",
+  "PrimaryExpr",
+  "JSONSimpleObjectUnion",
+  "ObjectConstructor",
+  "PairConstructor",
+  "ArrayConstructor",
+  "BlockExpr",
+  "FunctionDecl"
+];
+
                                                             // line 1123 "XQueryParser.ebnf"
                                                             });
-                                                            // line 25786 "XQueryParser_t.js"
+                                                            // line 26122 "XQueryParser_t.js"
 // End

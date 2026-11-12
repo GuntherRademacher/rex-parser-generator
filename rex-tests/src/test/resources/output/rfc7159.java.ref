@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:31 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q rfc7159.ebnf -java -performance -tree
 
 import java.util.Arrays;
@@ -43,9 +43,9 @@ public class rfc7159
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -63,25 +63,25 @@ public class rfc7159
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -105,31 +105,39 @@ public class rfc7159
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -137,16 +145,22 @@ public class rfc7159
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -155,7 +169,7 @@ public class rfc7159
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -166,11 +180,11 @@ public class rfc7159
     @Override
     public void reset(CharSequence string) {length = 0;}
     @Override
-    public void startNonterminal(String name, int begin) {}
+    public void startNonterminal(int id, int begin) {}
     @Override
-    public void endNonterminal(String name, int end) {}
+    public void endNonterminal(int id, int end) {}
     @Override
-    public void terminal(String name, int begin, int end) {length += end - begin;}
+    public void terminal(int id, int begin, int end) {length += end - begin;}
     @Override
     public void whitespace(int begin, int end) {length += end - begin;}
   }
@@ -393,6 +407,16 @@ public class rfc7159
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -429,7 +453,7 @@ public class rfc7159
 
   public void parse_JSON_text()
   {
-    eventHandler.startNonterminal("JSON-text", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1(0);                  // ws
     consume(1);                     // ws
     parse_value();
@@ -437,79 +461,79 @@ public class rfc7159
     consume(1);                     // ws
     lookahead1(3);                  // EOF
     consume(10);                    // EOF
-    eventHandler.endNonterminal("JSON-text", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_begin_array()
   {
-    eventHandler.startNonterminal("begin-array", e0);
+    eventHandler.startNonterminal(1, e0);
     consume(1);                     // ws
     lookahead1(6);                  // '['
     consume(13);                    // '['
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("begin-array", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void parse_begin_object()
   {
-    eventHandler.startNonterminal("begin-object", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(1);                     // ws
     lookahead1(8);                  // '{'
     consume(15);                    // '{'
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("begin-object", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void parse_end_array()
   {
-    eventHandler.startNonterminal("end-array", e0);
+    eventHandler.startNonterminal(3, e0);
     consume(1);                     // ws
     lookahead1(7);                  // ']'
     consume(14);                    // ']'
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("end-array", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void parse_end_object()
   {
-    eventHandler.startNonterminal("end-object", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(1);                     // ws
     lookahead1(9);                  // '}'
     consume(16);                    // '}'
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("end-object", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void parse_name_separator()
   {
-    eventHandler.startNonterminal("name-separator", e0);
+    eventHandler.startNonterminal(5, e0);
     lookahead1(0);                  // ws
     consume(1);                     // ws
     lookahead1(5);                  // ':'
     consume(12);                    // ':'
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("name-separator", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void parse_value_separator()
   {
-    eventHandler.startNonterminal("value-separator", e0);
+    eventHandler.startNonterminal(6, e0);
     consume(1);                     // ws
     lookahead1(4);                  // ','
     consume(11);                    // ','
     lookahead1(0);                  // ws
     consume(1);                     // ws
-    eventHandler.endNonterminal("value-separator", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void parse_value()
   {
-    eventHandler.startNonterminal("value", e0);
+    eventHandler.startNonterminal(7, e0);
     lookahead1(17);                 // ws | false | null | true | int | minus | string
     switch (l1)
     {
@@ -542,12 +566,12 @@ public class rfc7159
     default:
       parse_number();
     }
-    eventHandler.endNonterminal("value", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void parse_object()
   {
-    eventHandler.startNonterminal("object", e0);
+    eventHandler.startNonterminal(8, e0);
     parse_begin_object();
     lookahead1(11);                 // ws | string
     if (l1 == 9)                    // string
@@ -573,22 +597,22 @@ public class rfc7159
       }
     }
     parse_end_object();
-    eventHandler.endNonterminal("object", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void parse_member()
   {
-    eventHandler.startNonterminal("member", e0);
+    eventHandler.startNonterminal(9, e0);
     lookahead1(2);                  // string
     consume(9);                     // string
     parse_name_separator();
     parse_value();
-    eventHandler.endNonterminal("member", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void parse_array()
   {
-    eventHandler.startNonterminal("array", e0);
+    eventHandler.startNonterminal(10, e0);
     parse_begin_array();
     lookahead1(17);                 // ws | false | null | true | int | minus | string
     switch (l1)
@@ -622,12 +646,12 @@ public class rfc7159
       }
     }
     parse_end_array();
-    eventHandler.endNonterminal("array", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void parse_number()
   {
-    eventHandler.startNonterminal("number", e0);
+    eventHandler.startNonterminal(11, e0);
     if (l1 == 8)                    // minus
     {
       consume(8);                   // minus
@@ -644,14 +668,14 @@ public class rfc7159
     {
       consume(5);                   // exp
     }
-    eventHandler.endNonterminal("number", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void consume(int t)
   {
     if (l1 == t)
     {
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -848,7 +872,7 @@ public class rfc7159
     /* 19 */ 57344, 926, 128, 512, 32, 64, 4, 8, 16, 512, 32, 4, 8, 16, 512, 4, 512, 512
   };
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "ws",
@@ -867,6 +891,22 @@ public class rfc7159
     "']'",
     "'{'",
     "'}'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "JSON-text",
+    "begin-array",
+    "begin-object",
+    "end-array",
+    "end-object",
+    "name-separator",
+    "value-separator",
+    "value",
+    "object",
+    "member",
+    "array",
+    "number"
   };
 }
 

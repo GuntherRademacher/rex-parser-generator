@@ -1,4 +1,4 @@
-// This file was generated on Thu Oct 15, 2026 12:32 (UTC+02) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q WD-turtle-20120710.ebnf -performance -tree -faster -java
 
 import java.util.Arrays;
@@ -43,9 +43,9 @@ public class WD_turtle_20120710
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -63,25 +63,25 @@ public class WD_turtle_20120710
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -105,31 +105,39 @@ public class WD_turtle_20120710
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -137,16 +145,22 @@ public class WD_turtle_20120710
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -155,7 +169,7 @@ public class WD_turtle_20120710
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -166,11 +180,11 @@ public class WD_turtle_20120710
     @Override
     public void reset(CharSequence string) {length = 0;}
     @Override
-    public void startNonterminal(String name, int begin) {}
+    public void startNonterminal(int id, int begin) {}
     @Override
-    public void endNonterminal(String name, int end) {}
+    public void endNonterminal(int id, int end) {}
     @Override
-    public void terminal(String name, int begin, int end) {length += end - begin;}
+    public void terminal(int id, int begin, int end) {length += end - begin;}
     @Override
     public void whitespace(int begin, int end) {length += end - begin;}
   }
@@ -392,6 +406,16 @@ public class WD_turtle_20120710
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -428,7 +452,7 @@ public class WD_turtle_20120710
 
   public void parse_turtleDoc()
   {
-    eventHandler.startNonterminal("turtleDoc", e0);
+    eventHandler.startNonterminal(0, e0);
     for (;;)
     {
       lookahead1W(8);               // WhiteSpace | PREFIX | BASE | IRIREF | PNAME_NS | PNAME_LN | BLANK_NODE_LABEL |
@@ -441,12 +465,12 @@ public class WD_turtle_20120710
       parse_statement();
     }
     consume(17);                    // EOF
-    eventHandler.endNonterminal("turtleDoc", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_statement()
   {
-    eventHandler.startNonterminal("statement", e0);
+    eventHandler.startNonterminal(1, e0);
     switch (l1)
     {
     case 2:                         // PREFIX
@@ -459,12 +483,12 @@ public class WD_turtle_20120710
       parse_triples();
       consume(21);                  // '.'
     }
-    eventHandler.endNonterminal("statement", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void parse_directive()
   {
-    eventHandler.startNonterminal("directive", e0);
+    eventHandler.startNonterminal(2, e0);
     switch (l1)
     {
     case 24:                        // '@prefix'
@@ -479,12 +503,12 @@ public class WD_turtle_20120710
     default:
       parse_sparqlBase();
     }
-    eventHandler.endNonterminal("directive", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void parse_prefixID()
   {
-    eventHandler.startNonterminal("prefixID", e0);
+    eventHandler.startNonterminal(3, e0);
     consume(24);                    // '@prefix'
     lookahead1W(1);                 // WhiteSpace | PNAME_NS
     consume(5);                     // PNAME_NS
@@ -492,43 +516,43 @@ public class WD_turtle_20120710
     consume(4);                     // IRIREF
     lookahead1W(2);                 // WhiteSpace | '.'
     consume(21);                    // '.'
-    eventHandler.endNonterminal("prefixID", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void parse_base()
   {
-    eventHandler.startNonterminal("base", e0);
+    eventHandler.startNonterminal(4, e0);
     consume(23);                    // '@base'
     lookahead1W(0);                 // WhiteSpace | IRIREF
     consume(4);                     // IRIREF
     lookahead1W(2);                 // WhiteSpace | '.'
     consume(21);                    // '.'
-    eventHandler.endNonterminal("base", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void parse_sparqlPrefix()
   {
-    eventHandler.startNonterminal("sparqlPrefix", e0);
+    eventHandler.startNonterminal(5, e0);
     consume(2);                     // PREFIX
     lookahead1W(1);                 // WhiteSpace | PNAME_NS
     consume(5);                     // PNAME_NS
     lookahead1W(0);                 // WhiteSpace | IRIREF
     consume(4);                     // IRIREF
-    eventHandler.endNonterminal("sparqlPrefix", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void parse_sparqlBase()
   {
-    eventHandler.startNonterminal("sparqlBase", e0);
+    eventHandler.startNonterminal(6, e0);
     consume(3);                     // BASE
     lookahead1W(0);                 // WhiteSpace | IRIREF
     consume(4);                     // IRIREF
-    eventHandler.endNonterminal("sparqlBase", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void parse_triples()
   {
-    eventHandler.startNonterminal("triples", e0);
+    eventHandler.startNonterminal(7, e0);
     switch (l1)
     {
     case 25:                        // '['
@@ -546,12 +570,12 @@ public class WD_turtle_20120710
       whitespace();
       parse_predicateObjectList();
     }
-    eventHandler.endNonterminal("triples", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void parse_predicateObjectList()
   {
-    eventHandler.startNonterminal("predicateObjectList", e0);
+    eventHandler.startNonterminal(8, e0);
     parse_verb();
     lookahead1W(9);                 // WhiteSpace | IRIREF | PNAME_NS | PNAME_LN | BLANK_NODE_LABEL | INTEGER |
                                     // DECIMAL | DOUBLE | STRING_LITERAL_QUOTE | STRING_LITERAL_SINGLE_QUOTE |
@@ -581,12 +605,12 @@ public class WD_turtle_20120710
         parse_objectList();
       }
     }
-    eventHandler.endNonterminal("predicateObjectList", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void parse_objectList()
   {
-    eventHandler.startNonterminal("objectList", e0);
+    eventHandler.startNonterminal(9, e0);
     parse_object();
     for (;;)
     {
@@ -603,12 +627,12 @@ public class WD_turtle_20120710
       whitespace();
       parse_object();
     }
-    eventHandler.endNonterminal("objectList", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void parse_verb()
   {
-    eventHandler.startNonterminal("verb", e0);
+    eventHandler.startNonterminal(10, e0);
     switch (l1)
     {
     case 28:                        // 'a'
@@ -617,12 +641,12 @@ public class WD_turtle_20120710
     default:
       parse_predicate();
     }
-    eventHandler.endNonterminal("verb", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void parse_subject()
   {
-    eventHandler.startNonterminal("subject", e0);
+    eventHandler.startNonterminal(11, e0);
     switch (l1)
     {
     case 4:                         // IRIREF
@@ -633,19 +657,19 @@ public class WD_turtle_20120710
     default:
       parse_blank();
     }
-    eventHandler.endNonterminal("subject", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void parse_predicate()
   {
-    eventHandler.startNonterminal("predicate", e0);
+    eventHandler.startNonterminal(12, e0);
     parse_iri();
-    eventHandler.endNonterminal("predicate", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   private void parse_object()
   {
-    eventHandler.startNonterminal("object", e0);
+    eventHandler.startNonterminal(13, e0);
     switch (l1)
     {
     case 4:                         // IRIREF
@@ -664,12 +688,12 @@ public class WD_turtle_20120710
     default:
       parse_literal();
     }
-    eventHandler.endNonterminal("object", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   private void parse_literal()
   {
-    eventHandler.startNonterminal("literal", e0);
+    eventHandler.startNonterminal(14, e0);
     switch (l1)
     {
     case 9:                         // INTEGER
@@ -684,12 +708,12 @@ public class WD_turtle_20120710
     default:
       parse_RDFLiteral();
     }
-    eventHandler.endNonterminal("literal", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   private void parse_blank()
   {
-    eventHandler.startNonterminal("blank", e0);
+    eventHandler.startNonterminal(15, e0);
     switch (l1)
     {
     case 18:                        // '('
@@ -698,23 +722,23 @@ public class WD_turtle_20120710
     default:
       parse_BlankNode();
     }
-    eventHandler.endNonterminal("blank", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   private void parse_blankNodePropertyList()
   {
-    eventHandler.startNonterminal("blankNodePropertyList", e0);
+    eventHandler.startNonterminal(16, e0);
     consume(25);                    // '['
     lookahead1W(4);                 // WhiteSpace | IRIREF | PNAME_NS | PNAME_LN | 'a'
     whitespace();
     parse_predicateObjectList();
     consume(26);                    // ']'
-    eventHandler.endNonterminal("blankNodePropertyList", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   private void parse_collection()
   {
-    eventHandler.startNonterminal("collection", e0);
+    eventHandler.startNonterminal(17, e0);
     consume(18);                    // '('
     for (;;)
     {
@@ -730,12 +754,12 @@ public class WD_turtle_20120710
       parse_object();
     }
     consume(19);                    // ')'
-    eventHandler.endNonterminal("collection", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   private void parse_NumericLiteral()
   {
-    eventHandler.startNonterminal("NumericLiteral", e0);
+    eventHandler.startNonterminal(18, e0);
     switch (l1)
     {
     case 9:                         // INTEGER
@@ -747,12 +771,12 @@ public class WD_turtle_20120710
     default:
       consume(11);                  // DOUBLE
     }
-    eventHandler.endNonterminal("NumericLiteral", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   private void parse_RDFLiteral()
   {
-    eventHandler.startNonterminal("RDFLiteral", e0);
+    eventHandler.startNonterminal(19, e0);
     parse_String();
     lookahead1W(11);                // WhiteSpace | IRIREF | PNAME_NS | PNAME_LN | BLANK_NODE_LABEL | LANGTAG |
                                     // INTEGER | DECIMAL | DOUBLE | STRING_LITERAL_QUOTE | STRING_LITERAL_SINGLE_QUOTE |
@@ -773,12 +797,12 @@ public class WD_turtle_20120710
         parse_iri();
       }
     }
-    eventHandler.endNonterminal("RDFLiteral", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   private void parse_BooleanLiteral()
   {
-    eventHandler.startNonterminal("BooleanLiteral", e0);
+    eventHandler.startNonterminal(20, e0);
     switch (l1)
     {
     case 30:                        // 'true'
@@ -787,12 +811,12 @@ public class WD_turtle_20120710
     default:
       consume(29);                  // 'false'
     }
-    eventHandler.endNonterminal("BooleanLiteral", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   private void parse_String()
   {
-    eventHandler.startNonterminal("String", e0);
+    eventHandler.startNonterminal(21, e0);
     switch (l1)
     {
     case 12:                        // STRING_LITERAL_QUOTE
@@ -807,12 +831,12 @@ public class WD_turtle_20120710
     default:
       consume(15);                  // STRING_LITERAL_LONG_QUOTE
     }
-    eventHandler.endNonterminal("String", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   private void parse_iri()
   {
-    eventHandler.startNonterminal("iri", e0);
+    eventHandler.startNonterminal(22, e0);
     switch (l1)
     {
     case 4:                         // IRIREF
@@ -821,12 +845,12 @@ public class WD_turtle_20120710
     default:
       parse_PrefixedName();
     }
-    eventHandler.endNonterminal("iri", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   private void parse_PrefixedName()
   {
-    eventHandler.startNonterminal("PrefixedName", e0);
+    eventHandler.startNonterminal(23, e0);
     switch (l1)
     {
     case 6:                         // PNAME_LN
@@ -835,12 +859,12 @@ public class WD_turtle_20120710
     default:
       consume(5);                   // PNAME_NS
     }
-    eventHandler.endNonterminal("PrefixedName", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   private void parse_BlankNode()
   {
-    eventHandler.startNonterminal("BlankNode", e0);
+    eventHandler.startNonterminal(24, e0);
     switch (l1)
     {
     case 7:                         // BLANK_NODE_LABEL
@@ -849,7 +873,7 @@ public class WD_turtle_20120710
     default:
       consume(16);                  // ANON
     }
-    eventHandler.endNonterminal("BlankNode", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   private void consume(int t)
@@ -857,7 +881,7 @@ public class WD_turtle_20120710
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = 0;
     }
     else
@@ -1152,7 +1176,7 @@ public class WD_turtle_20120710
     /* 104 */ 8192, 8192, 8192, 536871008, 256, 16, 32768, 32768, 16384, 16384, 16384, 8192
   };
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "WhiteSpace",
@@ -1185,6 +1209,35 @@ public class WD_turtle_20120710
     "'a'",
     "'false'",
     "'true'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "turtleDoc",
+    "statement",
+    "directive",
+    "prefixID",
+    "base",
+    "sparqlPrefix",
+    "sparqlBase",
+    "triples",
+    "predicateObjectList",
+    "objectList",
+    "verb",
+    "subject",
+    "predicate",
+    "object",
+    "literal",
+    "blank",
+    "blankNodePropertyList",
+    "collection",
+    "NumericLiteral",
+    "RDFLiteral",
+    "BooleanLiteral",
+    "String",
+    "iri",
+    "PrefixedName",
+    "BlankNode"
   };
 }
 

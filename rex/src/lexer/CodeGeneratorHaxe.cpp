@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 15:34 (UTC+01) by REx v6.3 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorHaxe.cpp.template
                                                             #line 1 "CodeGeneratorHaxe.cpp.template"
                                                             // generate CodeGeneratorHaxe.cpp using this command:
@@ -1025,31 +1025,32 @@
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1029 "CodeGeneratorHaxe.cpp"
+                                                                bool isPublic = variable("tree").boolean() || variable("useGlr").boolean() || (variable("nolexer").boolean() && strcmp(a->longName, "TOKEN") == 0);
+                                                            #line 1030 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  ");
-                                                            #line 602 "CodeGeneratorHaxe.cpp.template"
-                                                                print(visibility);
-                                                            #line 1035 "CodeGeneratorHaxe.cpp"
-  append(L" static var ");
                                                             #line 603 "CodeGeneratorHaxe.cpp.template"
+                                                                print(isPublic ? "public" : "private");
+                                                            #line 1036 "CodeGeneratorHaxe.cpp"
+  append(L" static var ");
+                                                            #line 604 "CodeGeneratorHaxe.cpp.template"
                                                                 print(a->longName);
-                                                            #line 1039 "CodeGeneratorHaxe.cpp"
+                                                            #line 1040 "CodeGeneratorHaxe.cpp"
   append(L" =\n");
   append(L"  [\n");
-                                                            #line 606 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 607 "CodeGeneratorHaxe.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 1047 "CodeGeneratorHaxe.cpp"
+                                                            #line 1048 "CodeGeneratorHaxe.cpp"
   append(L",\n");
-                                                            #line 611 "CodeGeneratorHaxe.cpp.template"
-                                                                  }
-                                                            #line 1051 "CodeGeneratorHaxe.cpp"
-  append(L"    \"");
                                                             #line 612 "CodeGeneratorHaxe.cpp.template"
+                                                                  }
+                                                            #line 1052 "CodeGeneratorHaxe.cpp"
+  append(L"    \"");
+                                                            #line 613 "CodeGeneratorHaxe.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1062,52 +1063,52 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 1066 "CodeGeneratorHaxe.cpp"
+                                                            #line 1067 "CodeGeneratorHaxe.cpp"
   append(L"\"");
-                                                            #line 624 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 625 "CodeGeneratorHaxe.cpp.template"
                                                                 }
-                                                            #line 1070 "CodeGeneratorHaxe.cpp"
+                                                            #line 1071 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"  ];");
-                                                            #line 626 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 627 "CodeGeneratorHaxe.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 1077 "CodeGeneratorHaxe.cpp"
+                                                            #line 1078 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public enum Token\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 633 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 634 "CodeGeneratorHaxe.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
                                                                 {
                                                                   if (i)
                                                                   {
-                                                            #line 1090 "CodeGeneratorHaxe.cpp"
+                                                            #line 1091 "CodeGeneratorHaxe.cpp"
   append(L",\n");
   append(L"    ");
-                                                            #line 640 "CodeGeneratorHaxe.cpp.template"
-                                                                  }
-                                                            #line 1095 "CodeGeneratorHaxe.cpp"
-  append(L"/* ");
                                                             #line 641 "CodeGeneratorHaxe.cpp.template"
-                                                                  print(format.toString<char>(i, 10, w));
-                                                            #line 1099 "CodeGeneratorHaxe.cpp"
-  append(L" */ ");
+                                                                  }
+                                                            #line 1096 "CodeGeneratorHaxe.cpp"
+  append(L"/* ");
                                                             #line 642 "CodeGeneratorHaxe.cpp.template"
+                                                                  print(format.toString<char>(i, 10, w));
+                                                            #line 1100 "CodeGeneratorHaxe.cpp"
+  append(L" */ ");
+                                                            #line 643 "CodeGeneratorHaxe.cpp.template"
                                                                   print(token.string(i));
                                                                 }
-                                                            #line 1104 "CodeGeneratorHaxe.cpp"
+                                                            #line 1105 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"  };");
-                                                            #line 645 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 646 "CodeGeneratorHaxe.cpp.template"
                                                               }
                                                               if (variable("selfTest").boolean())
                                                               {
-                                                            #line 1111 "CodeGeneratorHaxe.cpp"
+                                                            #line 1112 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  private void selfTest(int set, int tokenId)\n");
@@ -1144,40 +1145,40 @@
   append(L"  public static void main(String[] args)\n");
   append(L"  {\n");
   append(L"    ");
-                                                            #line 683 "CodeGeneratorHaxe.cpp.template"
-                                                                print(variable("classname").string());
-                                                            #line 1150 "CodeGeneratorHaxe.cpp"
-  append(L" testee = new ");
                                                             #line 684 "CodeGeneratorHaxe.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1154 "CodeGeneratorHaxe.cpp"
+                                                            #line 1151 "CodeGeneratorHaxe.cpp"
+  append(L" testee = new ");
+                                                            #line 685 "CodeGeneratorHaxe.cpp.template"
+                                                                print(variable("classname").string());
+                                                            #line 1155 "CodeGeneratorHaxe.cpp"
   append(L"();\n");
   append(L"    for (int e = 0; e < ");
-                                                            #line 686 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 687 "CodeGeneratorHaxe.cpp.template"
                                                                 print(variable("a0").size);
-                                                            #line 1159 "CodeGeneratorHaxe.cpp"
+                                                            #line 1160 "CodeGeneratorHaxe.cpp"
   append(L"; ++e)\n");
   append(L"    {\n");
   append(L"      int s = INITIAL[e] & ");
-                                                            #line 689 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 690 "CodeGeneratorHaxe.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 1165 "CodeGeneratorHaxe.cpp"
+                                                            #line 1166 "CodeGeneratorHaxe.cpp"
   append(L";\n");
   append(L"      for (int i = 0; i < ");
-                                                            #line 691 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 692 "CodeGeneratorHaxe.cpp.template"
                                                                 print(variable("t1").size);
-                                                            #line 1170 "CodeGeneratorHaxe.cpp"
+                                                            #line 1171 "CodeGeneratorHaxe.cpp"
   append(L"; i += 32)\n");
   append(L"      {\n");
   append(L"        int j = i;\n");
   append(L"        int i0 = (i >> 5) * ");
-                                                            #line 695 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 696 "CodeGeneratorHaxe.cpp.template"
                                                                 print(variable("transitionStateCount").integer());
-                                                            #line 1177 "CodeGeneratorHaxe.cpp"
+                                                            #line 1178 "CodeGeneratorHaxe.cpp"
   append(L" + s - 1;\n");
-                                                            #line 697 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 698 "CodeGeneratorHaxe.cpp.template"
                                                                 compressedMapAccessor(8, "i", "var f = ", "EXPECTED", &variable("t0bits").integer());
-                                                            #line 1181 "CodeGeneratorHaxe.cpp"
+                                                            #line 1182 "CodeGeneratorHaxe.cpp"
   append(L"\n");
   append(L"        for ( ; f != 0; f >>>= 1, ++j)\n");
   append(L"        {\n");
@@ -1189,16 +1190,16 @@
   append(L"      }\n");
   append(L"    }\n");
   append(L"  }");
-                                                            #line 708 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 709 "CodeGeneratorHaxe.cpp.template"
                                                               }
-                                                            #line 1195 "CodeGeneratorHaxe.cpp"
+                                                            #line 1196 "CodeGeneratorHaxe.cpp"
   append(L"\n");
-                                                            #line 710 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 711 "CodeGeneratorHaxe.cpp.template"
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 1200 "CodeGeneratorHaxe.cpp"
+                                                            #line 1201 "CodeGeneratorHaxe.cpp"
   append(L"}\n");
-                                                            #line 713 "CodeGeneratorHaxe.cpp.template"
+                                                            #line 714 "CodeGeneratorHaxe.cpp.template"
                                                               }
                                                             }
 

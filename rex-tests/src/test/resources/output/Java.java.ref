@@ -1,4 +1,4 @@
-// This file was generated on Fri Oct 30, 2026 11:37 (UTC+01) by REx v6.3-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -java
 
 import java.io.IOException;
@@ -87,9 +87,9 @@ public class Java
   public interface EventHandler
   {
     public void reset(CharSequence string);
-    public void startNonterminal(String name, int begin);
-    public void endNonterminal(String name, int end);
-    public void terminal(String name, int begin, int end);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
 
@@ -107,25 +107,25 @@ public class Java
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
     {
-      Nonterminal nonterminal = new Nonterminal(name, begin, begin, new Symbol[0]);
+      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
       if (top >= 0) addChild(nonterminal);
       if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
       stack[top] = nonterminal;
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
     {
       stack[top].end = end;
       if (top > 0) --top;
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
-      addChild(new Terminal(name, begin, end));
+      addChild(new Terminal(id, begin, end));
     }
 
     @Override
@@ -149,31 +149,39 @@ public class Java
 
   public static abstract class Symbol
   {
-    public String name;
+    public int id;
     public int begin;
     public int end;
 
-    protected Symbol(String name, int begin, int end)
+    protected Symbol(int id, int begin, int end)
     {
-      this.name = name;
+      this.id = id;
       this.begin = begin;
       this.end = end;
     }
+
+    public abstract String getName();
 
     public abstract void send(EventHandler e);
   }
 
   public static class Terminal extends Symbol
   {
-    public Terminal(String name, int begin, int end)
+    public Terminal(int id, int begin, int end)
     {
-      super(name, begin, end);
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.terminal(name, begin, end);
+      e.terminal(id, begin, end);
     }
   }
 
@@ -181,16 +189,22 @@ public class Java
   {
     public Symbol[] children;
 
-    public Nonterminal(String name, int begin, int end, Symbol[] children)
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
     {
-      super(name, begin, end);
+      super(id, begin, end);
       this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
     }
 
     @Override
     public void send(EventHandler e)
     {
-      e.startNonterminal(name, begin);
+      e.startNonterminal(id, begin);
       int pos = begin;
       for (Symbol c : children)
       {
@@ -199,7 +213,7 @@ public class Java
         pos = c.end;
       }
       if (pos < end) e.whitespace(pos, end);
-      e.endNonterminal(name, end);
+      e.endNonterminal(id, end);
     }
   }
 
@@ -231,7 +245,12 @@ public class Java
     }
 
     @Override
-    public void startNonterminal(String name, int begin)
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
     {
       if (delayedTag != null)
       {
@@ -253,7 +272,12 @@ public class Java
     }
 
     @Override
-    public void endNonterminal(String name, int end)
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
     {
       --depth;
       if (delayedTag != null)
@@ -284,15 +308,16 @@ public class Java
     }
 
     @Override
-    public void terminal(String name, int begin, int end)
+    public void terminal(int id, int begin, int end)
     {
+      String name = getTerminalName(id);
       if (name.charAt(0) == '\'')
       {
         name = "TOKEN";
       }
-      startNonterminal(name, begin);
+      startElement(name);
       characters(begin, end);
-      endNonterminal(name, end);
+      endElement(name);
     }
 
     @Override
@@ -401,6 +426,16 @@ public class Java
     return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
   }
 
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
   public static String[] getExpectedTokenSet(ParseException e)
   {
     String[] expected;
@@ -437,7 +472,7 @@ public class Java
 
   public void parse_compilationUnit()
   {
-    eventHandler.startNonterminal("compilationUnit", e0);
+    eventHandler.startNonterminal(0, e0);
     lookahead1W(80);                // ENUM | WS | COMMENT | LINE_COMMENT | EOF | ';' | '@' | 'abstract' | 'class' |
                                     // 'final' | 'import' | 'interface' | 'package' | 'private' | 'protected' |
                                     // 'public' | 'static' | 'strictfp'
@@ -596,18 +631,18 @@ public class Java
       }
     }
     consume(13);                    // EOF
-    eventHandler.endNonterminal("compilationUnit", e0);
+    eventHandler.endNonterminal(0, e0);
   }
 
   private void parse_packageDeclaration()
   {
-    eventHandler.startNonterminal("packageDeclaration", e0);
+    eventHandler.startNonterminal(1, e0);
     consume(85);                    // 'package'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
     parse_qualifiedName();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("packageDeclaration", e0);
+    eventHandler.endNonterminal(1, e0);
   }
 
   private void try_packageDeclaration()
@@ -620,7 +655,7 @@ public class Java
 
   private void parse_importDeclaration()
   {
-    eventHandler.startNonterminal("importDeclaration", e0);
+    eventHandler.startNonterminal(2, e0);
     consume(77);                    // 'import'
     lookahead1W(24);                // Identifier | WS | COMMENT | LINE_COMMENT | 'static'
     if (l1 == 91)                   // 'static'
@@ -638,7 +673,7 @@ public class Java
     }
     lookahead1W(6);                 // WS | COMMENT | LINE_COMMENT | ';'
     consume(37);                    // ';'
-    eventHandler.endNonterminal("importDeclaration", e0);
+    eventHandler.endNonterminal(2, e0);
   }
 
   private void try_importDeclaration()
@@ -663,7 +698,7 @@ public class Java
 
   private void parse_typeDeclaration()
   {
-    eventHandler.startNonterminal("typeDeclaration", e0);
+    eventHandler.startNonterminal(3, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -672,7 +707,7 @@ public class Java
     default:
       parse_classOrInterfaceDeclaration();
     }
-    eventHandler.endNonterminal("typeDeclaration", e0);
+    eventHandler.endNonterminal(3, e0);
   }
 
   private void try_typeDeclaration()
@@ -689,7 +724,7 @@ public class Java
 
   private void parse_classOrInterfaceDeclaration()
   {
-    eventHandler.startNonterminal("classOrInterfaceDeclaration", e0);
+    eventHandler.startNonterminal(4, e0);
     parse_classOrInterfaceModifiers();
     switch (l1)
     {
@@ -702,7 +737,7 @@ public class Java
       whitespace();
       parse_interfaceDeclaration();
     }
-    eventHandler.endNonterminal("classOrInterfaceDeclaration", e0);
+    eventHandler.endNonterminal(4, e0);
   }
 
   private void try_classOrInterfaceDeclaration()
@@ -721,7 +756,7 @@ public class Java
 
   private void parse_classOrInterfaceModifiers()
   {
-    eventHandler.startNonterminal("classOrInterfaceModifiers", e0);
+    eventHandler.startNonterminal(5, e0);
     for (;;)
     {
       lookahead1W(74);              // ENUM | WS | COMMENT | LINE_COMMENT | '@' | 'abstract' | 'class' | 'final' |
@@ -744,7 +779,7 @@ public class Java
       whitespace();
       parse_classOrInterfaceModifier();
     }
-    eventHandler.endNonterminal("classOrInterfaceModifiers", e0);
+    eventHandler.endNonterminal(5, e0);
   }
 
   private void try_classOrInterfaceModifiers()
@@ -774,7 +809,7 @@ public class Java
 
   private void parse_classOrInterfaceModifier()
   {
-    eventHandler.startNonterminal("classOrInterfaceModifier", e0);
+    eventHandler.startNonterminal(6, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -801,7 +836,7 @@ public class Java
     default:
       consume(92);                  // 'strictfp'
     }
-    eventHandler.endNonterminal("classOrInterfaceModifier", e0);
+    eventHandler.endNonterminal(6, e0);
   }
 
   private void try_classOrInterfaceModifier()
@@ -836,7 +871,7 @@ public class Java
 
   private void parse_modifiers()
   {
-    eventHandler.startNonterminal("modifiers", e0);
+    eventHandler.startNonterminal(7, e0);
     for (;;)
     {
       lookahead1W(85);              // ENUM | Identifier | WS | COMMENT | LINE_COMMENT | '<' | '@' | 'abstract' |
@@ -869,7 +904,7 @@ public class Java
       whitespace();
       parse_modifier();
     }
-    eventHandler.endNonterminal("modifiers", e0);
+    eventHandler.endNonterminal(7, e0);
   }
 
   private void try_modifiers()
@@ -909,7 +944,7 @@ public class Java
 
   private void parse_classDeclaration()
   {
-    eventHandler.startNonterminal("classDeclaration", e0);
+    eventHandler.startNonterminal(8, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -918,7 +953,7 @@ public class Java
     default:
       parse_enumDeclaration();
     }
-    eventHandler.endNonterminal("classDeclaration", e0);
+    eventHandler.endNonterminal(8, e0);
   }
 
   private void try_classDeclaration()
@@ -935,7 +970,7 @@ public class Java
 
   private void parse_normalClassDeclaration()
   {
-    eventHandler.startNonterminal("normalClassDeclaration", e0);
+    eventHandler.startNonterminal(9, e0);
     consume(63);                    // 'class'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -964,7 +999,7 @@ public class Java
     }
     whitespace();
     parse_classBody();
-    eventHandler.endNonterminal("normalClassDeclaration", e0);
+    eventHandler.endNonterminal(9, e0);
   }
 
   private void try_normalClassDeclaration()
@@ -997,7 +1032,7 @@ public class Java
 
   private void parse_typeParameters()
   {
-    eventHandler.startNonterminal("typeParameters", e0);
+    eventHandler.startNonterminal(10, e0);
     consume(38);                    // '<'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -1014,7 +1049,7 @@ public class Java
       parse_typeParameter();
     }
     consume(44);                    // '>'
-    eventHandler.endNonterminal("typeParameters", e0);
+    eventHandler.endNonterminal(10, e0);
   }
 
   private void try_typeParameters()
@@ -1037,7 +1072,7 @@ public class Java
 
   private void parse_typeParameter()
   {
-    eventHandler.startNonterminal("typeParameter", e0);
+    eventHandler.startNonterminal(11, e0);
     consume(9);                     // Identifier
     lookahead1W(48);                // WS | COMMENT | LINE_COMMENT | ',' | '>' | 'extends'
     if (l1 == 69)                   // 'extends'
@@ -1048,7 +1083,7 @@ public class Java
       whitespace();
       parse_typeBound();
     }
-    eventHandler.endNonterminal("typeParameter", e0);
+    eventHandler.endNonterminal(11, e0);
   }
 
   private void try_typeParameter()
@@ -1066,7 +1101,7 @@ public class Java
 
   private void parse_typeBound()
   {
-    eventHandler.startNonterminal("typeBound", e0);
+    eventHandler.startNonterminal(12, e0);
     parse_type();
     for (;;)
     {
@@ -1080,7 +1115,7 @@ public class Java
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("typeBound", e0);
+    eventHandler.endNonterminal(12, e0);
   }
 
   private void try_typeBound()
@@ -1101,7 +1136,7 @@ public class Java
 
   private void parse_enumDeclaration()
   {
-    eventHandler.startNonterminal("enumDeclaration", e0);
+    eventHandler.startNonterminal(13, e0);
     consume(7);                     // ENUM
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1116,7 +1151,7 @@ public class Java
     }
     whitespace();
     parse_enumBody();
-    eventHandler.endNonterminal("enumDeclaration", e0);
+    eventHandler.endNonterminal(13, e0);
   }
 
   private void try_enumDeclaration()
@@ -1137,7 +1172,7 @@ public class Java
 
   private void parse_enumBody()
   {
-    eventHandler.startNonterminal("enumBody", e0);
+    eventHandler.startNonterminal(14, e0);
     consume(105);                   // '{'
     lookahead1W(62);                // Identifier | WS | COMMENT | LINE_COMMENT | ',' | ';' | '@' | '}'
     if (l1 == 9                     // Identifier
@@ -1157,7 +1192,7 @@ public class Java
       parse_enumBodyDeclarations();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("enumBody", e0);
+    eventHandler.endNonterminal(14, e0);
   }
 
   private void try_enumBody()
@@ -1183,7 +1218,7 @@ public class Java
 
   private void parse_enumConstants()
   {
-    eventHandler.startNonterminal("enumConstants", e0);
+    eventHandler.startNonterminal(15, e0);
     parse_enumConstant();
     for (;;)
     {
@@ -1206,7 +1241,7 @@ public class Java
       whitespace();
       parse_enumConstant();
     }
-    eventHandler.endNonterminal("enumConstants", e0);
+    eventHandler.endNonterminal(15, e0);
   }
 
   private void try_enumConstants()
@@ -1236,7 +1271,7 @@ public class Java
 
   private void parse_enumConstant()
   {
-    eventHandler.startNonterminal("enumConstant", e0);
+    eventHandler.startNonterminal(16, e0);
     if (l1 == 51)                   // '@'
     {
       whitespace();
@@ -1255,7 +1290,7 @@ public class Java
       whitespace();
       parse_classBody();
     }
-    eventHandler.endNonterminal("enumConstant", e0);
+    eventHandler.endNonterminal(16, e0);
   }
 
   private void try_enumConstant()
@@ -1279,7 +1314,7 @@ public class Java
 
   private void parse_enumBodyDeclarations()
   {
-    eventHandler.startNonterminal("enumBodyDeclarations", e0);
+    eventHandler.startNonterminal(17, e0);
     consume(37);                    // ';'
     for (;;)
     {
@@ -1295,7 +1330,7 @@ public class Java
       whitespace();
       parse_classBodyDeclaration();
     }
-    eventHandler.endNonterminal("enumBodyDeclarations", e0);
+    eventHandler.endNonterminal(17, e0);
   }
 
   private void try_enumBodyDeclarations()
@@ -1318,7 +1353,7 @@ public class Java
 
   private void parse_interfaceDeclaration()
   {
-    eventHandler.startNonterminal("interfaceDeclaration", e0);
+    eventHandler.startNonterminal(18, e0);
     switch (l1)
     {
     case 80:                        // 'interface'
@@ -1327,7 +1362,7 @@ public class Java
     default:
       parse_annotationTypeDeclaration();
     }
-    eventHandler.endNonterminal("interfaceDeclaration", e0);
+    eventHandler.endNonterminal(18, e0);
   }
 
   private void try_interfaceDeclaration()
@@ -1344,7 +1379,7 @@ public class Java
 
   private void parse_normalInterfaceDeclaration()
   {
-    eventHandler.startNonterminal("normalInterfaceDeclaration", e0);
+    eventHandler.startNonterminal(19, e0);
     consume(80);                    // 'interface'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
@@ -1365,7 +1400,7 @@ public class Java
     }
     whitespace();
     parse_interfaceBody();
-    eventHandler.endNonterminal("normalInterfaceDeclaration", e0);
+    eventHandler.endNonterminal(19, e0);
   }
 
   private void try_normalInterfaceDeclaration()
@@ -1391,7 +1426,7 @@ public class Java
 
   private void parse_typeList()
   {
-    eventHandler.startNonterminal("typeList", e0);
+    eventHandler.startNonterminal(20, e0);
     parse_type();
     for (;;)
     {
@@ -1405,7 +1440,7 @@ public class Java
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("typeList", e0);
+    eventHandler.endNonterminal(20, e0);
   }
 
   private void try_typeList()
@@ -1426,7 +1461,7 @@ public class Java
 
   private void parse_classBody()
   {
-    eventHandler.startNonterminal("classBody", e0);
+    eventHandler.startNonterminal(21, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1443,7 +1478,7 @@ public class Java
       parse_classBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("classBody", e0);
+    eventHandler.endNonterminal(21, e0);
   }
 
   private void try_classBody()
@@ -1467,7 +1502,7 @@ public class Java
 
   private void parse_interfaceBody()
   {
-    eventHandler.startNonterminal("interfaceBody", e0);
+    eventHandler.startNonterminal(22, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -1483,7 +1518,7 @@ public class Java
       parse_interfaceBodyDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("interfaceBody", e0);
+    eventHandler.endNonterminal(22, e0);
   }
 
   private void try_interfaceBody()
@@ -1506,7 +1541,7 @@ public class Java
 
   private void parse_classBodyDeclaration()
   {
-    eventHandler.startNonterminal("classBodyDeclaration", e0);
+    eventHandler.startNonterminal(23, e0);
     switch (l1)
     {
     case 91:                        // 'static'
@@ -1538,7 +1573,7 @@ public class Java
       whitespace();
       parse_memberDecl();
     }
-    eventHandler.endNonterminal("classBodyDeclaration", e0);
+    eventHandler.endNonterminal(23, e0);
   }
 
   private void try_classBodyDeclaration()
@@ -1576,7 +1611,7 @@ public class Java
 
   private void parse_memberDecl()
   {
-    eventHandler.startNonterminal("memberDecl", e0);
+    eventHandler.startNonterminal(24, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1615,7 +1650,7 @@ public class Java
     default:
       parse_memberDeclaration();
     }
-    eventHandler.endNonterminal("memberDecl", e0);
+    eventHandler.endNonterminal(24, e0);
   }
 
   private void try_memberDecl()
@@ -1660,7 +1695,7 @@ public class Java
 
   private void parse_memberDeclaration()
   {
-    eventHandler.startNonterminal("memberDeclaration", e0);
+    eventHandler.startNonterminal(25, e0);
     parse_type();
     switch (l1)
     {
@@ -1680,7 +1715,7 @@ public class Java
       whitespace();
       parse_fieldDeclaration();
     }
-    eventHandler.endNonterminal("memberDeclaration", e0);
+    eventHandler.endNonterminal(25, e0);
   }
 
   private void try_memberDeclaration()
@@ -1706,13 +1741,13 @@ public class Java
 
   private void parse_genericMethodOrConstructorDecl()
   {
-    eventHandler.startNonterminal("genericMethodOrConstructorDecl", e0);
+    eventHandler.startNonterminal(26, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
     whitespace();
     parse_genericMethodOrConstructorRest();
-    eventHandler.endNonterminal("genericMethodOrConstructorDecl", e0);
+    eventHandler.endNonterminal(26, e0);
   }
 
   private void try_genericMethodOrConstructorDecl()
@@ -1725,7 +1760,7 @@ public class Java
 
   private void parse_genericMethodOrConstructorRest()
   {
-    eventHandler.startNonterminal("genericMethodOrConstructorRest", e0);
+    eventHandler.startNonterminal(27, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -1757,7 +1792,7 @@ public class Java
       whitespace();
       parse_methodDeclaratorRest();
     }
-    eventHandler.endNonterminal("genericMethodOrConstructorRest", e0);
+    eventHandler.endNonterminal(27, e0);
   }
 
   private void try_genericMethodOrConstructorRest()
@@ -1795,12 +1830,12 @@ public class Java
 
   private void parse_methodDeclaration()
   {
-    eventHandler.startNonterminal("methodDeclaration", e0);
+    eventHandler.startNonterminal(28, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_methodDeclaratorRest();
-    eventHandler.endNonterminal("methodDeclaration", e0);
+    eventHandler.endNonterminal(28, e0);
   }
 
   private void try_methodDeclaration()
@@ -1812,10 +1847,10 @@ public class Java
 
   private void parse_fieldDeclaration()
   {
-    eventHandler.startNonterminal("fieldDeclaration", e0);
+    eventHandler.startNonterminal(29, e0);
     parse_variableDeclarators();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("fieldDeclaration", e0);
+    eventHandler.endNonterminal(29, e0);
   }
 
   private void try_fieldDeclaration()
@@ -1826,7 +1861,7 @@ public class Java
 
   private void parse_interfaceBodyDeclaration()
   {
-    eventHandler.startNonterminal("interfaceBodyDeclaration", e0);
+    eventHandler.startNonterminal(30, e0);
     switch (l1)
     {
     case 37:                        // ';'
@@ -1837,7 +1872,7 @@ public class Java
       whitespace();
       parse_interfaceMemberDecl();
     }
-    eventHandler.endNonterminal("interfaceBodyDeclaration", e0);
+    eventHandler.endNonterminal(30, e0);
   }
 
   private void try_interfaceBodyDeclaration()
@@ -1855,7 +1890,7 @@ public class Java
 
   private void parse_interfaceMemberDecl()
   {
-    eventHandler.startNonterminal("interfaceMemberDecl", e0);
+    eventHandler.startNonterminal(31, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -1880,7 +1915,7 @@ public class Java
     default:
       parse_interfaceMethodOrFieldDecl();
     }
-    eventHandler.endNonterminal("interfaceMemberDecl", e0);
+    eventHandler.endNonterminal(31, e0);
   }
 
   private void try_interfaceMemberDecl()
@@ -1912,13 +1947,13 @@ public class Java
 
   private void parse_interfaceMethodOrFieldDecl()
   {
-    eventHandler.startNonterminal("interfaceMethodOrFieldDecl", e0);
+    eventHandler.startNonterminal(32, e0);
     parse_type();
     consume(9);                     // Identifier
     lookahead1W(45);                // WS | COMMENT | LINE_COMMENT | '(' | '=' | '['
     whitespace();
     parse_interfaceMethodOrFieldRest();
-    eventHandler.endNonterminal("interfaceMethodOrFieldDecl", e0);
+    eventHandler.endNonterminal(32, e0);
   }
 
   private void try_interfaceMethodOrFieldDecl()
@@ -1931,7 +1966,7 @@ public class Java
 
   private void parse_interfaceMethodOrFieldRest()
   {
-    eventHandler.startNonterminal("interfaceMethodOrFieldRest", e0);
+    eventHandler.startNonterminal(33, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -1941,7 +1976,7 @@ public class Java
       parse_constantDeclaratorsRest();
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("interfaceMethodOrFieldRest", e0);
+    eventHandler.endNonterminal(33, e0);
   }
 
   private void try_interfaceMethodOrFieldRest()
@@ -1959,7 +1994,7 @@ public class Java
 
   private void parse_methodDeclaratorRest()
   {
-    eventHandler.startNonterminal("methodDeclaratorRest", e0);
+    eventHandler.startNonterminal(34, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -1988,7 +2023,7 @@ public class Java
     default:
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("methodDeclaratorRest", e0);
+    eventHandler.endNonterminal(34, e0);
   }
 
   private void try_methodDeclaratorRest()
@@ -2023,7 +2058,7 @@ public class Java
 
   private void parse_voidMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("voidMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(35, e0);
     parse_formalParameters();
     lookahead1W(50);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -2042,7 +2077,7 @@ public class Java
     default:
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("voidMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(35, e0);
   }
 
   private void try_voidMethodDeclaratorRest()
@@ -2067,7 +2102,7 @@ public class Java
 
   private void parse_interfaceMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("interfaceMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(36, e0);
     parse_formalParameters();
     for (;;)
     {
@@ -2088,7 +2123,7 @@ public class Java
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler.endNonterminal("interfaceMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(36, e0);
   }
 
   private void try_interfaceMethodDeclaratorRest()
@@ -2116,7 +2151,7 @@ public class Java
 
   private void parse_interfaceGenericMethodDecl()
   {
-    eventHandler.startNonterminal("interfaceGenericMethodDecl", e0);
+    eventHandler.startNonterminal(37, e0);
     parse_typeParameters();
     lookahead1W(73);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short' | 'void'
@@ -2134,7 +2169,7 @@ public class Java
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_interfaceMethodDeclaratorRest();
-    eventHandler.endNonterminal("interfaceGenericMethodDecl", e0);
+    eventHandler.endNonterminal(37, e0);
   }
 
   private void try_interfaceGenericMethodDecl()
@@ -2158,7 +2193,7 @@ public class Java
 
   private void parse_voidInterfaceMethodDeclaratorRest()
   {
-    eventHandler.startNonterminal("voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler.startNonterminal(38, e0);
     parse_formalParameters();
     lookahead1W(33);                // WS | COMMENT | LINE_COMMENT | ';' | 'throws'
     if (l1 == 98)                   // 'throws'
@@ -2169,7 +2204,7 @@ public class Java
       parse_qualifiedNameList();
     }
     consume(37);                    // ';'
-    eventHandler.endNonterminal("voidInterfaceMethodDeclaratorRest", e0);
+    eventHandler.endNonterminal(38, e0);
   }
 
   private void try_voidInterfaceMethodDeclaratorRest()
@@ -2187,7 +2222,7 @@ public class Java
 
   private void parse_constructorDeclaratorRest()
   {
-    eventHandler.startNonterminal("constructorDeclaratorRest", e0);
+    eventHandler.startNonterminal(39, e0);
     parse_formalParameters();
     lookahead1W(42);                // WS | COMMENT | LINE_COMMENT | 'throws' | '{'
     if (l1 == 98)                   // 'throws'
@@ -2199,7 +2234,7 @@ public class Java
     }
     whitespace();
     parse_constructorBody();
-    eventHandler.endNonterminal("constructorDeclaratorRest", e0);
+    eventHandler.endNonterminal(39, e0);
   }
 
   private void try_constructorDeclaratorRest()
@@ -2217,12 +2252,12 @@ public class Java
 
   private void parse_constantDeclarator()
   {
-    eventHandler.startNonterminal("constantDeclarator", e0);
+    eventHandler.startNonterminal(40, e0);
     consume(9);                     // Identifier
     lookahead1W(36);                // WS | COMMENT | LINE_COMMENT | '=' | '['
     whitespace();
     parse_constantDeclaratorRest();
-    eventHandler.endNonterminal("constantDeclarator", e0);
+    eventHandler.endNonterminal(40, e0);
   }
 
   private void try_constantDeclarator()
@@ -2234,7 +2269,7 @@ public class Java
 
   private void parse_variableDeclarators()
   {
-    eventHandler.startNonterminal("variableDeclarators", e0);
+    eventHandler.startNonterminal(41, e0);
     parse_variableDeclarator();
     for (;;)
     {
@@ -2248,7 +2283,7 @@ public class Java
       whitespace();
       parse_variableDeclarator();
     }
-    eventHandler.endNonterminal("variableDeclarators", e0);
+    eventHandler.endNonterminal(41, e0);
   }
 
   private void try_variableDeclarators()
@@ -2269,7 +2304,7 @@ public class Java
 
   private void parse_variableDeclarator()
   {
-    eventHandler.startNonterminal("variableDeclarator", e0);
+    eventHandler.startNonterminal(42, e0);
     parse_variableDeclaratorId();
     if (l1 == 42)                   // '='
     {
@@ -2282,7 +2317,7 @@ public class Java
       whitespace();
       parse_variableInitializer();
     }
-    eventHandler.endNonterminal("variableDeclarator", e0);
+    eventHandler.endNonterminal(42, e0);
   }
 
   private void try_variableDeclarator()
@@ -2302,7 +2337,7 @@ public class Java
 
   private void parse_constantDeclaratorsRest()
   {
-    eventHandler.startNonterminal("constantDeclaratorsRest", e0);
+    eventHandler.startNonterminal(43, e0);
     parse_constantDeclaratorRest();
     for (;;)
     {
@@ -2316,7 +2351,7 @@ public class Java
       whitespace();
       parse_constantDeclarator();
     }
-    eventHandler.endNonterminal("constantDeclaratorsRest", e0);
+    eventHandler.endNonterminal(43, e0);
   }
 
   private void try_constantDeclaratorsRest()
@@ -2337,7 +2372,7 @@ public class Java
 
   private void parse_constantDeclaratorRest()
   {
-    eventHandler.startNonterminal("constantDeclaratorRest", e0);
+    eventHandler.startNonterminal(44, e0);
     for (;;)
     {
       lookahead1W(36);              // WS | COMMENT | LINE_COMMENT | '=' | '['
@@ -2357,7 +2392,7 @@ public class Java
                                     // 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_variableInitializer();
-    eventHandler.endNonterminal("constantDeclaratorRest", e0);
+    eventHandler.endNonterminal(44, e0);
   }
 
   private void try_constantDeclaratorRest()
@@ -2384,7 +2419,7 @@ public class Java
 
   private void parse_variableDeclaratorId()
   {
-    eventHandler.startNonterminal("variableDeclaratorId", e0);
+    eventHandler.startNonterminal(45, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -2397,7 +2432,7 @@ public class Java
       lookahead1W(10);              // WS | COMMENT | LINE_COMMENT | ']'
       consume(53);                  // ']'
     }
-    eventHandler.endNonterminal("variableDeclaratorId", e0);
+    eventHandler.endNonterminal(45, e0);
   }
 
   private void try_variableDeclaratorId()
@@ -2418,7 +2453,7 @@ public class Java
 
   private void parse_variableInitializer()
   {
-    eventHandler.startNonterminal("variableInitializer", e0);
+    eventHandler.startNonterminal(46, e0);
     switch (l1)
     {
     case 105:                       // '{'
@@ -2427,7 +2462,7 @@ public class Java
     default:
       parse_expression();
     }
-    eventHandler.endNonterminal("variableInitializer", e0);
+    eventHandler.endNonterminal(46, e0);
   }
 
   private void try_variableInitializer()
@@ -2444,7 +2479,7 @@ public class Java
 
   private void parse_arrayInitializer()
   {
-    eventHandler.startNonterminal("arrayInitializer", e0);
+    eventHandler.startNonterminal(47, e0);
     consume(105);                   // '{'
     lookahead1W(96);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -2491,7 +2526,7 @@ public class Java
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler.endNonterminal("arrayInitializer", e0);
+    eventHandler.endNonterminal(47, e0);
   }
 
   private void try_arrayInitializer()
@@ -2544,7 +2579,7 @@ public class Java
 
   private void parse_modifier()
   {
-    eventHandler.startNonterminal("modifier", e0);
+    eventHandler.startNonterminal(48, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -2583,7 +2618,7 @@ public class Java
     default:
       consume(92);                  // 'strictfp'
     }
-    eventHandler.endNonterminal("modifier", e0);
+    eventHandler.endNonterminal(48, e0);
   }
 
   private void try_modifier()
@@ -2630,9 +2665,9 @@ public class Java
 
   private void parse_enumConstantName()
   {
-    eventHandler.startNonterminal("enumConstantName", e0);
+    eventHandler.startNonterminal(49, e0);
     consume(9);                     // Identifier
-    eventHandler.endNonterminal("enumConstantName", e0);
+    eventHandler.endNonterminal(49, e0);
   }
 
   private void try_enumConstantName()
@@ -2642,7 +2677,7 @@ public class Java
 
   private void parse_type()
   {
-    eventHandler.startNonterminal("type", e0);
+    eventHandler.startNonterminal(50, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -2679,7 +2714,7 @@ public class Java
         consume(53);                // ']'
       }
     }
-    eventHandler.endNonterminal("type", e0);
+    eventHandler.endNonterminal(50, e0);
   }
 
   private void try_type()
@@ -2724,7 +2759,7 @@ public class Java
 
   private void parse_classOrInterfaceType()
   {
-    eventHandler.startNonterminal("classOrInterfaceType", e0);
+    eventHandler.startNonterminal(51, e0);
     consume(9);                     // Identifier
     lookahead1W(104);               // Identifier | WS | COMMENT | LINE_COMMENT | '!=' | '%=' | '&' | '&&' | '&=' |
                                     // '(' | ')' | '*=' | '+=' | ',' | '-=' | '.' | '...' | '/=' | ':' | ';' | '<' |
@@ -2758,7 +2793,7 @@ public class Java
         parse_typeArguments();
       }
     }
-    eventHandler.endNonterminal("classOrInterfaceType", e0);
+    eventHandler.endNonterminal(51, e0);
   }
 
   private void try_classOrInterfaceType()
@@ -2798,7 +2833,7 @@ public class Java
 
   private void parse_primitiveType()
   {
-    eventHandler.startNonterminal("primitiveType", e0);
+    eventHandler.startNonterminal(52, e0);
     switch (l1)
     {
     case 57:                        // 'boolean'
@@ -2825,7 +2860,7 @@ public class Java
     default:
       consume(67);                  // 'double'
     }
-    eventHandler.endNonterminal("primitiveType", e0);
+    eventHandler.endNonterminal(52, e0);
   }
 
   private void try_primitiveType()
@@ -2860,7 +2895,7 @@ public class Java
 
   private void parse_variableModifier()
   {
-    eventHandler.startNonterminal("variableModifier", e0);
+    eventHandler.startNonterminal(53, e0);
     switch (l1)
     {
     case 71:                        // 'final'
@@ -2869,7 +2904,7 @@ public class Java
     default:
       parse_annotation();
     }
-    eventHandler.endNonterminal("variableModifier", e0);
+    eventHandler.endNonterminal(53, e0);
   }
 
   private void try_variableModifier()
@@ -2886,7 +2921,7 @@ public class Java
 
   private void parse_typeArguments()
   {
-    eventHandler.startNonterminal("typeArguments", e0);
+    eventHandler.startNonterminal(54, e0);
     consume(38);                    // '<'
     lookahead1W(72);                // Identifier | WS | COMMENT | LINE_COMMENT | '?' | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
@@ -2905,7 +2940,7 @@ public class Java
       parse_typeArgument();
     }
     consume(44);                    // '>'
-    eventHandler.endNonterminal("typeArguments", e0);
+    eventHandler.endNonterminal(54, e0);
   }
 
   private void try_typeArguments()
@@ -2930,7 +2965,7 @@ public class Java
 
   private void parse_typeArgument()
   {
-    eventHandler.startNonterminal("typeArgument", e0);
+    eventHandler.startNonterminal(55, e0);
     switch (l1)
     {
     case 50:                        // '?'
@@ -2956,7 +2991,7 @@ public class Java
     default:
       parse_type();
     }
-    eventHandler.endNonterminal("typeArgument", e0);
+    eventHandler.endNonterminal(55, e0);
   }
 
   private void try_typeArgument()
@@ -2989,7 +3024,7 @@ public class Java
 
   private void parse_qualifiedNameList()
   {
-    eventHandler.startNonterminal("qualifiedNameList", e0);
+    eventHandler.startNonterminal(56, e0);
     parse_qualifiedName();
     for (;;)
     {
@@ -3002,7 +3037,7 @@ public class Java
       whitespace();
       parse_qualifiedName();
     }
-    eventHandler.endNonterminal("qualifiedNameList", e0);
+    eventHandler.endNonterminal(56, e0);
   }
 
   private void try_qualifiedNameList()
@@ -3022,7 +3057,7 @@ public class Java
 
   private void parse_formalParameters()
   {
-    eventHandler.startNonterminal("formalParameters", e0);
+    eventHandler.startNonterminal(57, e0);
     consume(21);                    // '('
     lookahead1W(76);                // Identifier | WS | COMMENT | LINE_COMMENT | ')' | '@' | 'boolean' | 'byte' |
                                     // 'char' | 'double' | 'final' | 'float' | 'int' | 'long' | 'short'
@@ -3032,7 +3067,7 @@ public class Java
       parse_formalParameterDecls();
     }
     consume(22);                    // ')'
-    eventHandler.endNonterminal("formalParameters", e0);
+    eventHandler.endNonterminal(57, e0);
   }
 
   private void try_formalParameters()
@@ -3049,13 +3084,13 @@ public class Java
 
   private void parse_formalParameterDecls()
   {
-    eventHandler.startNonterminal("formalParameterDecls", e0);
+    eventHandler.startNonterminal(58, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_formalParameterDeclsRest();
-    eventHandler.endNonterminal("formalParameterDecls", e0);
+    eventHandler.endNonterminal(58, e0);
   }
 
   private void try_formalParameterDecls()
@@ -3067,7 +3102,7 @@ public class Java
 
   private void parse_formalParameterDeclsRest()
   {
-    eventHandler.startNonterminal("formalParameterDeclsRest", e0);
+    eventHandler.startNonterminal(59, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -3087,7 +3122,7 @@ public class Java
       whitespace();
       parse_variableDeclaratorId();
     }
-    eventHandler.endNonterminal("formalParameterDeclsRest", e0);
+    eventHandler.endNonterminal(59, e0);
   }
 
   private void try_formalParameterDeclsRest()
@@ -3113,9 +3148,9 @@ public class Java
 
   private void parse_methodBody()
   {
-    eventHandler.startNonterminal("methodBody", e0);
+    eventHandler.startNonterminal(60, e0);
     parse_block();
-    eventHandler.endNonterminal("methodBody", e0);
+    eventHandler.endNonterminal(60, e0);
   }
 
   private void try_methodBody()
@@ -3125,7 +3160,7 @@ public class Java
 
   private void parse_constructorBody()
   {
-    eventHandler.startNonterminal("constructorBody", e0);
+    eventHandler.startNonterminal(61, e0);
     consume(105);                   // '{'
     lookahead1W(117);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | ENUM | ASSERT | Identifier | WS | COMMENT |
@@ -3314,7 +3349,7 @@ public class Java
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("constructorBody", e0);
+    eventHandler.endNonterminal(61, e0);
   }
 
   private void try_constructorBody()
@@ -3509,7 +3544,7 @@ public class Java
 
   private void parse_explicitConstructorInvocation()
   {
-    eventHandler.startNonterminal("explicitConstructorInvocation", e0);
+    eventHandler.startNonterminal(62, e0);
     switch (l1)
     {
     case 93:                        // 'super'
@@ -3603,7 +3638,7 @@ public class Java
       lookahead1W(6);               // WS | COMMENT | LINE_COMMENT | ';'
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("explicitConstructorInvocation", e0);
+    eventHandler.endNonterminal(62, e0);
   }
 
   private void try_explicitConstructorInvocation()
@@ -3704,7 +3739,7 @@ public class Java
 
   private void parse_qualifiedName()
   {
-    eventHandler.startNonterminal("qualifiedName", e0);
+    eventHandler.startNonterminal(63, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -3725,7 +3760,7 @@ public class Java
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler.endNonterminal("qualifiedName", e0);
+    eventHandler.endNonterminal(63, e0);
   }
 
   private void try_qualifiedName()
@@ -3754,7 +3789,7 @@ public class Java
 
   private void parse_literal()
   {
-    eventHandler.startNonterminal("literal", e0);
+    eventHandler.startNonterminal(64, e0);
     switch (l1)
     {
     case 4:                         // FloatingPointLiteral
@@ -3776,7 +3811,7 @@ public class Java
     default:
       parse_integerLiteral();
     }
-    eventHandler.endNonterminal("literal", e0);
+    eventHandler.endNonterminal(64, e0);
   }
 
   private void try_literal()
@@ -3806,7 +3841,7 @@ public class Java
 
   private void parse_integerLiteral()
   {
-    eventHandler.startNonterminal("integerLiteral", e0);
+    eventHandler.startNonterminal(65, e0);
     switch (l1)
     {
     case 1:                         // HexLiteral
@@ -3818,7 +3853,7 @@ public class Java
     default:
       consume(2);                   // DecimalLiteral
     }
-    eventHandler.endNonterminal("integerLiteral", e0);
+    eventHandler.endNonterminal(65, e0);
   }
 
   private void try_integerLiteral()
@@ -3838,7 +3873,7 @@ public class Java
 
   private void parse_booleanLiteral()
   {
-    eventHandler.startNonterminal("booleanLiteral", e0);
+    eventHandler.startNonterminal(66, e0);
     switch (l1)
     {
     case 100:                       // 'true'
@@ -3847,7 +3882,7 @@ public class Java
     default:
       consume(70);                  // 'false'
     }
-    eventHandler.endNonterminal("booleanLiteral", e0);
+    eventHandler.endNonterminal(66, e0);
   }
 
   private void try_booleanLiteral()
@@ -3864,7 +3899,7 @@ public class Java
 
   private void parse_annotations()
   {
-    eventHandler.startNonterminal("annotations", e0);
+    eventHandler.startNonterminal(67, e0);
     for (;;)
     {
       whitespace();
@@ -3908,7 +3943,7 @@ public class Java
         break;
       }
     }
-    eventHandler.endNonterminal("annotations", e0);
+    eventHandler.endNonterminal(67, e0);
   }
 
   private void try_annotations()
@@ -3961,7 +3996,7 @@ public class Java
 
   private void parse_annotation()
   {
-    eventHandler.startNonterminal("annotation", e0);
+    eventHandler.startNonterminal(68, e0);
     consume(51);                    // '@'
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     whitespace();
@@ -4000,7 +4035,7 @@ public class Java
       lookahead1W(2);               // WS | COMMENT | LINE_COMMENT | ')'
       consume(22);                  // ')'
     }
-    eventHandler.endNonterminal("annotation", e0);
+    eventHandler.endNonterminal(68, e0);
   }
 
   private void try_annotation()
@@ -4044,7 +4079,7 @@ public class Java
 
   private void parse_annotationName()
   {
-    eventHandler.startNonterminal("annotationName", e0);
+    eventHandler.startNonterminal(69, e0);
     consume(9);                     // Identifier
     for (;;)
     {
@@ -4061,7 +4096,7 @@ public class Java
       lookahead1W(0);               // Identifier | WS | COMMENT | LINE_COMMENT
       consume(9);                   // Identifier
     }
-    eventHandler.endNonterminal("annotationName", e0);
+    eventHandler.endNonterminal(69, e0);
   }
 
   private void try_annotationName()
@@ -4086,7 +4121,7 @@ public class Java
 
   private void parse_elementValuePairs()
   {
-    eventHandler.startNonterminal("elementValuePairs", e0);
+    eventHandler.startNonterminal(70, e0);
     parse_elementValuePair();
     for (;;)
     {
@@ -4100,7 +4135,7 @@ public class Java
       whitespace();
       parse_elementValuePair();
     }
-    eventHandler.endNonterminal("elementValuePairs", e0);
+    eventHandler.endNonterminal(70, e0);
   }
 
   private void try_elementValuePairs()
@@ -4121,7 +4156,7 @@ public class Java
 
   private void parse_elementValuePair()
   {
-    eventHandler.startNonterminal("elementValuePair", e0);
+    eventHandler.startNonterminal(71, e0);
     consume(9);                     // Identifier
     lookahead1W(8);                 // WS | COMMENT | LINE_COMMENT | '='
     consume(42);                    // '='
@@ -4132,7 +4167,7 @@ public class Java
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler.endNonterminal("elementValuePair", e0);
+    eventHandler.endNonterminal(71, e0);
   }
 
   private void try_elementValuePair()
@@ -4150,7 +4185,7 @@ public class Java
 
   private void parse_elementValue()
   {
-    eventHandler.startNonterminal("elementValue", e0);
+    eventHandler.startNonterminal(72, e0);
     switch (l1)
     {
     case 51:                        // '@'
@@ -4162,7 +4197,7 @@ public class Java
     default:
       parse_conditionalExpression();
     }
-    eventHandler.endNonterminal("elementValue", e0);
+    eventHandler.endNonterminal(72, e0);
   }
 
   private void try_elementValue()
@@ -4182,7 +4217,7 @@ public class Java
 
   private void parse_elementValueArrayInitializer()
   {
-    eventHandler.startNonterminal("elementValueArrayInitializer", e0);
+    eventHandler.startNonterminal(73, e0);
     consume(105);                   // '{'
     lookahead1W(101);               // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -4230,7 +4265,7 @@ public class Java
     }
     lookahead1W(18);                // WS | COMMENT | LINE_COMMENT | '}'
     consume(109);                   // '}'
-    eventHandler.endNonterminal("elementValueArrayInitializer", e0);
+    eventHandler.endNonterminal(73, e0);
   }
 
   private void try_elementValueArrayInitializer()
@@ -4284,7 +4319,7 @@ public class Java
 
   private void parse_annotationTypeDeclaration()
   {
-    eventHandler.startNonterminal("annotationTypeDeclaration", e0);
+    eventHandler.startNonterminal(74, e0);
     consume(51);                    // '@'
     lookahead1W(12);                // WS | COMMENT | LINE_COMMENT | 'interface'
     consume(80);                    // 'interface'
@@ -4293,7 +4328,7 @@ public class Java
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_annotationTypeBody();
-    eventHandler.endNonterminal("annotationTypeDeclaration", e0);
+    eventHandler.endNonterminal(74, e0);
   }
 
   private void try_annotationTypeDeclaration()
@@ -4309,7 +4344,7 @@ public class Java
 
   private void parse_annotationTypeBody()
   {
-    eventHandler.startNonterminal("annotationTypeBody", e0);
+    eventHandler.startNonterminal(75, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4325,7 +4360,7 @@ public class Java
       parse_annotationTypeElementDeclaration();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("annotationTypeBody", e0);
+    eventHandler.endNonterminal(75, e0);
   }
 
   private void try_annotationTypeBody()
@@ -4348,11 +4383,11 @@ public class Java
 
   private void parse_annotationTypeElementDeclaration()
   {
-    eventHandler.startNonterminal("annotationTypeElementDeclaration", e0);
+    eventHandler.startNonterminal(76, e0);
     parse_modifiers();
     whitespace();
     parse_annotationTypeElementRest();
-    eventHandler.endNonterminal("annotationTypeElementDeclaration", e0);
+    eventHandler.endNonterminal(76, e0);
   }
 
   private void try_annotationTypeElementDeclaration()
@@ -4363,7 +4398,7 @@ public class Java
 
   private void parse_annotationTypeElementRest()
   {
-    eventHandler.startNonterminal("annotationTypeElementRest", e0);
+    eventHandler.startNonterminal(77, e0);
     switch (l1)
     {
     case 63:                        // 'class'
@@ -4417,7 +4452,7 @@ public class Java
       lookahead1W(6);               // WS | COMMENT | LINE_COMMENT | ';'
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("annotationTypeElementRest", e0);
+    eventHandler.endNonterminal(77, e0);
   }
 
   private void try_annotationTypeElementRest()
@@ -4478,7 +4513,7 @@ public class Java
 
   private void parse_annotationMethodOrConstantRest()
   {
-    eventHandler.startNonterminal("annotationMethodOrConstantRest", e0);
+    eventHandler.startNonterminal(78, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4495,7 +4530,7 @@ public class Java
     default:
       parse_annotationConstantRest();
     }
-    eventHandler.endNonterminal("annotationMethodOrConstantRest", e0);
+    eventHandler.endNonterminal(78, e0);
   }
 
   private void try_annotationMethodOrConstantRest()
@@ -4520,7 +4555,7 @@ public class Java
 
   private void parse_annotationMethodRest()
   {
-    eventHandler.startNonterminal("annotationMethodRest", e0);
+    eventHandler.startNonterminal(79, e0);
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -4532,7 +4567,7 @@ public class Java
       whitespace();
       parse_defaultValue();
     }
-    eventHandler.endNonterminal("annotationMethodRest", e0);
+    eventHandler.endNonterminal(79, e0);
   }
 
   private void try_annotationMethodRest()
@@ -4551,9 +4586,9 @@ public class Java
 
   private void parse_annotationConstantRest()
   {
-    eventHandler.startNonterminal("annotationConstantRest", e0);
+    eventHandler.startNonterminal(80, e0);
     parse_variableDeclarators();
-    eventHandler.endNonterminal("annotationConstantRest", e0);
+    eventHandler.endNonterminal(80, e0);
   }
 
   private void try_annotationConstantRest()
@@ -4563,7 +4598,7 @@ public class Java
 
   private void parse_defaultValue()
   {
-    eventHandler.startNonterminal("defaultValue", e0);
+    eventHandler.startNonterminal(81, e0);
     consume(65);                    // 'default'
     lookahead1W(95);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -4572,7 +4607,7 @@ public class Java
                                     // 'super' | 'this' | 'true' | 'void' | '{' | '~'
     whitespace();
     parse_elementValue();
-    eventHandler.endNonterminal("defaultValue", e0);
+    eventHandler.endNonterminal(81, e0);
   }
 
   private void try_defaultValue()
@@ -4588,7 +4623,7 @@ public class Java
 
   private void parse_block()
   {
-    eventHandler.startNonterminal("block", e0);
+    eventHandler.startNonterminal(82, e0);
     consume(105);                   // '{'
     for (;;)
     {
@@ -4608,7 +4643,7 @@ public class Java
       parse_blockStatement();
     }
     consume(109);                   // '}'
-    eventHandler.endNonterminal("block", e0);
+    eventHandler.endNonterminal(82, e0);
   }
 
   private void try_block()
@@ -4635,7 +4670,7 @@ public class Java
 
   private void parse_blockStatement()
   {
-    eventHandler.startNonterminal("blockStatement", e0);
+    eventHandler.startNonterminal(83, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -4761,7 +4796,7 @@ public class Java
     default:
       parse_statement();
     }
-    eventHandler.endNonterminal("blockStatement", e0);
+    eventHandler.endNonterminal(83, e0);
   }
 
   private void try_blockStatement()
@@ -4899,10 +4934,10 @@ public class Java
 
   private void parse_localVariableDeclarationStatement()
   {
-    eventHandler.startNonterminal("localVariableDeclarationStatement", e0);
+    eventHandler.startNonterminal(84, e0);
     parse_localVariableDeclaration();
     consume(37);                    // ';'
-    eventHandler.endNonterminal("localVariableDeclarationStatement", e0);
+    eventHandler.endNonterminal(84, e0);
   }
 
   private void try_localVariableDeclarationStatement()
@@ -4913,13 +4948,13 @@ public class Java
 
   private void parse_localVariableDeclaration()
   {
-    eventHandler.startNonterminal("localVariableDeclaration", e0);
+    eventHandler.startNonterminal(85, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclarators();
-    eventHandler.endNonterminal("localVariableDeclaration", e0);
+    eventHandler.endNonterminal(85, e0);
   }
 
   private void try_localVariableDeclaration()
@@ -4931,7 +4966,7 @@ public class Java
 
   private void parse_variableModifiers()
   {
-    eventHandler.startNonterminal("variableModifiers", e0);
+    eventHandler.startNonterminal(86, e0);
     for (;;)
     {
       lookahead1W(75);              // Identifier | WS | COMMENT | LINE_COMMENT | '@' | 'boolean' | 'byte' | 'char' |
@@ -4944,7 +4979,7 @@ public class Java
       whitespace();
       parse_variableModifier();
     }
-    eventHandler.endNonterminal("variableModifiers", e0);
+    eventHandler.endNonterminal(86, e0);
   }
 
   private void try_variableModifiers()
@@ -4964,7 +4999,7 @@ public class Java
 
   private void parse_statement()
   {
-    eventHandler.startNonterminal("statement", e0);
+    eventHandler.startNonterminal(87, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -5331,7 +5366,7 @@ public class Java
       parse_statementExpression();
       consume(37);                  // ';'
     }
-    eventHandler.endNonterminal("statement", e0);
+    eventHandler.endNonterminal(87, e0);
   }
 
   private void try_statement()
@@ -5686,7 +5721,7 @@ public class Java
 
   private void parse_catches()
   {
-    eventHandler.startNonterminal("catches", e0);
+    eventHandler.startNonterminal(88, e0);
     parse_catchClause();
     for (;;)
     {
@@ -5706,7 +5741,7 @@ public class Java
       whitespace();
       parse_catchClause();
     }
-    eventHandler.endNonterminal("catches", e0);
+    eventHandler.endNonterminal(88, e0);
   }
 
   private void try_catches()
@@ -5733,7 +5768,7 @@ public class Java
 
   private void parse_catchClause()
   {
-    eventHandler.startNonterminal("catchClause", e0);
+    eventHandler.startNonterminal(89, e0);
     consume(61);                    // 'catch'
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     consume(21);                    // '('
@@ -5745,7 +5780,7 @@ public class Java
     lookahead1W(17);                // WS | COMMENT | LINE_COMMENT | '{'
     whitespace();
     parse_block();
-    eventHandler.endNonterminal("catchClause", e0);
+    eventHandler.endNonterminal(89, e0);
   }
 
   private void try_catchClause()
@@ -5763,13 +5798,13 @@ public class Java
 
   private void parse_formalParameter()
   {
-    eventHandler.startNonterminal("formalParameter", e0);
+    eventHandler.startNonterminal(90, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
     whitespace();
     parse_variableDeclaratorId();
-    eventHandler.endNonterminal("formalParameter", e0);
+    eventHandler.endNonterminal(90, e0);
   }
 
   private void try_formalParameter()
@@ -5781,7 +5816,7 @@ public class Java
 
   private void parse_switchBlockStatementGroups()
   {
-    eventHandler.startNonterminal("switchBlockStatementGroups", e0);
+    eventHandler.startNonterminal(91, e0);
     for (;;)
     {
       if (l1 == 109)                // '}'
@@ -5791,7 +5826,7 @@ public class Java
       whitespace();
       parse_switchBlockStatementGroup();
     }
-    eventHandler.endNonterminal("switchBlockStatementGroups", e0);
+    eventHandler.endNonterminal(91, e0);
   }
 
   private void try_switchBlockStatementGroups()
@@ -5808,7 +5843,7 @@ public class Java
 
   private void parse_switchBlockStatementGroup()
   {
-    eventHandler.startNonterminal("switchBlockStatementGroup", e0);
+    eventHandler.startNonterminal(92, e0);
     for (;;)
     {
       whitespace();
@@ -5914,7 +5949,7 @@ public class Java
       whitespace();
       parse_blockStatement();
     }
-    eventHandler.endNonterminal("switchBlockStatementGroup", e0);
+    eventHandler.endNonterminal(92, e0);
   }
 
   private void try_switchBlockStatementGroup()
@@ -6028,7 +6063,7 @@ public class Java
 
   private void parse_switchLabel()
   {
-    eventHandler.startNonterminal("switchLabel", e0);
+    eventHandler.startNonterminal(93, e0);
     switch (l1)
     {
     case 60:                        // 'case'
@@ -6097,7 +6132,7 @@ public class Java
       parse_constantExpression();
       consume(36);                  // ':'
     }
-    eventHandler.endNonterminal("switchLabel", e0);
+    eventHandler.endNonterminal(93, e0);
   }
 
   private void try_switchLabel()
@@ -6175,7 +6210,7 @@ public class Java
 
   private void parse_forControl()
   {
-    eventHandler.startNonterminal("forControl", e0);
+    eventHandler.startNonterminal(94, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -6293,7 +6328,7 @@ public class Java
         parse_forUpdate();
       }
     }
-    eventHandler.endNonterminal("forControl", e0);
+    eventHandler.endNonterminal(94, e0);
   }
 
   private void try_forControl()
@@ -6419,7 +6454,7 @@ public class Java
 
   private void parse_forInit()
   {
-    eventHandler.startNonterminal("forInit", e0);
+    eventHandler.startNonterminal(95, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -6494,7 +6529,7 @@ public class Java
     default:
       parse_expressionList();
     }
-    eventHandler.endNonterminal("forInit", e0);
+    eventHandler.endNonterminal(95, e0);
   }
 
   private void try_forInit()
@@ -6580,7 +6615,7 @@ public class Java
 
   private void parse_enhancedForControl()
   {
-    eventHandler.startNonterminal("enhancedForControl", e0);
+    eventHandler.startNonterminal(96, e0);
     parse_variableModifiers();
     whitespace();
     parse_type();
@@ -6594,7 +6629,7 @@ public class Java
                                     // 'this' | 'true' | 'void' | '~'
     whitespace();
     parse_expression();
-    eventHandler.endNonterminal("enhancedForControl", e0);
+    eventHandler.endNonterminal(96, e0);
   }
 
   private void try_enhancedForControl()
@@ -6614,9 +6649,9 @@ public class Java
 
   private void parse_forUpdate()
   {
-    eventHandler.startNonterminal("forUpdate", e0);
+    eventHandler.startNonterminal(97, e0);
     parse_expressionList();
-    eventHandler.endNonterminal("forUpdate", e0);
+    eventHandler.endNonterminal(97, e0);
   }
 
   private void try_forUpdate()
@@ -6626,7 +6661,7 @@ public class Java
 
   private void parse_parExpression()
   {
-    eventHandler.startNonterminal("parExpression", e0);
+    eventHandler.startNonterminal(98, e0);
     consume(21);                    // '('
     lookahead1W(89);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -6636,7 +6671,7 @@ public class Java
     whitespace();
     parse_expression();
     consume(22);                    // ')'
-    eventHandler.endNonterminal("parExpression", e0);
+    eventHandler.endNonterminal(98, e0);
   }
 
   private void try_parExpression()
@@ -6653,7 +6688,7 @@ public class Java
 
   private void parse_expressionList()
   {
-    eventHandler.startNonterminal("expressionList", e0);
+    eventHandler.startNonterminal(99, e0);
     parse_expression();
     for (;;)
     {
@@ -6670,7 +6705,7 @@ public class Java
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("expressionList", e0);
+    eventHandler.endNonterminal(99, e0);
   }
 
   private void try_expressionList()
@@ -6694,9 +6729,9 @@ public class Java
 
   private void parse_statementExpression()
   {
-    eventHandler.startNonterminal("statementExpression", e0);
+    eventHandler.startNonterminal(100, e0);
     parse_expression();
-    eventHandler.endNonterminal("statementExpression", e0);
+    eventHandler.endNonterminal(100, e0);
   }
 
   private void try_statementExpression()
@@ -6706,9 +6741,9 @@ public class Java
 
   private void parse_constantExpression()
   {
-    eventHandler.startNonterminal("constantExpression", e0);
+    eventHandler.startNonterminal(101, e0);
     parse_expression();
-    eventHandler.endNonterminal("constantExpression", e0);
+    eventHandler.endNonterminal(101, e0);
   }
 
   private void try_constantExpression()
@@ -6718,7 +6753,7 @@ public class Java
 
   private void parse_expression()
   {
-    eventHandler.startNonterminal("expression", e0);
+    eventHandler.startNonterminal(102, e0);
     parse_conditionalExpression();
     switch (l1)
     {
@@ -6789,7 +6824,7 @@ public class Java
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("expression", e0);
+    eventHandler.endNonterminal(102, e0);
   }
 
   private void try_expression()
@@ -6866,7 +6901,7 @@ public class Java
 
   private void parse_assignmentOperator()
   {
-    eventHandler.startNonterminal("assignmentOperator", e0);
+    eventHandler.startNonterminal(103, e0);
     switch (l1)
     {
     case 42:                        // '='
@@ -6905,7 +6940,7 @@ public class Java
     default:
       consume(47);                  // '>>='
     }
-    eventHandler.endNonterminal("assignmentOperator", e0);
+    eventHandler.endNonterminal(103, e0);
   }
 
   private void try_assignmentOperator()
@@ -6952,7 +6987,7 @@ public class Java
 
   private void parse_conditionalExpression()
   {
-    eventHandler.startNonterminal("conditionalExpression", e0);
+    eventHandler.startNonterminal(104, e0);
     parse_conditionalOrExpression();
     if (l1 == 50)                   // '?'
     {
@@ -6973,7 +7008,7 @@ public class Java
       whitespace();
       parse_expression();
     }
-    eventHandler.endNonterminal("conditionalExpression", e0);
+    eventHandler.endNonterminal(104, e0);
   }
 
   private void try_conditionalExpression()
@@ -7000,7 +7035,7 @@ public class Java
 
   private void parse_conditionalOrExpression()
   {
-    eventHandler.startNonterminal("conditionalOrExpression", e0);
+    eventHandler.startNonterminal(105, e0);
     parse_conditionalAndExpression();
     for (;;)
     {
@@ -7017,7 +7052,7 @@ public class Java
       whitespace();
       parse_conditionalAndExpression();
     }
-    eventHandler.endNonterminal("conditionalOrExpression", e0);
+    eventHandler.endNonterminal(105, e0);
   }
 
   private void try_conditionalOrExpression()
@@ -7041,7 +7076,7 @@ public class Java
 
   private void parse_conditionalAndExpression()
   {
-    eventHandler.startNonterminal("conditionalAndExpression", e0);
+    eventHandler.startNonterminal(106, e0);
     parse_inclusiveOrExpression();
     for (;;)
     {
@@ -7058,7 +7093,7 @@ public class Java
       whitespace();
       parse_inclusiveOrExpression();
     }
-    eventHandler.endNonterminal("conditionalAndExpression", e0);
+    eventHandler.endNonterminal(106, e0);
   }
 
   private void try_conditionalAndExpression()
@@ -7082,7 +7117,7 @@ public class Java
 
   private void parse_inclusiveOrExpression()
   {
-    eventHandler.startNonterminal("inclusiveOrExpression", e0);
+    eventHandler.startNonterminal(107, e0);
     parse_exclusiveOrExpression();
     for (;;)
     {
@@ -7099,7 +7134,7 @@ public class Java
       whitespace();
       parse_exclusiveOrExpression();
     }
-    eventHandler.endNonterminal("inclusiveOrExpression", e0);
+    eventHandler.endNonterminal(107, e0);
   }
 
   private void try_inclusiveOrExpression()
@@ -7123,7 +7158,7 @@ public class Java
 
   private void parse_exclusiveOrExpression()
   {
-    eventHandler.startNonterminal("exclusiveOrExpression", e0);
+    eventHandler.startNonterminal(108, e0);
     parse_andExpression();
     for (;;)
     {
@@ -7140,7 +7175,7 @@ public class Java
       whitespace();
       parse_andExpression();
     }
-    eventHandler.endNonterminal("exclusiveOrExpression", e0);
+    eventHandler.endNonterminal(108, e0);
   }
 
   private void try_exclusiveOrExpression()
@@ -7164,7 +7199,7 @@ public class Java
 
   private void parse_andExpression()
   {
-    eventHandler.startNonterminal("andExpression", e0);
+    eventHandler.startNonterminal(109, e0);
     parse_equalityExpression();
     for (;;)
     {
@@ -7181,7 +7216,7 @@ public class Java
       whitespace();
       parse_equalityExpression();
     }
-    eventHandler.endNonterminal("andExpression", e0);
+    eventHandler.endNonterminal(109, e0);
   }
 
   private void try_andExpression()
@@ -7205,7 +7240,7 @@ public class Java
 
   private void parse_equalityExpression()
   {
-    eventHandler.startNonterminal("equalityExpression", e0);
+    eventHandler.startNonterminal(110, e0);
     parse_instanceOfExpression();
     for (;;)
     {
@@ -7230,7 +7265,7 @@ public class Java
       whitespace();
       parse_instanceOfExpression();
     }
-    eventHandler.endNonterminal("equalityExpression", e0);
+    eventHandler.endNonterminal(110, e0);
   }
 
   private void try_equalityExpression()
@@ -7262,7 +7297,7 @@ public class Java
 
   private void parse_instanceOfExpression()
   {
-    eventHandler.startNonterminal("instanceOfExpression", e0);
+    eventHandler.startNonterminal(111, e0);
     parse_relationalExpression();
     if (l1 == 78)                   // 'instanceof'
     {
@@ -7272,7 +7307,7 @@ public class Java
       whitespace();
       parse_type();
     }
-    eventHandler.endNonterminal("instanceOfExpression", e0);
+    eventHandler.endNonterminal(111, e0);
   }
 
   private void try_instanceOfExpression()
@@ -7289,7 +7324,7 @@ public class Java
 
   private void parse_relationalExpression()
   {
-    eventHandler.startNonterminal("relationalExpression", e0);
+    eventHandler.startNonterminal(112, e0);
     parse_shiftExpression();
     for (;;)
     {
@@ -7310,7 +7345,7 @@ public class Java
       whitespace();
       parse_shiftExpression();
     }
-    eventHandler.endNonterminal("relationalExpression", e0);
+    eventHandler.endNonterminal(112, e0);
   }
 
   private void try_relationalExpression()
@@ -7337,7 +7372,7 @@ public class Java
 
   private void parse_relationalOp()
   {
-    eventHandler.startNonterminal("relationalOp", e0);
+    eventHandler.startNonterminal(113, e0);
     switch (l1)
     {
     case 41:                        // '<='
@@ -7352,7 +7387,7 @@ public class Java
     default:
       consume(44);                  // '>'
     }
-    eventHandler.endNonterminal("relationalOp", e0);
+    eventHandler.endNonterminal(113, e0);
   }
 
   private void try_relationalOp()
@@ -7375,7 +7410,7 @@ public class Java
 
   private void parse_shiftExpression()
   {
-    eventHandler.startNonterminal("shiftExpression", e0);
+    eventHandler.startNonterminal(114, e0);
     parse_additiveExpression();
     for (;;)
     {
@@ -7395,7 +7430,7 @@ public class Java
       whitespace();
       parse_additiveExpression();
     }
-    eventHandler.endNonterminal("shiftExpression", e0);
+    eventHandler.endNonterminal(114, e0);
   }
 
   private void try_shiftExpression()
@@ -7421,7 +7456,7 @@ public class Java
 
   private void parse_shiftOp()
   {
-    eventHandler.startNonterminal("shiftOp", e0);
+    eventHandler.startNonterminal(115, e0);
     switch (l1)
     {
     case 39:                        // '<<'
@@ -7433,7 +7468,7 @@ public class Java
     default:
       consume(46);                  // '>>'
     }
-    eventHandler.endNonterminal("shiftOp", e0);
+    eventHandler.endNonterminal(115, e0);
   }
 
   private void try_shiftOp()
@@ -7453,7 +7488,7 @@ public class Java
 
   private void parse_additiveExpression()
   {
-    eventHandler.startNonterminal("additiveExpression", e0);
+    eventHandler.startNonterminal(116, e0);
     parse_multiplicativeExpression();
     for (;;)
     {
@@ -7478,7 +7513,7 @@ public class Java
       whitespace();
       parse_multiplicativeExpression();
     }
-    eventHandler.endNonterminal("additiveExpression", e0);
+    eventHandler.endNonterminal(116, e0);
   }
 
   private void try_additiveExpression()
@@ -7510,7 +7545,7 @@ public class Java
 
   private void parse_multiplicativeExpression()
   {
-    eventHandler.startNonterminal("multiplicativeExpression", e0);
+    eventHandler.startNonterminal(117, e0);
     parse_unaryExpression();
     for (;;)
     {
@@ -7543,7 +7578,7 @@ public class Java
       whitespace();
       parse_unaryExpression();
     }
-    eventHandler.endNonterminal("multiplicativeExpression", e0);
+    eventHandler.endNonterminal(117, e0);
   }
 
   private void try_multiplicativeExpression()
@@ -7583,7 +7618,7 @@ public class Java
 
   private void parse_unaryExpression()
   {
-    eventHandler.startNonterminal("unaryExpression", e0);
+    eventHandler.startNonterminal(118, e0);
     switch (l1)
     {
     case 25:                        // '+'
@@ -7629,7 +7664,7 @@ public class Java
     default:
       parse_unaryExpressionNotPlusMinus();
     }
-    eventHandler.endNonterminal("unaryExpression", e0);
+    eventHandler.endNonterminal(118, e0);
   }
 
   private void try_unaryExpression()
@@ -7679,7 +7714,7 @@ public class Java
 
   private void parse_unaryExpressionNotPlusMinus()
   {
-    eventHandler.startNonterminal("unaryExpressionNotPlusMinus", e0);
+    eventHandler.startNonterminal(119, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -7793,7 +7828,7 @@ public class Java
         }
       }
     }
-    eventHandler.endNonterminal("unaryExpressionNotPlusMinus", e0);
+    eventHandler.endNonterminal(119, e0);
   }
 
   private void try_unaryExpressionNotPlusMinus()
@@ -7915,7 +7950,7 @@ public class Java
 
   private void parse_castExpression()
   {
-    eventHandler.startNonterminal("castExpression", e0);
+    eventHandler.startNonterminal(120, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8075,7 +8110,7 @@ public class Java
       whitespace();
       parse_unaryExpressionNotPlusMinus();
     }
-    eventHandler.endNonterminal("castExpression", e0);
+    eventHandler.endNonterminal(120, e0);
   }
 
   private void try_castExpression()
@@ -8244,7 +8279,7 @@ public class Java
 
   private void parse_primary()
   {
-    eventHandler.startNonterminal("primary", e0);
+    eventHandler.startNonterminal(121, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -8559,7 +8594,7 @@ public class Java
     default:
       parse_literal();
     }
-    eventHandler.endNonterminal("primary", e0);
+    eventHandler.endNonterminal(121, e0);
   }
 
   private void try_primary()
@@ -8880,7 +8915,7 @@ public class Java
 
   private void parse_identifierSuffix()
   {
-    eventHandler.startNonterminal("identifierSuffix", e0);
+    eventHandler.startNonterminal(122, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -9042,7 +9077,7 @@ public class Java
         }
       }
     }
-    eventHandler.endNonterminal("identifierSuffix", e0);
+    eventHandler.endNonterminal(122, e0);
   }
 
   private void try_identifierSuffix()
@@ -9217,7 +9252,7 @@ public class Java
 
   private void parse_creator()
   {
-    eventHandler.startNonterminal("creator", e0);
+    eventHandler.startNonterminal(123, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -9244,7 +9279,7 @@ public class Java
         parse_classCreatorRest();
       }
     }
-    eventHandler.endNonterminal("creator", e0);
+    eventHandler.endNonterminal(123, e0);
   }
 
   private void try_creator()
@@ -9275,7 +9310,7 @@ public class Java
 
   private void parse_createdName()
   {
-    eventHandler.startNonterminal("createdName", e0);
+    eventHandler.startNonterminal(124, e0);
     switch (l1)
     {
     case 9:                         // Identifier
@@ -9284,7 +9319,7 @@ public class Java
     default:
       parse_primitiveType();
     }
-    eventHandler.endNonterminal("createdName", e0);
+    eventHandler.endNonterminal(124, e0);
   }
 
   private void try_createdName()
@@ -9301,7 +9336,7 @@ public class Java
 
   private void parse_innerCreator()
   {
-    eventHandler.startNonterminal("innerCreator", e0);
+    eventHandler.startNonterminal(125, e0);
     if (l1 == 38)                   // '<'
     {
       whitespace();
@@ -9318,7 +9353,7 @@ public class Java
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_classCreatorRest();
-    eventHandler.endNonterminal("innerCreator", e0);
+    eventHandler.endNonterminal(125, e0);
   }
 
   private void try_innerCreator()
@@ -9340,7 +9375,7 @@ public class Java
 
   private void parse_nonWildcardTypeArgumentsOrDiamond()
   {
-    eventHandler.startNonterminal("nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler.startNonterminal(126, e0);
     switch (l1)
     {
     case 38:                        // '<'
@@ -9360,7 +9395,7 @@ public class Java
     default:
       parse_nonWildcardTypeArguments();
     }
-    eventHandler.endNonterminal("nonWildcardTypeArgumentsOrDiamond", e0);
+    eventHandler.endNonterminal(126, e0);
   }
 
   private void try_nonWildcardTypeArgumentsOrDiamond()
@@ -9388,7 +9423,7 @@ public class Java
 
   private void parse_arrayCreatorRest()
   {
-    eventHandler.startNonterminal("arrayCreatorRest", e0);
+    eventHandler.startNonterminal(127, e0);
     consume(52);                    // '['
     lookahead1W(93);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -9536,7 +9571,7 @@ public class Java
         consume(53);                // ']'
       }
     }
-    eventHandler.endNonterminal("arrayCreatorRest", e0);
+    eventHandler.endNonterminal(127, e0);
   }
 
   private void try_arrayCreatorRest()
@@ -9690,7 +9725,7 @@ public class Java
 
   private void parse_classCreatorRest()
   {
-    eventHandler.startNonterminal("classCreatorRest", e0);
+    eventHandler.startNonterminal(128, e0);
     parse_arguments();
     lookahead1W(115);               // WS | COMMENT | LINE_COMMENT | '!=' | '%' | '%=' | '&' | '&&' | '&=' | ')' | '*' |
                                     // '*=' | '+' | '++' | '+=' | ',' | '-' | '--' | '-=' | '.' | '/' | '/=' | ':' |
@@ -9702,7 +9737,7 @@ public class Java
       whitespace();
       parse_classBody();
     }
-    eventHandler.endNonterminal("classCreatorRest", e0);
+    eventHandler.endNonterminal(128, e0);
   }
 
   private void try_classCreatorRest()
@@ -9721,14 +9756,14 @@ public class Java
 
   private void parse_explicitGenericInvocation()
   {
-    eventHandler.startNonterminal("explicitGenericInvocation", e0);
+    eventHandler.startNonterminal(129, e0);
     parse_nonWildcardTypeArguments();
     lookahead1W(0);                 // Identifier | WS | COMMENT | LINE_COMMENT
     consume(9);                     // Identifier
     lookahead1W(1);                 // WS | COMMENT | LINE_COMMENT | '('
     whitespace();
     parse_arguments();
-    eventHandler.endNonterminal("explicitGenericInvocation", e0);
+    eventHandler.endNonterminal(129, e0);
   }
 
   private void try_explicitGenericInvocation()
@@ -9742,14 +9777,14 @@ public class Java
 
   private void parse_nonWildcardTypeArguments()
   {
-    eventHandler.startNonterminal("nonWildcardTypeArguments", e0);
+    eventHandler.startNonterminal(130, e0);
     consume(38);                    // '<'
     lookahead1W(69);                // Identifier | WS | COMMENT | LINE_COMMENT | 'boolean' | 'byte' | 'char' |
                                     // 'double' | 'float' | 'int' | 'long' | 'short'
     whitespace();
     parse_typeList();
     consume(44);                    // '>'
-    eventHandler.endNonterminal("nonWildcardTypeArguments", e0);
+    eventHandler.endNonterminal(130, e0);
   }
 
   private void try_nonWildcardTypeArguments()
@@ -9763,7 +9798,7 @@ public class Java
 
   private void parse_selector()
   {
-    eventHandler.startNonterminal("selector", e0);
+    eventHandler.startNonterminal(131, e0);
     switch (l1)
     {
     case 32:                        // '.'
@@ -9821,7 +9856,7 @@ public class Java
       parse_expression();
       consume(53);                  // ']'
     }
-    eventHandler.endNonterminal("selector", e0);
+    eventHandler.endNonterminal(131, e0);
   }
 
   private void try_selector()
@@ -9883,7 +9918,7 @@ public class Java
 
   private void parse_superSuffix()
   {
-    eventHandler.startNonterminal("superSuffix", e0);
+    eventHandler.startNonterminal(132, e0);
     switch (l1)
     {
     case 21:                        // '('
@@ -9904,7 +9939,7 @@ public class Java
         parse_arguments();
       }
     }
-    eventHandler.endNonterminal("superSuffix", e0);
+    eventHandler.endNonterminal(132, e0);
   }
 
   private void try_superSuffix()
@@ -9932,7 +9967,7 @@ public class Java
 
   private void parse_arguments()
   {
-    eventHandler.startNonterminal("arguments", e0);
+    eventHandler.startNonterminal(133, e0);
     consume(21);                    // '('
     lookahead1W(91);                // HexLiteral | DecimalLiteral | OctalLiteral | FloatingPointLiteral |
                                     // CharacterLiteral | StringLiteral | Identifier | WS | COMMENT | LINE_COMMENT |
@@ -9945,7 +9980,7 @@ public class Java
       parse_expressionList();
     }
     consume(22);                    // ')'
-    eventHandler.endNonterminal("arguments", e0);
+    eventHandler.endNonterminal(133, e0);
   }
 
   private void try_arguments()
@@ -9968,7 +10003,7 @@ public class Java
     if (l1 == t)
     {
       whitespace();
-      eventHandler.terminal(TOKEN[l1], b1, e1);
+      eventHandler.terminal(l1, b1, e1);
       b0 = b1; e0 = e1; l1 = l2; if (l1 != 0) {
       b1 = b2; e1 = e2; l2 = 0; }
     }
@@ -11118,7 +11153,7 @@ public class Java
     decode(s1, EXPECTED);
   }
 
-  private static final String[] TOKEN =
+  public static final String[] TOKEN =
   {
     "%ERROR",
     "HexLiteral",
@@ -11231,6 +11266,145 @@ public class Java
     "'||'",
     "'}'",
     "'~'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "compilationUnit",
+    "packageDeclaration",
+    "importDeclaration",
+    "typeDeclaration",
+    "classOrInterfaceDeclaration",
+    "classOrInterfaceModifiers",
+    "classOrInterfaceModifier",
+    "modifiers",
+    "classDeclaration",
+    "normalClassDeclaration",
+    "typeParameters",
+    "typeParameter",
+    "typeBound",
+    "enumDeclaration",
+    "enumBody",
+    "enumConstants",
+    "enumConstant",
+    "enumBodyDeclarations",
+    "interfaceDeclaration",
+    "normalInterfaceDeclaration",
+    "typeList",
+    "classBody",
+    "interfaceBody",
+    "classBodyDeclaration",
+    "memberDecl",
+    "memberDeclaration",
+    "genericMethodOrConstructorDecl",
+    "genericMethodOrConstructorRest",
+    "methodDeclaration",
+    "fieldDeclaration",
+    "interfaceBodyDeclaration",
+    "interfaceMemberDecl",
+    "interfaceMethodOrFieldDecl",
+    "interfaceMethodOrFieldRest",
+    "methodDeclaratorRest",
+    "voidMethodDeclaratorRest",
+    "interfaceMethodDeclaratorRest",
+    "interfaceGenericMethodDecl",
+    "voidInterfaceMethodDeclaratorRest",
+    "constructorDeclaratorRest",
+    "constantDeclarator",
+    "variableDeclarators",
+    "variableDeclarator",
+    "constantDeclaratorsRest",
+    "constantDeclaratorRest",
+    "variableDeclaratorId",
+    "variableInitializer",
+    "arrayInitializer",
+    "modifier",
+    "enumConstantName",
+    "type",
+    "classOrInterfaceType",
+    "primitiveType",
+    "variableModifier",
+    "typeArguments",
+    "typeArgument",
+    "qualifiedNameList",
+    "formalParameters",
+    "formalParameterDecls",
+    "formalParameterDeclsRest",
+    "methodBody",
+    "constructorBody",
+    "explicitConstructorInvocation",
+    "qualifiedName",
+    "literal",
+    "integerLiteral",
+    "booleanLiteral",
+    "annotations",
+    "annotation",
+    "annotationName",
+    "elementValuePairs",
+    "elementValuePair",
+    "elementValue",
+    "elementValueArrayInitializer",
+    "annotationTypeDeclaration",
+    "annotationTypeBody",
+    "annotationTypeElementDeclaration",
+    "annotationTypeElementRest",
+    "annotationMethodOrConstantRest",
+    "annotationMethodRest",
+    "annotationConstantRest",
+    "defaultValue",
+    "block",
+    "blockStatement",
+    "localVariableDeclarationStatement",
+    "localVariableDeclaration",
+    "variableModifiers",
+    "statement",
+    "catches",
+    "catchClause",
+    "formalParameter",
+    "switchBlockStatementGroups",
+    "switchBlockStatementGroup",
+    "switchLabel",
+    "forControl",
+    "forInit",
+    "enhancedForControl",
+    "forUpdate",
+    "parExpression",
+    "expressionList",
+    "statementExpression",
+    "constantExpression",
+    "expression",
+    "assignmentOperator",
+    "conditionalExpression",
+    "conditionalOrExpression",
+    "conditionalAndExpression",
+    "inclusiveOrExpression",
+    "exclusiveOrExpression",
+    "andExpression",
+    "equalityExpression",
+    "instanceOfExpression",
+    "relationalExpression",
+    "relationalOp",
+    "shiftExpression",
+    "shiftOp",
+    "additiveExpression",
+    "multiplicativeExpression",
+    "unaryExpression",
+    "unaryExpressionNotPlusMinus",
+    "castExpression",
+    "primary",
+    "identifierSuffix",
+    "creator",
+    "createdName",
+    "innerCreator",
+    "nonWildcardTypeArgumentsOrDiamond",
+    "arrayCreatorRest",
+    "classCreatorRest",
+    "explicitGenericInvocation",
+    "nonWildcardTypeArguments",
+    "selector",
+    "superSuffix",
+    "arguments",
+    "whitespace"
   };
 }
 
