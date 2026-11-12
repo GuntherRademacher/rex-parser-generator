@@ -31,17 +31,17 @@ jobs:
           echo "$(pwd)/rex/build/bin" >> "$GITHUB_PATH"
         working-directory: rex-parser-generator
 
-      # Setup JDK 17
-      - name: Setup JDK 17
+      # Setup JDK
+      - name: Setup JDK
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       # Download and install BaseX
       - name: Download and Install BaseX
         run: |
-          curl -s -O https://files.basex.org/releases/12.4/BaseX124.zip
+          curl -s -O https://files.basex.org/releases/13.0/BaseX130.zip
           unzip -q BaseX*.zip
           echo "$(pwd)/basex/bin" >> "$GITHUB_PATH"
 

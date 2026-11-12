@@ -52,7 +52,7 @@ declare variable $reserved-constructor-names :=
     if (exists($names) or contains($specification-url, 'xpath')) then
       $names
     else
-      trace(local:keywords($unified-grammar/g:grammar), "reserved-constructor-names");
+      trace(local:keywords("", $unified-grammar/g:grammar), "reserved-constructor-names");
 
 (:~
  : This is the structure of a rewriting rule:
@@ -207,7 +207,8 @@ declare variable $rules as local:rule+ :=
     function($node as node())
     {
       let $grammar := root($node)/g:grammar
-      let $keywords := local:keywords($grammar)
+      let $keywords := local:keywords("", $grammar)
+      let $percent-keywords := local:keywords("%", $grammar)
       return
       (
         (: Add new production UnreservedFunctionEQName for restricting valid function names. :)
@@ -334,6 +335,7 @@ declare variable $rules as local:rule+ :=
 
         (: Add lexical lookahead for keywords. :)
         $keywords                                                 !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, element g:string {.}},
+        $percent-keywords                                         !element g:delimiter {<g:ref name='QNameOrKeywordDelimiter'/>, element g:string {.}},
 
         (: Add lexical lookahead for '<'. :)
         if (not($grammar//g:production/@name = 'DirElemConstructor')) then
@@ -389,7 +391,7 @@ declare variable $rules as local:rule+ :=
         element g:choice
         {
           $node/*,
-          local:keywords($node/ancestor::g:grammar)[not(. = $reserved)]!element g:string {.}
+          local:keywords("", $node/ancestor::g:grammar)[not(. = $reserved)]!element g:string {.}
         }
     }
   )
@@ -465,14 +467,14 @@ declare function local:rewrite($nodes as node()*) as node()*
  : @param $grammar the grammar
  : @return the sequence of keywords
  :)
-declare function local:keywords($grammar as element(g:grammar)) as xs:string*
+declare function local:keywords($prefix as xs:string, $grammar as element(g:grammar)) as xs:string*
 {
   let $tokens-separator := $grammar//processing-instruction(TOKENS)
   let $syntax := $grammar/*[. << $tokens-separator]
   for $keyword in
     distinct-values((
-      $syntax//g:string[matches(., '^[a-zA-Z].*$')],
-      $reserved-function-names
+      $syntax//g:string[starts-with(., $prefix) and matches(substring(., 1 + string-length($prefix)), '^[a-zA-Z].*$')],
+      $reserved-function-names[not($prefix)]
     ))
   order by $keyword
   return $keyword
