@@ -47,11 +47,11 @@ jobs:
       - name: Add Executable to PATH
         run: echo "$(pwd)/rex/build/bin" >> $GITHUB_PATH
 
-      - name: Setup JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install Haxe
         run: |

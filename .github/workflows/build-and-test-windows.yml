@@ -26,11 +26,11 @@ jobs:
           rex\scripts\build-msvc-x64.bat
           Add-Content $env:GITHUB_PATH "$PWD\rex\build\bin"
 
-      - name: Setup JDK 17
+      - name: Setup JDK
         uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Install Haxe
         run: |
