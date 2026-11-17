@@ -124,7 +124,7 @@ This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query L
 
 ## Sample Grammar: [XQuery-Full-Text-Update-BaseX-40.ebnf](XQuery-Full-Text-Update-BaseX-40.ebnf)
 
-This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html), also integrating [XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/), [XQuery and XPath Full Text 3.0](https://www.w3.org/TR/xpath-full-text-30/), and extensions made by [BaseX](https://basex.org/). It was produced by the transformation scripts in folder [XQuery-40](XQuery-40/). As the XQuery 4.0 specification is still evolving, this grammar is regularly updated to track specification changes. The grammar currently has at least one unresolved ambiguity. Use option `-glalr 1` when generating a parser from it.
+This grammar was created from the W3C Editor's Draft [XQuery 4.0: An XML Query Language](https://qt4cg.org/specifications/xquery-40/xquery-40.html), also integrating [XQuery Update Facility 3.0](https://www.w3.org/TR/xquery-update-30/), [XQuery and XPath Full Text 3.0](https://www.w3.org/TR/xpath-full-text-30/), and extensions made by [BaseX](https://basex.org/). It was produced by the transformation scripts in folder [XQuery-40](XQuery-40/). As the XQuery 4.0 specification is still evolving, this grammar is regularly updated to track specification changes. The grammar currently has at least one unresolved ambiguity. Use option `-glalr 2` when generating a parser from it.
 
 &nbsp;
 ---

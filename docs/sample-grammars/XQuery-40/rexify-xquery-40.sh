@@ -59,7 +59,7 @@ rexify() {
     local algorithm="$3"
     local lookahead="$4"
     local ambiguity=()
-    if [[ "$algorithm" == "-glalr" && "$lookahead" == "1" ]]; then
+    if [[ "$algorithm" == "-glalr" && "$lookahead" == "2" ]]; then
         ambiguity=(-ambiguity shift -tree)
     fi
     local with_update="$5"
@@ -81,7 +81,7 @@ rexify() {
 
 rexify $XQUERY_SPEC XQuery-40.ebnf                         -lalr 2 false false false
 rexify $XQUERY_SPEC XQuery-Full-Text-Update-40.ebnf        -lalr 2 true  true  false
-rexify $XQUERY_SPEC XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 1 true  true  true
+rexify $XQUERY_SPEC XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 2 true  true  true
 rexify $XPATH_SPEC  XPath-40.ebnf                          -lalr 2 false false false
 rexify $XPATH_SPEC  XPath-Full-Text-40.ebnf                -lalr 2 false true  false
 

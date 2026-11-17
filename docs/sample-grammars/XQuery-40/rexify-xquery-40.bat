@@ -40,7 +40,7 @@ cd "%BUILD_DIR%" || exit /b
 
 call :rexify %XQUERY_SPEC% XQuery-40.ebnf                         -lalr 2 false false false || exit /b
 call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-40.ebnf        -lalr 2 true  true  false || exit /b
-call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 1 true  true  true  || exit /b
+call :rexify %XQUERY_SPEC% XQuery-Full-Text-Update-BaseX-40.ebnf -glalr 2 true  true  true  || exit /b
 call :rexify %XPATH_SPEC%  XPath-40.ebnf                          -lalr 2 false false false || exit /b
 call :rexify %XPATH_SPEC%  XPath-Full-Text-40.ebnf                -lalr 2 false true  false || exit /b
 echo ...done
@@ -60,7 +60,7 @@ set "EBNF=%2"
 set "ALGORITHM=%3"
 set "LOOKAHEAD=%4"
 set "AMBIGUITY="
-if "%ALGORITHM% %LOOKAHEAD%"=="-glalr 1" set "AMBIGUITY=-ambiguity shift -tree"
+if "%ALGORITHM% %LOOKAHEAD%"=="-glalr 2" set "AMBIGUITY=-ambiguity shift -tree"
 set "WITH_UPDATE=%5"
 set "WITH_FULL_TEXT=%6"
 set "WITH_BASEX=%7"
