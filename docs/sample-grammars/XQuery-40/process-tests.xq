@@ -67,6 +67,7 @@ declare variable $basex-known-failures as xs:string* :=
   "K2-ForExprWithout-42a",
   "K2-ForExprWithout-43a",
   "K2-ForExprWithout-44a",
+  "Constr-compelem-compname-30",
 
   (: BaseX treatment of xgc:leading-lone-slash :)
 
