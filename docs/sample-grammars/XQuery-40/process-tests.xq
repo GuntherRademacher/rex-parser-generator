@@ -25,10 +25,14 @@ declare variable $verbose as xs:boolean external := false();
 
 declare variable $xquery-known-failures as xs:string* :=
 (
+  (: Tests asking for syntax errors that are not covered by the grammar.    :)
+  "method-920"
 );
 
 declare variable $xpath-known-failures as xs:string* :=
 (
+  (: Tests asking for syntax errors that are not covered by the grammar.    :)
+  "method-920"
 );
 
 declare variable $basex-known-failures as xs:string* :=
