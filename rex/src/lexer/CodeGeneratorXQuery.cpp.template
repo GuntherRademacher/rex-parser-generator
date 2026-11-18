@@ -236,7 +236,10 @@ declare function p:predict($input as xs:string,
                                ~(~                                if (variable("unlimitedLookahead").boolean())
                                                                   {
                                  ~0, ~                            }
-                                 ~$action idiv 2, $input, $state)
+                                 ~$action idiv 2, $input, $state~ if (variable("useGlr").boolean())
+                                                                  {
+                                                 ~, $id~          }
+                                                 ~)
       return
         if ($state[$p:l~                                          print(format.toString<char>(i));
                        ~] lt 0) then
@@ -255,7 +258,10 @@ declare function p:predict($input as xs:string,
         if ($lk eq 0) then~                                       if (loop)
                                                                   {
 ~
-          p:predict($input, $state, $dpi + 1)~                    }
+          p:predict($input, $state, $dpi + 1~                       if (variable("useGlr").boolean())
+                                                                    {
+                                            ~, $id~                 }
+                                            ~)~                   }
                                                                   else
                                                                   {
 ~
@@ -276,7 +282,10 @@ declare function p:predict($input as xs:string,
     if ($action ne 0) then
       ($action idiv 2, subsequence($state, $p:lk + 1))
     else
-      p:predict($input, $state, $dpi + 1)~                      }
+      p:predict($input, $state, $dpi + 1~                         if (variable("useGlr").boolean())
+                                                                  {
+                                        ~, $id~                   }
+                                        ~)~                     }
                                                                 else
                                                                 {
 ~

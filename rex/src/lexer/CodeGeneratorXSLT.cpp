@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Wed Nov 18, 2026 07:32 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorXSLT.cpp.template
                                                             #line 1 "CodeGeneratorXSLT.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -445,21 +445,30 @@
                                                             #line 270 "CodeGeneratorXSLT.cpp.template"
                                                                   }
                                                             #line 448 "CodeGeneratorXSLT.cpp"
-  append(L"$action idiv 2, $input, $state)\"/>\n");
+  append(L"$action idiv 2, $input, $state");
+                                                            #line 272 "CodeGeneratorXSLT.cpp.template"
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                                                            #line 453 "CodeGeneratorXSLT.cpp"
+  append(L", $id");
+                                                            #line 274 "CodeGeneratorXSLT.cpp.template"
+                                                                  }
+                                                            #line 457 "CodeGeneratorXSLT.cpp"
+  append(L")\"/>\n");
   append(L"      <xsl:choose>\n");
   append(L"        <xsl:when test=\"$state[$p:l");
-                                                            #line 273 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 277 "CodeGeneratorXSLT.cpp.template"
                                                                   print(format.toString<char>(i));
-                                                            #line 454 "CodeGeneratorXSLT.cpp"
+                                                            #line 463 "CodeGeneratorXSLT.cpp"
   append(L"] lt 0\">\n");
   append(L"          <xsl:sequence select=\"0, subsequence($state, $p:lk + 1)\"/>\n");
   append(L"        </xsl:when>\n");
   append(L"        <xsl:otherwise>");
-                                                            #line 277 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 281 "CodeGeneratorXSLT.cpp.template"
                                                                   indent += 2;
-                                                            #line 461 "CodeGeneratorXSLT.cpp"
+                                                            #line 470 "CodeGeneratorXSLT.cpp"
   append(L"\n");
-                                                            #line 279 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 283 "CodeGeneratorXSLT.cpp.template"
                                                                   CString li("$state[$p:l");
                                                                   li += format.toString<char>(i);
                                                                   li += "]";
@@ -467,34 +476,43 @@
                                                                   ii += format.toString<char>(i);
                                                                   compressedMap2dAccessor(i == 2 ? "$state[$p:l1]" : "$lk", li.c_str(), variable("lxcols").integer(),
                                                                                               6, ii.c_str(), "<xsl:variable name=\"lk\" select=\"", "$p:LOOKAHEAD", &variable("lxbits").integer());
-                                                            #line 471 "CodeGeneratorXSLT.cpp"
+                                                            #line 480 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:choose>\n");
   append(L"        <xsl:when test=\"$lk eq 0\">");
-                                                            #line 288 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 292 "CodeGeneratorXSLT.cpp.template"
                                                                   if (loop)
                                                                   {
-                                                            #line 478 "CodeGeneratorXSLT.cpp"
+                                                            #line 487 "CodeGeneratorXSLT.cpp"
   append(L"\n");
-  append(L"          <xsl:sequence select=\"p:predict($input, $state, $dpi + 1)\"/>");
-                                                            #line 292 "CodeGeneratorXSLT.cpp.template"
+  append(L"          <xsl:sequence select=\"p:predict($input, $state, $dpi + 1");
+                                                            #line 295 "CodeGeneratorXSLT.cpp.template"
+                                                                    if (variable("useGlr").boolean())
+                                                                    {
+                                                            #line 493 "CodeGeneratorXSLT.cpp"
+  append(L", $id");
+                                                            #line 297 "CodeGeneratorXSLT.cpp.template"
+                                                                    }
+                                                            #line 497 "CodeGeneratorXSLT.cpp"
+  append(L")\"/>");
+                                                            #line 298 "CodeGeneratorXSLT.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 485 "CodeGeneratorXSLT.cpp"
+                                                            #line 503 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          <xsl:sequence select=\"0, subsequence($state, $p:lk + 1)\"/>");
-                                                            #line 297 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 303 "CodeGeneratorXSLT.cpp.template"
                                                                   }
-                                                            #line 490 "CodeGeneratorXSLT.cpp"
+                                                            #line 508 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"        </xsl:when>\n");
   append(L"        <xsl:otherwise>");
-                                                            #line 300 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 306 "CodeGeneratorXSLT.cpp.template"
                                                                   indent += 1;
-                                                            #line 496 "CodeGeneratorXSLT.cpp"
+                                                            #line 514 "CodeGeneratorXSLT.cpp"
   append(L"\n");
-                                                            #line 302 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 308 "CodeGeneratorXSLT.cpp.template"
                                                                   CString ji("j");
                                                                   ji += format.toString<char>(i);
                                                                   compressedMap2dAccessor("$lk", "$dpi", variable("cicols").integer(),
@@ -503,27 +521,36 @@
                                                                 }
                                                                 if (loop)
                                                                 {
-                                                            #line 507 "CodeGeneratorXSLT.cpp"
+                                                            #line 525 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:sequence select=\"\n");
   append(L"    if ($action ne 0) then\n");
   append(L"      ($action idiv 2, subsequence($state, $p:lk + 1))\n");
   append(L"    else\n");
-  append(L"      p:predict($input, $state, $dpi + 1)\n");
+  append(L"      p:predict($input, $state, $dpi + 1");
+                                                            #line 321 "CodeGeneratorXSLT.cpp.template"
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                                                            #line 535 "CodeGeneratorXSLT.cpp"
+  append(L", $id");
+                                                            #line 323 "CodeGeneratorXSLT.cpp.template"
+                                                                  }
+                                                            #line 539 "CodeGeneratorXSLT.cpp"
+  append(L")\n");
   append(L"  \"/>");
-                                                            #line 316 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 325 "CodeGeneratorXSLT.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 519 "CodeGeneratorXSLT.cpp"
+                                                            #line 546 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:sequence select=\"$action idiv 2, subsequence($state, $p:lk + 1)\"/>");
-                                                            #line 321 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 330 "CodeGeneratorXSLT.cpp.template"
                                                                 }
                                                                 indent -= 5;
                                                                 for (int i = 2; i <= k; ++i)
                                                                 {
-                                                            #line 527 "CodeGeneratorXSLT.cpp"
+                                                            #line 554 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          </xsl:otherwise>\n");
   append(L"        </xsl:choose>\n");
@@ -531,18 +558,18 @@
   append(L"    </xsl:choose>\n");
   append(L"  </xsl:otherwise>\n");
   append(L"</xsl:choose>");
-                                                            #line 331 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 340 "CodeGeneratorXSLT.cpp.template"
                                                                   indent -= 6;
                                                                 }
                                                                 indent += 3;
-                                                            #line 539 "CodeGeneratorXSLT.cpp"
+                                                            #line 566 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 338 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 347 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 546 "CodeGeneratorXSLT.cpp"
+                                                            #line 573 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -554,15 +581,15 @@
   append(L" ! @param $input the input string.\n");
   append(L" ! @param $begin the index where to start in input string.\n");
   append(L" ! @param $token-set the expected token set id.");
-                                                            #line 347 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 356 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("useGlr").boolean())
                                                               {
-                                                            #line 561 "CodeGeneratorXSLT.cpp"
+                                                            #line 588 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L" : @param $id the parsing thread id.");
-                                                            #line 350 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 359 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 566 "CodeGeneratorXSLT.cpp"
+                                                            #line 593 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L" ! @return a sequence of three: the token code of the result token,\n");
   append(L" ! with input string begin and end positions. If there is no valid\n");
@@ -573,40 +600,40 @@
   append(L"  <xsl:param name=\"input\" as=\"xs:string\"/>\n");
   append(L"  <xsl:param name=\"begin\" as=\"xs:integer\"/>\n");
   append(L"  <xsl:param name=\"token-set\" as=\"xs:integer\"/>");
-                                                            #line 360 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 369 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("useGlr").boolean())
                                                               {
-                                                            #line 580 "CodeGeneratorXSLT.cpp"
+                                                            #line 607 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:param name=\"id\" as=\"xs:integer\"/>");
-                                                            #line 363 "CodeGeneratorXSLT.cpp.template"
-                                                              }
-                                                            #line 585 "CodeGeneratorXSLT.cpp"
-  append(L"\n");
-                                                            #line 365 "CodeGeneratorXSLT.cpp.template"
-                                                              if (variable("trace").boolean())
-                                                              {
-                                                            #line 590 "CodeGeneratorXSLT.cpp"
-  append(L"\n");
-  append(L"  <xsl:sequence select=\"p:trace(concat('  &lt;tokenize ");
-                                                            #line 368 "CodeGeneratorXSLT.cpp.template"
-                                                                if (variable("useGlr").boolean())
-                                                                {
-                                                            #line 596 "CodeGeneratorXSLT.cpp"
-  append(L"thread=&quot;', $id, '&quot; ");
-                                                            #line 370 "CodeGeneratorXSLT.cpp.template"
-                                                                }
-                                                            #line 600 "CodeGeneratorXSLT.cpp"
-  append(L"tokenset=&quot;', $token-set, '&quot;&gt;'))\"/>");
                                                             #line 372 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 604 "CodeGeneratorXSLT.cpp"
+                                                            #line 612 "CodeGeneratorXSLT.cpp"
+  append(L"\n");
+                                                            #line 374 "CodeGeneratorXSLT.cpp.template"
+                                                              if (variable("trace").boolean())
+                                                              {
+                                                            #line 617 "CodeGeneratorXSLT.cpp"
+  append(L"\n");
+  append(L"  <xsl:sequence select=\"p:trace(concat('  &lt;tokenize ");
+                                                            #line 377 "CodeGeneratorXSLT.cpp.template"
+                                                                if (variable("useGlr").boolean())
+                                                                {
+                                                            #line 623 "CodeGeneratorXSLT.cpp"
+  append(L"thread=&quot;', $id, '&quot; ");
+                                                            #line 379 "CodeGeneratorXSLT.cpp.template"
+                                                                }
+                                                            #line 627 "CodeGeneratorXSLT.cpp"
+  append(L"tokenset=&quot;', $token-set, '&quot;&gt;'))\"/>");
+                                                            #line 381 "CodeGeneratorXSLT.cpp.template"
+                                                              }
+                                                            #line 631 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"  <xsl:variable name=\"result\" select=\"$p:INITIAL[1 + $token-set]\"/>\n");
   append(L"  <xsl:sequence select=\"p:transition($input, $begin, $begin, $begin, $result, $result mod ");
-                                                            #line 376 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 385 "CodeGeneratorXSLT.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
-                                                            #line 610 "CodeGeneratorXSLT.cpp"
+                                                            #line 637 "CodeGeneratorXSLT.cpp"
   append(L", 0)\"/>\n");
   append(L"</xsl:function>\n");
   append(L"\n");
@@ -642,121 +669,121 @@
   append(L"  <xsl:choose>\n");
   append(L"    <xsl:when test=\"$current-state eq 0\">\n");
   append(L"      <xsl:variable name=\"result\" select=\"$result idiv ");
-                                                            #line 409 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 418 "CodeGeneratorXSLT.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
-                                                            #line 648 "CodeGeneratorXSLT.cpp"
+                                                            #line 675 "CodeGeneratorXSLT.cpp"
   append(L"\"/>");
-                                                            #line 410 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 419 "CodeGeneratorXSLT.cpp.template"
                                                               if (0 == variable("maxcontextlength").integer())
                                                               {
                                                                 if (variable("hasfixedtokenlength").boolean())
                                                                 {
-                                                            #line 655 "CodeGeneratorXSLT.cpp"
+                                                            #line 682 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:variable name=\"end\" select=\"if ($result idiv ");
-                                                            #line 415 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 424 "CodeGeneratorXSLT.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                                            #line 660 "CodeGeneratorXSLT.cpp"
+                                                            #line 687 "CodeGeneratorXSLT.cpp"
   append(L" ne 0) then $begin else $end\"/>");
-                                                            #line 417 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 426 "CodeGeneratorXSLT.cpp.template"
                                                                 }
                                                               }
                                                               else if (! variable("hasfixedtokenlength").boolean())
                                                               {
-                                                            #line 667 "CodeGeneratorXSLT.cpp"
+                                                            #line 694 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:variable name=\"end\" select=\"$end - $result idiv ");
-                                                            #line 422 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 431 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                                            #line 672 "CodeGeneratorXSLT.cpp"
+                                                            #line 699 "CodeGeneratorXSLT.cpp"
   append(L"\"/>");
-                                                            #line 424 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 433 "CodeGeneratorXSLT.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 678 "CodeGeneratorXSLT.cpp"
+                                                            #line 705 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:variable name=\"end\" select=\"\n");
   append(L"        if ($result idiv ");
-                                                            #line 429 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 438 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                                            #line 684 "CodeGeneratorXSLT.cpp"
+                                                            #line 711 "CodeGeneratorXSLT.cpp"
   append(L" mod 2 eq 1) then\n");
   append(L"          $begin + $result idiv ");
-                                                            #line 431 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 440 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
-                                                            #line 689 "CodeGeneratorXSLT.cpp"
+                                                            #line 716 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"        else\n");
   append(L"          $end - $result idiv ");
-                                                            #line 434 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 443 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, 1 + variable("tokencodeBits").integer()));
-                                                            #line 695 "CodeGeneratorXSLT.cpp"
+                                                            #line 722 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      \"/>");
-                                                            #line 436 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 445 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 700 "CodeGeneratorXSLT.cpp"
+                                                            #line 727 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:variable name=\"end\" select=\"if ($end gt string-length($input)) then string-length($input) + 1 else $end\"/>\n");
   append(L"      <xsl:sequence select=\"\n");
   append(L"        if ($result ne 0) then\n");
   append(L"        (");
-                                                            #line 441 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 450 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
-                                                            #line 709 "CodeGeneratorXSLT.cpp"
+                                                            #line 736 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          p:trace(concat('    &lt;done result=&quot;', p:xml-escape($p:TOKEN[$result");
-                                                            #line 445 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 454 "CodeGeneratorXSLT.cpp.template"
                                                                 if (   0 != variable("maxcontextlength").integer()
                                                                     || variable("hasfixedtokenlength").boolean())
                                                                 {
-                                                            #line 716 "CodeGeneratorXSLT.cpp"
+                                                            #line 743 "CodeGeneratorXSLT.cpp"
   append(L" mod ");
-                                                            #line 448 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 457 "CodeGeneratorXSLT.cpp.template"
                                                                   print(Math::powerof(2, variable("tokencodeBits").integer()));
                                                                 }
-                                                            #line 721 "CodeGeneratorXSLT.cpp"
+                                                            #line 748 "CodeGeneratorXSLT.cpp"
   append(L"]), '&quot; begin=&quot;', $begin, '&quot; end=&quot;', $end, '&quot;/&gt;')),\n");
   append(L"          p:trace('  &lt;/tokenize&gt;'),");
-                                                            #line 451 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 460 "CodeGeneratorXSLT.cpp.template"
                                                               }
                                                               if (0 == variable("maxcontextlength").integer() && ! variable("hasfixedtokenlength").boolean())
                                                               {
-                                                            #line 728 "CodeGeneratorXSLT.cpp"
+                                                            #line 755 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          $result - 1,");
-                                                            #line 455 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 464 "CodeGeneratorXSLT.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 735 "CodeGeneratorXSLT.cpp"
+                                                            #line 762 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          $result mod ");
-                                                            #line 459 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 468 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                                            #line 740 "CodeGeneratorXSLT.cpp"
+                                                            #line 767 "CodeGeneratorXSLT.cpp"
   append(L" - 1,");
-                                                            #line 460 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 469 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 744 "CodeGeneratorXSLT.cpp"
+                                                            #line 771 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          $begin,\n");
   append(L"          $end\n");
   append(L"        )\n");
   append(L"        else\n");
   append(L"        (");
-                                                            #line 466 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 475 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
-                                                            #line 754 "CodeGeneratorXSLT.cpp"
+                                                            #line 781 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          p:trace(concat('    &lt;fail begin=&quot;', $begin, '&quot; end=&quot;', $current - 1, '&quot; state=&quot;', $previous-state, '&quot;/&gt;')),\n");
   append(L"          p:trace('  &lt;/tokenize&gt;'),");
-                                                            #line 470 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 479 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 760 "CodeGeneratorXSLT.cpp"
+                                                            #line 787 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"          - $previous-state,\n");
   append(L"          $begin,\n");
@@ -769,98 +796,98 @@
   append(L"      <xsl:variable name=\"c1\" as=\"xs:integer\">\n");
   append(L"        <xsl:choose>\n");
   append(L"          <xsl:when test=\"$c0 &lt; ");
-                                                            #line 482 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 491 "CodeGeneratorXSLT.cpp.template"
                                                               print(variable("simplifiedCodeMap").integer());
-                                                            #line 775 "CodeGeneratorXSLT.cpp"
+                                                            #line 802 "CodeGeneratorXSLT.cpp"
   append(L"\">\n");
   append(L"            <xsl:sequence select=\"$p:MAP0[1 + $c0]\"/>\n");
   append(L"          </xsl:when>\n");
   append(L"          <xsl:when test=\"$c0 &lt; ");
-                                                            #line 486 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 495 "CodeGeneratorXSLT.cpp.template"
                                                               print(variable("uncompressedMapSize").integer());
-                                                            #line 782 "CodeGeneratorXSLT.cpp"
+                                                            #line 809 "CodeGeneratorXSLT.cpp"
   append(L"\">");
-                                                            #line 487 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 496 "CodeGeneratorXSLT.cpp.template"
                                                               const int *m1bits = &variable("m1bits").integer();
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
-                                                            #line 788 "CodeGeneratorXSLT.cpp"
+                                                            #line 815 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"            <xsl:variable name=\"c");
-                                                            #line 491 "CodeGeneratorXSLT.cpp.template"
-                                                                print(i + 1);
-                                                            #line 793 "CodeGeneratorXSLT.cpp"
-  append(L"\" select=\"$c");
-                                                            #line 492 "CodeGeneratorXSLT.cpp.template"
-                                                                print(i);
-                                                            #line 797 "CodeGeneratorXSLT.cpp"
-  append(L" idiv ");
-                                                            #line 493 "CodeGeneratorXSLT.cpp.template"
-                                                                print(Math::powerof(2, m1bits[i]));
-                                                            #line 801 "CodeGeneratorXSLT.cpp"
-  append(L"\"/>");
-                                                            #line 494 "CodeGeneratorXSLT.cpp.template"
-                                                              }
-                                                            #line 805 "CodeGeneratorXSLT.cpp"
-  append(L"\n");
-  append(L"            <xsl:sequence select=\"$p:MAP1[1 + $c0");
-                                                            #line 496 "CodeGeneratorXSLT.cpp.template"
-                                                              for (size_t i = 0; m1bits[i]; ++i)
-                                                              {
-                                                            #line 811 "CodeGeneratorXSLT.cpp"
-  append(L" mod ");
-                                                            #line 498 "CodeGeneratorXSLT.cpp.template"
-                                                                print(Math::powerof(2, m1bits[i]));
-                                                            #line 815 "CodeGeneratorXSLT.cpp"
-  append(L" + $p:MAP1[1 + $c");
                                                             #line 500 "CodeGeneratorXSLT.cpp.template"
                                                                 print(i + 1);
+                                                            #line 820 "CodeGeneratorXSLT.cpp"
+  append(L"\" select=\"$c");
+                                                            #line 501 "CodeGeneratorXSLT.cpp.template"
+                                                                print(i);
+                                                            #line 824 "CodeGeneratorXSLT.cpp"
+  append(L" idiv ");
+                                                            #line 502 "CodeGeneratorXSLT.cpp.template"
+                                                                print(Math::powerof(2, m1bits[i]));
+                                                            #line 828 "CodeGeneratorXSLT.cpp"
+  append(L"\"/>");
+                                                            #line 503 "CodeGeneratorXSLT.cpp.template"
+                                                              }
+                                                            #line 832 "CodeGeneratorXSLT.cpp"
+  append(L"\n");
+  append(L"            <xsl:sequence select=\"$p:MAP1[1 + $c0");
+                                                            #line 505 "CodeGeneratorXSLT.cpp.template"
+                                                              for (size_t i = 0; m1bits[i]; ++i)
+                                                              {
+                                                            #line 838 "CodeGeneratorXSLT.cpp"
+  append(L" mod ");
+                                                            #line 507 "CodeGeneratorXSLT.cpp.template"
+                                                                print(Math::powerof(2, m1bits[i]));
+                                                            #line 842 "CodeGeneratorXSLT.cpp"
+  append(L" + $p:MAP1[1 + $c");
+                                                            #line 509 "CodeGeneratorXSLT.cpp.template"
+                                                                print(i + 1);
                                                               }
                                                               for (size_t i = 0; m1bits[i]; ++i)
                                                               {
-                                                            #line 822 "CodeGeneratorXSLT.cpp"
+                                                            #line 849 "CodeGeneratorXSLT.cpp"
   append(L"]");
-                                                            #line 505 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 514 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 826 "CodeGeneratorXSLT.cpp"
+                                                            #line 853 "CodeGeneratorXSLT.cpp"
   append(L"]\"/>\n");
   append(L"          </xsl:when>\n");
   append(L"          <xsl:otherwise>\n");
   append(L"            <xsl:sequence select=\"");
-                                                            #line 509 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 518 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("m2").size == 0)
                                                               {
-                                                            #line 834 "CodeGeneratorXSLT.cpp"
+                                                            #line 861 "CodeGeneratorXSLT.cpp"
   append(L"0");
-                                                            #line 511 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 520 "CodeGeneratorXSLT.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 840 "CodeGeneratorXSLT.cpp"
+                                                            #line 867 "CodeGeneratorXSLT.cpp"
   append(L"p:map2($c0, 1, ");
-                                                            #line 514 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 523 "CodeGeneratorXSLT.cpp.template"
                                                                 print(variable("m2").size / 3);
-                                                            #line 844 "CodeGeneratorXSLT.cpp"
+                                                            #line 871 "CodeGeneratorXSLT.cpp"
   append(L")");
-                                                            #line 515 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 524 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 848 "CodeGeneratorXSLT.cpp"
+                                                            #line 875 "CodeGeneratorXSLT.cpp"
   append(L"\"/>\n");
   append(L"          </xsl:otherwise>\n");
   append(L"        </xsl:choose>\n");
   append(L"      </xsl:variable>\n");
   append(L"      <xsl:variable name=\"current\" select=\"$current + 1\"/>\n");
-                                                            #line 521 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 530 "CodeGeneratorXSLT.cpp.template"
                                                               const int *a1bits = &variable("a1bits").integer();
                                                               compressedMap2dAccessor("$current-state - 1", "$c1", variable("a1cols").integer(),
                                                                                           6, "i", "<xsl:variable name=\"next-state\" select=\"", "$p:TRANSITION", a1bits);
-                                                            #line 858 "CodeGeneratorXSLT.cpp"
+                                                            #line 885 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"      <xsl:sequence select=\"");
-                                                            #line 525 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 534 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("trace").boolean())
                                                               {
-                                                            #line 864 "CodeGeneratorXSLT.cpp"
+                                                            #line 891 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"        p:trace\n");
   append(L"        (\n");
@@ -876,38 +903,38 @@
   append(L"              ' codepoint=&quot;', string($c0), '&quot;',\n");
   append(L"              ' class=&quot;', string($c1), '&quot;',\n");
   append(L"              if ($next-state lt ");
-                                                            #line 541 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 550 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()));
-                                                            #line 882 "CodeGeneratorXSLT.cpp"
+                                                            #line 909 "CodeGeneratorXSLT.cpp"
   append(L") then\n");
   append(L"                ()\n");
   append(L"              else\n");
   append(L"              (\n");
   append(L"                ' result=&quot;',\n");
   append(L"                p:xml-escape($p:TOKEN[$next-state idiv ");
-                                                            #line 547 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 556 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("stateCodeBits").integer()));
-                                                            #line 891 "CodeGeneratorXSLT.cpp"
+                                                            #line 918 "CodeGeneratorXSLT.cpp"
   append(L" mod ");
-                                                            #line 548 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 557 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, variable("tokencodeBits").integer()));
-                                                            #line 895 "CodeGeneratorXSLT.cpp"
+                                                            #line 922 "CodeGeneratorXSLT.cpp"
   append(L"]), '&quot;',\n");
   append(L"                if ($next-state lt ");
-                                                            #line 550 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 559 "CodeGeneratorXSLT.cpp.template"
                                                                 int contextOffset = variable("stateCodeBits").integer()
                                                                                   + variable("tokencodeBits").integer();
                                                                 int sizeOffset = contextOffset
                                                                                + (variable("hasfixedtokenlength").boolean() ? 1 : 0);
                                                                 print(Math::powerof(2, sizeOffset));
-                                                            #line 904 "CodeGeneratorXSLT.cpp"
+                                                            #line 931 "CodeGeneratorXSLT.cpp"
   append(L") then\n");
   append(L"                  ''\n");
   append(L"                else\n");
   append(L"                  (' trailing-context-size=&quot;', string($next-state idiv ");
-                                                            #line 559 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 568 "CodeGeneratorXSLT.cpp.template"
                                                                 print(Math::powerof(2, sizeOffset));
-                                                            #line 911 "CodeGeneratorXSLT.cpp"
+                                                            #line 938 "CodeGeneratorXSLT.cpp"
   append(L"), '&quot;')\n");
   append(L"              ),\n");
   append(L"              '/&gt;'\n");
@@ -915,19 +942,19 @@
   append(L"            ''\n");
   append(L"          )\n");
   append(L"        ),");
-                                                            #line 566 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 575 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 921 "CodeGeneratorXSLT.cpp"
+                                                            #line 948 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"        if ($next-state &gt; ");
-                                                            #line 568 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 577 "CodeGeneratorXSLT.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()) - 1);
-                                                            #line 926 "CodeGeneratorXSLT.cpp"
+                                                            #line 953 "CodeGeneratorXSLT.cpp"
   append(L") then\n");
   append(L"          p:transition($input, $begin, $current, $current, $next-state, $next-state mod ");
-                                                            #line 571 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 580 "CodeGeneratorXSLT.cpp.template"
                                                               print(Math::powerof(2, variable("stateCodeBits").integer()));
-                                                            #line 931 "CodeGeneratorXSLT.cpp"
+                                                            #line 958 "CodeGeneratorXSLT.cpp"
   append(L", $current-state)\n");
   append(L"        else\n");
   append(L"          p:transition($input, $begin, $current, $end, $result, $next-state, $current-state)");
@@ -965,10 +992,10 @@
   append(L"      )\n");
   append(L"  \"/>\n");
   append(L"</xsl:function>\n");
-                                                            #line 607 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 616 "CodeGeneratorXSLT.cpp.template"
                                                               if (defined("gtbits"))
                                                               {
-                                                            #line 972 "CodeGeneratorXSLT.cpp"
+                                                            #line 999 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -983,7 +1010,7 @@
   append(L"  <xsl:param name=\"nonterminal\" as=\"xs:integer\"/>\n");
   append(L"  <xsl:param name=\"state\" as=\"xs:integer\"/>\n");
   append(L"\n");
-                                                            #line 621 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 630 "CodeGeneratorXSLT.cpp.template"
                                                                 compressedMap2dAccessor("$nonterminal",
                                                                                             "$state",
                                                                                             variable("gtcols").integer(),
@@ -992,12 +1019,12 @@
                                                                                             "<xsl:sequence select=\"",
                                                                                             "$p:GOTO",
                                                                                             &variable("gtbits").integer());
-                                                            #line 996 "CodeGeneratorXSLT.cpp"
+                                                            #line 1023 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"</xsl:function>\n");
-                                                            #line 631 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 640 "CodeGeneratorXSLT.cpp.template"
                                                               }
-                                                            #line 1001 "CodeGeneratorXSLT.cpp"
+                                                            #line 1028 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -1013,26 +1040,26 @@
   append(L"\n");
   append(L"  <xsl:if test=\"$state > 0\">\n");
   append(L"    <xsl:for-each select=\"0 to ");
-                                                            #line 644 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 653 "CodeGeneratorXSLT.cpp.template"
                                                               print((variable("t1").size - 1) / 32);
-                                                            #line 1019 "CodeGeneratorXSLT.cpp"
+                                                            #line 1046 "CodeGeneratorXSLT.cpp"
   append(L"\">\n");
   append(L"      <xsl:variable name=\"i0\" select=\". * ");
-                                                            #line 646 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 655 "CodeGeneratorXSLT.cpp.template"
                                                               print(variable("transitionStateCount").integer());
-                                                            #line 1024 "CodeGeneratorXSLT.cpp"
+                                                            #line 1051 "CodeGeneratorXSLT.cpp"
   append(L" + $state - 1\"/>\n");
-                                                            #line 648 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 657 "CodeGeneratorXSLT.cpp.template"
                                                               compressedMapAccessor(6, "i", "<xsl:sequence select=\"p:token((), ", "$p:EXPECTED", &variable("t0bits").integer());
-                                                            #line 1028 "CodeGeneratorXSLT.cpp"
+                                                            #line 1055 "CodeGeneratorXSLT.cpp"
   append(L", . * 32 + 1)\"/>\n");
   append(L"    </xsl:for-each>\n");
   append(L"  </xsl:if>\n");
   append(L"</xsl:function>\n");
-                                                            #line 653 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 662 "CodeGeneratorXSLT.cpp.template"
                                                               if (variable("m2").size != 0)
                                                               {
-                                                            #line 1036 "CodeGeneratorXSLT.cpp"
+                                                            #line 1063 "CodeGeneratorXSLT.cpp"
   append(L"\n");
   append(L"<!--");
   append(L"~");
@@ -1060,22 +1087,22 @@
   append(L"      <xsl:sequence select=\"p:map2($c, $lo, $m - 1)\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:when test=\"$p:MAP2[");
-                                                            #line 679 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 688 "CodeGeneratorXSLT.cpp.template"
                                                                 print(variable("m2").size / 3);
-                                                            #line 1066 "CodeGeneratorXSLT.cpp"
+                                                            #line 1093 "CodeGeneratorXSLT.cpp"
   append(L" + $m] &lt; $c\">\n");
   append(L"      <xsl:sequence select=\"p:map2($c, $m + 1, $hi)\"/>\n");
   append(L"    </xsl:when>\n");
   append(L"    <xsl:otherwise>\n");
   append(L"      <xsl:sequence select=\"$p:MAP2[");
-                                                            #line 684 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 693 "CodeGeneratorXSLT.cpp.template"
                                                                 print(variable("m2").size / 3 * 2);
-                                                            #line 1074 "CodeGeneratorXSLT.cpp"
+                                                            #line 1101 "CodeGeneratorXSLT.cpp"
   append(L" + $m]\"/>\n");
   append(L"    </xsl:otherwise>\n");
   append(L"  </xsl:choose>\n");
   append(L"</xsl:function>\n");
-                                                            #line 689 "CodeGeneratorXSLT.cpp.template"
+                                                            #line 698 "CodeGeneratorXSLT.cpp.template"
                                                               }
                                                               indent -= 1;
                                                             }

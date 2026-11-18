@@ -268,7 +268,11 @@
                                                      ~(~          if (variable("unlimitedLookahead").boolean())
                                                                   {
                                                        ~0, ~      }
-                                                           ~$action idiv 2, $input, $state)"/>
+                                                           ~$action idiv 2, $input, $state~
+                                                                  if (variable("useGlr").boolean())
+                                                                  {
+                                                   ~, $id~        }
+                                                   ~)"/>
       <xsl:choose>
         <xsl:when test="$state[$p:l~                              print(format.toString<char>(i));
                                    ~] lt 0">
@@ -288,8 +292,10 @@
         <xsl:when test="$lk eq 0">~                               if (loop)
                                                                   {
 ~
-          <xsl:sequence select="p:predict($input, $state, $dpi + 1)"/>~
-                                                                  }
+          <xsl:sequence select="p:predict($input, $state, $dpi + 1~ if (variable("useGlr").boolean())
+                                                                    {
+                                                   ~, $id~          }
+                                                   ~)"/>~         }
                                                                   else
                                                                   {
 ~
@@ -312,7 +318,10 @@
     if ($action ne 0) then
       ($action idiv 2, subsequence($state, $p:lk + 1))
     else
-      p:predict($input, $state, $dpi + 1)
+      p:predict($input, $state, $dpi + 1~                         if (variable("useGlr").boolean())
+                                                                  {
+                                        ~, $id~                   }
+                                        ~)
   "/>~                                                          }
                                                                 else
                                                                 {
