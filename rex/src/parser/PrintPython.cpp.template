@@ -437,13 +437,14 @@ class ParsingThread:
                                  ~0, ~                        }
                                  ~self.e0, None)
     self.state = initialState
-    self.action = self.predict(initialState)~                 if (tree)
+    self.threads = None~                                      if (tree)
                                                               {
 ~
     self.bw = self.e0
     self.bs = self.e0
     self.es = self.e0~                                        }
 ~
+    self.action = self.predict(initialState)
     self.threads = [(False, self.e0, self.id, self)]
     return self.threads
 
