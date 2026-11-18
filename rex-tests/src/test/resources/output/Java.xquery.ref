@@ -1,6 +1,6 @@
 xquery version "1.0" encoding "UTF-8";
 
-(: This file was generated on Fri Oct 24, 2025 23:25 (UTC+02) by REx v6.2-SNAPSHOT which is Copyright (c) 1979-2025 by Gunther Rademacher <grd@gmx.net> :)
+(: This file was generated on Wed Nov 18, 2026 17:22 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net> :)
 (: REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -xquery :)
 
 declare namespace p="Java";
@@ -17899,6 +17899,7 @@ declare function p:parse-compilationUnit($input as xs:string, $state as item()+)
     if ($state[$p:error]) then
       $state
     else if ($state[$p:lk] = -1) then
+      let $state := p:whitespace($input, $state)
       let $state :=
         if ($state[$p:error]) then
           $state

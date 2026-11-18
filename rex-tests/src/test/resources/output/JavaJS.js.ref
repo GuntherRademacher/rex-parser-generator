@@ -1,4 +1,4 @@
-// This file was generated on Tue Nov 3, 2026 22:59 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Wed Nov 18, 2026 17:22 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -javascript -name JavaJS
 
 function JavaJS(string, parsingEventHandler)
@@ -201,6 +201,7 @@ function JavaJS(string, parsingEventHandler)
     switch (lk)
     {
     case -1:
+      whitespace();
       parse_annotations();
       switch (l1)
       {
