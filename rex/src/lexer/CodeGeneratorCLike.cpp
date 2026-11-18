@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Wed Nov 18, 2026 16:32 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorCLike.cpp.template
                                                             #line 1 "CodeGeneratorCLike.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -501,7 +501,7 @@
                                                                                                                              :isPython ? "matchCode = "
                                                                                                                                        : (i == 2 ? "int matchCode = " : "matchCode = ");
                                                                 CString lookahead;
-                                                                if (isScala)
+                                                                if (isScala || (isHaxe && variable("useGlr").boolean()))
                                                                 {
                                                                   lookahead += variable("classname").string();
                                                                   lookahead += ".";

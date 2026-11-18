@@ -264,7 +264,7 @@ if ~                                                              print(ifLeftPa
                                                                                                                              :isPython ? "matchCode = "
                                                                                                                                        : (i == 2 ? "int matchCode = " : "matchCode = ");
                                                                 CString lookahead;
-                                                                if (isScala)
+                                                                if (isScala || (isHaxe && variable("useGlr").boolean()))
                                                                 {
                                                                   lookahead += variable("classname").string();
                                                                   lookahead += ".";

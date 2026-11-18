@@ -820,10 +820,20 @@ function ParsingThread()
 ~
     id = ++maxId;
     b0 = other.getB0();
-    e0 = other.getE0();
-    l1 = other.getL1();
-    b1 = other.getB1();
-    e1 = other.getE1();
+    e0 = other.getE0();~                                      for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    l~                                                          print(iString);
+     ~ = other.getL~                                            print(iString);
+                ~();
+    b~                                                          print(iString);
+     ~ = other.getB~                                            print(iString);
+                ~();
+    e~                                                          print(iString);
+     ~ = other.getE~                                            print(iString);
+                ~();~                                         }
+~
     return this;
   };
 

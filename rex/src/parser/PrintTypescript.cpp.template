@@ -722,10 +722,20 @@ class ParsingThread
 ~
     this.id = ++this.parser.maxId;
     this.b0 = other.b0;
-    this.e0 = other.e0;
-    this.l1 = other.l1;
-    this.b1 = other.b1;
-    this.e1 = other.e1;
+    this.e0 = other.e0;~                                      for (size_t i = 1; i <= grammar->k; ++i)
+                                                              {
+                                                                const wchar_t *iString = format.toString<wchar_t>(i);
+~
+    this.l~                                                     print(iString);
+     ~ = other.l~                                               print(iString);
+                ~;
+    this.b~                                                     print(iString);
+     ~ = other.b~                                               print(iString);
+                ~;
+    this.e~                                                     print(iString);
+     ~ = other.e~                                               print(iString);
+                ~;~                                           }
+~
     return this;
   }
 
