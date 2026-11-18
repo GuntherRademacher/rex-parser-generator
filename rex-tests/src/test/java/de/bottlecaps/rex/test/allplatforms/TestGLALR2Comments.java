@@ -31,11 +31,11 @@ public class TestGLALR2Comments extends RExExecutionWithResult
       new NamedFile
       (
         "input.txt",
-        "cq(:1:)xy(:2(:3:):)v"
+        "(:0:) cq(:1:)xy(:2(:3:):)v"
       )
     );
     expectedStdout = TREE;
   }
 
-  private static final String TREE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Start><D><TOKEN>c</TOKEN></D><TOKEN>q</TOKEN>(:1:)<TOKEN>x</TOKEN><TOKEN>y</TOKEN>(:2(:3:):)<TOKEN>v</TOKEN><EOF/></Start>";
+  private static final String TREE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Start>(:0:) <D><TOKEN>c</TOKEN></D><TOKEN>q</TOKEN>(:1:)<TOKEN>x</TOKEN><TOKEN>y</TOKEN>(:2(:3:):)<TOKEN>v</TOKEN><EOF/></Start>";
 }

@@ -542,7 +542,7 @@ public:
     {
       if (node->isStartSymbol() && node->firstElementChild)
       {
-        node->firstElementChild->whitespaceAllowance = IMPLICIT;
+        markLeading(node->firstElementChild);
       }
       super::visitProduction(node);
     }
@@ -559,6 +559,35 @@ public:
   }
 
 private:
+  // allow whitespace before the first terminal or reference of each
+  // alternative of the start symbol, not only when it is the very first
+  // element of the production (the first element is a choice if there
+  // are alternatives)
+
+  void markLeading(Node *node)
+  {
+    if (node->isChoice())
+    {
+      Choice *choice = static_cast<Choice *>(node);
+      for (NodeList::const_iterator i = choice->cases.begin(); i != choice->cases.end(); ++i)
+      {
+        markLeading(*i);
+      }
+    }
+    else if (node->isSequence() || node->isOptional() || node->isZeroOrMore() || node->isOneOrMore())
+    {
+      NodeWithChildren *parent = static_cast<NodeWithChildren *>(node);
+      if (parent->firstElementChild)
+      {
+        markLeading(parent->firstElementChild);
+      }
+    }
+    else
+    {
+      node->whitespaceAllowance = IMPLICIT;
+    }
+  }
+
   void mark(Node *node)
   {
     for (Node *n = node; n != node->production; n = n->getParent())
