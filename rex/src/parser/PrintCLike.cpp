@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 22:42 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintCLike.cpp.template
                                                             #line 1 "PrintCLike.cpp.template"
                                                             /*
@@ -3041,7 +3041,7 @@
   append(L"\n");
   append(L"  var message = e.getMessage();");
                                                             #line 2078 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   increaseIndent();
                                                             #line 3048 "PrintCLike.cpp"
@@ -3089,7 +3089,7 @@
   append(L"          + \"\\n\"\n");
   append(L"          + (size == 0 || found != null ? \"\" : \"after successfully scanning \" + size + \" characters beginning \");");
                                                             #line 2107 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                             #line 3096 "PrintCLike.cpp"
@@ -3166,7 +3166,7 @@
   append(L"\n");
   append(L"  String[] expected");
                                                             #line 2148 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3172 "PrintCLike.cpp"
   append(L" = {}");
@@ -3180,7 +3180,7 @@
   append(L"  }\n");
   append(L"  else");
                                                             #line 2156 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3186 "PrintCLike.cpp"
   append(L" if (! e.isAmbiguousInput())");
@@ -3198,7 +3198,7 @@
   append(L"{\n");
   append(L"  String message = e.getMessage();");
                                                             #line 2168 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3204 "PrintCLike.cpp"
   append(L"\n");
@@ -3233,7 +3233,7 @@
   append(L"          + \"\\n\"\n");
   append(L"          + (size == 0 || found != null ? \"\" : \"after successfully scanning \" + size + \" characters beginning \");");
                                                             #line 2189 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                             #line 3240 "PrintCLike.cpp"
@@ -3310,7 +3310,7 @@
   append(L"{\n");
   append(L"  String message = e.getMessage();");
                                                             #line 2247 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3316 "PrintCLike.cpp"
   append(L"\n");
@@ -3334,7 +3334,7 @@
   append(L"          + \"\\n\"\n");
   append(L"          + (size == 0 || found != null ? \"\" : \"after successfully scanning \" + size + \" characters beginning \");");
                                                             #line 2266 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                             #line 3341 "PrintCLike.cpp"
@@ -3392,7 +3392,7 @@
   append(L") GetErrorMessage(e ParseError) string {\n");
   append(L"  message := e.Error()");
                                                             #line 2305 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3398 "PrintCLike.cpp"
   append(L"\n");
@@ -3431,7 +3431,7 @@
   append(L"    message += \" characters beginning \"\n");
   append(L"  }");
                                                             #line 2338 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                             #line 3438 "PrintCLike.cpp"
@@ -3502,7 +3502,7 @@
   append(L"def getErrorMessage(self, e):\n");
   append(L"  message = e.error()");
                                                             #line 2390 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3508 "PrintCLike.cpp"
   append(L"\n");
@@ -3544,7 +3544,7 @@
   append(L"    message += str(size)\n");
   append(L"    message += \" characters beginning \" ");
                                                             #line 2420 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                                 }
@@ -3675,7 +3675,7 @@
                                                             #line 3676 "PrintCLike.cpp"
   append(L"string message(e.getMessage());");
                                                             #line 2508 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 3681 "PrintCLike.cpp"
   append(L"\n");
@@ -3775,7 +3775,7 @@
   append(L"\" characters beginning \";\n");
   append(L"  }");
                                                             #line 2557 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                             #line 3782 "PrintCLike.cpp"
@@ -4312,7 +4312,7 @@
   append(L".ParseException) = {\n");
   append(L"    var message = e.getMessage");
                                                             #line 2834 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 4318 "PrintCLike.cpp"
   append(L"\n");
@@ -4339,7 +4339,7 @@
   append(L"      (if (tokenSet.length == 1) tokenSet(0) else \"[\" + (tokenSet mkString \", \") + \"]\") + \"\\n\" +\n");
   append(L"      (if (size == 0 || found != null) \"\" else \"after successfully scanning \" + size + \" characters beginning \")");
                                                             #line 2850 "PrintCLike.cpp.template"
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                             #line 4345 "PrintCLike.cpp"
   append(L"\n");

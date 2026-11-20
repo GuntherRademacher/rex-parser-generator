@@ -35,6 +35,8 @@ The following is explained in this document:
 
 Note: the information about parsing event interfaces does not apply to parsers genereated in XQuery or XSLT. Those will always materialize the parse tree, when enabled via `-tree`, and return it as the result of the parsing function for the start symbol.
 
+With `-tree`, the generated parser also contains a standard tree builder, together with the node classes `Symbol`, `Terminal` and `Nonterminal`: `TopDownTreeBuilder` for LL parsers, or `ParseTreeBuilder` for LR parsers. These are not used by the parser itself, so they can be left out by specifying `-nobuilder`. They are generated nevertheless where the generated code refers to them: `ParseTreeBuilder` with `-main`, `-performance`, and when `-glr` or `-glalr` reject ambiguous input (and, in Java, with `-saxon` or `-basex`). The `XmlSerializer` class is only generated together with `-main`. For LR parsers, the top-down `EventHandler` interface is only generated where generated code refers to it, which is the case together with `ParseTreeBuilder`. The `ParseException` methods `isAmbiguousInput()` and `serialize(eventHandler)` are only generated for GLR parsers that reject ambiguous input, which is the default with `-glr` and `-glalr`. The option is not supported for XQuery or XSLT.
+
 ## Identifying Nonterminals and Terminals
 
 Parsing events identify nonterminals and terminals by their integer codes, not by their names. 
@@ -77,8 +79,9 @@ against:
  - The names are obtained from a parser instance, so `getNonterminalName(id)` and 
    `getTerminalName(id)` are instance methods, not static ones.
  - `Symbol.getName()` takes the parser as an argument: `getName(parser)`.
- - The standard serializers need the parser as an additional constructor argument, e.g. 
-   `new XmlSerializer(writer, indent, parser)`.
+ - The standard serializer `XmlSerializer` (generated with `-main`) needs the parser as an
+   additional constructor argument, e.g. `new XmlSerializer(writer, indent, parser)`. The
+   tree builders do not need it.
 
 ## Migrating from Names to Codes
 
@@ -144,8 +147,11 @@ The `EventHandler` interface defines the communication between an LL parser and 
 
 `TopDownTreeBuilder` is a standard implementation of the `EventHandler` interface that constructs a materialized parse tree during the parsing process.
 
-- **Fields:**
-  - `stack`: The stack holding the symbols being processed. After parsing completes successfully, the single remaining node in the stack is the `Nonterminal` representing the start symbol.
+- **Methods:**
+  - `getRoot()`
+    Returns the root of the parse tree: after parsing completes successfully, this is the `Nonterminal` representing the start symbol. It returns null (nil in Go, `None` in Python) when no tree has been built.
+  - `serialize(EventHandler e)`
+    Sends the tree to an `EventHandler`.
 
 ## Bottom-Up Parsing: `BottomUpEventHandler` Interface
 
@@ -195,12 +201,15 @@ The `BottomUpEventHandler` interface defines the communication between an LALR, 
 
 `ParseTreeBuilder` is a standard implementation of the `BottomUpEventHandler` interface that constructs a materialized parse tree during the parsing process.
 
-- **Fields:**
-  - `stack`: The stack holding the symbols being processed. After parsing completes successfully, the single remaining node in the stack is the `Nonterminal` representing the start symbol.
+- **Methods:**
+  - `getRoot()`
+    Returns the root of the parse tree: after parsing completes successfully, this is the `Nonterminal` representing the start symbol. It returns null (nil in Go, `None` in Python) when no tree has been built.
+  - `serialize(EventHandler e)`
+    Sends the tree to an `EventHandler`.
 
 ## Parse Tree Representation
 
-A materialized parse tree, as created by `TopDownTreeBuilder`  or `BottomUpTreeBuilder`, consists of two main types of nodes: `Terminal` and `Nonterminal`, both derived from the abstract `Symbol` class.
+A materialized parse tree, as created by `TopDownTreeBuilder` or `ParseTreeBuilder`, consists of two main types of nodes: `Terminal` and `Nonterminal`, both derived from the abstract `Symbol` class.
 
 ---
 
@@ -234,7 +243,7 @@ Represents a terminal node in the parse tree, corresponding to recognized tokens
 Represents a nonterminal node in the parse tree, corresponding to grammar rules. A nonterminal node can have child nodes, which may be other nonterminals or terminals.
 
 - **Fields:**
-  - `children`: An array of child `Symbol` nodes representing the subtree of this nonterminal.
+  - `children`: An array of child `Symbol` nodes representing the subtree of this nonterminal. In Go, the children are returned by the method `GetChildren()`, and `id`, `begin` and `end` of a `Symbol` by `GetId()`, `GetBegin()` and `GetEnd()`.
 
 - **Overrides `send`:**
   - Recursively invokes `send` on all child nodes, starting with `startNonterminal`, followed by processing children, and ending with `endNonterminal`.

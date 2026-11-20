@@ -1,4 +1,4 @@
-// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:07 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q exprBNF.ebnf -lalr 1 -java -tree -main
 
 import java.io.IOException;
@@ -74,16 +74,11 @@ public class exprBNF
            : "syntax error";
     }
 
-    public void serialize(EventHandler eventHandler)
-    {
-    }
-
     public int getBegin() {return begin;}
     public int getEnd() {return end;}
     public int getState() {return state;}
     public int getOffending() {return offending;}
     public int getExpected() {return expected;}
-    public boolean isAmbiguousInput() {return false;}
   }
 
   public interface EventHandler
@@ -93,60 +88,6 @@ public class exprBNF
     public void endNonterminal(int id, int end);
     public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
-  }
-
-  public static class TopDownTreeBuilder implements EventHandler
-  {
-    private CharSequence input = null;
-    private Nonterminal[] stack = new Nonterminal[64];
-    private int top = -1;
-
-    @Override
-    public void reset(CharSequence input)
-    {
-      this.input = input;
-      top = -1;
-    }
-
-    @Override
-    public void startNonterminal(int id, int begin)
-    {
-      Nonterminal nonterminal = new Nonterminal(id, begin, begin, new Symbol[0]);
-      if (top >= 0) addChild(nonterminal);
-      if (++top >= stack.length) stack = Arrays.copyOf(stack, stack.length << 1);
-      stack[top] = nonterminal;
-    }
-
-    @Override
-    public void endNonterminal(int id, int end)
-    {
-      stack[top].end = end;
-      if (top > 0) --top;
-    }
-
-    @Override
-    public void terminal(int id, int begin, int end)
-    {
-      addChild(new Terminal(id, begin, end));
-    }
-
-    @Override
-    public void whitespace(int begin, int end)
-    {
-    }
-
-    private void addChild(Symbol s)
-    {
-      Nonterminal current = stack[top];
-      current.children = Arrays.copyOf(current.children, current.children.length + 1);
-      current.children[current.children.length - 1] = s;
-    }
-
-    public void serialize(EventHandler e)
-    {
-      e.reset(input);
-      stack[0].send(e);
-    }
   }
 
   public static abstract class Symbol
@@ -390,6 +331,11 @@ public class exprBNF
     public void terminal(int id, int begin, int end)
     {
       push(new Terminal(id, begin, end));
+    }
+
+    public Symbol getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
     }
 
     public void serialize(EventHandler e)

@@ -1,4 +1,4 @@
-// This file was generated on Tue Nov 3, 2026 23:00 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:18 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryParser.ebnf -ll 2 -backtrack -tree -javascript -a xquery.rex -t -smaller -name XQueryParser_ts
 
                                                             // line 2 "XQueryParser.ebnf"
@@ -53,7 +53,6 @@
     this.getState = function() {return state;};
     this.getExpected = function() {return expected;};
     this.getOffending = function() {return offending;};
-    this.isAmbiguousInput = function() {return false;};
 
     this.getMessage = function()
     {
@@ -21421,116 +21420,6 @@
 
 }
 
-XQueryParser_ts.XmlSerializer = function(log, indent)
-{
-  var input = null;
-  var delayedTag = null;
-  var hasChildElement = false;
-  var depth = 0;
-
-  this.reset = function(string)
-  {
-    log("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
-    input = string;
-    delayedTag = null;
-    hasChildElement = false;
-    depth = 0;
-  };
-
-  this.startNonterminal = function(id, begin)
-  {
-    startElement(XQueryParser_ts.NONTERMINAL[id]);
-  };
-
-  function startElement(tag)
-  {
-    if (delayedTag != null)
-    {
-      log("<");
-      log(delayedTag);
-      log(">");
-    }
-    delayedTag = tag;
-    if (indent)
-    {
-      log("\n");
-      for (var i = 0; i < depth; ++i)
-      {
-        log("  ");
-      }
-    }
-    hasChildElement = false;
-    ++depth;
-  }
-
-  this.endNonterminal = function(id, end)
-  {
-    endElement(XQueryParser_ts.NONTERMINAL[id]);
-  };
-
-  function endElement(tag)
-  {
-    --depth;
-    if (delayedTag != null)
-    {
-      delayedTag = null;
-      log("<");
-      log(tag);
-      log("/>");
-    }
-    else
-    {
-      if (indent)
-      {
-        if (hasChildElement)
-        {
-          log("\n");
-          for (var i = 0; i < depth; ++i)
-          {
-            log("  ");
-          }
-        }
-      }
-      log("</");
-      log(tag);
-      log(">");
-    }
-    hasChildElement = true;
-  }
-
-  this.terminal = function(id, begin, end)
-  {
-    var tag = XQueryParser_ts.TOKEN[id];
-    if (tag.charAt(0) == '\'') tag = "TOKEN";
-    startElement(tag);
-    characters(begin, end);
-    endElement(tag);
-  };
-
-  this.whitespace = function(begin, end)
-  {
-    characters(begin, end);
-  };
-
-  function characters(begin, end)
-  {
-    if (begin < end)
-    {
-      if (delayedTag != null)
-      {
-        log("<");
-        log(delayedTag);
-        log(">");
-        delayedTag = null;
-      }
-      log(input.substring(begin, end)
-               .replace(/&/g, "&amp;")
-               .replace(/</g, "&lt;")
-               .replace(/>/g, "&gt;"));
-    }
-  }
-};
-
 XQueryParser_ts.getTokenSet = function(tokenSetId)
 {
   var set = [];
@@ -21592,6 +21481,8 @@ XQueryParser_ts.TopDownTreeBuilder = function()
     current.children.push(s);
   }
 
+  this.getRoot = function() {return stack != null && stack.length > 0 ? stack[0] : null;};
+
   this.serialize = function(e)
   {
     e.reset(input);
@@ -21621,6 +21512,7 @@ XQueryParser_ts.Nonterminal = function(id, begin, end, children)
   this.id = id;
   this.begin = begin;
   this.end = end;
+  this.children = children;
 
   this.getName = function()
   {
@@ -21629,9 +21521,10 @@ XQueryParser_ts.Nonterminal = function(id, begin, end, children)
 
   this.send = function(e)
   {
+    var end = this.end;
     e.startNonterminal(id, begin);
     var pos = begin;
-    children.forEach
+    this.children.forEach
     (
       function(c)
       {
@@ -25212,5 +25105,5 @@ XQueryParser_ts.NONTERMINAL =
 
                                                             // line 1123 "XQueryParser.ebnf"
                                                             });
-                                                            // line 25216 "XQueryParser_ts.js"
+                                                            // line 25109 "XQueryParser_ts.js"
 // End

@@ -325,6 +325,15 @@ void PrintREx::visitGrammar(Grammar *node)
 
   bool tables = ! node->decisionPoints.empty();
   rex->bind(CGVariable("lrparser", node->states != 0));
+  bool emitParseTreeBuilder = tree
+                           && node->states != 0
+                           && (   ! node->noBuilders
+                               || node->mainOrPerformance
+                               || (node->useGlr && ! node->resolvesAmbiguity));
+  bool emitTopDownTreeBuilder = tree && node->states == 0 && ! node->noBuilders;
+  rex->bind(CGVariable("emitParseTreeBuilder", emitParseTreeBuilder));
+  rex->bind(CGVariable("emitTopDownTreeBuilder", emitTopDownTreeBuilder));
+  rex->bind(CGVariable("emitTreeNodes", emitParseTreeBuilder || emitTopDownTreeBuilder));
   rex->bind(CGVariable("useGlr", node->useGlr));
   rex->bind(CGVariable("resolvesAmbiguity", node->resolvesAmbiguity));
   rex->bind(CGVariable("unambiguousId", Grammar::syntheticNonterminalCode(2)));

@@ -11,6 +11,8 @@
 export namespace ~                                              print(className.c_str());
                  ~
 {~                                                            }
+                                                              if (emitsEventHandler())
+                                                              {
 ~
   export interface ParsingEventHandler
   {
@@ -20,7 +22,8 @@ export namespace ~                                              print(className.
     terminal(id: number, begin: number, end: number): void;
     whitespace(begin: number, end: number): void;
   }
-~                                                             if (isLrParser)
+~                                                             }
+                                                              if (isLrParser)
                                                               {
 ~
   export interface BottomUpEventHandler
@@ -87,14 +90,17 @@ export namespace ~                                              print(className.
     getEnd() {return this.end;}
     getState() {return this.state;}
     getExpected() {return this.expected;}
-    getOffending() {return this.offending;}
-    isAmbiguousInput() {return ~                              if (rejectsAmbiguity())
+    getOffending() {return this.offending;}~                  if (rejectsAmbiguity())
                                                               {
-                               ~this.ambiguousInput~          }
-                                                              else
-                                                              {
-                               ~false~                        }
-                               ~;}
+~
+    isAmbiguousInput() {return ~                                if (rejectsAmbiguity())
+                                                                {
+                               ~this.ambiguousInput~            }
+                                                                else
+                                                                {
+                               ~false~                          }
+                               ~;}~                           }
+~
 
     getMessage()
     {
@@ -1247,7 +1253,7 @@ else
                                                                 decreaseIndent();
 ~}
 ~                                                             }
-                                                              if (tree)
+                                                              if (emitsTopDownTreeBuilder())
                                                               {
 ~
   export class TopDownTreeBuilder implements ParsingEventHandler
@@ -1289,13 +1295,21 @@ else
       current.children.push(s);
     }
 
+    public getRoot(): Nonterminal | null
+    {
+      return this.stack !== undefined && this.stack.length > 0 ? this.stack[0] : null;
+    }
+
     public serialize(e: ParsingEventHandler): void
     {
       e.reset(this.input);
       this.stack[0].send(e);
     }
   }
-
+~                                                             }
+                                                              if (emitsTreeNodes())
+                                                              {
+~
   export abstract class Symbol
   {
     public id: number;
@@ -1367,8 +1381,9 @@ else
       e.endNonterminal(this.id, this.end);
     }
   }
-~                                                               if (isLrParser)
-                                                                {
+~                                                             }
+                                                              if (emitsParseTreeBuilder())
+                                                              {
 ~
   export class ParseTreeBuilder implements BottomUpEventHandler
   {
@@ -1386,20 +1401,20 @@ else
     public getTop(): number {return this.top;}
 
     public nonterminal(id: number, begin: number, end: number, count: number): void
-    {~                                                            if (rejectsAmbiguity())
-                                                                  {
+    {~                                                          if (rejectsAmbiguity())
+                                                                {
 ~
       if (count > this.top + 1)
       {
         var content = this.pop(this.top + 1);
-        this.nonterminal(~                                          print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+        this.nonterminal(~                                        print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
                          ~, begin, content.length == 0 ? end : content[0].begin, 0);
         for (let symbol of content)
         {
           this.push(symbol);
         }
         count = this.top + 1;
-      }~                                                          }
+      }~                                                        }
 ~
       this.push(new Nonterminal(id, begin, end, this.pop(count)));
     }
@@ -1407,14 +1422,19 @@ else
     public terminal(id: number, begin: number, end: number): void
     {
       this.push(new Terminal(id, begin, end));
-    }~                                                            if (resolvesAmbiguity)
-                                                                  {
+    }~                                                          if (resolvesAmbiguity)
+                                                                {
 ~
 
     public ambiguity(begin: number, end: number): void
     {
-    }~                                                            }
+    }~                                                          }
 ~
+
+    public getRoot(): Symbol | null
+    {
+      return this.top >= 0 ? this.stack[0] : null;
+    }
 
     public serialize(e: ParsingEventHandler): void
     {
@@ -1436,8 +1456,7 @@ else
       return this.stack.slice(this.top + 1, this.top + 1 + count);
     }
   }
-~                                                               }
-                                                              }
+~                                                             }
                                                               if (! visitEpilog())
                                                               {
 ~}

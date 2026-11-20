@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 22:42 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorJavascript.cpp.template
                                                             #line 1 "CodeGeneratorJavascript.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -808,7 +808,7 @@
                                                             #line 475 "CodeGeneratorJavascript.cpp.template"
                                                               if (variable("tree").boolean())
                                                               {
-                                                                if (variable("lrparser").boolean())
+                                                                if (variable("emitParseTreeBuilder").boolean())
                                                                 {
                                                             #line 814 "CodeGeneratorJavascript.cpp"
   append(L"\n");
@@ -890,6 +890,8 @@
   append(L".Terminal(id, begin, end));\n");
   append(L"  };\n");
   append(L"\n");
+  append(L"  this.getRoot = function() {return top >= 0 ? stack[0] : null;};\n");
+  append(L"\n");
   append(L"  this.serialize = function(e)\n");
   append(L"  {\n");
   append(L"    e.reset(input);\n");
@@ -910,15 +912,15 @@
   append(L"    return stack.slice(top + 1, top + 1 + count);\n");
   append(L"  };\n");
   append(L"};\n");
-                                                            #line 553 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 555 "CodeGeneratorJavascript.cpp.template"
                                                                 }
-                                                                else
+                                                                if (variable("emitTopDownTreeBuilder").boolean())
                                                                 {
-                                                            #line 918 "CodeGeneratorJavascript.cpp"
+                                                            #line 920 "CodeGeneratorJavascript.cpp"
   append(L"\n");
-                                                            #line 557 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 559 "CodeGeneratorJavascript.cpp.template"
                                                                   print(variable("classname").string());
-                                                            #line 922 "CodeGeneratorJavascript.cpp"
+                                                            #line 924 "CodeGeneratorJavascript.cpp"
   append(L".TopDownTreeBuilder = function()\n");
   append(L"{\n");
   append(L"  var input = null;\n");
@@ -933,9 +935,9 @@
   append(L"  this.startNonterminal = function(id, begin)\n");
   append(L"  {\n");
   append(L"    var nonterminal = new ");
-                                                            #line 571 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 573 "CodeGeneratorJavascript.cpp.template"
                                                                   print(variable("classname").string());
-                                                            #line 939 "CodeGeneratorJavascript.cpp"
+                                                            #line 941 "CodeGeneratorJavascript.cpp"
   append(L".Nonterminal(id, begin, begin, []);\n");
   append(L"    if (stack.length > 0) addChild(nonterminal);\n");
   append(L"    stack.push(nonterminal);\n");
@@ -950,9 +952,9 @@
   append(L"  this.terminal = function(id, begin, end)\n");
   append(L"  {\n");
   append(L"    addChild(new ");
-                                                            #line 585 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 587 "CodeGeneratorJavascript.cpp.template"
                                                                   print(variable("classname").string());
-                                                            #line 956 "CodeGeneratorJavascript.cpp"
+                                                            #line 958 "CodeGeneratorJavascript.cpp"
   append(L".Terminal(id, begin, end));\n");
   append(L"  };\n");
   append(L"\n");
@@ -966,19 +968,23 @@
   append(L"    current.children.push(s);\n");
   append(L"  }\n");
   append(L"\n");
+  append(L"  this.getRoot = function() {return stack != null && stack.length > 0 ? stack[0] : null;};\n");
+  append(L"\n");
   append(L"  this.serialize = function(e)\n");
   append(L"  {\n");
   append(L"    e.reset(input);\n");
   append(L"    stack[0].send(e);\n");
   append(L"  };\n");
   append(L"};\n");
-                                                            #line 605 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 609 "CodeGeneratorJavascript.cpp.template"
                                                                 }
-                                                            #line 978 "CodeGeneratorJavascript.cpp"
+                                                                if (variable("emitTreeNodes").boolean())
+                                                                {
+                                                            #line 984 "CodeGeneratorJavascript.cpp"
   append(L"\n");
-                                                            #line 607 "CodeGeneratorJavascript.cpp.template"
-                                                                print(variable("classname").string());
-                                                            #line 982 "CodeGeneratorJavascript.cpp"
+                                                            #line 613 "CodeGeneratorJavascript.cpp.template"
+                                                                  print(variable("classname").string());
+                                                            #line 988 "CodeGeneratorJavascript.cpp"
   append(L".Terminal = function(id, begin, end)\n");
   append(L"{\n");
   append(L"  this.id = id;\n");
@@ -988,9 +994,9 @@
   append(L"  this.getName = function()\n");
   append(L"  {\n");
   append(L"    return ");
-                                                            #line 616 "CodeGeneratorJavascript.cpp.template"
-                                                                print(variable("classname").string());
-                                                            #line 994 "CodeGeneratorJavascript.cpp"
+                                                            #line 622 "CodeGeneratorJavascript.cpp.template"
+                                                                  print(variable("classname").string());
+                                                            #line 1000 "CodeGeneratorJavascript.cpp"
   append(L".TOKEN[id];\n");
   append(L"  };\n");
   append(L"\n");
@@ -1000,40 +1006,42 @@
   append(L"  };\n");
   append(L"};\n");
   append(L"\n");
-                                                            #line 626 "CodeGeneratorJavascript.cpp.template"
-                                                                print(variable("classname").string());
-                                                            #line 1006 "CodeGeneratorJavascript.cpp"
+                                                            #line 632 "CodeGeneratorJavascript.cpp.template"
+                                                                  print(variable("classname").string());
+                                                            #line 1012 "CodeGeneratorJavascript.cpp"
   append(L".Nonterminal = function(id, begin, end, children)\n");
   append(L"{\n");
   append(L"  this.id = id;\n");
   append(L"  this.begin = begin;\n");
   append(L"  this.end = end;\n");
+  append(L"  this.children = children;\n");
   append(L"\n");
   append(L"  this.getName = function()\n");
   append(L"  {\n");
   append(L"    return ");
-                                                            #line 635 "CodeGeneratorJavascript.cpp.template"
-                                                                if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
-                                                                {
-                                                                  print(L"id >= 0 ? ");
-                                                                }
-                                                                print(variable("classname").string());
-                                                            #line 1022 "CodeGeneratorJavascript.cpp"
-  append(L".NONTERMINAL[id]");
-                                                            #line 640 "CodeGeneratorJavascript.cpp.template"
-                                                                if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
-                                                                {
-                                                                  print(L" : id == -2 ? \"ALTERNATIVE\" : id == -3 ? \"AMBIGUOUS\" : id == -4 ? \"UNAMBIGUOUS\" : null");
-                                                                }
+                                                            #line 642 "CodeGeneratorJavascript.cpp.template"
+                                                                  if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
+                                                                  {
+                                                                    print(L"id >= 0 ? ");
+                                                                  }
+                                                                  print(variable("classname").string());
                                                             #line 1029 "CodeGeneratorJavascript.cpp"
+  append(L".NONTERMINAL[id]");
+                                                            #line 647 "CodeGeneratorJavascript.cpp.template"
+                                                                  if (variable("useGlr").boolean() && ! variable("resolvesAmbiguity").boolean())
+                                                                  {
+                                                                    print(L" : id == -2 ? \"ALTERNATIVE\" : id == -3 ? \"AMBIGUOUS\" : id == -4 ? \"UNAMBIGUOUS\" : null");
+                                                                  }
+                                                            #line 1036 "CodeGeneratorJavascript.cpp"
   append(L";\n");
   append(L"  };\n");
   append(L"\n");
   append(L"  this.send = function(e)\n");
   append(L"  {\n");
+  append(L"    var end = this.end;\n");
   append(L"    e.startNonterminal(id, begin);\n");
   append(L"    var pos = begin;\n");
-  append(L"    children.forEach\n");
+  append(L"    this.children.forEach\n");
   append(L"    (\n");
   append(L"      function(c)\n");
   append(L"      {\n");
@@ -1046,44 +1054,45 @@
   append(L"    e.endNonterminal(id, end);\n");
   append(L"  };\n");
   append(L"};\n");
-                                                            #line 664 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 672 "CodeGeneratorJavascript.cpp.template"
+                                                                }
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::INTEGER) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1056 "CodeGeneratorJavascript.cpp"
+                                                            #line 1065 "CodeGeneratorJavascript.cpp"
   append(L"\n");
-                                                            #line 670 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 679 "CodeGeneratorJavascript.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1060 "CodeGeneratorJavascript.cpp"
+                                                            #line 1069 "CodeGeneratorJavascript.cpp"
   append(L".");
-                                                            #line 671 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 680 "CodeGeneratorJavascript.cpp.template"
                                                                 print(a->getLongName());
-                                                            #line 1064 "CodeGeneratorJavascript.cpp"
+                                                            #line 1073 "CodeGeneratorJavascript.cpp"
   append(L" =\n");
   append(L"[");
-                                                            #line 673 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 682 "CodeGeneratorJavascript.cpp.template"
                                                                 int w = (int) Format::width(a->size);
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j == 0 || lineLength() + Format::width(a->integer(j)) + 2 > 119)
                                                                   {
                                                                     if (j) print(",");
-                                                            #line 1074 "CodeGeneratorJavascript.cpp"
+                                                            #line 1083 "CodeGeneratorJavascript.cpp"
   append(L"\n");
   append(L"  /* ");
-                                                            #line 680 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 689 "CodeGeneratorJavascript.cpp.template"
                                                                     print(format.toString<char>(j, 10, w));
-                                                            #line 1079 "CodeGeneratorJavascript.cpp"
+                                                            #line 1088 "CodeGeneratorJavascript.cpp"
   append(L" */ ");
-                                                            #line 681 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 690 "CodeGeneratorJavascript.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 1085 "CodeGeneratorJavascript.cpp"
+                                                            #line 1094 "CodeGeneratorJavascript.cpp"
   append(L", ");
-                                                            #line 684 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 693 "CodeGeneratorJavascript.cpp.template"
                                                                   }
                                                                   if (a->integer(j) != (int) 0x80000000)
                                                                   {
@@ -1094,42 +1103,42 @@
                                                                     print(format.toString<char>(a->integer(j), 16, 0, 0, "0x", "0123456789abcdef"));
                                                                   }
                                                                 }
-                                                            #line 1098 "CodeGeneratorJavascript.cpp"
+                                                            #line 1107 "CodeGeneratorJavascript.cpp"
   append(L"\n");
   append(L"];\n");
-                                                            #line 696 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 705 "CodeGeneratorJavascript.cpp.template"
                                                               }
                                                               for (VarsInInsertionOrder::iterator a(varsInInsertionOrder.begin());
                                                                    a != varsInInsertionOrder.end(); ++a)
                                                                 if (a->isArray() && a->size > 0 && a->hasType(CGVariable::STRING) && strlen(a->name) == 2)
                                                               {
-                                                            #line 1107 "CodeGeneratorJavascript.cpp"
+                                                            #line 1116 "CodeGeneratorJavascript.cpp"
   append(L"\n");
-                                                            #line 702 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 711 "CodeGeneratorJavascript.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1111 "CodeGeneratorJavascript.cpp"
+                                                            #line 1120 "CodeGeneratorJavascript.cpp"
   append(L".");
-                                                            #line 703 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 712 "CodeGeneratorJavascript.cpp.template"
                                                                 print(a->getLongName());
-                                                            #line 1115 "CodeGeneratorJavascript.cpp"
+                                                            #line 1124 "CodeGeneratorJavascript.cpp"
   append(L" =\n");
   append(L"[\n");
-                                                            #line 706 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 715 "CodeGeneratorJavascript.cpp.template"
                                                                 for (size_t j = 0; j < a->size; ++j)
                                                                 {
                                                                   if (j)
                                                                   {
-                                                            #line 1123 "CodeGeneratorJavascript.cpp"
+                                                            #line 1132 "CodeGeneratorJavascript.cpp"
   append(L",\n");
-                                                            #line 711 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 720 "CodeGeneratorJavascript.cpp.template"
                                                                   }
-                                                            #line 1127 "CodeGeneratorJavascript.cpp"
+                                                            #line 1136 "CodeGeneratorJavascript.cpp"
   append(L"  ");
-                                                            #line 712 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 721 "CodeGeneratorJavascript.cpp.template"
                                                                   print(variable("stringPrefix").string());
-                                                            #line 1131 "CodeGeneratorJavascript.cpp"
+                                                            #line 1140 "CodeGeneratorJavascript.cpp"
   append(L"\"");
-                                                            #line 713 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 722 "CodeGeneratorJavascript.cpp.template"
                                                                   const char *s = a->string(j);
                                                                   const char *c = s;
                                                                   for (; *c; ++c)
@@ -1142,49 +1151,49 @@
                                                                     }
                                                                   }
                                                                   print(s, c - s);
-                                                            #line 1146 "CodeGeneratorJavascript.cpp"
+                                                            #line 1155 "CodeGeneratorJavascript.cpp"
   append(L"\"");
-                                                            #line 725 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 734 "CodeGeneratorJavascript.cpp.template"
                                                                   print(variable("stringSuffix").string());
                                                                 }
-                                                            #line 1151 "CodeGeneratorJavascript.cpp"
+                                                            #line 1160 "CodeGeneratorJavascript.cpp"
   append(L"\n");
   append(L"];\n");
-                                                            #line 729 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 738 "CodeGeneratorJavascript.cpp.template"
                                                               }
                                                               if (! variable("embedded").boolean())
                                                               {
-                                                            #line 1158 "CodeGeneratorJavascript.cpp"
+                                                            #line 1167 "CodeGeneratorJavascript.cpp"
   append(L"\n");
   append(L"var ");
-                                                            #line 733 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 742 "CodeGeneratorJavascript.cpp.template"
                                                                 print(variable("classname").string());
-                                                            #line 1163 "CodeGeneratorJavascript.cpp"
+                                                            #line 1172 "CodeGeneratorJavascript.cpp"
   append(L".Token =\n");
   append(L"{\n");
   append(L"  ");
-                                                            #line 736 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 745 "CodeGeneratorJavascript.cpp.template"
                                                                 const CGVariable &token = variable("token");
                                                                 int w = (int) Format::width(token.size);
                                                                 for (size_t i = 0; i < token.size; ++i)
                                                                 {
                                                                   if (i)
                                                                   {
-                                                            #line 1174 "CodeGeneratorJavascript.cpp"
+                                                            #line 1183 "CodeGeneratorJavascript.cpp"
   append(L",\n");
   append(L"  ");
-                                                            #line 743 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 752 "CodeGeneratorJavascript.cpp.template"
                                                                   }
                                                                   print(token.string(i));
-                                                            #line 1180 "CodeGeneratorJavascript.cpp"
+                                                            #line 1189 "CodeGeneratorJavascript.cpp"
   append(L":");
-                                                            #line 745 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 754 "CodeGeneratorJavascript.cpp.template"
                                                                   print(format.toString<char>(i, 10, w));
                                                                 }
-                                                            #line 1185 "CodeGeneratorJavascript.cpp"
+                                                            #line 1194 "CodeGeneratorJavascript.cpp"
   append(L"\n");
   append(L"};\n");
-                                                            #line 749 "CodeGeneratorJavascript.cpp.template"
+                                                            #line 758 "CodeGeneratorJavascript.cpp.template"
                                                               }
                                                             }
 

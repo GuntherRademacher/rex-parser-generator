@@ -1,0 +1,1055 @@
+// This file was generated on Thu Nov 19, 2026 22:30 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q ambiguousExpr.ebnf -glalr 1 -ambiguity minimal -tree -nobuilder -cpp -name ambiguousExpr_glr_nobuilder
+
+#ifndef AMBIGUOUSEXPR_GLR_NOBUILDER_HPP
+#define AMBIGUOUSEXPR_GLR_NOBUILDER_HPP
+
+#include <vector>
+#include <queue>
+#include <stack>
+#include <stdio.h>
+#include <string>
+#include <algorithm>
+
+class ambiguousExpr_glr_nobuilder
+{
+public:
+  class BottomUpEventHandler;
+
+  ambiguousExpr_glr_nobuilder(const wchar_t *string, BottomUpEventHandler *t)
+  : thread(0)
+
+  {
+    initialize(string, t);
+  }
+
+  virtual ~ambiguousExpr_glr_nobuilder()
+  {
+    delete thread;
+  }
+
+  class BottomUpEventHandler
+  {
+  public:
+    virtual ~BottomUpEventHandler() {}
+
+    virtual void reset(const wchar_t *string) = 0;
+    virtual void nonterminal(int id, int begin, int end, int count) = 0;
+    virtual void terminal(int id, int begin, int end) = 0;
+    virtual void ambiguity(int begin, int end) = 0;
+  };
+
+  class ParseException
+  {
+  private:
+    int begin, end, offending, expected, state;
+    friend class ambiguousExpr_glr_nobuilder;
+
+  protected:
+    ParseException(int b, int e, int s, int o, int x)
+    : begin(b), end(e), offending(o), expected(x), state(s)
+    {
+    }
+
+  public:
+    const wchar_t *getMessage() const
+    {
+      return offending < 0
+           ? L"lexical analysis failed"
+           : L"syntax error";
+    }
+
+    int getBegin() const {return begin;}
+    int getEnd() const {return end;}
+    int getState() const {return state;}
+    int getOffending() const {return offending;}
+    int getExpected() const {return expected;}
+  };
+
+  void initialize(const wchar_t *source, BottomUpEventHandler *parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    maxId = 0;
+    thread = new ParsingThread();
+    thread->parser = this;
+    thread->reset(0, 0, 0);
+  }
+
+  static const wchar_t *getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? 0 : TOKEN[e.getOffending()];
+  }
+
+  static const wchar_t *getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  static const wchar_t *getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
+  static void getExpectedTokenSet(const ParseException &e, const wchar_t **set, int size)
+  {
+    if (e.expected < 0)
+    {
+      getTokenSet(- e.state, set, size);
+    }
+    else if (size == 1)
+    {
+      set[0] = 0;
+    }
+    else if (size > 1)
+    {
+      set[0] = TOKEN[e.expected];
+      set[1] = 0;
+    }
+  }
+
+  static std::wstring to_wstring(int i)
+  {
+    const wchar_t *sign = i < 0 ? L"-" : L"";
+    std::wstring a;
+    do
+    {
+      a += L'0' + abs(i % 10);
+      i /= 10;
+    }
+    while (i != 0);
+    a += sign;
+    std::reverse(a.begin(), a.end());
+    return a;
+  }
+
+  std::wstring getErrorMessage(const ParseException &e)
+  {
+    std::wstring message(e.getMessage());
+    const wchar_t *found = getOffendingToken(e);
+    if (found != 0)
+    {
+      message += L", found ";
+      message += found;
+    }
+    const wchar_t *expected[64];
+    getExpectedTokenSet(e, expected, sizeof expected / sizeof *expected);
+    message += L"\nwhile expecting ";
+    const wchar_t *delimiter(expected[1] ? L"[" : L"");
+    for (const wchar_t **x = expected; *x; ++x)
+    {
+      message += delimiter;
+      message += *x;
+      delimiter = L", ";
+    }
+    message += expected[1] ? L"]\n" : L"\n";
+    int size = e.getEnd() - e.getBegin();
+    if (size != 0 && found == 0)
+    {
+      message += L"after successfully scanning ";
+      message += to_wstring(size);
+      message += L" characters beginning ";
+    }
+    int line = 1;
+    int column = 1;
+    for (int i = 0; i < e.getBegin(); ++i)
+    {
+      if (input[i] == L'\n')
+      {
+        ++line;
+        column = 1;
+      }
+      else
+      {
+        ++column;
+      }
+    }
+    message += L"at line ";
+    message += to_wstring(line);
+    message += L", column ";
+    message += to_wstring(column);
+    message += L":\n...";
+    const wchar_t *w = input + e.getBegin();
+    for (int i = 0; i < 64 && *w; ++i)
+    {
+      message += *w++;
+    }
+    message += L"...";
+    return message;
+  }
+
+  void parse_input()
+  {
+    parse(0, 0, eventHandler, thread);
+  }
+
+private:
+  template<class T>
+  class TreeStructuredStack
+  {
+  public:
+    T *link;
+
+    TreeStructuredStack(T *link)
+    : link(link), referenceCount(1)
+    {}
+
+    virtual ~TreeStructuredStack() {}
+
+    T *share()
+    {
+      ++referenceCount;
+      return static_cast<T *>(this);
+    }
+
+    T *pop(int n)
+    {
+      T *node;
+      T *link;
+      for (node = static_cast<T *>(this); n-- > 0; node = link)
+      {
+        link = node->link;
+        if (--node->referenceCount)
+        {
+          ++link->referenceCount;
+        }
+        else
+        {
+          delete node;
+        }
+      }
+      return node;
+    }
+
+    void unshare()
+    {
+      T *node;
+      T *link;
+      for (node = static_cast<T *>(this); node; node = link)
+      {
+        link = node->link;
+        if (--node->referenceCount)
+        {
+          break;
+        }
+        else
+        {
+          delete node;
+        }
+      }
+    }
+
+  private:
+    int referenceCount;
+  };
+
+  class StackNode : public TreeStructuredStack<StackNode>
+  {
+  public:
+    int state;
+    int pos;
+
+    StackNode(int state, int pos, StackNode *link)
+    : TreeStructuredStack(link), state(state), pos(pos)
+    {}
+
+    bool equals(const StackNode *rhs)
+    {
+      StackNode *lhs = this;
+      while (lhs != 0 && rhs != 0)
+      {
+        if (lhs == rhs) return true;
+        if (lhs->state != rhs->state) return false;
+        if (lhs->pos != rhs->pos) return false;
+        lhs = lhs->link;
+        rhs = rhs->link;
+      }
+      return lhs == rhs;
+    }
+
+  };
+
+  class DeferredEvent : public TreeStructuredStack<DeferredEvent>
+  {
+  public:
+    int id;
+    int begin;
+    int end;
+
+    DeferredEvent(DeferredEvent *link, int id, int begin, int end)
+    : TreeStructuredStack(link), id(id), begin(begin), end(end)
+    {}
+
+    virtual void execute(BottomUpEventHandler *eventHandler) = 0;
+
+    void release(BottomUpEventHandler *eventHandler)
+    {
+      DeferredEvent *current = this;
+      DeferredEvent *predecessor = current->link;
+      current->link = 0;
+      while (predecessor != 0)
+      {
+        DeferredEvent *next = predecessor->link;
+        predecessor->link = current;
+        current = predecessor;
+        predecessor = next;
+      }
+      do
+      {
+        DeferredEvent *next = current->link;
+        current->execute(eventHandler);
+        delete current;
+        current = next;
+      }
+      while (current != 0);
+    }
+
+    void show(BottomUpEventHandler *eventHandler)
+    {
+      std::stack<DeferredEvent *> stack;
+      for (DeferredEvent *current = this; current != 0; current = current->link)
+      {
+        stack.push(current);
+      }
+      while (! stack.empty())
+      {
+        stack.top()->execute(eventHandler);
+        stack.pop();
+      }
+    }
+  };
+
+  class TerminalEvent : public DeferredEvent
+  {
+  public:
+    TerminalEvent(DeferredEvent *link, int id, int begin, int end)
+    : DeferredEvent(link, id, begin, end)
+    {}
+
+    void execute(BottomUpEventHandler *eventHandler)
+    {
+      eventHandler->terminal(id, begin, end);
+    }
+  };
+
+  class NonterminalEvent : public DeferredEvent
+  {
+  public:
+    int count;
+
+    NonterminalEvent(DeferredEvent *link, int id, int begin, int end, int count)
+    : DeferredEvent(link, id, begin, end), count(count)
+    {}
+
+    void execute(BottomUpEventHandler *eventHandler)
+    {
+      eventHandler->nonterminal(id, begin, end, count);
+    }
+  };
+
+
+  class AmbiguityEvent : public DeferredEvent
+  {
+  public:
+    AmbiguityEvent(DeferredEvent *link, int begin, int end)
+    : DeferredEvent(link, -1, begin, end)
+    {}
+
+    void execute(BottomUpEventHandler *eventHandler)
+    {
+      eventHandler->ambiguity(begin, end);
+    }
+  };
+
+  class ParsingThread;
+
+  class ParsingThreadLess
+  {
+  public:
+    bool operator()(ParsingThread *lhs, ParsingThread *rhs) const {return *lhs < *rhs;}
+  };
+
+  class PriorityQueue : public std::priority_queue<ParsingThread *, std::vector<ParsingThread *>, ParsingThreadLess>
+  {
+  public:
+    ~PriorityQueue()
+    {
+      while (!empty())
+      {
+        delete top();
+        pop();
+      }
+    }
+  };
+
+  enum Status {PARSING, ACCEPTED, ERROR};
+
+  void parse(int target, int initialState, BottomUpEventHandler *eventHandler, ParsingThread *&thread)
+  {
+    PriorityQueue threads;
+    thread->open(threads, initialState, eventHandler, target);
+    for (;;)
+    {
+      thread = threads.top();
+      threads.pop();
+      if (thread->accepted)
+      {
+        while (! threads.empty())
+        {
+          ParsingThread *other = threads.top();
+          threads.pop();
+          if (thread->e0 < other->e0)
+          {
+            delete thread;
+            thread = other;
+          }
+          else
+          {
+            thread = resolve(thread, other);
+          }
+        }
+        if (thread->deferredEvent != 0)
+        {
+          thread->deferredEvent->release(eventHandler);
+          thread->deferredEvent = 0;
+        }
+        return;
+      }
+
+      while (! threads.empty() && *threads.top() == *thread)
+      {
+        ParsingThread *other = threads.top();
+        threads.pop();
+        thread = resolve(thread, other);
+      }
+      if (threads.empty())
+      {
+        if (thread->deferredEvent != 0)
+        {
+          thread->deferredEvent->release(eventHandler);
+          thread->deferredEvent = 0;
+        }
+      }
+
+      int status;
+      for (;;)
+      {
+        if ((status = thread->parse()) != PARSING) break;
+        if (! threads.empty()) break;
+      }
+
+      if (status != ERROR)
+      {
+        threads.push(thread);
+      }
+      else if (threads.empty())
+      {
+        thread->cleanup();
+        throw ParseException(thread->b1,
+                             thread->e1,
+                             TOKENSET[thread->state] + 1,
+                             thread->l1,
+                             -1
+                            );
+      }
+      else
+      {
+        delete thread;
+      }
+    }
+  }
+
+  ParsingThread *resolve(ParsingThread *thread, ParsingThread *other)
+  {
+    int begin = thread->stack->pos;
+    for (StackNode *a = thread->stack, *b = other->stack; a != b && a != 0 && b != 0; a = a->link, b = b->link)
+    {
+      begin = a->pos;
+    }
+    ParsingThread *winner = other->eventCount < thread->eventCount ? other : thread;
+    delete (winner == thread ? other : thread);
+    winner->addAmbiguity(begin, winner->e0);
+    return winner;
+  }
+  class ParsingThread
+  {
+  public:
+    ambiguousExpr_glr_nobuilder *parser;
+    PriorityQueue *threads;
+    bool accepted;
+    StackNode *stack;
+    int state;
+    int action;
+    int target;
+    DeferredEvent *deferredEvent;
+    int id;
+    int eventCount;
+
+    ParsingThread()
+    : stack(0)
+    {}
+
+    ~ParsingThread()
+    {
+      cleanup();
+    }
+
+    void open(PriorityQueue &threads, int initialState, BottomUpEventHandler *eventHandler, int target)
+    {
+      this->threads = &threads;
+      this->target = target;
+      eventCount = 0;
+      bw = e0;
+      bs = e0;
+      es = e0;
+      this->eventHandler = eventHandler;
+      if (eventHandler != 0)
+      {
+        eventHandler->reset(parser->input);
+      }
+      deferredEvent = 0;
+      accepted = false;
+      stack = new StackNode(-1, e0, 0);
+      state = initialState;
+      action = predict(initialState);
+      threads.push(this);
+    }
+
+    void cleanup()
+    {
+      if (stack != 0)
+      {
+        stack->unshare();
+        stack = 0;
+      }
+      if (deferredEvent != 0)
+      {
+        deferredEvent->unshare();
+        deferredEvent = 0;
+      }
+    }
+
+    ParsingThread *copy(ParsingThread *other, int action)
+    {
+      this->action = action;
+      accepted = other->accepted;
+      target = other->target;
+      parser = other->parser;
+      eventCount = other->eventCount;
+      bs = other->bs;
+      bw = other->bw;
+      es = other->es;
+      eventHandler = other->eventHandler;
+      deferredEvent = other->deferredEvent == 0 ? 0 : other->deferredEvent->share();
+      id = ++parser->maxId;
+      threads = other->threads;
+      state = other->state;
+      stack = other->stack->share();
+      b0 = other->b0;
+      e0 = other->e0;
+      l1 = other->l1;
+      b1 = other->b1;
+      e1 = other->e1;
+      end = other->end;
+      return this;
+    }
+
+
+    void addAmbiguity(int begin, int end)
+    {
+      if (eventHandler != 0)
+        deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+    }
+
+    bool operator<(const ParsingThread &other)
+    {
+      int comp;
+      if (accepted != other.accepted)
+      {
+        comp = accepted ? 1 : -1;
+      }
+      else
+      {
+        comp = e0 - other.e0;
+        if (comp == 0)
+          comp = id - other.id;
+      }
+      return comp >= 0;
+    }
+
+    bool operator==(const ParsingThread &other)
+    {
+      if (accepted != other.accepted) return false;
+      if (b1 != other.b1) return false;
+      if (e1 != other.e1) return false;
+      if (l1 != other.l1) return false;
+      if (state != other.state) return false;
+      if (action != other.action) return false;
+      if (! stack->equals(other.stack)) return false;
+      return true;
+    }
+
+    int parse()
+    {
+      int nonterminalId = -1;
+      for (;;)
+      {
+        int argument = action >> 6;
+        int lookback = (action >> 3) & 7;
+        int shift = -1;
+        int reduce = -1;
+        int symbols = -1;
+        int pos = -1;
+        switch (action & 7)
+        {
+        case 1: // SHIFT
+          shift = argument;
+          break;
+
+        case 2: // REDUCE
+          reduce = argument;
+          symbols = lookback;
+          break;
+
+        case 4: // SHIFT+REDUCE
+          shift = state;
+          reduce = argument;
+          symbols = lookback + 1;
+          break;
+
+        case 6: // ACCEPT
+          accepted = true;
+          action = 0;
+          return ACCEPTED;
+
+        case 7: // FORK
+          threads->push((new ParsingThread())->copy(this, APPENDIX[argument]));
+          action = APPENDIX[argument + 1];
+          return PARSING;
+
+        default: // ERROR
+          return ERROR;
+        }
+
+        if (shift >= 0)
+        {
+          if (nonterminalId < 0)
+          {
+            eventCount++;
+            if (eventHandler != 0)
+            {
+              if (isUnambiguous())
+              {
+                eventHandler->terminal(l1, b1, e1);
+              }
+              else
+              {
+                deferredEvent = new TerminalEvent(deferredEvent, l1, b1, e1);
+              }
+            }
+            es = e1;
+            pos = b1;
+            consume(l1);
+          }
+          else
+          {
+            pos = bs;
+          }
+        }
+
+        if (reduce < 0)
+        {
+          stack = new StackNode(state, pos, stack);
+          state = shift;
+          action = predict(state);
+          break;
+        }
+        else
+        {
+          nonterminalId = reduce;
+          eventCount++;
+          if (l1 == 0)
+          {
+            b1 = e0;
+          }
+          if (symbols > 0)
+          {
+            int n = symbols;
+            if (shift >= 0)
+            {
+              n -= 1;
+            }
+            if (n > 0)
+            {
+              stack = stack->pop(n - 1);
+              state = stack->state;
+              bs = stack->pos;
+              stack = stack->pop(1);
+            }
+            else
+            {
+              bs = pos;
+            }
+          }
+          else
+          {
+            bs = b1;
+            es = b1;
+          }
+          if (nonterminalId == target && stack->link == 0)
+          {
+            bs = bw;
+            es = b1;
+            bw = b1;
+          }
+          if (eventHandler != 0)
+          {
+            if (isUnambiguous())
+            {
+              eventHandler->nonterminal(nonterminalId, bs, es, symbols);
+            }
+            else
+            {
+              deferredEvent = new NonterminalEvent(deferredEvent, nonterminalId, bs, es, symbols);
+            }
+          }
+          action = goTo(nonterminalId, state);
+        }
+      }
+      return PARSING;
+    }
+
+    bool isUnambiguous()
+    {
+      return threads->empty();
+    }
+
+  public:
+
+    void reset(int l, int b, int e)
+    {
+              b0 = b; e0 = b;
+      l1 = l; b1 = b; e1 = e;
+      end = e;
+      parser->maxId = 0;
+      id = parser->maxId;
+    }
+
+    void consume(int t)
+    {
+      if (l1 == t)
+      {
+        b0 = b1; e0 = e1; l1 = 0;
+      }
+      else
+      {
+        error(b1, e1, 0, l1, t);
+      }
+    }
+
+    int matchW(int tokenSetId)
+    {
+      int code;
+      for (;;)
+      {
+        code = match(tokenSetId);
+        if (code != 1)              // ws
+        {
+          break;
+        }
+      }
+      return code;
+    }
+
+    int error(int b, int e, int s, int l, int t)
+    {
+      throw ParseException(b, e, s, l, t);
+    }
+
+    int     b0, e0;
+    int l1, b1, e1;
+    int bw, bs, es;
+    BottomUpEventHandler *eventHandler;
+
+    int begin;
+    int end;
+
+    int predict(int dpi)
+    {
+      int d = dpi;
+      if (l1 == 0)
+      {
+        l1 = matchW(TOKENSET[d]);
+        b1 = begin;
+        e1 = end;
+      }
+      if (l1 < 0)
+        return 0;
+      int j10 = (d << 4) + l1;
+      int j11 = j10 >> 1;
+      int action = CASEID[(j10 & 1) + CASEID[(j11 & 3) + CASEID[j11 >> 2]]];
+      return action >> 1;
+    }
+
+    int match(int tokenSetId)
+    {
+      begin = end;
+      int current = end;
+      int result = INITIAL[tokenSetId];
+
+      for (int code = result & 3; code != 0; )
+      {
+        int charclass;
+        int c0 = parser->input[current];
+        ++current;
+        if (c0 < 0x80)
+        {
+          charclass = MAP0[c0];
+        }
+        else if (c0 < 0xd800)
+        {
+          int c1 = c0 >> 5;
+          charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+
+        int i0 = (charclass << 2) + code - 1;
+        code = TRANSITION[(i0 & 1) + TRANSITION[i0 >> 1]];
+        if (code > 3)
+        {
+          result = code;
+          code &= 3;
+          end = current;
+        }
+      }
+
+      result >>= 2;
+      if (result == 0)
+      {
+        end = current - 1;
+        int c1 = parser->input[end];
+        if (c1 >= 0xdc00 && c1 < 0xe000) --end;
+        end = begin;
+        return -1;
+      }
+
+      if (parser->input[begin] == 0) end = begin;
+      return (result & 7) - 1;
+    }
+
+  };
+
+  ParsingThread *thread;
+  BottomUpEventHandler *eventHandler;
+  const wchar_t *input;
+  int size;
+  int maxId;
+
+  class MalformedInputException
+  {
+  public:
+    MalformedInputException(size_t offset) : offset(offset) {}
+    size_t getOffset() const {return offset;}
+
+  private:
+    size_t offset;
+  };
+
+  class Utf8Encoder
+  {
+  public:
+    static std::string encode(const wchar_t *unencoded)
+    {
+      return encode(unencoded, wcslen(unencoded));
+    }
+
+    static std::string encode(const wchar_t *unencoded, size_t size)
+    {
+      std::string encoded;
+      encoded.reserve(size + 3);
+
+      for (size_t i = 0; i < size; ++i)
+      {
+        if (encoded.size() + 4 >= encoded.capacity()) encoded.reserve(encoded.capacity() * 2);
+
+        int w = unencoded[i];
+        if (w < 0x80)
+        {
+          encoded += w;
+        }
+        else if (w < 0x800)
+        {
+          encoded += 0xc0 | (w >> 6);
+          encoded += 0x80 | (w & 0x3f);
+        }
+        else if (w < 0xd800)
+        {
+          encoded += 0xe0 | ( w          >> 12);
+          encoded += 0x80 | ((w & 0xfff) >>  6);
+          encoded += 0x80 | ( w &  0x3f       );
+        }
+        else if (w < 0xe000)
+        {
+          if (++i >= size)
+          {
+            throw MalformedInputException(i - 1);
+          }
+          int w2 = unencoded[i];
+          if (w2 < 0xdc00 || w2 > 0xdfff)
+          {
+            throw MalformedInputException(i - 1);
+          }
+          w = (((w  & 0x3ff) << 10) | (w2 & 0x3ff)) + 0x10000;
+          encoded += 0xf0 | ( w            >> 18);
+          encoded += 0x80 | ((w & 0x3ffff) >> 12);
+          encoded += 0x80 | ((w &   0xfff) >>  6);
+          encoded += 0x80 | ( w &    0x3f       );
+        }
+        else if (w < 0x10000)
+        {
+          encoded += 0xe0 | ( w          >> 12);
+          encoded += 0x80 | ((w & 0xfff) >>  6);
+          encoded += 0x80 | ( w &  0x3f       );
+        }
+        else if (w < 0x110000)
+        {
+          encoded += 0xf0 | ( w            >> 18);
+          encoded += 0x80 | ((w & 0x3ffff) >> 12);
+          encoded += 0x80 | ((w &   0xfff) >>  6);
+          encoded += 0x80 | ( w &    0x3f       );
+        }
+        else
+        {
+          throw MalformedInputException(i);
+        }
+      }
+      return encoded;
+    }
+  };
+
+  static int goTo(int nonterminal, int state)
+  {
+    int i0 = (state << 3) + nonterminal;
+    return GOTO[(i0 & 1) + GOTO[i0 >> 1]];
+  }
+
+  static void getTokenSet(int tokenSetId, const wchar_t **set, int size)
+  {
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    for (int i = 0; i < 5; i += 32)
+    {
+      int j = i;
+      for (unsigned int f = ec(i >> 5, s); f != 0; f >>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          if (size > 1)
+          {
+            set[0] = TOKEN[j];
+            ++set;
+            --size;
+          }
+        }
+      }
+    }
+    if (size > 0)
+    {
+      set[0] = 0;
+    }
+  }
+
+  static int ec(int t, int s)
+  {
+    int i0 = t * 3 + s - 1;
+    return EXPECTED[i0];
+  }
+
+  static const int MAP0[];
+  static const int MAP1[];
+  static const int INITIAL[];
+  static const int TRANSITION[];
+  static const int EXPECTED[];
+  static const int CASEID[];
+  static const int TOKENSET[];
+  static const int APPENDIX[];
+  static const int GOTO[];
+public:
+  static const wchar_t *TOKEN[];
+  static const wchar_t *NONTERMINAL[];
+};
+
+const int ambiguousExpr_glr_nobuilder::MAP0[] =
+{
+/*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+/*  37 */ 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/*  74 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 111 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+const int ambiguousExpr_glr_nobuilder::MAP1[] =
+{
+/*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+/*  27 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+/*  54 */ 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+/*  81 */ 89, 89, 89, 89, 89, 89, 89, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* 115 */ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0,
+/* 152 */ 0
+};
+
+const int ambiguousExpr_glr_nobuilder::INITIAL[] =
+{
+/* 0 */ 1, 2
+};
+
+const int ambiguousExpr_glr_nobuilder::TRANSITION[] =
+{
+/*  0 */ 15, 15, 10, 15, 12, 15, 14, 14, 16, 15, 8, 8, 0, 20, 15, 0, 0, 16
+};
+
+const int ambiguousExpr_glr_nobuilder::EXPECTED[] =
+{
+/* 0 */ 6, 26, 4
+};
+
+const int ambiguousExpr_glr_nobuilder::CASEID[] =
+{
+/*  0 */ 14, 16, 14, 16, 11, 16, 8, 16, 21, 25, 27, 21, 22, 24, 21, 20, 21, 21, 21, 21, 136, 0, 0, 24, 146, 0, 180, 14,
+/* 28 */ 0
+};
+
+const int ambiguousExpr_glr_nobuilder::TOKENSET[] =
+{
+/* 0 */ 0, 0, 1, 1
+};
+
+const int ambiguousExpr_glr_nobuilder::APPENDIX[] =
+{
+/* 0 */ 73, 90
+};
+
+const int ambiguousExpr_glr_nobuilder::GOTO[] =
+{
+/*  0 */ 8, 10, 10, 10, 11, 10, 10, 10, 6, 137, 0, 0, 201
+};
+
+const wchar_t *ambiguousExpr_glr_nobuilder::TOKEN[] =
+{
+  L"%ERROR",
+  L"ws",
+  L"integer",
+  L"EOF",
+  L"'+'"
+};
+
+const wchar_t *ambiguousExpr_glr_nobuilder::NONTERMINAL[] =
+{
+  L"input",
+  L"expr"
+};
+
+#endif
+
+// End

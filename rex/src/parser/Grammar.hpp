@@ -713,6 +713,8 @@ public:
     codepoints(false),
     singleLexer(false),
     basex(false),
+    noBuilders(false),
+    mainOrPerformance(false),
     tables(0),
     cyclic(TokenSequence::VOID),
     tokenSequenceSets(0),
@@ -864,6 +866,8 @@ public:
   bool codepoints;
   bool singleLexer;
   bool basex;
+  bool noBuilders;
+  bool mainOrPerformance;
 
   size_t tables;
   TokenSequence cyclic;

@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 22:42 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintHaxe.cpp.template
                                                             #line 1 "PrintHaxe.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -28,21 +28,24 @@
   append(L";\n");
                                                             #line 20 "PrintHaxe.cpp.template"
                                                                 }
+                                                            #line 32 "PrintHaxe.cpp"
+  append(L"\n");
+  append(L"import haxe.io.Bytes;");
+                                                            #line 22 "PrintHaxe.cpp.template"
                                                                 if (main || performanceTest)
                                                                 {
-                                                            #line 34 "PrintHaxe.cpp"
+                                                            #line 38 "PrintHaxe.cpp"
   append(L"\n");
-  append(L"import haxe.io.Bytes;\n");
   append(L"import sys.io.File;");
                                                             #line 25 "PrintHaxe.cpp.template"
                                                                   if (performanceTest)
                                                                   {
-                                                            #line 41 "PrintHaxe.cpp"
+                                                            #line 44 "PrintHaxe.cpp"
   append(L"\n");
   append(L"import sys.FileSystem;");
                                                             #line 28 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 46 "PrintHaxe.cpp"
+                                                            #line 49 "PrintHaxe.cpp"
   append(L"\n");
                                                             #line 30 "PrintHaxe.cpp.template"
                                                                 }
@@ -57,25 +60,25 @@
                                                                 printThreadBody1();
                                                                 print(lexerInstanceCode);
                                                                 currentStaticPrefix = L"";
-                                                            #line 61 "PrintHaxe.cpp"
+                                                            #line 64 "PrintHaxe.cpp"
   append(L"}\n");
                                                             #line 43 "PrintHaxe.cpp.template"
                                                               }
                                                               if (! hasProlog)
                                                               {
-                                                            #line 67 "PrintHaxe.cpp"
+                                                            #line 70 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class ");
                                                             #line 47 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
                                                                 if (! interfaceName.empty())
                                                                 {
-                                                            #line 74 "PrintHaxe.cpp"
+                                                            #line 77 "PrintHaxe.cpp"
   append(L" implements ");
                                                             #line 50 "PrintHaxe.cpp.template"
                                                                   print(interfaceName.c_str());
                                                                 }
-                                                            #line 79 "PrintHaxe.cpp"
+                                                            #line 82 "PrintHaxe.cpp"
   append(L"\n");
   append(L"{");
                                                             #line 53 "PrintHaxe.cpp.template"
@@ -86,7 +89,7 @@
                                                               }
                                                               if (main)
                                                               {
-                                                            #line 90 "PrintHaxe.cpp"
+                                                            #line 93 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public static function main()\n");
   append(L"  {\n");
@@ -99,24 +102,24 @@
                                                                 print(className.c_str());
                                                                 if (tree)
                                                                 {
-                                                            #line 103 "PrintHaxe.cpp"
+                                                            #line 106 "PrintHaxe.cpp"
   append(L" [-i]");
                                                             #line 70 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 107 "PrintHaxe.cpp"
+                                                            #line 110 "PrintHaxe.cpp"
   append(L" INPUT...\\n\");\n");
   append(L"      Sys.println(\"  parse INPUT, which is either a filename or literal text enclosed in curly braces\");");
                                                             #line 73 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 113 "PrintHaxe.cpp"
+                                                            #line 116 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      Sys.println(\"\");\n");
   append(L"      Sys.println(\"  Option:\");\n");
   append(L"      Sys.println(\"    -i     indented parse tree\");");
                                                             #line 78 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 120 "PrintHaxe.cpp"
+                                                            #line 123 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    else\n");
@@ -127,7 +130,7 @@
                                                             #line 85 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 131 "PrintHaxe.cpp"
+                                                            #line 134 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        if (arg == \"-i\")\n");
   append(L"        {\n");
@@ -136,86 +139,86 @@
   append(L"        }\n");
                                                             #line 93 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 140 "PrintHaxe.cpp"
+                                                            #line 143 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        var input = read(arg);");
                                                             #line 95 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 146 "PrintHaxe.cpp"
+                                                            #line 149 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        var s = new XmlSerializer(indent);");
                                                             #line 98 "PrintHaxe.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 152 "PrintHaxe.cpp"
+                                                            #line 155 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        var b = new ParseTreeBuilder();");
                                                             #line 101 "PrintHaxe.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 158 "PrintHaxe.cpp"
+                                                            #line 161 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        var parser = new ");
                                                             #line 104 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 163 "PrintHaxe.cpp"
+                                                            #line 166 "PrintHaxe.cpp"
   append(L"(input");
                                                             #line 105 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 168 "PrintHaxe.cpp"
+                                                            #line 171 "PrintHaxe.cpp"
   append(L", ");
                                                             #line 107 "PrintHaxe.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 173 "PrintHaxe.cpp"
+                                                            #line 176 "PrintHaxe.cpp"
   append(L"b");
                                                             #line 109 "PrintHaxe.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 179 "PrintHaxe.cpp"
+                                                            #line 182 "PrintHaxe.cpp"
   append(L"s");
                                                             #line 112 "PrintHaxe.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 184 "PrintHaxe.cpp"
+                                                            #line 187 "PrintHaxe.cpp"
   append(L");\n");
   append(L"        try\n");
   append(L"        {");
                                                             #line 116 "PrintHaxe.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 191 "PrintHaxe.cpp"
+                                                            #line 194 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          trace(\"<trace>\");");
                                                             #line 119 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 196 "PrintHaxe.cpp"
+                                                            #line 199 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          parser.");
                                                             #line 121 "PrintHaxe.cpp.template"
                                                                 print(methodPrefixParse);
                                                                 print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 202 "PrintHaxe.cpp"
+                                                            #line 205 "PrintHaxe.cpp"
   append(L"();");
                                                             #line 123 "PrintHaxe.cpp.template"
                                                                 if (trace)
                                                                 {
-                                                            #line 207 "PrintHaxe.cpp"
+                                                            #line 210 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          trace(\"</trace>\");");
                                                             #line 126 "PrintHaxe.cpp.template"
                                                                 }
                                                                 if (tree && isLrParser)
                                                                 {
-                                                            #line 214 "PrintHaxe.cpp"
+                                                            #line 217 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          b.serialize(s);");
                                                             #line 130 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 219 "PrintHaxe.cpp"
+                                                            #line 222 "PrintHaxe.cpp"
   append(L"\n");
   append(L"        }\n");
   append(L"        catch (pe: ParseException)\n");
@@ -223,7 +226,7 @@
                                                             #line 134 "PrintHaxe.cpp.template"
                                                                 if (rejectsAmbiguity() && tree)
                                                                 {
-                                                            #line 227 "PrintHaxe.cpp"
+                                                            #line 230 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          if (pe.isAmbiguousInput())\n");
   append(L"          {\n");
@@ -232,7 +235,7 @@
   append(L"          }");
                                                             #line 141 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 236 "PrintHaxe.cpp"
+                                                            #line 239 "PrintHaxe.cpp"
   append(L"\n");
   append(L"          throw \"ParseException while processing \" + arg + \":\\n\" + parser.getErrorMessage(pe);\n");
   append(L"        }\n");
@@ -244,46 +247,46 @@
                                                               printReadMethod();
                                                               if (! hasProlog)
                                                               {
-                                                            #line 248 "PrintHaxe.cpp"
+                                                            #line 251 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function new(string");
                                                             #line 153 "PrintHaxe.cpp.template"
                                                                 if (noLexer)
                                                                 {
-                                                            #line 254 "PrintHaxe.cpp"
+                                                            #line 257 "PrintHaxe.cpp"
   append(L", lexer");
                                                             #line 155 "PrintHaxe.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 260 "PrintHaxe.cpp"
+                                                            #line 263 "PrintHaxe.cpp"
   append(L", t");
                                                             #line 158 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 264 "PrintHaxe.cpp"
+                                                            #line 267 "PrintHaxe.cpp"
   append(L")\n");
   append(L"  {\n");
   append(L"    initialize(string");
                                                             #line 161 "PrintHaxe.cpp.template"
                                                                 if (noLexer)
                                                                 {
-                                                            #line 271 "PrintHaxe.cpp"
+                                                            #line 274 "PrintHaxe.cpp"
   append(L", lexer");
                                                             #line 163 "PrintHaxe.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 277 "PrintHaxe.cpp"
+                                                            #line 280 "PrintHaxe.cpp"
   append(L", t");
                                                             #line 166 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 281 "PrintHaxe.cpp"
+                                                            #line 284 "PrintHaxe.cpp"
   append(L");\n");
   append(L"  }\n");
                                                             #line 169 "PrintHaxe.cpp.template"
                                                               }
                                                               /*
-                                                            #line 287 "PrintHaxe.cpp"
+                                                            #line 290 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function getInput()\n");
   append(L"  {\n");
@@ -310,7 +313,7 @@
                                                             void PrintHaxe::openStackNode()
                                                             {
                                                               currentStaticPrefix = classNamePrefix;
-                                                            #line 314 "PrintHaxe.cpp"
+                                                            #line 317 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private class StackNode\n");
   append(L"{\n");
@@ -318,12 +321,12 @@
                                                             #line 199 "PrintHaxe.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 322 "PrintHaxe.cpp"
+                                                            #line 325 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var code: Int;");
                                                             #line 202 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 327 "PrintHaxe.cpp"
+                                                            #line 330 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var pos: Int;\n");
   append(L"  public var link: StackNode;\n");
@@ -332,23 +335,23 @@
                                                             #line 207 "PrintHaxe.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 336 "PrintHaxe.cpp"
+                                                            #line 339 "PrintHaxe.cpp"
   append(L"code: Int, ");
                                                             #line 209 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 340 "PrintHaxe.cpp"
+                                                            #line 343 "PrintHaxe.cpp"
   append(L"pos: Int, link: StackNode)\n");
   append(L"  {\n");
   append(L"    this.state = state;");
                                                             #line 212 "PrintHaxe.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 347 "PrintHaxe.cpp"
+                                                            #line 350 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    this.code = code;");
                                                             #line 215 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 352 "PrintHaxe.cpp"
+                                                            #line 355 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    this.pos = pos;\n");
   append(L"    this.link = link;\n");
@@ -364,12 +367,12 @@
                                                             #line 227 "PrintHaxe.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 368 "PrintHaxe.cpp"
+                                                            #line 371 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      if (lhs.code != rhs.code) return false;");
                                                             #line 230 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 373 "PrintHaxe.cpp"
+                                                            #line 376 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      if (lhs.pos != rhs.pos) return false;\n");
   append(L"      lhs = lhs.link;\n");
@@ -385,7 +388,7 @@
                                                             void PrintHaxe::closeStackNode()
                                                             {
                                                               decreaseIndent();
-                                                            #line 389 "PrintHaxe.cpp"
+                                                            #line 392 "PrintHaxe.cpp"
   append(L"\n");
   append(L"}\n");
   append(L"\n");
@@ -464,7 +467,7 @@
                                                               beginNonpublic();
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 468 "PrintHaxe.cpp"
+                                                            #line 471 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private class DeferredCode\n");
   append(L"{\n");
@@ -485,7 +488,7 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 489 "PrintHaxe.cpp"
+                                                            #line 492 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private class DeferredEvent\n");
   append(L"{\n");
@@ -496,14 +499,14 @@
                                                             #line 346 "PrintHaxe.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 500 "PrintHaxe.cpp"
+                                                            #line 503 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var depth: Int;\n");
   append(L"\n");
   append(L"  public function isTerminal(): Bool {return false;}");
                                                             #line 351 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 507 "PrintHaxe.cpp"
+                                                            #line 510 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public function new(link: DeferredEvent, id: Int, begin: Int, end: Int)\n");
@@ -515,12 +518,12 @@
                                                             #line 359 "PrintHaxe.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 519 "PrintHaxe.cpp"
+                                                            #line 522 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    this.depth = link == null ? 1 : link.depth + 1;");
                                                             #line 362 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 524 "PrintHaxe.cpp"
+                                                            #line 527 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  }\n");
   append(L"\n");
@@ -544,12 +547,12 @@
                                                             #line 382 "PrintHaxe.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 548 "PrintHaxe.cpp"
+                                                            #line 551 "PrintHaxe.cpp"
   append(L"if (eventHandler != null)\n");
   append(L"        ");
                                                             #line 385 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 553 "PrintHaxe.cpp"
+                                                            #line 556 "PrintHaxe.cpp"
   append(L"current.execute(eventHandler);\n");
   append(L"      current = current.link;\n");
   append(L"    }\n");
@@ -586,13 +589,13 @@
                                                             #line 418 "PrintHaxe.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 590 "PrintHaxe.cpp"
+                                                            #line 593 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public override function isTerminal(): Bool {return true;}");
                                                             #line 422 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 596 "PrintHaxe.cpp"
+                                                            #line 599 "PrintHaxe.cpp"
   append(L"\n");
   append(L"}\n");
   append(L"\n");
@@ -614,7 +617,7 @@
                                                             #line 441 "PrintHaxe.cpp.template"
                                                                 if (resolvesAmbiguity)
                                                                 {
-                                                            #line 618 "PrintHaxe.cpp"
+                                                            #line 621 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private class AmbiguityEvent extends DeferredEvent\n");
   append(L"{\n");
@@ -635,14 +638,14 @@
 
                                                             void PrintHaxe::openThread()
                                                             {
-                                                            #line 639 "PrintHaxe.cpp"
+                                                            #line 642 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private class ParsingThread\n");
   append(L"{\n");
   append(L"  public var parser: ");
                                                             #line 465 "PrintHaxe.cpp.template"
                                                               print(className.c_str());
-                                                            #line 646 "PrintHaxe.cpp"
+                                                            #line 649 "PrintHaxe.cpp"
   append(L";\n");
   append(L"  public var threads: Heap;\n");
   append(L"  public var accepted: Bool;\n");
@@ -653,30 +656,30 @@
                                                             #line 472 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 657 "PrintHaxe.cpp"
+                                                            #line 660 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var deferredEvent: DeferredEvent;");
                                                             #line 475 "PrintHaxe.cpp.template"
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 664 "PrintHaxe.cpp"
+                                                            #line 667 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var deferredCode: DeferredCode;");
                                                             #line 479 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 669 "PrintHaxe.cpp"
+                                                            #line 672 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var id: Int;");
                                                             #line 481 "PrintHaxe.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 675 "PrintHaxe.cpp"
+                                                            #line 678 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var eventCount: Int;");
                                                             #line 484 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 680 "PrintHaxe.cpp"
+                                                            #line 683 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public function new()\n");
@@ -687,11 +690,11 @@
                                                             #line 491 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 691 "PrintHaxe.cpp"
+                                                            #line 694 "PrintHaxe.cpp"
   append(L", eh: BottomUpEventHandler");
                                                             #line 493 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 695 "PrintHaxe.cpp"
+                                                            #line 698 "PrintHaxe.cpp"
   append(L", t: Int): Heap\n");
   append(L"  {\n");
   append(L"    accepted = false;\n");
@@ -699,14 +702,14 @@
                                                             #line 497 "PrintHaxe.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 703 "PrintHaxe.cpp"
+                                                            #line 706 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    eventCount = 0;");
                                                             #line 500 "PrintHaxe.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 710 "PrintHaxe.cpp"
+                                                            #line 713 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    eventHandler = eh;\n");
   append(L"    if (eventHandler != null)\n");
@@ -718,34 +721,34 @@
                                                               }
                                                               if (hasCustomCode && useGlr)
                                                               {
-                                                            #line 722 "PrintHaxe.cpp"
+                                                            #line 725 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    deferredCode = null;");
                                                             #line 513 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 727 "PrintHaxe.cpp"
+                                                            #line 730 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    stack = new StackNode(-1, ");
                                                             #line 515 "PrintHaxe.cpp.template"
                                                               if (grammar->states->hasLookback)
                                                               {
-                                                            #line 733 "PrintHaxe.cpp"
+                                                            #line 736 "PrintHaxe.cpp"
   append(L"0, ");
                                                             #line 517 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 737 "PrintHaxe.cpp"
+                                                            #line 740 "PrintHaxe.cpp"
   append(L"e0, null);\n");
   append(L"    state = initialState;\n");
   append(L"    action = predict(initialState);");
                                                             #line 520 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 744 "PrintHaxe.cpp"
+                                                            #line 747 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    es = e0;");
                                                             #line 523 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 749 "PrintHaxe.cpp"
+                                                            #line 752 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    bw = e0;\n");
   append(L"    bs = e0;\n");
@@ -765,14 +768,14 @@
                                                             #line 539 "PrintHaxe.cpp.template"
                                                               if (resolvesAmbiguity)
                                                               {
-                                                            #line 769 "PrintHaxe.cpp"
+                                                            #line 772 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    eventCount = other.eventCount;");
                                                             #line 542 "PrintHaxe.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 776 "PrintHaxe.cpp"
+                                                            #line 779 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    es = other.es;\n");
   append(L"    eventHandler = other.eventHandler;\n");
@@ -781,12 +784,12 @@
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 785 "PrintHaxe.cpp"
+                                                            #line 788 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    deferredCode = other.deferredCode;");
                                                             #line 552 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 790 "PrintHaxe.cpp"
+                                                            #line 793 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    id = ++parser.maxId;\n");
   append(L"    threads = other.threads;\n");
@@ -798,38 +801,38 @@
                                                               for (size_t i = 1; i <= grammar->k; ++i)
                                                               {
                                                                 const wchar_t *iString = format.toString<wchar_t>(i);
-                                                            #line 802 "PrintHaxe.cpp"
+                                                            #line 805 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    l");
                                                             #line 563 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 807 "PrintHaxe.cpp"
+                                                            #line 810 "PrintHaxe.cpp"
   append(L" = other.l");
                                                             #line 564 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 811 "PrintHaxe.cpp"
+                                                            #line 814 "PrintHaxe.cpp"
   append(L";\n");
   append(L"    b");
                                                             #line 566 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 816 "PrintHaxe.cpp"
+                                                            #line 819 "PrintHaxe.cpp"
   append(L" = other.b");
                                                             #line 567 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 820 "PrintHaxe.cpp"
+                                                            #line 823 "PrintHaxe.cpp"
   append(L";\n");
   append(L"    e");
                                                             #line 569 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 825 "PrintHaxe.cpp"
+                                                            #line 828 "PrintHaxe.cpp"
   append(L" = other.e");
                                                             #line 570 "PrintHaxe.cpp.template"
                                                                 print(iString);
-                                                            #line 829 "PrintHaxe.cpp"
+                                                            #line 832 "PrintHaxe.cpp"
   append(L";");
                                                             #line 571 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 833 "PrintHaxe.cpp"
+                                                            #line 836 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    end = other.end;\n");
   append(L"    return this;\n");
@@ -857,7 +860,7 @@
                                                             #line 596 "PrintHaxe.cpp.template"
                                                               if (resolvesAmbiguity && tree)
                                                               {
-                                                            #line 861 "PrintHaxe.cpp"
+                                                            #line 864 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function addAmbiguity(begin: Int, end: Int): Void\n");
   append(L"  {\n");
@@ -866,7 +869,7 @@
   append(L"  }\n");
                                                             #line 604 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 870 "PrintHaxe.cpp"
+                                                            #line 873 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function parse(): Int\n");
   append(L"  {");
@@ -877,7 +880,7 @@
 
                                                             void PrintHaxe::printGlrParseMethod()
                                                             {
-                                                            #line 881 "PrintHaxe.cpp"
+                                                            #line 884 "PrintHaxe.cpp"
   append(L"\n");
   append(L"public static var PARSING = 0;\n");
   append(L"public static var ACCEPTED = 1;\n");
@@ -887,22 +890,22 @@
                                                             #line 618 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 891 "PrintHaxe.cpp"
+                                                            #line 894 "PrintHaxe.cpp"
   append(L"eventHandler: BottomUpEventHandler, ");
                                                             #line 621 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 895 "PrintHaxe.cpp"
+                                                            #line 898 "PrintHaxe.cpp"
   append(L"thread: ParsingThread): ParsingThread\n");
   append(L"{\n");
   append(L"  var threads: Heap = thread.open(initialState");
                                                             #line 624 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 902 "PrintHaxe.cpp"
+                                                            #line 905 "PrintHaxe.cpp"
   append(L", eventHandler");
                                                             #line 627 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 906 "PrintHaxe.cpp"
+                                                            #line 909 "PrintHaxe.cpp"
   append(L", target);\n");
   append(L"  while (true)\n");
   append(L"  {\n");
@@ -912,7 +915,7 @@
                                                             #line 633 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 916 "PrintHaxe.cpp"
+                                                            #line 919 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      var other: ParsingThread = null;\n");
   append(L"      while (! threads.isEmpty())\n");
@@ -930,18 +933,18 @@
                                                             #line 648 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 934 "PrintHaxe.cpp"
+                                                            #line 937 "PrintHaxe.cpp"
   append(L", thread.deferredEvent, other.deferredEvent");
                                                             #line 650 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 938 "PrintHaxe.cpp"
+                                                            #line 941 "PrintHaxe.cpp"
   append(L");\n");
   append(L"      }");
                                                             #line 652 "PrintHaxe.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 945 "PrintHaxe.cpp"
+                                                            #line 948 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      while (! threads.isEmpty())\n");
   append(L"      {\n");
@@ -952,7 +955,7 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 956 "PrintHaxe.cpp"
+                                                            #line 959 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      if (thread.deferredEvent != null)\n");
   append(L"      {\n");
@@ -963,12 +966,12 @@
                                                               }
                                                               if (hasCustomCode)
                                                               {
-                                                            #line 967 "PrintHaxe.cpp"
+                                                            #line 970 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
                                                             #line 672 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 972 "PrintHaxe.cpp"
+                                                            #line 975 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      return thread;\n");
   append(L"    }\n");
@@ -976,7 +979,7 @@
                                                             #line 677 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 980 "PrintHaxe.cpp"
+                                                            #line 983 "PrintHaxe.cpp"
   append(L"    if (! threads.isEmpty())\n");
   append(L"    {\n");
   append(L"      if (threads.peek().equals(thread))\n");
@@ -985,11 +988,11 @@
                                                             #line 683 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 989 "PrintHaxe.cpp"
+                                                            #line 992 "PrintHaxe.cpp"
   append(L", thread.deferredEvent, threads.peek().deferredEvent");
                                                             #line 685 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 993 "PrintHaxe.cpp"
+                                                            #line 996 "PrintHaxe.cpp"
   append(L");\n");
   append(L"      }\n");
   append(L"    }");
@@ -997,7 +1000,7 @@
                                                               }
                                                               else
                                                               {
-                                                            #line 1001 "PrintHaxe.cpp"
+                                                            #line 1004 "PrintHaxe.cpp"
   append(L"    while (! threads.isEmpty() && threads.peek().equals(thread))\n");
   append(L"    {\n");
   append(L"      thread = resolve(thread, threads.poll());\n");
@@ -1008,7 +1011,7 @@
                                                               {
                                                                 if (rejectsAmbiguity())
                                                                 {
-                                                            #line 1012 "PrintHaxe.cpp"
+                                                            #line 1015 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    else\n");
   append(L"    {");
@@ -1016,7 +1019,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1020 "PrintHaxe.cpp"
+                                                            #line 1023 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    if (threads.isEmpty())\n");
   append(L"    {");
@@ -1024,7 +1027,7 @@
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 1028 "PrintHaxe.cpp"
+                                                            #line 1031 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      if (thread.deferredEvent != null)\n");
   append(L"      {\n");
@@ -1035,17 +1038,17 @@
                                                                 }
                                                                 if (hasCustomCode)
                                                                 {
-                                                            #line 1039 "PrintHaxe.cpp"
+                                                            #line 1042 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      thread.executeDeferredCode();");
                                                             #line 718 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1044 "PrintHaxe.cpp"
+                                                            #line 1047 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    }");
                                                             #line 720 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1049 "PrintHaxe.cpp"
+                                                            #line 1052 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"    var status = PARSING;\n");
@@ -1073,23 +1076,23 @@
                                                             #line 745 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1077 "PrintHaxe.cpp"
+                                                            #line 1080 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private function rejectAmbiguity(begin: Int, end: Int");
                                                             #line 748 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1083 "PrintHaxe.cpp"
+                                                            #line 1086 "PrintHaxe.cpp"
   append(L", first: DeferredEvent, second: DeferredEvent");
                                                             #line 750 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1087 "PrintHaxe.cpp"
+                                                            #line 1090 "PrintHaxe.cpp"
   append(L"): Void\n");
   append(L"{");
                                                             #line 752 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1093 "PrintHaxe.cpp"
+                                                            #line 1096 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  var treeBuilder = new ParseTreeBuilder();\n");
   append(L"  treeBuilder.reset(input);\n");
@@ -1097,35 +1100,35 @@
   append(L"  treeBuilder.nonterminal(");
                                                             #line 758 "PrintHaxe.cpp.template"
                                                                   print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
-                                                            #line 1101 "PrintHaxe.cpp"
+                                                            #line 1104 "PrintHaxe.cpp"
   append(L", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);\n");
   append(L"  var secondTree = treeBuilder.pop(1)[0];\n");
   append(L"  first.show(treeBuilder);\n");
   append(L"  treeBuilder.nonterminal(");
                                                             #line 762 "PrintHaxe.cpp.template"
                                                                   print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(0)));
-                                                            #line 1108 "PrintHaxe.cpp"
+                                                            #line 1111 "PrintHaxe.cpp"
   append(L", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, treeBuilder.getTop() + 1);\n");
   append(L"  treeBuilder.push(secondTree);\n");
   append(L"  treeBuilder.nonterminal(");
                                                             #line 765 "PrintHaxe.cpp.template"
                                                                   print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(1)));
-                                                            #line 1114 "PrintHaxe.cpp"
+                                                            #line 1117 "PrintHaxe.cpp"
   append(L", treeBuilder.getStack()[0].begin, treeBuilder.getStack()[treeBuilder.getTop()].end, 2);");
                                                             #line 767 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1118 "PrintHaxe.cpp"
+                                                            #line 1121 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  var exception = new ParseException(begin, end, -1, -1, -1);\n");
   append(L"  exception.setAmbiguousInput(");
                                                             #line 770 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1125 "PrintHaxe.cpp"
+                                                            #line 1128 "PrintHaxe.cpp"
   append(L"treeBuilder");
                                                             #line 772 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1129 "PrintHaxe.cpp"
+                                                            #line 1132 "PrintHaxe.cpp"
   append(L");\n");
   append(L"  throw exception;\n");
   append(L"}");
@@ -1133,14 +1136,14 @@
                                                               }
                                                               else
                                                               {
-                                                            #line 1137 "PrintHaxe.cpp"
+                                                            #line 1140 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private function resolve(thread: ParsingThread, other: ParsingThread): ParsingThread\n");
   append(L"{");
                                                             #line 780 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1144 "PrintHaxe.cpp"
+                                                            #line 1147 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  var a = thread.stack;\n");
   append(L"  var b = other.stack;\n");
@@ -1153,12 +1156,12 @@
   append(L"  }");
                                                             #line 791 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1157 "PrintHaxe.cpp"
+                                                            #line 1160 "PrintHaxe.cpp"
   append(L"\n");
                                                             #line 793 "PrintHaxe.cpp.template"
                                                                 if (shiftAmbiguity)
                                                                 {
-                                                            #line 1162 "PrintHaxe.cpp"
+                                                            #line 1165 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  var ea = thread.deferredEvent;\n");
   append(L"  var eb = other.deferredEvent;\n");
@@ -1190,7 +1193,7 @@
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1194 "PrintHaxe.cpp"
+                                                            #line 1197 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  if (other.eventCount < thread.eventCount)\n");
   append(L"    thread = other;");
@@ -1198,30 +1201,30 @@
                                                                 }
                                                                 if (tree)
                                                                 {
-                                                            #line 1202 "PrintHaxe.cpp"
+                                                            #line 1205 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  thread.addAmbiguity(begin, thread.e0);");
                                                             #line 830 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1207 "PrintHaxe.cpp"
+                                                            #line 1210 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  return thread;\n");
   append(L"}");
                                                             #line 833 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1213 "PrintHaxe.cpp"
+                                                            #line 1216 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"private var thread: ParsingThread;");
                                                             #line 836 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1220 "PrintHaxe.cpp"
+                                                            #line 1223 "PrintHaxe.cpp"
   append(L"\n");
   append(L"private var eventHandler: BottomUpEventHandler;");
                                                             #line 839 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1225 "PrintHaxe.cpp"
+                                                            #line 1228 "PrintHaxe.cpp"
   append(L"\n");
   append(L"public var input: Bytes = null;\n");
   append(L"public var size = 0;\n");
@@ -1237,19 +1240,19 @@
                                                                                        bool constant,
                                                                                        const wchar_t *clazz)
                                                             {
-                                                            #line 1241 "PrintHaxe.cpp"
+                                                            #line 1244 "PrintHaxe.cpp"
   append(L"\n");
                                                             #line 854 "PrintHaxe.cpp.template"
                                                               print(visibility);
-                                                            #line 1245 "PrintHaxe.cpp"
+                                                            #line 1248 "PrintHaxe.cpp"
   append(L" ");
                                                             #line 855 "PrintHaxe.cpp.template"
                                                               print(prefix);
-                                                            #line 1249 "PrintHaxe.cpp"
+                                                            #line 1252 "PrintHaxe.cpp"
   append(L"function ");
                                                             #line 856 "PrintHaxe.cpp.template"
                                                               print(name);
-                                                            #line 1253 "PrintHaxe.cpp"
+                                                            #line 1256 "PrintHaxe.cpp"
   append(L"(");
                                                             #line 857 "PrintHaxe.cpp.template"
                                                               bool ignore = true;
@@ -1264,12 +1267,12 @@
                                                                   ignore = ! ignore;
                                                                 }
                                                               }
-                                                            #line 1268 "PrintHaxe.cpp"
+                                                            #line 1271 "PrintHaxe.cpp"
   append(L")");
                                                             #line 869 "PrintHaxe.cpp.template"
                                                               if (*type) // && wcscmp(type, L"void "))
                                                               {
-                                                            #line 1273 "PrintHaxe.cpp"
+                                                            #line 1276 "PrintHaxe.cpp"
   append(L": ");
                                                             #line 871 "PrintHaxe.cpp.template"
                                                                 print(towupper(*type));
@@ -1281,7 +1284,7 @@
                                                             {
                                                               if (trace)
                                                               {
-                                                            #line 1285 "PrintHaxe.cpp"
+                                                            #line 1288 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private function lookaheadString()\n");
   append(L"  {\n");
@@ -1289,45 +1292,45 @@
   append(L"    if (");
                                                             #line 884 "PrintHaxe.cpp.template"
                                                                 print(thiz());
-                                                            #line 1293 "PrintHaxe.cpp"
+                                                            #line 1296 "PrintHaxe.cpp"
   append(L"l1 > 0)\n");
   append(L"    {\n");
   append(L"      result += ");
                                                             #line 887 "PrintHaxe.cpp.template"
                                                                 print(staticPrefix());
-                                                            #line 1299 "PrintHaxe.cpp"
+                                                            #line 1302 "PrintHaxe.cpp"
   append(L"TOKEN[");
                                                             #line 888 "PrintHaxe.cpp.template"
                                                                 print(thiz());
-                                                            #line 1303 "PrintHaxe.cpp"
+                                                            #line 1306 "PrintHaxe.cpp"
   append(L"l1];");
                                                             #line 889 "PrintHaxe.cpp.template"
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
-                                                            #line 1308 "PrintHaxe.cpp"
+                                                            #line 1311 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      if (");
                                                             #line 892 "PrintHaxe.cpp.template"
                                                                   print(thiz());
-                                                            #line 1313 "PrintHaxe.cpp"
+                                                            #line 1316 "PrintHaxe.cpp"
   append(L"l");
                                                             #line 893 "PrintHaxe.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1317 "PrintHaxe.cpp"
+                                                            #line 1320 "PrintHaxe.cpp"
   append(L" > 0)\n");
   append(L"      {\n");
   append(L"        result += \" \" + ");
                                                             #line 896 "PrintHaxe.cpp.template"
                                                                   print(staticPrefix());
-                                                            #line 1323 "PrintHaxe.cpp"
+                                                            #line 1326 "PrintHaxe.cpp"
   append(L"TOKEN[");
                                                             #line 897 "PrintHaxe.cpp.template"
                                                                   print(thiz());
-                                                            #line 1327 "PrintHaxe.cpp"
+                                                            #line 1330 "PrintHaxe.cpp"
   append(L"l");
                                                             #line 898 "PrintHaxe.cpp.template"
                                                                   print(format.toString<wchar_t>(i));
-                                                            #line 1331 "PrintHaxe.cpp"
+                                                            #line 1334 "PrintHaxe.cpp"
   append(L"];");
                                                             #line 899 "PrintHaxe.cpp.template"
                                                                   increaseIndent();
@@ -1335,12 +1338,12 @@
                                                                 for (size_t i = 2; i <= grammar->k; ++i)
                                                                 {
                                                                   decreaseIndent();
-                                                            #line 1339 "PrintHaxe.cpp"
+                                                            #line 1342 "PrintHaxe.cpp"
   append(L"\n");
   append(L"      }");
                                                             #line 905 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1344 "PrintHaxe.cpp"
+                                                            #line 1347 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"    return result;\n");
@@ -1351,14 +1354,14 @@
                                                               if (memoization)
                                                               {
                                                                 int bits = Math::bits(grammar->conflictCount);
-                                                            #line 1355 "PrintHaxe.cpp"
+                                                            #line 1358 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private function memoize(i, e, v)\n");
   append(L"  {\n");
   append(L"    memo.set((e << ");
                                                             #line 918 "PrintHaxe.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1362 "PrintHaxe.cpp"
+                                                            #line 1365 "PrintHaxe.cpp"
   append(L") + i, v);\n");
   append(L"  }\n");
   append(L"\n");
@@ -1367,13 +1370,13 @@
   append(L"    var v = memo.get((e << ");
                                                             #line 924 "PrintHaxe.cpp.template"
                                                                 print(format.toString<wchar_t>(bits));
-                                                            #line 1371 "PrintHaxe.cpp"
+                                                            #line 1374 "PrintHaxe.cpp"
   append(L") + i);\n");
   append(L"    return v == null ? 0 : v;\n");
   append(L"  }\n");
                                                             #line 928 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1377 "PrintHaxe.cpp"
+                                                            #line 1380 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  ");
                                                             #line 930 "PrintHaxe.cpp.template"
@@ -1381,67 +1384,67 @@
                                                                                    memoization ||
                                                                                    ! grammar->decisionPoints.empty()))
                                                               {
-                                                            #line 1385 "PrintHaxe.cpp"
+                                                            #line 1388 "PrintHaxe.cpp"
   append(L"private var lk: Int; ");
                                                             #line 934 "PrintHaxe.cpp.template"
                                                               }
                                                               else if (! useGlr)
                                                               {
-                                                            #line 1391 "PrintHaxe.cpp"
+                                                            #line 1394 "PrintHaxe.cpp"
   append(L"                     ");
                                                             #line 937 "PrintHaxe.cpp.template"
                                                               }
                                                               else
                                                               {
-                                                            #line 1397 "PrintHaxe.cpp"
+                                                            #line 1400 "PrintHaxe.cpp"
   append(L"                    ");
                                                             #line 940 "PrintHaxe.cpp.template"
                                                               }
                                                               const wchar_t *visibility = useGlr ? L"public" : L"private";
                                                               print(visibility);
-                                                            #line 1403 "PrintHaxe.cpp"
+                                                            #line 1406 "PrintHaxe.cpp"
   append(L" var b0: Int; ");
                                                             #line 943 "PrintHaxe.cpp.template"
                                                               print(visibility);
-                                                            #line 1407 "PrintHaxe.cpp"
+                                                            #line 1410 "PrintHaxe.cpp"
   append(L" var e0: Int;");
                                                             #line 944 "PrintHaxe.cpp.template"
                                                               for (size_t k = 1; k <= grammar->k; ++k)
                                                               {
                                                                 Format format;
                                                                 wchar_t *asString = format.toString<wchar_t>(k);
-                                                            #line 1414 "PrintHaxe.cpp"
+                                                            #line 1417 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  ");
                                                             #line 949 "PrintHaxe.cpp.template"
                                                                 print(visibility);
-                                                            #line 1419 "PrintHaxe.cpp"
+                                                            #line 1422 "PrintHaxe.cpp"
   append(L" var l");
                                                             #line 950 "PrintHaxe.cpp.template"
                                                                 print(asString);
-                                                            #line 1423 "PrintHaxe.cpp"
+                                                            #line 1426 "PrintHaxe.cpp"
   append(L": Int; ");
                                                             #line 951 "PrintHaxe.cpp.template"
                                                                 print(visibility);
-                                                            #line 1427 "PrintHaxe.cpp"
+                                                            #line 1430 "PrintHaxe.cpp"
   append(L" var b");
                                                             #line 952 "PrintHaxe.cpp.template"
                                                                 print(asString);
-                                                            #line 1431 "PrintHaxe.cpp"
+                                                            #line 1434 "PrintHaxe.cpp"
   append(L": Int; ");
                                                             #line 953 "PrintHaxe.cpp.template"
                                                                 print(visibility);
-                                                            #line 1435 "PrintHaxe.cpp"
+                                                            #line 1438 "PrintHaxe.cpp"
   append(L" var e");
                                                             #line 954 "PrintHaxe.cpp.template"
                                                                 print(asString);
-                                                            #line 1439 "PrintHaxe.cpp"
+                                                            #line 1442 "PrintHaxe.cpp"
   append(L": Int;");
                                                             #line 955 "PrintHaxe.cpp.template"
                                                               }
                                                               if (hasBacktracking)
                                                               {
-                                                            #line 1445 "PrintHaxe.cpp"
+                                                            #line 1448 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var bx: Int;\n");
   append(L"  private var ex: Int;\n");
@@ -1452,7 +1455,7 @@
                                                               }
                                                               if (isLrParser && ! useGlr)
                                                               {
-                                                            #line 1456 "PrintHaxe.cpp"
+                                                            #line 1459 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var iStack = [];\n");
   append(L"  private var top = -1;");
@@ -1460,7 +1463,7 @@
                                                               }
                                                               if (useGlr)
                                                               {
-                                                            #line 1464 "PrintHaxe.cpp"
+                                                            #line 1467 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var bw: Int;\n");
   append(L"  private var bs: Int;");
@@ -1472,19 +1475,19 @@
                                                                 {
                                                                   if (useGlr)
                                                                   {
-                                                            #line 1476 "PrintHaxe.cpp"
+                                                            #line 1479 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var es: Int;");
                                                             #line 981 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 1481 "PrintHaxe.cpp"
+                                                            #line 1484 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var eventHandler: BottomUpEventHandler = null;");
                                                             #line 983 "PrintHaxe.cpp.template"
                                                                 }
                                                                 else
                                                                 {
-                                                            #line 1488 "PrintHaxe.cpp"
+                                                            #line 1491 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var eventHandler: EventHandler = null;");
                                                             #line 987 "PrintHaxe.cpp.template"
@@ -1492,13 +1495,13 @@
                                                               }
                                                               if (memoization)
                                                               {
-                                                            #line 1496 "PrintHaxe.cpp"
+                                                            #line 1499 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var memo: Map<Int, Int>  = new Map();");
                                                             #line 992 "PrintHaxe.cpp.template"
                                                                 if (grammar->noThrow)
                                                                 {
-                                                            #line 1502 "PrintHaxe.cpp"
+                                                            #line 1505 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var viable: Bool;");
                                                             #line 995 "PrintHaxe.cpp.template"
@@ -1508,7 +1511,7 @@
 
                                                             void PrintHaxe::printFileProcessor()
                                                             {
-                                                            #line 1512 "PrintHaxe.cpp"
+                                                            #line 1515 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private static var quiet = false;\n");
   append(L"  private static var parsed = 0;\n");
@@ -1524,7 +1527,7 @@
   append(L"      Sys.println(\"Usage: ");
                                                             #line 1013 "PrintHaxe.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1528 "PrintHaxe.cpp"
+                                                            #line 1531 "PrintHaxe.cpp"
   append(L" [-q] [-r N] [-t N] ENDING...\\n\");\n");
   append(L"      Sys.println(\"  parse all files that have names ending with ENDING, in current dir and below,\");\n");
   append(L"      Sys.println(\"  and display performance summary.\\n\");\n");
@@ -1591,17 +1594,17 @@
                                                             #line 1076 "PrintHaxe.cpp.template"
                                                               if (useGlr)
                                                               {
-                                                            #line 1595 "PrintHaxe.cpp"
+                                                            #line 1598 "PrintHaxe.cpp"
   append(L".thread");
                                                             #line 1078 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1599 "PrintHaxe.cpp"
+                                                            #line 1602 "PrintHaxe.cpp"
   append(L".reset(0, 0, 0);\n");
   append(L"                job.parser.");
                                                             #line 1080 "PrintHaxe.cpp.template"
                                                               print(methodPrefixParse);
                                                               print(Format::acceptableName<WString>(grammar->startSymbol()->name).c_str());
-                                                            #line 1605 "PrintHaxe.cpp"
+                                                            #line 1608 "PrintHaxe.cpp"
   append(L"();\n");
   append(L"                if (! quiet) Sys.println(\"\");");
                                                             #line 1083 "PrintHaxe.cpp.template"
@@ -1609,12 +1612,12 @@
                                                               {
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1613 "PrintHaxe.cpp"
+                                                            #line 1616 "PrintHaxe.cpp"
   append(L"\n");
   append(L"                job.parseTreeBuilder.serialize(job.contentCounter);");
                                                             #line 1089 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1618 "PrintHaxe.cpp"
+                                                            #line 1621 "PrintHaxe.cpp"
   append(L"\n");
   append(L"                if (job.contentCounter.getLength() != job.input.length)\n");
   append(L"                {\n");
@@ -1622,7 +1625,7 @@
   append(L"                }");
                                                             #line 1094 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1626 "PrintHaxe.cpp"
+                                                            #line 1629 "PrintHaxe.cpp"
   append(L"\n");
   append(L"                parsed += job.input.length;\n");
   append(L"              }\n");
@@ -1686,14 +1689,14 @@
                                                             {
                                                               if (main || performanceTest)
                                                               {
-                                                            #line 1690 "PrintHaxe.cpp"
+                                                            #line 1693 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private static function read(input)\n");
   append(L"  {\n");
   append(L"    if (");
                                                             #line 1160 "PrintHaxe.cpp.template"
                                                                 print(L"~/^");
-                                                            #line 1697 "PrintHaxe.cpp"
+                                                            #line 1700 "PrintHaxe.cpp"
   append(L"\\{.*\\}$/g.match(input))\n");
   append(L"    {\n");
   append(L"      return input.substring(1, input.length - 1);\n");
@@ -1719,12 +1722,12 @@
                                                             {
                                                               if (! packageName.empty())
                                                               {
-                                                            #line 1723 "PrintHaxe.cpp"
+                                                            #line 1726 "PrintHaxe.cpp"
   append(L"\n");
   append(L"package ");
                                                             #line 1186 "PrintHaxe.cpp.template"
                                                                 print(packageName.c_str());
-                                                            #line 1728 "PrintHaxe.cpp"
+                                                            #line 1731 "PrintHaxe.cpp"
   append(L";\n");
                                                             #line 1188 "PrintHaxe.cpp.template"
                                                               }
@@ -1732,44 +1735,44 @@
                                                               {
                                                                 if (main)
                                                                 {
-                                                            #line 1736 "PrintHaxe.cpp"
+                                                            #line 1739 "PrintHaxe.cpp"
   append(L"\n");
   append(L"import java.io.IOException;\n");
   append(L"import java.io.Writer;\n");
                                                             #line 1196 "PrintHaxe.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1743 "PrintHaxe.cpp"
+                                                            #line 1746 "PrintHaxe.cpp"
   append(L"\n");
   append(L"public interface ");
                                                             #line 1199 "PrintHaxe.cpp.template"
                                                               print(className.c_str());
-                                                            #line 1748 "PrintHaxe.cpp"
+                                                            #line 1751 "PrintHaxe.cpp"
   append(L"\n");
   append(L"{\n");
   append(L"  public void initialize(CharSequence input");
                                                             #line 1202 "PrintHaxe.cpp.template"
                                                               if (tree)
                                                               {
-                                                            #line 1755 "PrintHaxe.cpp"
+                                                            #line 1758 "PrintHaxe.cpp"
   append(L", EventHandler eh");
                                                             #line 1205 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1759 "PrintHaxe.cpp"
+                                                            #line 1762 "PrintHaxe.cpp"
   append(L");\n");
   append(L"  public void parse();\n");
   append(L"  public void reset();\n");
   append(L"  public String getErrorMessage(ParseException e);\n");
                                                             #line 1210 "PrintHaxe.cpp.template"
                                                               printParseException();
-                                                            #line 1766 "PrintHaxe.cpp"
+                                                            #line 1769 "PrintHaxe.cpp"
   append(L"}\n");
                                                             #line 1212 "PrintHaxe.cpp.template"
                                                             }
 
                                                             void PrintHaxe::printParseException()
                                                             {
-                                                            #line 1773 "PrintHaxe.cpp"
+                                                            #line 1776 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class ParseException\n");
   append(L"{\n");
@@ -1781,19 +1784,19 @@
                                                             #line 1223 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1785 "PrintHaxe.cpp"
+                                                            #line 1788 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var ambiguousInput: Bool;");
                                                             #line 1226 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1791 "PrintHaxe.cpp"
+                                                            #line 1794 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  private var ambiguityDescriptor: ParseTreeBuilder;");
                                                             #line 1229 "PrintHaxe.cpp.template"
                                                                 }
                                                               }
-                                                            #line 1797 "PrintHaxe.cpp"
+                                                            #line 1800 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public function new(b, e, s, o, x)\n");
@@ -1807,93 +1810,102 @@
                                                             #line 1241 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1811 "PrintHaxe.cpp"
+                                                            #line 1814 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function setAmbiguousInput(");
                                                             #line 1244 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1817 "PrintHaxe.cpp"
+                                                            #line 1820 "PrintHaxe.cpp"
   append(L"a");
                                                             #line 1246 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1821 "PrintHaxe.cpp"
+                                                            #line 1824 "PrintHaxe.cpp"
   append(L")\n");
   append(L"  {\n");
   append(L"    ambiguousInput = true;");
                                                             #line 1249 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 1828 "PrintHaxe.cpp"
+                                                            #line 1831 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    ambiguityDescriptor = a;");
                                                             #line 1252 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 1833 "PrintHaxe.cpp"
+                                                            #line 1836 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  }\n");
                                                             #line 1255 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1838 "PrintHaxe.cpp"
+                                                            #line 1841 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function getBegin() {return begin;}\n");
   append(L"  public function getEnd() {return end;}\n");
   append(L"  public function getState() {return state;}\n");
   append(L"  public function getExpected() {return expected;}\n");
-  append(L"  public function getOffending() {return offending;}\n");
-  append(L"  public function isAmbiguousInput() {return ");
-                                                            #line 1262 "PrintHaxe.cpp.template"
+  append(L"  public function getOffending() {return offending;}");
+                                                            #line 1261 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1849 "PrintHaxe.cpp"
-  append(L"ambiguousInput");
+                                                            #line 1851 "PrintHaxe.cpp"
+  append(L"\n");
+  append(L"  public function isAmbiguousInput() {return ");
                                                             #line 1264 "PrintHaxe.cpp.template"
-                                                              }
-                                                              else
-                                                              {
-                                                            #line 1855 "PrintHaxe.cpp"
+                                                                if (rejectsAmbiguity())
+                                                                {
+                                                            #line 1857 "PrintHaxe.cpp"
+  append(L"ambiguousInput");
+                                                            #line 1266 "PrintHaxe.cpp.template"
+                                                                }
+                                                                else
+                                                                {
+                                                            #line 1863 "PrintHaxe.cpp"
   append(L"false");
-                                                            #line 1267 "PrintHaxe.cpp.template"
+                                                            #line 1269 "PrintHaxe.cpp.template"
+                                                                }
+                                                            #line 1867 "PrintHaxe.cpp"
+  append(L";}");
+                                                            #line 1270 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1859 "PrintHaxe.cpp"
-  append(L";}\n");
+                                                            #line 1871 "PrintHaxe.cpp"
+  append(L"\n");
   append(L"\n");
   append(L"  public function getMessage()\n");
   append(L"  {\n");
   append(L"    return ");
-                                                            #line 1272 "PrintHaxe.cpp.template"
+                                                            #line 1275 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity())
                                                               {
-                                                            #line 1868 "PrintHaxe.cpp"
+                                                            #line 1880 "PrintHaxe.cpp"
   append(L"ambiguousInput\n");
   append(L"         ? \"ambiguous input\"\n");
   append(L"         : ");
-                                                            #line 1276 "PrintHaxe.cpp.template"
+                                                            #line 1279 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1874 "PrintHaxe.cpp"
+                                                            #line 1886 "PrintHaxe.cpp"
   append(L"offending < 0\n");
   append(L"         ? \"lexical analysis failed\"\n");
   append(L"         : \"syntax error\";\n");
   append(L"  }");
-                                                            #line 1280 "PrintHaxe.cpp.template"
+                                                            #line 1283 "PrintHaxe.cpp.template"
                                                               if (rejectsAmbiguity() && tree)
                                                               {
-                                                            #line 1882 "PrintHaxe.cpp"
+                                                            #line 1894 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public function serialize(eventHandler)\n");
   append(L"  {\n");
   append(L"    ambiguityDescriptor.serialize(eventHandler);\n");
   append(L"  }");
-                                                            #line 1287 "PrintHaxe.cpp.template"
+                                                            #line 1290 "PrintHaxe.cpp.template"
                                                               }
-                                                            #line 1891 "PrintHaxe.cpp"
+                                                            #line 1903 "PrintHaxe.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 1290 "PrintHaxe.cpp.template"
+                                                            #line 1293 "PrintHaxe.cpp.template"
                                                               if (noLexer)
                                                               {
-                                                            #line 1897 "PrintHaxe.cpp"
+                                                            #line 1909 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public class Token\n");
   append(L"  {\n");
@@ -1907,11 +1919,13 @@
   append(L"    void reset(CharSequence input);\n");
   append(L"    void match(int tokenset, Token token);\n");
   append(L"  }\n");
-                                                            #line 1305 "PrintHaxe.cpp.template"
+                                                            #line 1308 "PrintHaxe.cpp.template"
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1915 "PrintHaxe.cpp"
+                                                                if (emitsEventHandler())
+                                                                {
+                                                            #line 1929 "PrintHaxe.cpp"
   append(L"\n");
   append(L"interface EventHandler\n");
   append(L"{\n");
@@ -1921,31 +1935,32 @@
   append(L"  public function terminal(id: Int, begin: Int, end: Int): Void;\n");
   append(L"  public function whitespace(begin: Int, end: Int): Void;\n");
   append(L"}\n");
-                                                            #line 1317 "PrintHaxe.cpp.template"
+                                                            #line 1322 "PrintHaxe.cpp.template"
+                                                                }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1928 "PrintHaxe.cpp"
+                                                            #line 1943 "PrintHaxe.cpp"
   append(L"\n");
   append(L"interface BottomUpEventHandler\n");
   append(L"{\n");
   append(L"  public function reset(input: Bytes): Void;\n");
   append(L"  public function nonterminal(id: Int, begin: Int, end: Int, count: Int): Void;\n");
   append(L"  public function terminal(id: Int, begin: Int, end: Int): Void;");
-                                                            #line 1324 "PrintHaxe.cpp.template"
+                                                            #line 1330 "PrintHaxe.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1938 "PrintHaxe.cpp"
+                                                            #line 1953 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function ambiguity(begin: Int, end: Int): Void;");
-                                                            #line 1327 "PrintHaxe.cpp.template"
+                                                            #line 1333 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 1943 "PrintHaxe.cpp"
+                                                            #line 1958 "PrintHaxe.cpp"
   append(L"\n");
   append(L"}\n");
-                                                            #line 1330 "PrintHaxe.cpp.template"
+                                                            #line 1336 "PrintHaxe.cpp.template"
                                                                 }
                                                                 #if EXPATH_EXTENSION_FUNCTION
-                                                            #line 1949 "PrintHaxe.cpp"
+                                                            #line 1964 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class XmlTreeBuilder implements EventHandler\n");
   append(L"{\n");
@@ -1968,9 +1983,9 @@
   append(L"  public function startNonterminal(id, begin)\n");
   append(L"  {\n");
   append(L"    startElement(");
-                                                            #line 1353 "PrintHaxe.cpp.template"
+                                                            #line 1359 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 1974 "PrintHaxe.cpp"
+                                                            #line 1989 "PrintHaxe.cpp"
   append(L".getNonterminalName(id));\n");
   append(L"  }\n");
   append(L"\n");
@@ -1994,9 +2009,9 @@
   append(L"  public function terminal(id: Int, begin: Int, end: Int): Void\n");
   append(L"  {\n");
   append(L"    var tag = ");
-                                                            #line 1376 "PrintHaxe.cpp.template"
+                                                            #line 1382 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2000 "PrintHaxe.cpp"
+                                                            #line 2015 "PrintHaxe.cpp"
   append(L".getTerminalName(id);\n");
   append(L"    if (tag.charAt(0) == '\\'') tag = \"TOKEN\";\n");
   append(L"    startElement(tag);\n");
@@ -2014,7 +2029,7 @@
   append(L"    node.addChild(Xml.createPCData(input.getString(begin, end - begin)));\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1394 "PrintHaxe.cpp.template"
+                                                            #line 1400 "PrintHaxe.cpp.template"
                                                                 #endif
                                                                 if (main)
                                                                 {
@@ -2022,87 +2037,87 @@
                                                               }
                                                               if (performanceTest)
                                                               {
-                                                            #line 2026 "PrintHaxe.cpp"
+                                                            #line 2041 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class ParseJob\n");
   append(L"{\n");
   append(L"  public var name: String;\n");
   append(L"  public var input: String;\n");
   append(L"  public var parser: ");
-                                                            #line 1407 "PrintHaxe.cpp.template"
+                                                            #line 1413 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2035 "PrintHaxe.cpp"
+                                                            #line 2050 "PrintHaxe.cpp"
   append(L";");
-                                                            #line 1408 "PrintHaxe.cpp.template"
+                                                            #line 1414 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2040 "PrintHaxe.cpp"
+                                                            #line 2055 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var contentCounter: ContentCounter;");
-                                                            #line 1411 "PrintHaxe.cpp.template"
+                                                            #line 1417 "PrintHaxe.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 2046 "PrintHaxe.cpp"
+                                                            #line 2061 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public var parseTreeBuilder: ParseTreeBuilder;");
-                                                            #line 1414 "PrintHaxe.cpp.template"
+                                                            #line 1420 "PrintHaxe.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 2052 "PrintHaxe.cpp"
+                                                            #line 2067 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function new(s: String, i: String)\n");
   append(L"  {\n");
   append(L"    name = s;\n");
   append(L"    input = i;");
-                                                            #line 1420 "PrintHaxe.cpp.template"
+                                                            #line 1426 "PrintHaxe.cpp.template"
                                                                 if (tree)
                                                                 {
-                                                            #line 2061 "PrintHaxe.cpp"
+                                                            #line 2076 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    contentCounter = new ContentCounter();");
-                                                            #line 1423 "PrintHaxe.cpp.template"
+                                                            #line 1429 "PrintHaxe.cpp.template"
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 2067 "PrintHaxe.cpp"
+                                                            #line 2082 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    parseTreeBuilder = new ParseTreeBuilder();");
-                                                            #line 1426 "PrintHaxe.cpp.template"
+                                                            #line 1432 "PrintHaxe.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 2073 "PrintHaxe.cpp"
+                                                            #line 2088 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    parser = new ");
-                                                            #line 1429 "PrintHaxe.cpp.template"
+                                                            #line 1435 "PrintHaxe.cpp.template"
                                                                 print(className.c_str());
-                                                            #line 2078 "PrintHaxe.cpp"
+                                                            #line 2093 "PrintHaxe.cpp"
   append(L"(input");
-                                                            #line 1430 "PrintHaxe.cpp.template"
+                                                            #line 1436 "PrintHaxe.cpp.template"
                                                                 if (noLexer)
                                                                 {
-                                                            #line 2083 "PrintHaxe.cpp"
+                                                            #line 2098 "PrintHaxe.cpp"
   append(L", null");
-                                                            #line 1432 "PrintHaxe.cpp.template"
+                                                            #line 1438 "PrintHaxe.cpp.template"
                                                                 }
                                                                 if (tree)
                                                                 {
                                                                   if (isLrParser)
                                                                   {
-                                                            #line 2091 "PrintHaxe.cpp"
+                                                            #line 2106 "PrintHaxe.cpp"
   append(L", parseTreeBuilder");
-                                                            #line 1437 "PrintHaxe.cpp.template"
+                                                            #line 1443 "PrintHaxe.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 2097 "PrintHaxe.cpp"
+                                                            #line 2112 "PrintHaxe.cpp"
   append(L", contentCounter");
-                                                            #line 1440 "PrintHaxe.cpp.template"
+                                                            #line 1446 "PrintHaxe.cpp.template"
                                                                   }
                                                                 }
-                                                            #line 2102 "PrintHaxe.cpp"
+                                                            #line 2117 "PrintHaxe.cpp"
   append(L");\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1445 "PrintHaxe.cpp.template"
+                                                            #line 1451 "PrintHaxe.cpp.template"
                                                               }
                                                             }
 
@@ -2112,7 +2127,7 @@
                                                               {
                                                                 if (main)
                                                                 {
-                                                            #line 2116 "PrintHaxe.cpp"
+                                                            #line 2131 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class XmlSerializer implements EventHandler\n");
   append(L"{\n");
@@ -2139,9 +2154,9 @@
   append(L"  public function startNonterminal(id, begin)\n");
   append(L"  {\n");
   append(L"    startElement(");
-                                                            #line 1479 "PrintHaxe.cpp.template"
+                                                            #line 1485 "PrintHaxe.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 2145 "PrintHaxe.cpp"
+                                                            #line 2160 "PrintHaxe.cpp"
   append(L".getNonterminalName(id));\n");
   append(L"  }\n");
   append(L"\n");
@@ -2169,9 +2184,9 @@
   append(L"  public function endNonterminal(id, end)\n");
   append(L"  {\n");
   append(L"    endElement(");
-                                                            #line 1506 "PrintHaxe.cpp.template"
+                                                            #line 1512 "PrintHaxe.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 2175 "PrintHaxe.cpp"
+                                                            #line 2190 "PrintHaxe.cpp"
   append(L".getNonterminalName(id));\n");
   append(L"  }\n");
   append(L"\n");
@@ -2208,9 +2223,9 @@
   append(L"  public function terminal(id, begin, end)\n");
   append(L"  {\n");
   append(L"    var tag = ");
-                                                            #line 1542 "PrintHaxe.cpp.template"
+                                                            #line 1548 "PrintHaxe.cpp.template"
                                                                   print(className.c_str());
-                                                            #line 2214 "PrintHaxe.cpp"
+                                                            #line 2229 "PrintHaxe.cpp"
   append(L".getTerminalName(id);\n");
   append(L"    if (tag.charAt(0) == '\\'') tag = \"TOKEN\";\n");
   append(L"    startElement(tag);\n");
@@ -2248,11 +2263,11 @@
   append(L"    }\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1574 "PrintHaxe.cpp.template"
+                                                            #line 1580 "PrintHaxe.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2256 "PrintHaxe.cpp"
+                                                            #line 2271 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class ContentCounter implements EventHandler\n");
   append(L"{\n");
@@ -2265,9 +2280,11 @@
   append(L"  public function terminal(id, begin, end) {length += end - begin;}\n");
   append(L"  public function whitespace(begin, end) {length += end - begin;}\n");
   append(L"}\n");
-                                                            #line 1589 "PrintHaxe.cpp.template"
+                                                            #line 1595 "PrintHaxe.cpp.template"
                                                                 }
-                                                            #line 2271 "PrintHaxe.cpp"
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+                                                            #line 2288 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class TopDownTreeBuilder implements EventHandler\n");
   append(L"{\n");
@@ -2314,12 +2331,22 @@
   append(L"    current.children.push(s);\n");
   append(L"  }\n");
   append(L"\n");
+  append(L"  public function getRoot(): Nonterminal\n");
+  append(L"  {\n");
+  append(L"    return stack != null && stack.length > 0 ? stack[0] : null;\n");
+  append(L"  }\n");
+  append(L"\n");
   append(L"  public function serialize(e: EventHandler)\n");
   append(L"  {\n");
   append(L"    e.reset(input);\n");
   append(L"    stack[0].send(e);\n");
   append(L"  }\n");
   append(L"}\n");
+                                                            #line 1655 "PrintHaxe.cpp.template"
+                                                                }
+                                                                if (emitsTreeNodes())
+                                                                {
+                                                            #line 2350 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class Symbol\n");
   append(L"{\n");
@@ -2350,9 +2377,9 @@
   append(L"  public function getName(): String\n");
   append(L"  {\n");
   append(L"    return ");
-                                                            #line 1671 "PrintHaxe.cpp.template"
-                                                                print(className.c_str());
-                                                            #line 2356 "PrintHaxe.cpp"
+                                                            #line 1687 "PrintHaxe.cpp.template"
+                                                                  print(className.c_str());
+                                                            #line 2383 "PrintHaxe.cpp"
   append(L".TOKEN[id];\n");
   append(L"  }\n");
   append(L"\n");
@@ -2377,14 +2404,14 @@
   append(L"  public function getName(): String\n");
   append(L"  {\n");
   append(L"    return ");
-                                                            #line 1695 "PrintHaxe.cpp.template"
-                                                                printSyntheticNamePrefix();
-                                                                print(className.c_str());
-                                                            #line 2384 "PrintHaxe.cpp"
+                                                            #line 1711 "PrintHaxe.cpp.template"
+                                                                  printSyntheticNamePrefix();
+                                                                  print(className.c_str());
+                                                            #line 2411 "PrintHaxe.cpp"
   append(L".NONTERMINAL[id]");
-                                                            #line 1697 "PrintHaxe.cpp.template"
-                                                                printSyntheticNameSuffix();
-                                                            #line 2388 "PrintHaxe.cpp"
+                                                            #line 1713 "PrintHaxe.cpp.template"
+                                                                  printSyntheticNameSuffix();
+                                                            #line 2415 "PrintHaxe.cpp"
   append(L";\n");
   append(L"  }\n");
   append(L"\n");
@@ -2403,10 +2430,11 @@
   append(L"    e.endNonterminal(id, end);\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1716 "PrintHaxe.cpp.template"
-                                                                if (isLrParser)
+                                                            #line 1732 "PrintHaxe.cpp.template"
+                                                                }
+                                                                if (emitsParseTreeBuilder())
                                                                 {
-                                                            #line 2410 "PrintHaxe.cpp"
+                                                            #line 2438 "PrintHaxe.cpp"
   append(L"\n");
   append(L"class ParseTreeBuilder implements BottomUpEventHandler\n");
   append(L"{\n");
@@ -2421,31 +2449,31 @@
   append(L"    this.input = input;\n");
   append(L"    top = -1;\n");
   append(L"  }\n");
-                                                            #line 1732 "PrintHaxe.cpp.template"
+                                                            #line 1749 "PrintHaxe.cpp.template"
                                                                   if (useGlr)
                                                                   {
-                                                            #line 2428 "PrintHaxe.cpp"
+                                                            #line 2456 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function getStack() {return stack;}\n");
   append(L"  public function getTop() {return top;}\n");
-                                                            #line 1737 "PrintHaxe.cpp.template"
+                                                            #line 1754 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 2434 "PrintHaxe.cpp"
+                                                            #line 2462 "PrintHaxe.cpp"
   append(L"\n");
   append(L"  public function nonterminal(id: Int, begin: Int, end: Int, count: Int)\n");
   append(L"  {");
-                                                            #line 1740 "PrintHaxe.cpp.template"
+                                                            #line 1757 "PrintHaxe.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 2441 "PrintHaxe.cpp"
+                                                            #line 2469 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    if (count > top + 1)\n");
   append(L"    {\n");
   append(L"      var content = pop(top + 1);\n");
   append(L"      nonterminal(");
-                                                            #line 1746 "PrintHaxe.cpp.template"
+                                                            #line 1763 "PrintHaxe.cpp.template"
                                                                     print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
-                                                            #line 2449 "PrintHaxe.cpp"
+                                                            #line 2477 "PrintHaxe.cpp"
   append(L", begin, content.length == 0 ? end : content[0].begin, 0);\n");
   append(L"      for (symbol in content)\n");
   append(L"      {\n");
@@ -2453,9 +2481,9 @@
   append(L"      }\n");
   append(L"      count = top + 1;\n");
   append(L"    }");
-                                                            #line 1753 "PrintHaxe.cpp.template"
+                                                            #line 1770 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 2459 "PrintHaxe.cpp"
+                                                            #line 2487 "PrintHaxe.cpp"
   append(L"\n");
   append(L"    push(new Nonterminal(id, begin, end, pop(count)));\n");
   append(L"  }\n");
@@ -2464,19 +2492,24 @@
   append(L"  {\n");
   append(L"    push(new Terminal(id, begin, end));\n");
   append(L"  }");
-                                                            #line 1761 "PrintHaxe.cpp.template"
+                                                            #line 1778 "PrintHaxe.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 2471 "PrintHaxe.cpp"
+                                                            #line 2499 "PrintHaxe.cpp"
   append(L"\n");
   append(L"\n");
   append(L"  public function ambiguity(begin: Int, end: Int)\n");
   append(L"  {\n");
   append(L"  }");
-                                                            #line 1767 "PrintHaxe.cpp.template"
+                                                            #line 1784 "PrintHaxe.cpp.template"
                                                                   }
-                                                            #line 2479 "PrintHaxe.cpp"
+                                                            #line 2507 "PrintHaxe.cpp"
   append(L"\n");
+  append(L"\n");
+  append(L"  public function getRoot(): Symbol\n");
+  append(L"  {\n");
+  append(L"    return top >= 0 ? stack[0] : null;\n");
+  append(L"  }\n");
   append(L"\n");
   append(L"  public function serialize(e: EventHandler)\n");
   append(L"  {\n");
@@ -2500,7 +2533,7 @@
   append(L"     return stack.slice(top + 1, top + count + 1);\n");
   append(L"  }\n");
   append(L"}\n");
-                                                            #line 1792 "PrintHaxe.cpp.template"
+                                                            #line 1814 "PrintHaxe.cpp.template"
                                                                 }
                                                               }
                                                             }

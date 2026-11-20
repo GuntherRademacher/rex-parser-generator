@@ -48,22 +48,27 @@ function ~                                                      print(className.
     this.getEnd = function() {return end;};
     this.getState = function() {return state;};
     this.getExpected = function() {return expected;};
-    this.getOffending = function() {return offending;};
-    this.isAmbiguousInput = function() {return ~              if (rejectsAmbiguity())
+    this.getOffending = function() {return offending;};~      if (rejectsAmbiguity())
                                                               {
-                                               ~ambiguousInput~
-                                                              }
-                                                              else
-                                                              {
-                                               ~false~        }
-                                               ~;};
+~
+    this.isAmbiguousInput = function() {return ~                if (rejectsAmbiguity())
+                                                                {
+                                               ~ambiguousInput~ }
+                                                                else
+                                                                {
+                                               ~false~          }
+                                               ~;};~          }
+~
 ~                                                             if (rejectsAmbiguity())
                                                               {
 ~
     this.setAmbiguousInput = function(a)
     {
-      ambiguousInput = true;
-      ambiguityDescriptor = a;
+      ambiguousInput = true;~                                   if (tree)
+                                                                {
+~
+      ambiguityDescriptor = a;~                                 }
+~
     };
 ~                                                             }
 ~
@@ -77,7 +82,7 @@ function ~                                                      print(className.
              ~offending < 0
            ? "lexical analysis failed"
            : "syntax error";
-    };~                                                       if (rejectsAmbiguity())
+    };~                                                       if (rejectsAmbiguity() && tree)
                                                               {
 ~
 
@@ -309,7 +314,7 @@ flushTrace();~                                                }
 
                                                             void PrintJavascript::printXmlSerializer()
                                                             {
-                                                              if (tree)
+                                                              if (emitsXmlSerializer())
                                                               {
 ~
 ~                                                               print(className.c_str());

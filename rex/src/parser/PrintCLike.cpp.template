@@ -2075,7 +2075,7 @@ public function getErrorMessage(e: ParseException): String~     }
                                                                 }
                                                                 print(leftBrace());
 ~
-  var message = e.getMessage();~                                if (useGlr)
+  var message = e.getMessage();~                                if (rejectsAmbiguity())
                                                                 {
                                                                   increaseIndent();
 ~
@@ -2104,7 +2104,7 @@ if ~                                                              print(ifLeftPa
           + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
           + "\n"
           + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");~
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
 ~
@@ -2145,7 +2145,7 @@ if ~                                                              print(ifLeftPa
                                                                 openMethod(L"String[] ", L"static ", L"getExpectedTokenSet", L"ParseException e");
                                                                 print(leftBrace());
 ~
-  String[] expected~                                            if (useGlr)
+  String[] expected~                                            if (rejectsAmbiguity())
                                                                 {
                    ~ = {}~                                      }
                          ~;
@@ -2153,7 +2153,7 @@ if ~                                                              print(ifLeftPa
   {
     expected = new String[]{TOKEN[e.getExpected()]};
   }
-  else~                                                         if (useGlr)
+  else~                                                         if (rejectsAmbiguity())
                                                                 {
       ~ if (! e.isAmbiguousInput())~                            }
 ~
@@ -2165,7 +2165,7 @@ if ~                                                              print(ifLeftPa
 
 public String getErrorMessage(ParseException e)
 {
-  String message = e.getMessage();~                             if (useGlr)
+  String message = e.getMessage();~                             if (rejectsAmbiguity())
                                                                 {
 ~
   if ~                                                            print(ifLeftParen());
@@ -2186,7 +2186,7 @@ public String getErrorMessage(ParseException e)
           + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
           + "\n"
           + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");~
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
 ~
@@ -2244,7 +2244,7 @@ public void parse()
 
 public String getErrorMessage(ParseException e)
 {
-  String message = e.getMessage();~                             if (useGlr)
+  String message = e.getMessage();~                             if (rejectsAmbiguity())
                                                                 {
 ~
   if (e.isAmbiguousInput())
@@ -2263,7 +2263,7 @@ public String getErrorMessage(ParseException e)
           + (tokenSet.Length == 1 ? tokenSet[0] : ("[" + String.Join(", ", tokenSet) + "]"))
           + "\n"
           + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");~
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
 ~
@@ -2302,7 +2302,7 @@ func GetExpectedTokenSet(e ParseError) []string {
 
 func (this *~                                                   print(className.c_str());
             ~) GetErrorMessage(e ParseError) string {
-  message := e.Error()~                                         if (useGlr)
+  message := e.Error()~                                         if (rejectsAmbiguity())
                                                                 {
 ~
   if e.IsAmbiguousInput() {
@@ -2335,7 +2335,7 @@ func (this *~                                                   print(className.
     message += "after successfully scanning "
     message += strconv.Itoa(size)
     message += " characters beginning "
-  }~                                                            if (useGlr)
+  }~                                                            if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
 ~
@@ -2387,7 +2387,7 @@ def getExpectedTokenSet(e):
             ~.TOKEN[e.expected]]
 
 def getErrorMessage(self, e):
-  message = e.error()~                                          if (useGlr)
+  message = e.error()~                                          if (rejectsAmbiguity())
                                                                 {
 ~
   if e.isAmbiguousInput():
@@ -2417,7 +2417,7 @@ def getErrorMessage(self, e):
   if size != 0 and found == "":
     message += "after successfully scanning "
     message += str(size)
-    message += " characters beginning " ~                       if (useGlr)
+    message += " characters beginning " ~                       if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
                                                                 }
@@ -2505,7 +2505,7 @@ std::~                                                          if (stringIntrod
      ~string getErrorMessage(const ParseException &e)
 {
   std::~                                                        if (stringIntroducer()[0]) append(L"w");
-       ~string message(e.getMessage());~                        if (useGlr)
+       ~string message(e.getMessage());~                        if (rejectsAmbiguity())
                                                                 {
 ~
   if (e.isAmbiguousInput())
@@ -2554,7 +2554,7 @@ std::~                                                          if (stringIntrod
                   ~string(size);
     message += ~                                                print(stringIntroducer());
                ~" characters beginning ";
-  }~                                                            if (useGlr)
+  }~                                                            if (rejectsAmbiguity())
                                                                 {
                                                                   decreaseIndent();
 ~
@@ -2831,7 +2831,7 @@ return ~                                                        if (isPython())
 ~
   def getErrorMessage(e: ~                                      print(className.c_str());
                          ~.ParseException) = {
-    var message = e.getMessage~                                 if (useGlr)
+    var message = e.getMessage~                                 if (rejectsAmbiguity())
                                                                 {
 ~
     if (e.isAmbiguousInput)
@@ -2847,7 +2847,7 @@ return ~                                                        if (isPython())
     message += (if (found == null) "" else ", found " + found) + "\nwhile expecting " +
       (if (tokenSet.length == 1) tokenSet(0) else "[" + (tokenSet mkString ", ") + "]") + "\n" +
       (if (size == 0 || found != null) "" else "after successfully scanning " + size + " characters beginning ")~
-                                                                if (useGlr)
+                                                                if (rejectsAmbiguity())
                                                                 {
 ~
     }~                                                            decreaseIndent();

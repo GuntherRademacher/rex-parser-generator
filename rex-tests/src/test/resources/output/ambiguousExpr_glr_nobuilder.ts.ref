@@ -1,0 +1,824 @@
+// This file was generated on Thu Nov 19, 2026 22:30 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q ambiguousExpr.ebnf -glalr 1 -ambiguity minimal -tree -nobuilder -typescript -name ambiguousExpr_glr_nobuilder
+
+export namespace ambiguousExpr_glr_nobuilder
+{
+  export interface BottomUpEventHandler
+  {
+    reset(input: string): void;
+    nonterminal(id: number, begin: number, end: number, count: number): void;
+    terminal(id: number, begin: number, end: number): void;
+    ambiguity(begin: number, end: number): void;
+  }
+
+  export class ParseException
+  {
+    private begin: number;
+    private end: number;
+    private state: number;
+    private offending: number;
+    private expected: number;
+
+    constructor(b: number, e: number, s: number, o: number, x: number)
+    {
+      this.begin = b;
+      this.end = e;
+      this.state = s;
+      this.offending = o;
+      this.expected = x;
+    }
+
+    getBegin() {return this.begin;}
+    getEnd() {return this.end;}
+    getState() {return this.state;}
+    getExpected() {return this.expected;}
+    getOffending() {return this.offending;}
+
+    getMessage()
+    {
+      return this.offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+  }
+
+  interface Memoizer
+  {
+    [index: number]: number;
+  }
+
+  export class Parser
+  {
+    constructor(source: string, parsingEventHandler: BottomUpEventHandler)
+    {
+      this.initialize(source, parsingEventHandler);
+    }
+
+    initialize(source: string, parsingEventHandler: BottomUpEventHandler)
+    {
+      this.eventHandler = parsingEventHandler;
+      this.input = source;
+      this.size = source.length;
+      this.maxId = 0;
+      this.thread = new ParsingThread();
+      this.thread.parser = this;
+      this.thread.reset(0, 0, 0);
+    }
+
+    public reset(l: number, b: number, e: number)
+    {
+      this.thread.reset(l, b, e);
+    }
+
+    getOffendingToken(e: ParseException)
+    {
+      var o = e.getOffending();
+      return o >= 0 ? Parser.TOKEN[o] : null;
+    }
+
+    public static getTerminalName(id: number): string
+    {
+      return Parser.TOKEN[id];
+    }
+
+    public static getNonterminalName(id: number): string
+    {
+      return Parser.NONTERMINAL[id];
+    }
+
+    getExpectedTokenSet(e: ParseException)
+    {
+      var expected: string[];
+      if (e.getExpected() < 0)
+      {
+        expected = Parser.getTokenSet(- e.getState());
+      }
+      else
+      {
+        expected = [Parser.TOKEN[e.getExpected()]];
+      }
+      return expected;
+    }
+
+    getErrorMessage(e: ParseException)
+    {
+      var message = e.getMessage();
+      var found = this.getOffendingToken(e);
+      var tokenSet = this.getExpectedTokenSet(e);
+      var size = e.getEnd() - e.getBegin();
+      message += (found == null ? "" : ", found " + found)
+              + "\nwhile expecting "
+              + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
+              + "\n"
+              + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+      var prefix = this.input.substring(0, e.getBegin());
+      var lines = prefix.split("\n");
+      var line = lines.length;
+      var column = lines[line - 1].length + 1;
+      return message
+           + "at line " + line + ", column " + column + ":\n..."
+           + this.input.substring(e.getBegin(), Math.min(this.input.length, e.getBegin() + 64))
+           + "...";
+    }
+
+    parse_input()
+    {
+      this.thread = this.parse(0, 0, this.eventHandler, this.thread);
+    }
+
+    public static PARSING = 0;
+    public static ACCEPTED = 1;
+    public static ERROR = 2;
+
+    public parse(target: number, initialState: number, eventHandler: BottomUpEventHandler | null, thread: ParsingThread): ParsingThread
+    {
+      var threads: Heap = thread.open(initialState, eventHandler, target);
+      while (true)
+      {
+        thread = threads.poll();
+        if (thread.accepted)
+        {
+          while (! threads.isEmpty())
+          {
+            var other = threads.poll();
+            thread = thread.e0 < other.e0 ? other : this.resolve(thread, other);
+          }
+          if (thread.deferredEvent != null)
+          {
+            thread.deferredEvent.release(eventHandler!);
+            thread.deferredEvent = null;
+          }
+          return thread;
+        }
+
+        while (! threads.isEmpty() && threads.peek().equals(thread))
+        {
+          thread = this.resolve(thread, threads.poll());
+        }
+        if (threads.isEmpty())
+        {
+          if (thread.deferredEvent != null)
+          {
+            thread.deferredEvent.release(eventHandler!);
+            thread.deferredEvent = null;
+          }
+        }
+
+        var status = Parser.PARSING;
+        while (true)
+        {
+          if ((status = thread.parse()) != Parser.PARSING) break;
+          if (! threads.isEmpty()) break;
+        }
+
+        if (status != Parser.ERROR)
+        {
+          threads.offer(thread);
+        }
+        else if (threads.isEmpty())
+        {
+          throw new ParseException(thread.b1,
+                                   thread.e1,
+                                   Parser.TOKENSET[thread.state] + 1,
+                                   thread.l1,
+                                   -1
+                                  );
+        }
+      }
+    }
+
+    private resolve(thread: ParsingThread, other: ParsingThread): ParsingThread
+    {
+      var a: StackNode | null = thread.stack;
+      var b: StackNode | null = other.stack;
+      var begin = thread.stack.pos;
+      while (a != b && a != null && b != null)
+      {
+        begin = a.pos;
+        a = a.link;
+        b = b.link;
+      }
+
+      if (other.eventCount < thread.eventCount)
+        thread = other;
+      thread.addAmbiguity(begin, thread.e0);
+      return thread;
+    }
+
+    private thread!: ParsingThread;
+    private eventHandler!: BottomUpEventHandler | null;
+    public input!: string;
+    public size!: number;
+    public maxId!: number;
+
+    public static goTo(nonterminal: number, state: number): number
+    {
+      var i0 = (state << 3) + nonterminal;
+      return Parser.GOTO[(i0 & 1) + Parser.GOTO[i0 >> 1]];
+    }
+
+    private static getTokenSet(tokenSetId: number)
+    {
+      var set: string[] = [];
+      var s = tokenSetId < 0 ? - tokenSetId : Parser.INITIAL[tokenSetId] & 3;
+      for (var i = 0; i < 5; i += 32)
+      {
+        var j = i;
+        var i0 = (i >> 5) * 3 + s - 1;
+        var f = Parser.EXPECTED[i0];
+        for ( ; f != 0; f >>>= 1, ++j)
+        {
+          if ((f & 1) != 0)
+          {
+            set.push(Parser.TOKEN[j]);
+          }
+        }
+      }
+      return set;
+    }
+
+    public static MAP0: number[] =
+    [
+      /*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+      /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ];
+
+    public static MAP1: number[] =
+    [
+      /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+      /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+      /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+      /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+      /* 145 */ 3, 3, 0, 0, 0, 0, 0, 0
+    ];
+
+    public static INITIAL: number[] =
+    [
+      /* 0 */ 1, 2
+    ];
+
+    public static TRANSITION: number[] =
+    [
+      /*  0 */ 15, 15, 10, 15, 12, 15, 14, 14, 16, 15, 8, 8, 0, 20, 15, 0, 0, 16
+    ];
+
+    public static EXPECTED: number[] =
+    [
+      /* 0 */ 6, 26, 4
+    ];
+
+    public static CASEID: number[] =
+    [
+      /*  0 */ 14, 16, 14, 16, 11, 16, 8, 16, 21, 25, 27, 21, 22, 24, 21, 20, 21, 21, 21, 21, 136, 0, 0, 24, 146, 0, 180,
+      /* 27 */ 14, 0
+    ];
+
+    public static TOKENSET: number[] =
+    [
+      /* 0 */ 0, 0, 1, 1
+    ];
+
+    public static APPENDIX: number[] =
+    [
+      /* 0 */ 73, 90
+    ];
+
+    public static GOTO: number[] =
+    [
+      /*  0 */ 8, 10, 10, 10, 11, 10, 10, 10, 6, 137, 0, 0, 201
+    ];
+
+    public static TOKEN: string [] =
+    [
+      "%ERROR",
+      "ws",
+      "integer",
+      "EOF",
+      "'+'"
+    ];
+
+    public static NONTERMINAL: string [] =
+    [
+      "input",
+      "expr"
+    ];
+  }
+
+  class StackNode
+  {
+    public state: number;
+    public pos: number;
+    public link: StackNode | null;
+
+    constructor(state: number, pos: number, link: StackNode | null)
+    {
+      this.state = state;
+      this.pos = pos;
+      this.link = link;
+    }
+
+    equals(obj: StackNode)
+    {
+      var lhs: StackNode | null = this;
+      var rhs: StackNode | null = obj;
+      while (lhs != null && rhs != null)
+      {
+        if (lhs == rhs) return true;
+        if (lhs.state != rhs.state) return false;
+        if (lhs.pos != rhs.pos) return false;
+        lhs = lhs.link;
+        rhs = rhs.link;
+      }
+      return lhs == rhs;
+    }
+
+  }
+
+  class DeferredEvent
+  {
+    private link: DeferredEvent | null;
+    private id: number;
+    private begin: number;
+    private end: number;
+    private count: number;
+
+    constructor(link: DeferredEvent | null, id: number, begin: number, end: number, count: number)
+    {
+      this.link = link;
+      this.id = id;
+      this.link = link;
+      this.begin = begin;
+      this.end = end;
+      this.count = count;
+    }
+
+    execute(eventHandler: BottomUpEventHandler)
+    {
+      if (this.count == -2)
+      {
+        eventHandler.ambiguity(this.begin, this.end);
+      }
+      else if (this.count < 0)
+      {
+        eventHandler.terminal(this.id, this.begin, this.end);
+      }
+      else
+      {
+        eventHandler.nonterminal(this.id, this.begin, this.end, this.count);
+      }
+    }
+
+    release(eventHandler: BottomUpEventHandler)
+    {
+      var current: DeferredEvent | null = this;
+      var predecessor = current.link;
+      current.link = null;
+      while (predecessor != null)
+      {
+        var next = predecessor.link;
+        predecessor.link = current;
+        current = predecessor;
+        predecessor = next;
+      }
+      do
+      {
+        current.execute(eventHandler);
+        current = current.link;
+      }
+      while (current != null);
+    }
+
+    show(eventHandler: BottomUpEventHandler)
+    {
+      var stack = [];
+      for (var current: DeferredEvent | null = this; current != null; current = current.link)
+      {
+        stack.push(current);
+      }
+      while (stack.length > 0)
+      {
+        stack.pop()!.execute(eventHandler);
+      }
+    }
+  }
+
+  class Heap
+  {
+    private array: ParsingThread[] = [];
+    private size = 0;
+
+    constructor() {}
+
+    offer(value: ParsingThread)
+    {
+      var index = this.size++;
+      while (index != 0)
+      {
+        var parentIndex = (index - 1) >> 1;
+        if (this.array[parentIndex].compareTo(value) <= 0)
+          break;
+        this.array[index] = this.array[parentIndex];
+        index = parentIndex;
+      }
+      this.array[index] = value;
+    }
+
+    poll()
+    {
+      var min = this.array[0];
+      if (--this.size > 0)
+      {
+        var value = this.array[this.size];
+        var index = 0;
+        for (var child;;)
+        {
+          child = (index << 1) + 2;
+          if (child < this.size)
+          {
+            var otherChild = child - 1;
+            if (otherChild < this.size && this.array[child].compareTo(this.array[otherChild]) > 0)
+              child = otherChild;
+          }
+          else if (--child >= this.size)
+          {
+            break;
+          }
+          if (value.compareTo(this.array[child]) <= 0)
+          {
+            break;
+          }
+          this.array[index] = this.array[child];
+          index = child;
+        }
+        this.array[index] = value;
+      }
+      return min;
+    }
+
+    peek()
+    {
+      return this.array[0];
+    }
+
+    isEmpty(): boolean
+    {
+      return this.size == 0;
+    }
+  }
+
+  class ParsingThread
+  {
+    public parser!: Parser;
+    private threads!: Heap;
+    public accepted!: boolean;
+    public stack!: StackNode;
+    public state!: number;
+    private action!: number;
+    private target!: number;
+    public deferredEvent!: DeferredEvent | null;
+    private es!: number;
+    private bw!: number;
+    private bs!: number;
+    private id!: number;
+    public eventCount!: number;
+
+    open(initialState: number, eventHandler: BottomUpEventHandler | null, target: number): Heap
+    {
+      this.accepted = false;
+      this.eventCount = 0;
+      if (eventHandler != null)
+      {
+        eventHandler.reset(this.parser.input);
+      }
+      this.eventHandler = eventHandler;
+      this.target = target;
+      this.deferredEvent = null;
+      this.stack = new StackNode(-1, this.e0, null);
+      this.state = initialState;
+      this.action = this.predict(initialState);
+      this.bw = this.e0;
+      this.bs = this.e0;
+      this.es = this.e0;
+      this.threads = new Heap();
+      this.threads.offer(this);
+      return this.threads;
+    }
+
+    copy(other: ParsingThread, a: number)
+    {
+      this.action = a;
+      this.accepted = other.accepted;
+      this.parser = other.parser;
+      this.threads = other.threads;
+      this.state = other.state;
+      this.stack = other.stack;
+      this.end = other.end;
+      this.eventCount = other.eventCount;
+      this.bs = other.bs;
+      this.es = other.es;
+      this.bw = other.bw;
+      this.eventHandler = other.eventHandler;
+      this.target = other.target;
+      this.deferredEvent = other.deferredEvent;
+      this.id = ++this.parser.maxId;
+      this.b0 = other.b0;
+      this.e0 = other.e0;
+      this.l1 = other.l1;
+      this.b1 = other.b1;
+      this.e1 = other.e1;
+      return this;
+    }
+
+    compareTo(other: ParsingThread)
+    {
+      if (this.accepted != other.accepted)
+        return this.accepted ? 1 : -1;
+      var comp = this.e0 - other.e0;
+      return comp == 0 ? this.id - other.id : comp;
+    }
+
+    equals(other: ParsingThread)
+    {
+      if (this.accepted != other.accepted) return false;
+      if (this.b1 != other.b1) return false;
+      if (this.e1 != other.e1) return false;
+      if (this.l1 != other.l1) return false;
+      if (this.state != other.state) return false;
+      if (this.action != other.action) return false;
+      if (! this.stack.equals(other.stack)) return false;
+      return true;
+    }
+
+    addAmbiguity(begin: number, end: number)
+    {
+      if (this.eventHandler != null)
+        this.deferredEvent = new DeferredEvent(this.deferredEvent, -1, begin, end, -2);
+    }
+
+    release()
+    {
+      if (this.deferredEvent != null)
+      {
+        this.deferredEvent.release(this.eventHandler!);
+        this.deferredEvent = null;
+      }
+    }
+
+    parse()
+    {
+      var nonterminalId = -1;
+      for (;;)
+      {
+        var argument = this.action >> 6;
+        var lookback = (this.action >> 3) & 7;
+        var shift = -1;
+        var reduce = -1;
+        var symbols = -1;
+        var pos = -1;
+        switch (this.action & 7)
+        {
+        case 1: // SHIFT
+          shift = argument;
+          break;
+
+        case 2: // REDUCE
+          reduce = argument;
+          symbols = lookback;
+          break;
+
+        case 4: // SHIFT+REDUCE
+          shift = this.state;
+          reduce = argument;
+          symbols = lookback + 1;
+          break;
+
+        case 6: // ACCEPT
+          this.accepted = true;
+          this.action = 0;
+          return Parser.ACCEPTED;
+
+        case 7: // FORK
+          this.threads.offer(new ParsingThread().copy(this, Parser.APPENDIX[argument]));
+          this.action = Parser.APPENDIX[argument + 1];
+          return Parser.PARSING;
+
+        default: // ERROR
+          return Parser.ERROR;
+        }
+
+        if (shift >= 0)
+        {
+          if (nonterminalId < 0)
+          {
+            this.eventCount++;
+            if (this.eventHandler != null)
+            {
+              if (this.isUnambiguous())
+              {
+                this.eventHandler.terminal(this.l1, this.b1, this.e1);
+              }
+              else
+              {
+                this.deferredEvent = new DeferredEvent(this.deferredEvent, this.l1, this.b1, this.e1, -1);
+              }
+            }
+            this.es = this.e1;
+            pos = this.b1;
+            this.consume(this.l1);
+          }
+          else
+          {
+            pos = this.bs;
+          }
+        }
+
+        if (reduce < 0)
+        {
+          this.stack = new StackNode(this.state, pos, this.stack);
+          this.state = shift;
+          this.action = this.predict(this.state);
+          return Parser.PARSING;
+        }
+        else
+        {
+          nonterminalId = reduce;
+          this.eventCount++;
+          if (this.l1 == 0)
+          {
+            this.b1 = this.e0;
+          }
+          if (symbols > 0)
+          {
+            var n = symbols;
+            if (shift >= 0)
+            {
+              n -= 1;
+            }
+            if (n > 0)
+            {
+              for (var i = 1; i < n; i++)
+              {
+                this.stack = this.stack.link!;
+              }
+              this.state = this.stack.state;
+              this.bs = this.stack.pos;
+              this.stack = this.stack.link!;
+            }
+            else
+            {
+              this.bs = pos;
+            }
+          }
+          else
+          {
+            this.bs = this.b1;
+            this.es = this.b1;
+          }
+          if (nonterminalId == this.target && this.stack.link == null)
+          {
+            this.bs = this.bw;
+            this.es = this.b1;
+            this.bw = this.b1;
+          }
+          if (this.eventHandler != null)
+          {
+            if (this.isUnambiguous())
+            {
+              this.eventHandler.nonterminal(nonterminalId, this.bs, this.es, symbols);
+            }
+            else
+            {
+              this.deferredEvent = new DeferredEvent(this.deferredEvent, nonterminalId, this.bs, this.es, symbols);
+            }
+          }
+          this.action = Parser.goTo(nonterminalId, this.state);
+        }
+      }
+    }
+
+    private isUnambiguous()
+    {
+      return this.threads.isEmpty();
+    }
+
+    reset(l: number, b: number, e: number)
+    {
+                   this.b0 = b; this.e0 = b;
+      this.l1 = l; this.b1 = b; this.e1 = e;
+      this.end = e;
+      this.parser.maxId = 0;
+      this.id = this.parser.maxId;
+    }
+
+    private consume(t: number)
+    {
+      if (this.l1 == t)
+      {
+        this.b0 = this.b1; this.e0 = this.e1; this.l1 = 0;
+      }
+      else
+      {
+        this.error(this.b1, this.e1, 0, this.l1, t);
+      }
+    }
+
+    private matchW(tokenSetId: number)
+    {
+      var code: number;
+      for (;;)
+      {
+        code = this.match(tokenSetId);
+        if (code != 1)              // ws
+        {
+          break;
+        }
+      }
+      return code;
+    }
+
+    private error(b: number, e: number, s: number, l: number, t: number)
+    {
+      throw new ParseException(b, e, s, l, t);
+    }
+
+                        public b0!: number; public e0!: number;
+    public l1!: number; public b1!: number; public e1!: number;
+    private eventHandler!: BottomUpEventHandler | null;
+
+    private begin!: number;
+    private end!: number;
+
+    private predict(dpi: number): number
+    {
+      var d = dpi;
+      if (this.l1 == 0)
+      {
+        this.l1 = this.matchW(Parser.TOKENSET[d]);
+        this.b1 = this.begin;
+        this.e1 = this.end;
+      }
+      if (this.l1 < 0)
+        return 0;
+      var j10 = (d << 4) + this.l1;
+      var j11 = j10 >> 1;
+      var action = Parser.CASEID[(j10 & 1) + Parser.CASEID[(j11 & 3) + Parser.CASEID[j11 >> 2]]];
+      return action >> 1;
+    }
+
+    private match(tokenSetId: number): number
+    {
+      this.begin = this.end;
+      var current = this.end;
+      var result = Parser.INITIAL[tokenSetId];
+      var state = 0;
+      for (var code = result & 3; code != 0; )
+      {
+        var charclass: number;
+        var c0 = current < this.parser.size ? this.parser.input.charCodeAt(current) : 0;
+        ++current;
+        if (c0 < 0x80)
+        {
+          charclass = Parser.MAP0[c0];
+        }
+        else if (c0 < 0xd800)
+        {
+          var c1 = c0 >> 5;
+          charclass = Parser.MAP1[(c0 & 31) + Parser.MAP1[(c1 & 31) + Parser.MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+
+        state = code;
+        var i0 = (charclass << 2) + code - 1;
+        code = Parser.TRANSITION[(i0 & 1) + Parser.TRANSITION[i0 >> 1]];
+
+        if (code > 3)
+        {
+          result = code;
+          code &= 3;
+          this.end = current;
+        }
+      }
+
+      result >>= 2;
+      if (result == 0)
+      {
+        this.end = current - 1;
+        var c1: number = this.end < this.parser.size ? this.parser.input.charCodeAt(this.end) : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000) --this.end;
+        this.end = this.begin;
+        return -1;
+      }
+
+      if (this.end > this.parser.size) this.end = this.parser.size;
+      return (result & 7) - 1;
+    }
+  }
+}
+
+// End

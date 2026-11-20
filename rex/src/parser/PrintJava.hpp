@@ -111,6 +111,9 @@ public:
   void printNamesArgument();
   void printNamesPrefix();
 
+  // the Saxon extension function uses ParseTreeBuilder
+  virtual bool builderNeededByTarget() const {return saxon != 0;}
+
   // type of the parser input, and expression extracting input text from begin to end
   const wchar_t *inputType() const {return codepoints ? L"int[]" : L"CharSequence";}
   const wchar_t *substring() const

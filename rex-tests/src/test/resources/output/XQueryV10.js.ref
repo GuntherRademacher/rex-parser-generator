@@ -1,4 +1,4 @@
-// This file was generated on Thu Dec 26, 2024 07:00 (UTC+01) by REx v6.1-SNAPSHOT which is Copyright (c) 1979-2024 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Thu Nov 19, 2026 22:30 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XQueryV10.ebnf -javascript
 
 function XQueryV10(string)
@@ -20,7 +20,6 @@ function XQueryV10(string)
     this.getState = function() {return state;};
     this.getExpected = function() {return expected;};
     this.getOffending = function() {return offending;};
-    this.isAmbiguousInput = function() {return false;};
 
     this.getMessage = function()
     {

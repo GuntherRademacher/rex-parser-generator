@@ -102,6 +102,7 @@ Additional features for the generated code:
 | `-main`           | Generate simple main program.                               |
 | `-name NAME`      | Use non-default class name, or module namespace.            |
 | `-performance`    | Generate performance test program.                          |
+| `-nobuilder`      | With `-tree`, omit standard tree builder unless needed.     |
 
 ## Optimization
 

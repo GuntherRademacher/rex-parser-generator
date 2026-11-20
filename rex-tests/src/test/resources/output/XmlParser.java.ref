@@ -1,4 +1,4 @@
-// This file was generated on Tue Nov 3, 2026 20:16 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:07 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q XmlParser.ebnf -java -tree -main
 
 import java.io.IOException;
@@ -72,16 +72,11 @@ public class XmlParser
            : "syntax error";
     }
 
-    public void serialize(EventHandler eventHandler)
-    {
-    }
-
     public int getBegin() {return begin;}
     public int getEnd() {return end;}
     public int getState() {return state;}
     public int getOffending() {return offending;}
     public int getExpected() {return expected;}
-    public boolean isAmbiguousInput() {return false;}
   }
 
   public interface EventHandler
@@ -138,6 +133,11 @@ public class XmlParser
       Nonterminal current = stack[top];
       current.children = Arrays.copyOf(current.children, current.children.length + 1);
       current.children[current.children.length - 1] = s;
+    }
+
+    public Nonterminal getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
     }
 
     public void serialize(EventHandler e)

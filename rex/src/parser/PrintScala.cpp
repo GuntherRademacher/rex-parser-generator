@@ -1,4 +1,4 @@
-// This file was generated on Thu Nov 12, 2026 17:53 (UTC+01) by REx v7.0 which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 22:42 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: PrintScala.cpp.template
                                                             #line 1 "PrintScala.cpp.template"
                                                             #include "../common/Memory.hpp"
@@ -1683,7 +1683,7 @@
   append(L"if (offending < 0) \"lexical analysis failed\" else \"syntax error\"\n");
   append(L"    }");
                                                             #line 1038 "PrintScala.cpp.template"
-                                                              if (useGlr)
+                                                              if (rejectsAmbiguity())
                                                               {
                                                             #line 1689 "PrintScala.cpp"
   append(L"\n");
@@ -1754,7 +1754,9 @@
                                                               }
                                                               if (tree)
                                                               {
-                                                            #line 1758 "PrintScala.cpp"
+                                                                if (emitsEventHandler())
+                                                                {
+                                                            #line 1760 "PrintScala.cpp"
   append(L"\n");
   append(L"  trait EventHandler {\n");
   append(L"    def reset(string: String): Unit\n");
@@ -1763,6 +1765,11 @@
   append(L"    def terminal(id: Int, begin: Int, end: Int): Unit\n");
   append(L"    def whitespace(begin: Int, end: Int): Unit\n");
   append(L"  }\n");
+                                                            #line 1101 "PrintScala.cpp.template"
+                                                                }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+                                                            #line 1773 "PrintScala.cpp"
   append(L"\n");
   append(L"  class TopDownTreeBuilder extends EventHandler {\n");
   append(L"    private var input: String = null\n");
@@ -1799,11 +1806,18 @@
   append(L"      current.children += s\n");
   append(L"    }\n");
   append(L"\n");
+  append(L"    def getRoot: Nonterminal = if (top >= 0) stack(0) else null\n");
+  append(L"\n");
   append(L"    def serialize(e: EventHandler): Unit = {\n");
   append(L"      e.reset(input)\n");
   append(L"      stack(0).send(e)\n");
   append(L"    }\n");
   append(L"  }\n");
+                                                            #line 1147 "PrintScala.cpp.template"
+                                                                }
+                                                                if (emitsTreeNodes())
+                                                                {
+                                                            #line 1821 "PrintScala.cpp"
   append(L"\n");
   append(L"  abstract class Symbol(i: Int, b: Int, e: Int) {\n");
   append(L"    var id = i\n");
@@ -1830,13 +1844,13 @@
   append(L"\n");
   append(L"    override def getName: String = {\n");
   append(L"      ");
-                                                            #line 1165 "PrintScala.cpp.template"
-                                                                printSyntheticNamePrefix();
-                                                            #line 1836 "PrintScala.cpp"
+                                                            #line 1175 "PrintScala.cpp.template"
+                                                                  printSyntheticNamePrefix();
+                                                            #line 1850 "PrintScala.cpp"
   append(L"NONTERMINAL(id)");
-                                                            #line 1166 "PrintScala.cpp.template"
-                                                                printSyntheticNameSuffix();
-                                                            #line 1840 "PrintScala.cpp"
+                                                            #line 1176 "PrintScala.cpp.template"
+                                                                  printSyntheticNameSuffix();
+                                                            #line 1854 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"\n");
@@ -1852,32 +1866,33 @@
   append(L"      e.endNonterminal(id, end)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1182 "PrintScala.cpp.template"
+                                                            #line 1192 "PrintScala.cpp.template"
+                                                                }
                                                                 if (isLrParser)
                                                                 {
-                                                            #line 1859 "PrintScala.cpp"
+                                                            #line 1874 "PrintScala.cpp"
   append(L"\n");
   append(L"  trait BottomUpEventHandler {\n");
   append(L"    def reset(string: String): Unit\n");
   append(L"    def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit\n");
   append(L"    def terminal(id: Int, begin: Int, end: Int): Unit");
-                                                            #line 1188 "PrintScala.cpp.template"
+                                                            #line 1199 "PrintScala.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 1868 "PrintScala.cpp"
+                                                            #line 1883 "PrintScala.cpp"
   append(L"\n");
   append(L"    def ambiguity(begin: Int, end: Int): Unit");
-                                                            #line 1191 "PrintScala.cpp.template"
+                                                            #line 1202 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 1873 "PrintScala.cpp"
+                                                            #line 1888 "PrintScala.cpp"
   append(L"\n");
   append(L"  }\n");
-                                                            #line 1194 "PrintScala.cpp.template"
+                                                            #line 1205 "PrintScala.cpp.template"
                                                                 }
 
                                                                 if (main)
                                                                 {
-                                                            #line 1881 "PrintScala.cpp"
+                                                            #line 1896 "PrintScala.cpp"
   append(L"\n");
   append(L"  class XmlSerializer(val out: Writer, val indent: Boolean) extends EventHandler {\n");
   append(L"    private var input: String = null\n");
@@ -1975,11 +1990,11 @@
   append(L"      out.write(content)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1295 "PrintScala.cpp.template"
+                                                            #line 1306 "PrintScala.cpp.template"
                                                                 }
-                                                                if (tree && isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
-                                                            #line 1983 "PrintScala.cpp"
+                                                            #line 1998 "PrintScala.cpp"
   append(L"\n");
   append(L"  class ParseTreeBuilder extends BottomUpEventHandler {\n");
   append(L"    var input: String = null\n");
@@ -1992,17 +2007,17 @@
   append(L"    }\n");
   append(L"\n");
   append(L"    override def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit = {");
-                                                            #line 1310 "PrintScala.cpp.template"
+                                                            #line 1321 "PrintScala.cpp.template"
                                                                   if (rejectsAmbiguity())
                                                                   {
-                                                            #line 1999 "PrintScala.cpp"
+                                                            #line 2014 "PrintScala.cpp"
   append(L"\n");
   append(L"      if (count > top + 1) {\n");
   append(L"        val content: ArrayBuffer[Symbol] = pop(top + 1)\n");
   append(L"        nonterminal(");
-                                                            #line 1315 "PrintScala.cpp.template"
+                                                            #line 1326 "PrintScala.cpp.template"
                                                                     print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
-                                                            #line 2006 "PrintScala.cpp"
+                                                            #line 2021 "PrintScala.cpp"
   append(L", begin, if (content.length == 0) end else content(0).begin, 0)\n");
   append(L"        for (symbol <- content)\n");
   append(L"          push(symbol)\n");
@@ -2011,32 +2026,34 @@
   append(L"      else {\n");
   append(L"        push(new Nonterminal(id, begin, end, pop(count)))\n");
   append(L"      }");
-                                                            #line 1323 "PrintScala.cpp.template"
+                                                            #line 1334 "PrintScala.cpp.template"
                                                                   }
                                                                   else
                                                                   {
-                                                            #line 2019 "PrintScala.cpp"
+                                                            #line 2034 "PrintScala.cpp"
   append(L"\n");
   append(L"      push(new Nonterminal(id, begin, end, pop(count)))");
-                                                            #line 1327 "PrintScala.cpp.template"
+                                                            #line 1338 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 2024 "PrintScala.cpp"
+                                                            #line 2039 "PrintScala.cpp"
   append(L"\n");
   append(L"    }\n");
   append(L"\n");
   append(L"    override def terminal(id: Int, begin: Int, end: Int): Unit = {\n");
   append(L"      push(new Terminal(id, begin, end))\n");
   append(L"    }\n");
-                                                            #line 1334 "PrintScala.cpp.template"
+                                                            #line 1345 "PrintScala.cpp.template"
                                                                   if (resolvesAmbiguity)
                                                                   {
-                                                            #line 2034 "PrintScala.cpp"
+                                                            #line 2049 "PrintScala.cpp"
   append(L"\n");
   append(L"    override def ambiguity(begin: Int, end: Int): Unit = {\n");
   append(L"    }\n");
-                                                            #line 1339 "PrintScala.cpp.template"
+                                                            #line 1350 "PrintScala.cpp.template"
                                                                   }
-                                                            #line 2040 "PrintScala.cpp"
+                                                            #line 2055 "PrintScala.cpp"
+  append(L"\n");
+  append(L"    def getRoot: Symbol = if (top >= 0) stack(0) else null\n");
   append(L"\n");
   append(L"    def serialize(e: EventHandler): Unit = {\n");
   append(L"      e.reset(input)\n");
@@ -2055,11 +2072,11 @@
   append(L"      stack.slice(top + 1, top + count + 1)\n");
   append(L"    }\n");
   append(L"  }\n");
-                                                            #line 1358 "PrintScala.cpp.template"
+                                                            #line 1371 "PrintScala.cpp.template"
                                                                 }
                                                                 if (performanceTest)
                                                                 {
-                                                            #line 2063 "PrintScala.cpp"
+                                                            #line 2080 "PrintScala.cpp"
   append(L"\n");
   append(L"  private class ContentCounter extends EventHandler {\n");
   append(L"    var length = 0\n");
@@ -2069,7 +2086,7 @@
   append(L"    def terminal(id: Int, begin: Int, end: Int): Unit = {length += end - begin}\n");
   append(L"    def whitespace(begin: Int, end: Int): Unit = {length += end - begin}\n");
   append(L"  }\n");
-                                                            #line 1370 "PrintScala.cpp.template"
+                                                            #line 1383 "PrintScala.cpp.template"
                                                                 }
                                                               }
                                                             }

@@ -19,7 +19,7 @@
 package ~                                                         print(packageName.c_str());
         ~;
 ~                                                               }
-                                                                if ((tree && (main || useGlr) && interfaceName.empty()) || grammar->basex || trace)
+                                                                if ((tree && main && interfaceName.empty()) || grammar->basex || trace)
                                                                 {
 ~
 import java.io.IOException;~                                    }
@@ -31,15 +31,15 @@ import java.io.UnsupportedEncodingException;~                   }
                                                                 {
 ~
 import java.io.OutputStreamWriter;~                             }
-                                                                if (trace || (tree && main) || (tree && useGlr && interfaceName.empty()))
+                                                                if (trace || (tree && main))
                                                                 {
 ~
 import java.io.Writer;~                                         }
-                                                                if ((tree && interfaceName.empty()) || isLrParser)
+                                                                if ((interfaceName.empty() && emitsTreeNodes()) || isLrParser)
                                                                 {
                                                                   if (useGlr)
                                                                   {
-                                                                    if (tree && interfaceName.empty())
+                                                                    if (interfaceName.empty() && emitsTreeNodes())
                                                                     {
 ~
 import java.util.Arrays;~                                           }
@@ -495,7 +495,7 @@ public class ~                                                  print(className.
                                                                 {
                                                   ~)~           }
                                                   ~, LOCATION, 0);~
-                                                                if (tree && useGlr)
+                                                                if (tree && rejectsAmbiguity())
                                                                 {
 ~
     if (pe.isAmbiguousInput())
@@ -606,7 +606,7 @@ public class ~                                                  print(className.
         }
         memBuilder.openElem(Token.token("ERROR"), atts, new Atts());
         memBuilder.text(Token.token(parser.getErrorMessage(pe)));~
-                                                                if (tree && useGlr)
+                                                                if (tree && rejectsAmbiguity())
                                                                 {
 ~
         if (pe.isAmbiguousInput())
@@ -1232,7 +1232,7 @@ private ParsingThread resolve(ParsingThread thread, ParsingThread other)
 }~                                                            }
 ~
 
-private ParsingThread thread = new ParsingThread();~          if (tree)
+private ParsingThread thread;~                                if (tree)
                                                               {
 ~
 private BottomUpEventHandler eventHandler;~                   }
@@ -1786,14 +1786,17 @@ package ~                                                       print(packageNam
 ~                                                             }
                                                               if (tree)
                                                               {
-                                                                if (main || useGlr)
+                                                                if (main)
                                                                 {
 ~
 import java.io.IOException;
 import java.io.Writer;
 ~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
 ~
-import java.util.Arrays;~                                       if (saxon)
+import java.util.Arrays;~                                       }
+                                                                if (saxon)
                                                                 {
 ~
 import net.sf.saxon.event.Builder;~                               if (saxon == 99)
@@ -1906,7 +1909,7 @@ public interface ~                                            print(className.c_
            ? "lexical analysis failed"
            : "syntax error";
     }
-~                                                             if (tree)
+~                                                             if (tree && rejectsAmbiguity())
                                                               {
 ~
     public void serialize(EventHandler eventHandler)
@@ -1922,15 +1925,17 @@ public interface ~                                            print(className.c_
     public int getEnd() {return end;}
     public int getState() {return state;}
     public int getOffending() {return offending;}
-    public int getExpected() {return expected;}
-    public boolean isAmbiguousInput() {return ~               if (rejectsAmbiguity())
+    public int getExpected() {return expected;}~              if (rejectsAmbiguity())
                                                               {
-                                              ~ambiguousInput~
-                                                              }
-                                                              else
-                                                              {
-                                              ~false~         }
-                                              ~;}
+~
+    public boolean isAmbiguousInput() {return ~                 if (rejectsAmbiguity())
+                                                                {
+                                              ~ambiguousInput~  }
+                                                                else
+                                                                {
+                                              ~false~           }
+                                              ~;}~            }
+~
   }
 ~                                                             if (noLexer)
                                                               {
@@ -1950,26 +1955,31 @@ public interface ~                                            print(className.c_
 ~                                                             }
                                                               if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
   public interface EventHandler
   {
-    public void reset(~                                         print(inputType());
+    public void reset(~                                           print(inputType());
                       ~ string);
     public void startNonterminal(int id, int begin);
     public void endNonterminal(int id, int end);
     public void terminal(int id, int begin, int end);
     public void whitespace(int begin, int end);
   }
-
+~                                                               }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+~
   public static class TopDownTreeBuilder implements EventHandler
   {
-    private ~                                                   print(inputType());
+    private ~                                                     print(inputType());
             ~ input = null;
     private Nonterminal[] stack = new Nonterminal[64];
     private int top = -1;
 
     @Override
-    public void reset(~                                         print(inputType());
+    public void reset(~                                           print(inputType());
                       ~ input)
     {
       this.input = input;
@@ -2010,13 +2020,21 @@ public interface ~                                            print(className.c_
       current.children[current.children.length - 1] = s;
     }
 
+    public Nonterminal getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
+
     public void serialize(EventHandler e)
     {
       e.reset(input);
       stack[0].send(e);
     }
   }
-
+~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
+~
   public static abstract class Symbol
   {
     public int id;
@@ -2030,10 +2048,10 @@ public interface ~                                            print(className.c_
       this.end = end;
     }
 
-    public abstract String getName(~                            if (! interfaceName.empty())
-                                                                {
-                                                                  print(className.c_str());
-                                   ~ names~                     }
+    public abstract String getName(~                              if (! interfaceName.empty())
+                                                                  {
+                                                                    print(className.c_str());
+                                   ~ names~                       }
                                    ~);
 
     public abstract void send(EventHandler e);
@@ -2047,18 +2065,18 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public String getName(~                                     if (! interfaceName.empty())
-                                                                {
-                                                                  print(className.c_str());
-                          ~ names~                              }
+    public String getName(~                                       if (! interfaceName.empty())
+                                                                  {
+                                                                    print(className.c_str());
+                          ~ names~                                }
                           ~)
     {
-      return ~                                                  if (interfaceName.empty())
-                                                                {
-             ~TOKEN[id]~                                        }
-                                                                else
-                                                                {
-             ~names.getTerminalName(id)~                        }
+      return ~                                                    if (interfaceName.empty())
+                                                                  {
+             ~TOKEN[id]~                                          }
+                                                                  else
+                                                                  {
+             ~names.getTerminalName(id)~                          }
              ~;
     }
 
@@ -2080,20 +2098,20 @@ public interface ~                                            print(className.c_
     }
 
     @Override
-    public String getName(~                                     if (! interfaceName.empty())
-                                                                {
-                                                                  print(className.c_str());
-                          ~ names~                              }
+    public String getName(~                                       if (! interfaceName.empty())
+                                                                  {
+                                                                    print(className.c_str());
+                          ~ names~                                }
                           ~)
     {
-      return ~                                                  if (interfaceName.empty())
-                                                                {
-                                                                  printSyntheticNamePrefix();
-             ~NONTERMINAL[id]~                                    printSyntheticNameSuffix();
-                                                                }
-                                                                else
-                                                                {
-             ~names.getNonterminalName(id)~                     }
+      return ~                                                    if (interfaceName.empty())
+                                                                  {
+                                                                    printSyntheticNamePrefix();
+             ~NONTERMINAL[id]~                                      printSyntheticNameSuffix();
+                                                                  }
+                                                                  else
+                                                                  {
+             ~names.getNonterminalName(id)~                       }
              ~;
     }
 
@@ -2112,7 +2130,8 @@ public interface ~                                            print(className.c_
       e.endNonterminal(id, end);
     }
   }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
   public interface BottomUpEventHandler
@@ -2159,7 +2178,7 @@ public interface ~                                            print(className.c_
                                                             {
                                                               if (tree)
                                                               {
-                                                                if (main || useGlr)
+                                                                if (emitsXmlSerializer())
                                                                 {
 ~
   public static class XmlSerializer implements EventHandler
@@ -2470,7 +2489,7 @@ public interface ~                                            print(className.c_
     }
   }
 ~                                                               }
-                                                                if (isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
   public static class ParseTreeBuilder implements BottomUpEventHandler
@@ -2521,6 +2540,11 @@ public interface ~                                            print(className.c_
     {
     }~                                                            }
 ~
+
+    public Symbol getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
 
     public void serialize(EventHandler e)
     {

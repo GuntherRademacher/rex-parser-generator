@@ -1,4 +1,4 @@
-// This file was generated on Mon Nov 9, 2026 22:00 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:06 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q -haxe -tree -main -glalr 1 LL2_but_not_strongLL2.ebnf
 
 import haxe.io.Bytes;
@@ -1051,58 +1051,6 @@ class XmlSerializer implements EventHandler
   }
 }
 
-class TopDownTreeBuilder implements EventHandler
-{
-  private var input: Bytes;
-  private var stack: Array<Nonterminal>;
-
-  public function new()
-  {
-    input = null;
-    stack = null;
-  }
-
-  public function reset(i)
-  {
-    input = i;
-    stack = [];
-  };
-
-  public function startNonterminal(id, begin)
-  {
-    var nonterminal = new Nonterminal(id, begin, begin, new Array<Symbol>());
-    if (stack.length > 0) addChild(nonterminal);
-    stack.push(nonterminal);
-  }
-
-  public function endNonterminal(id, end)
-  {
-    stack[stack.length - 1].end = end;
-    if (stack.length > 1) stack.pop();
-  }
-
-  public function terminal(id, begin, end)
-  {
-    addChild(new Terminal(id, begin, end));
-  }
-
-  public function whitespace(begin, end)
-  {
-  }
-
-  private function addChild(s)
-  {
-    var current = stack[stack.length - 1];
-    current.children.push(s);
-  }
-
-  public function serialize(e: EventHandler)
-  {
-    e.reset(input);
-    stack[0].send(e);
-  }
-}
-
 class Symbol
 {
   public var id: Int;
@@ -1208,6 +1156,11 @@ class ParseTreeBuilder implements BottomUpEventHandler
   public function terminal(id: Int, begin: Int, end: Int)
   {
     push(new Terminal(id, begin, end));
+  }
+
+  public function getRoot(): Symbol
+  {
+    return top >= 0 ? stack[0] : null;
   }
 
   public function serialize(e: EventHandler)

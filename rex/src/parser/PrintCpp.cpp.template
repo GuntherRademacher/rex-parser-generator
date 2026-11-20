@@ -172,20 +172,23 @@ public:~                                                        if (tree)
 public:~                                                      }
                                                               if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
   class EventHandler
   {
   public:
     virtual ~~EventHandler() {}
 
-    virtual void reset(~                                        print(stringType());
+    virtual void reset(~                                          print(stringType());
                        ~string) = 0;
     virtual void startNonterminal(int id, int begin) = 0;
     virtual void endNonterminal(int id, int end) = 0;
     virtual void terminal(int id, int begin, int end) = 0;
     virtual void whitespace(int begin, int end) = 0;
   };
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
   class BottomUpEventHandler
@@ -375,7 +378,7 @@ public:~                                                      }
     int depth;
   };
 ~                                                             }
-                                                              if (tree)
+                                                              if (emitsTreeNodes())
                                                               {
 ~
   class Symbol
@@ -460,7 +463,10 @@ public:~                                                      }
       e->endNonterminal(id, end);
     }
   };
-
+~                                                             }
+                                                              if (emitsTopDownTreeBuilder())
+                                                              {
+~
   class TopDownTreeBuilder : public EventHandler
   {
   public:
@@ -481,8 +487,8 @@ public:~                                                      }
     void startNonterminal(int id, int begin)
     {
       Nonterminal *nonterminal = new Nonterminal(id, begin, begin, new std::vector<Symbol *>());
-      if (top++ >= 0) addChild(nonterminal);
-      if ((size_t) top >= stack.size())
+      if (top >= 0) addChild(nonterminal);
+      if ((size_t) ++top >= stack.size())
         stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
       stack[top] = nonterminal;
     }
@@ -502,6 +508,8 @@ public:~                                                      }
     {
     }
 
+    Nonterminal *getRoot() const {return top >= 0 ? stack[0] : 0;}
+
     void serialize(EventHandler *e)
     {
       e->reset(input);
@@ -520,8 +528,9 @@ public:~                                                      }
     std::vector<Nonterminal *> stack;
     int top;
   };
-~                                                               if (tree && isLrParser)
-                                                                {
+~                                                             }
+                                                              if (emitsParseTreeBuilder())
+                                                              {
 ~
   class ParseTreeBuilder : public BottomUpEventHandler
   {
@@ -535,7 +544,7 @@ public:~                                                      }
       reset(0);
     }
 
-    void reset(~                                                  print(stringType());
+    void reset(~                                                print(stringType());
                ~input)
     {
       for (int i = 0; i <= top; ++i)
@@ -547,13 +556,13 @@ public:~                                                      }
     }
 
     void nonterminal(int id, int begin, int end, int count)
-    {~                                                            if (rejectsAmbiguity())
-                                                                  {
+    {~                                                          if (rejectsAmbiguity())
+                                                                {
 ~
       if (count > top + 1)
       {
         std::vector<Symbol *> *content = pop(top + 1);
-        nonterminal(~                                               print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
+        nonterminal(~                                             print(format.toString<wchar_t>(Grammar::syntheticNonterminalCode(2)));
                     ~, begin, content->size() == 0 ? end : (*content)[0]->begin, 0);
         for (size_t i = 0; i < content->size(); ++i)
         {
@@ -561,7 +570,7 @@ public:~                                                      }
         }
         delete content;
         count = top + 1;
-      }~                                                          }
+      }~                                                        }
 ~
       push(new Nonterminal(id, begin, end, pop(count)));
     }
@@ -569,14 +578,16 @@ public:~                                                      }
     void terminal(int id, int begin, int end)
     {
       push(new Terminal(id, begin, end));
-    }~                                                            if (resolvesAmbiguity)
-                                                                  {
+    }~                                                          if (resolvesAmbiguity)
+                                                                {
 ~
 
     void ambiguity(int begin, int end)
     {
-    }~                                                            }
+    }~                                                          }
 ~
+
+    Symbol *getRoot() const {return top >= 0 ? stack[0] : 0;}
 
     void serialize(EventHandler *e)
     {
@@ -586,12 +597,12 @@ public:~                                                      }
         stack[i]->send(e);
       }
     }
-~                                                                 if (useGlr)
-                                                                  {
+~                                                               if (useGlr)
+                                                                {
 ~
     const std::vector<Symbol *> &getStack() const {return stack;}
     int getTop() const {return top;}
-~                                                                 }
+~                                                               }
 ~
     void push(Symbol *s)
     {
@@ -610,13 +621,12 @@ public:~                                                      }
     }
 
   private:
-    ~                                                             print(stringType());
+    ~                                                           print(stringType());
     ~input;
     std::vector<Symbol *> stack;
     int top;
   };
-~                                                               }
-                                                              }
+~                                                             }
                                                               if (main)
                                                               {
                                                                 printSimpleMain();
@@ -708,7 +718,7 @@ public:~                                                      }
     int getEnd() const {return end;}
     int getState() const {return state;}
     int getOffending() const {return offending;}
-    int getExpected() const {return expected;}~               if (useGlr)
+    int getExpected() const {return expected;}~               if (rejectsAmbiguity())
                                                               {
 ~
     int isAmbiguousInput() const {return ~                      if (rejectsAmbiguity())

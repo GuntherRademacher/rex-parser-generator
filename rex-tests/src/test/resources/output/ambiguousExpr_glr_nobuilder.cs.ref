@@ -1,0 +1,1177 @@
+// This file was generated on Fri Nov 20, 2026 10:07 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q ambiguousExpr.ebnf -glalr 1 -ambiguity minimal -tree -main -nobuilder -csharp -name ambiguousExpr_glr_nobuilder
+
+using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+
+public class ambiguousExpr_glr_nobuilder
+{
+  public static int Main(string[] args)
+  {
+    if (args.Length == 0)
+    {
+      Console.Error.WriteLine("Usage: ambiguousExpr_glr_nobuilder [-i] INPUT...");
+      Console.Error.WriteLine();
+      Console.Error.WriteLine("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+      Console.Error.WriteLine();
+      Console.Error.WriteLine("  Option:");
+      Console.Error.WriteLine("    -i     indented parse tree");
+    }
+    else
+    {
+      bool indent = false;
+      for (int i = 0; i < args.Length; ++i)
+      {
+        string arg = args[i];
+        if (arg.Equals("-i"))
+        {
+          indent = true;
+          continue;
+        }
+        TextWriter w = Console.Out;
+        XmlSerializer s = new XmlSerializer(w, indent);
+        ParseTreeBuilder b = new ParseTreeBuilder();
+        String input = read(arg);
+        ambiguousExpr_glr_nobuilder parser = new ambiguousExpr_glr_nobuilder(input, b);
+        try
+        {
+          parser.parse_input();
+          b.serialize(s);
+        }
+        catch (ParseException pe)
+        {
+          Console.Error.WriteLine("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe));
+          return 1;
+        }
+        finally
+        {
+          w.Close();
+        }
+      }
+    }
+    return 0;
+  }
+
+  public class ParseException : Exception
+  {
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+  }
+
+  public interface EventHandler
+  {
+    void reset(String s);
+    void startNonterminal(int id, int begin);
+    void endNonterminal(int id, int end);
+    void terminal(int id, int begin, int end);
+    void whitespace(int begin, int end);
+  }
+
+  public abstract class Symbol
+  {
+    public int id;
+    public int begin;
+    public int end;
+
+    protected Symbol(int id, int begin, int end)
+    {
+      this.id = id;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract String getName();
+
+    public abstract void send(EventHandler e);
+  }
+
+  public class Terminal : Symbol
+  {
+    public Terminal(int id, int begin, int end)
+    : base(id, begin, end)
+    {
+    }
+
+    public override String getName()
+    {
+      return TOKEN[id];
+    }
+
+    public override void send(EventHandler e)
+    {
+      e.terminal(id, begin, end);
+    }
+  }
+
+  public class Nonterminal : Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
+    : base(id, begin, end)
+    {
+      this.children = children;
+    }
+
+    public override String getName()
+    {
+      return NONTERMINAL[id];
+    }
+
+    public override void send(EventHandler e)
+    {
+      e.startNonterminal(id, begin);
+      int pos = begin;
+      foreach (Symbol c in children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(id, end);
+    }
+  }
+
+  public interface BottomUpEventHandler
+  {
+    void reset(String input);
+    void nonterminal(int id, int begin, int end, int count);
+    void terminal(int id, int begin, int end);
+    void ambiguity(int begin, int end);
+  }
+
+  public class XmlSerializer : EventHandler
+  {
+    private String input;
+    private String delayedTag;
+    private TextWriter output;
+    private bool indent;
+    private bool hasChildElement;
+    private int depth;
+
+    public XmlSerializer(TextWriter w, bool indent)
+    {
+      input = null;
+      delayedTag = null;
+      output = w;
+      this.indent = indent;
+    }
+
+    public void reset(String s)
+    {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+      input = s;
+      hasChildElement = false;
+      depth = 0;
+    }
+
+    public void startNonterminal(int id, int begin)
+    {
+      startElement(getNonterminalName(id));
+    }
+
+    private void startElement(String name)
+    {
+      if (delayedTag != null)
+      {
+        writeOutput("<");
+        writeOutput(delayedTag);
+        writeOutput(">");
+      }
+      delayedTag = name;
+      if (indent)
+      {
+        writeOutput("\n");
+        for (int i = 0; i < depth; ++i)
+        {
+          writeOutput("  ");
+        }
+      }
+      hasChildElement = false;
+      ++depth;
+    }
+
+    public void endNonterminal(int id, int end)
+    {
+      endElement(getNonterminalName(id));
+    }
+
+    private void endElement(String name)
+    {
+      --depth;
+      if (delayedTag != null)
+      {
+        delayedTag = null;
+        writeOutput("<");
+        writeOutput(name);
+        writeOutput("/>");
+      }
+      else
+      {
+        if (indent)
+        {
+          if (hasChildElement)
+          {
+            writeOutput("\n");
+            for (int i = 0; i < depth; ++i)
+            {
+              writeOutput("  ");
+            }
+          }
+        }
+        writeOutput("</");
+        writeOutput(name);
+        writeOutput(">");
+      }
+      hasChildElement = true;
+    }
+
+    public void terminal(int id, int begin, int end)
+    {
+      String name = getTerminalName(id);
+      if (name[0] == '\'')
+      {
+        name = "TOKEN";
+      }
+      startElement(name);
+      characters(begin, end);
+      endElement(name);
+    }
+
+    public void whitespace(int begin, int end)
+    {
+      characters(begin, end);
+    }
+
+    private void characters(int begin, int end)
+    {
+      if (begin < end)
+      {
+        if (delayedTag != null)
+        {
+          writeOutput("<");
+          writeOutput(delayedTag);
+          writeOutput(">");
+          delayedTag = null;
+        }
+        writeOutput(input.Substring(begin, end - begin)
+                         .Replace("&", "&amp;")
+                         .Replace("<", "&lt;")
+                         .Replace(">", "&gt;"));
+      }
+    }
+
+    public void writeOutput(String content)
+    {
+      output.Write(content);
+    }
+  }
+
+  public class ParseTreeBuilder : BottomUpEventHandler
+  {
+    private String input;
+    private Symbol[] stack = new Symbol[64];
+    private int top = -1;
+
+    public void reset(String input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    public Symbol[] getStack() {return stack;}
+    public int getTop() {return top;}
+
+    public void nonterminal(int id, int begin, int end, int count)
+    {
+      push(new Nonterminal(id, begin, end, pop(count)));
+    }
+
+    public void terminal(int id, int begin, int end)
+    {
+      push(new Terminal(id, begin, end));
+    }
+
+    public void ambiguity(int begin, int end)
+    {
+    }
+
+    public Symbol getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      for (int i = 0; i <= top; ++i)
+      {
+        stack[i].send(e);
+      }
+    }
+
+    public void push(Symbol s)
+    {
+      if (++top >= stack.Length) Array.Resize(ref stack, stack.Length << 1);
+      stack[top] = s;
+    }
+
+    public Symbol[] pop(int count)
+    {
+      top -= count;
+      Symbol[] result = new Symbol[count];
+      Array.Copy(stack, top + 1, result, 0, count);
+      return result;
+    }
+  }
+
+  private static String read(String input)
+  {
+    if (input.StartsWith("{") && input.EndsWith("}"))
+    {
+      return input.Substring(1, input.Length - 2);
+    }
+    else
+    {
+      return File.ReadAllText(input, Encoding.UTF8);
+    }
+  }
+
+  public ambiguousExpr_glr_nobuilder(String s, BottomUpEventHandler t)
+  {
+    initialize(s, t);
+  }
+
+  public void initialize(String source, BottomUpEventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.Length;
+    maxId = 0;
+    thread = new ParsingThread();
+    thread.parser = this;
+    thread.reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() < 0)
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    else
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.Length == 1 ? tokenSet[0] : ("[" + String.Join(", ", tokenSet) + "]"))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.Substring(0, e.getBegin());
+    int line = prefix.Length - prefix.Replace("\n", "").Length + 1;
+    int column = prefix.Length - prefix.LastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.Substring(e.getBegin(), Math.Min(input.Length, e.getBegin() + 64) - e.getBegin())
+         + "...";
+  }
+
+  public void parse_input()
+  {
+    thread = parse(0, 0, eventHandler, thread);
+  }
+
+  private class StackNode
+  {
+    public int state;
+    public int pos;
+    public StackNode link;
+
+    public StackNode(int state, int pos, StackNode link)
+    {
+      this.state = state;
+      this.pos = pos;
+      this.link = link;
+    }
+
+    public override bool Equals(Object obj)
+    {
+      StackNode lhs = this;
+      StackNode rhs = (StackNode) obj;
+      while (lhs != null && rhs != null)
+      {
+        if (lhs == rhs) return true;
+        if (lhs.state != rhs.state) return false;
+        if (lhs.pos != rhs.pos) return false;
+        lhs = lhs.link;
+        rhs = rhs.link;
+      }
+      return lhs == rhs;
+    }
+
+    public override int GetHashCode()
+    {
+      return 0;
+    }
+
+  }
+
+  private abstract class DeferredEvent
+  {
+    public DeferredEvent link;
+    public int id;
+    public int begin;
+    public int end;
+
+    public DeferredEvent(DeferredEvent link, int id, int begin, int end)
+    {
+      this.link = link;
+      this.id = id;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void execute(BottomUpEventHandler eventHandler);
+
+    public void release(BottomUpEventHandler eventHandler)
+    {
+      DeferredEvent current = this;
+      DeferredEvent predecessor = current.link;
+      current.link = null;
+      while (predecessor != null)
+      {
+        DeferredEvent next = predecessor.link;
+        predecessor.link = current;
+        current = predecessor;
+        predecessor = next;
+      }
+      do
+      {
+        current.execute(eventHandler);
+        current = current.link;
+      }
+      while (current != null);
+    }
+
+    public void show(BottomUpEventHandler eventHandler)
+    {
+      Stack<DeferredEvent> stack = new Stack<DeferredEvent>();
+      for (DeferredEvent current = this; current != null; current = current.link)
+      {
+        stack.Push(current);
+      }
+      while (stack.Count != 0)
+      {
+        stack.Pop().execute(eventHandler);
+      }
+    }
+  }
+
+  private class TerminalEvent : DeferredEvent
+  {
+    public TerminalEvent(DeferredEvent link, int id, int begin, int end)
+    : base(link, id, begin, end)
+    {
+    }
+
+    public override void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.terminal(id, begin, end);
+    }
+
+    public override String ToString()
+    {
+      return "terminal(" + TOKEN[id] + ", " + begin + ", " + end + ")";
+    }
+  }
+
+  private class NonterminalEvent : DeferredEvent
+  {
+    public int count;
+
+    public NonterminalEvent(DeferredEvent link, int id, int begin, int end, int count)
+    : base(link, id, begin, end)
+    {
+      this.count = count;
+    }
+
+    public override void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.nonterminal(id, begin, end, count);
+    }
+
+    public override String ToString()
+    {
+      return "nonterminal(" + NONTERMINAL[id] + ", " + begin + ", " + end + ", " + count + ")";
+    }
+  }
+
+
+  private class AmbiguityEvent : DeferredEvent
+  {
+    public AmbiguityEvent(DeferredEvent link, int begin, int end)
+    : base(link, -1, begin, end)
+    {
+    }
+
+    public override void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.ambiguity(begin, end);
+    }
+
+    public override String ToString()
+    {
+      return "ambiguity(" + begin + ", " + end + ")";
+    }
+  }
+
+  private static int PARSING = 0;
+  private static int ACCEPTED = 1;
+  private static int ERROR = 2;
+
+  private ParsingThread parse(int target, int initialState, BottomUpEventHandler eventHandler, ParsingThread thread)
+  {
+    Heap<ParsingThread> threads = thread.open(initialState, eventHandler, target);
+    for (;;)
+    {
+      thread = threads.poll();
+      if (thread.accepted)
+      {
+        while (! threads.isEmpty())
+        {
+          ParsingThread other = threads.poll();
+          thread = thread.e0 < other.e0 ? other : resolve(thread, other);
+        }
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+        return thread;
+      }
+
+      while (! threads.isEmpty() && threads.peek().Equals(thread))
+      {
+        thread = resolve(thread, threads.poll());
+      }
+      if (threads.isEmpty())
+      {
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+      }
+
+      int status;
+      for (;;)
+      {
+        if ((status = thread.parse()) != PARSING) break;
+        if (! threads.isEmpty()) break;
+      }
+
+      if (status != ERROR)
+      {
+        threads.offer(thread);
+      }
+      else if (threads.isEmpty())
+      {
+        throw new ParseException(thread.b1,
+                                 thread.e1,
+                                 TOKENSET[thread.state] + 1,
+                                 thread.l1,
+                                 -1
+                                );
+      }
+    }
+  }
+
+  private ParsingThread resolve(ParsingThread thread, ParsingThread other)
+  {
+    StackNode a = thread.stack;
+    StackNode b = other.stack;
+    int begin = a.pos;
+    while (a != b && a != null && b != null)
+    {
+      begin = a.pos;
+      a = a.link;
+      b = b.link;
+    }
+
+    if (other.eventCount < thread.eventCount)
+      thread = other;
+    thread.addAmbiguity(begin, thread.e0);
+    return thread;
+  }
+  private ParsingThread thread = null;
+  private BottomUpEventHandler eventHandler;
+  private String input = null;
+  private int size = 0;
+  private int maxId = 0;
+
+  private class ParsingThread : IComparable<ParsingThread>
+  {
+    public ambiguousExpr_glr_nobuilder parser;
+    public Heap<ParsingThread> threads;
+    public bool accepted;
+    public StackNode stack;
+    public int state;
+    public int action;
+    public int target;
+    public DeferredEvent deferredEvent;
+    public int id;
+    public int eventCount;
+
+    public Heap<ParsingThread> open(int initialState, BottomUpEventHandler eh, int t)
+    {
+      accepted = false;
+      target = t;
+      eventCount = 0;
+      eventHandler = eh;
+      if (eventHandler != null)
+      {
+        eventHandler.reset(parser.input);
+      }
+      deferredEvent = null;
+      stack = new StackNode(-1, e0, null);
+      state = initialState;
+      action = predict(initialState);
+      bw = e0;
+      bs = e0;
+      es = e0;
+      threads = new Heap<ParsingThread>();
+      threads.offer(this);
+      return threads;
+    }
+
+    public ParsingThread copy(ParsingThread other, int action)
+    {
+      this.action = action;
+      accepted = other.accepted;
+      target = other.target;
+      parser = other.parser;
+      eventCount = other.eventCount;
+      bs = other.bs;
+      bw = other.bw;
+      es = other.es;
+      eventHandler = other.eventHandler;
+      deferredEvent = other.deferredEvent;
+      id = ++parser.maxId;
+      threads = other.threads;
+      state = other.state;
+      stack = other.stack;
+      b0 = other.b0;
+      e0 = other.e0;
+      l1 = other.l1;
+      b1 = other.b1;
+      e1 = other.e1;
+      end = other.end;
+      return this;
+    }
+
+
+    public void addAmbiguity(int begin, int end)
+    {
+      if (eventHandler != null)
+        deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+    }
+
+    public int CompareTo(ParsingThread other)
+    {
+      if (accepted != other.accepted)
+        return accepted ? 1 : -1;
+      int comp = e0 - other.e0;
+      return comp == 0 ? id - other.id : comp;
+    }
+
+    public override bool Equals(Object obj)
+    {
+      ParsingThread other = (ParsingThread) obj;
+      if (accepted != other.accepted) return false;
+      if (b1 != other.b1) return false;
+      if (e1 != other.e1) return false;
+      if (l1 != other.l1) return false;
+      if (state != other.state) return false;
+      if (action != other.action) return false;
+      if (! stack.Equals(other.stack)) return false;
+      return true;
+    }
+
+    public override int GetHashCode()
+    {
+      return 0;
+    }
+
+    public int parse()
+    {
+      int nonterminalId = -1;
+      for (;;)
+      {
+        int argument = action >> 6;
+        int lookback = (action >> 3) & 7;
+        int shift = -1;
+        int reduce = -1;
+        int symbols = -1;
+        int pos = -1;
+        switch (action & 7)
+        {
+        case 1: // SHIFT
+          shift = argument;
+          break;
+
+        case 2: // REDUCE
+          reduce = argument;
+          symbols = lookback;
+          break;
+
+        case 4: // SHIFT+REDUCE
+          shift = state;
+          reduce = argument;
+          symbols = lookback + 1;
+          break;
+
+        case 6: // ACCEPT
+          accepted = true;
+          action = 0;
+          return ACCEPTED;
+
+        case 7: // FORK
+          threads.offer(new ParsingThread().copy(this, APPENDIX[argument]));
+          action = APPENDIX[argument + 1];
+          return PARSING;
+
+        default: // ERROR
+          return ERROR;
+        }
+
+        if (shift >= 0)
+        {
+          if (nonterminalId < 0)
+          {
+            eventCount++;
+            if (eventHandler != null)
+            {
+              if (isUnambiguous())
+              {
+                eventHandler.terminal(l1, b1, e1);
+              }
+              else
+              {
+                deferredEvent = new TerminalEvent(deferredEvent, l1, b1, e1);
+              }
+            }
+            es = e1;
+            pos = b1;
+            consume(l1);
+          }
+          else
+          {
+            pos = bs;
+          }
+        }
+
+        if (reduce < 0)
+        {
+          stack = new StackNode(state, pos, stack);
+          state = shift;
+          action = predict(state);
+          return PARSING;
+        }
+        else
+        {
+          nonterminalId = reduce;
+          eventCount++;
+          if (l1 == 0)
+          {
+            b1 = e0;
+          }
+          if (symbols > 0)
+          {
+            int n = symbols;
+            if (shift >= 0)
+            {
+              n -= 1;
+            }
+            if (n > 0)
+            {
+              for (int i = 1; i < n; i++)
+              {
+                stack = stack.link;
+              }
+              state = stack.state;
+              bs = stack.pos;
+              stack = stack.link;
+            }
+            else
+            {
+              bs = pos;
+            }
+          }
+          else
+          {
+            bs = b1;
+            es = b1;
+          }
+          if (nonterminalId == target && stack.link == null)
+          {
+            bs = bw;
+            es = b1;
+            bw = b1;
+          }
+          if (eventHandler != null)
+          {
+            if (isUnambiguous())
+            {
+              eventHandler.nonterminal(nonterminalId, bs, es, symbols);
+            }
+            else
+            {
+              deferredEvent = new NonterminalEvent(deferredEvent, nonterminalId, bs, es, symbols);
+            }
+          }
+          action = goTo(nonterminalId, state);
+        }
+      }
+    }
+
+    public bool isUnambiguous()
+    {
+      return threads.isEmpty();
+    }
+
+    public void reset(int l, int b, int e)
+    {
+              b0 = b; e0 = b;
+      l1 = l; b1 = b; e1 = e;
+      end = e;
+      parser.maxId = 0;
+      id = parser.maxId;
+    }
+
+    private void consume(int t)
+    {
+      if (l1 == t)
+      {
+        b0 = b1; e0 = e1; l1 = 0;
+      }
+      else
+      {
+        error(b1, e1, 0, l1, t);
+      }
+    }
+
+    private int matchW(int tokenSetId)
+    {
+      int code;
+      for (;;)
+      {
+        code = match(tokenSetId);
+        if (code != 1)              // ws
+        {
+          break;
+        }
+      }
+      return code;
+    }
+
+    private int error(int b, int e, int s, int l, int t)
+    {
+      throw new ParseException(b, e, s, l, t);
+    }
+
+    public int     b0, e0;
+    public int l1, b1, e1;
+    public int bw, bs, es;
+    public BottomUpEventHandler eventHandler = null;
+
+    private int begin = 0;
+    private int end = 0;
+
+    public int predict(int dpi)
+    {
+      int d = dpi;
+      if (l1 == 0)
+      {
+        l1 = matchW(TOKENSET[d]);
+        b1 = begin;
+        e1 = end;
+      }
+      if (l1 < 0)
+        return 0;
+      int j10 = (d << 4) + l1;
+      int j11 = j10 >> 1;
+      int action = CASEID[(j10 & 1) + CASEID[(j11 & 3) + CASEID[j11 >> 2]]];
+      return action >> 1;
+    }
+
+    private int match(int tokenSetId)
+    {
+      begin = end;
+      int current = end;
+      int result = INITIAL[tokenSetId];
+
+      for (int code = result & 3; code != 0; )
+      {
+        int charclass;
+        int c0 = current < parser.size ? parser.input[current] : 0;
+        ++current;
+        if (c0 < 0x80)
+        {
+          charclass = MAP0[c0];
+        }
+        else if (c0 < 0xd800)
+        {
+          int c1 = c0 >> 5;
+          charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+
+        int i0 = (charclass << 2) + code - 1;
+        code = TRANSITION[(i0 & 1) + TRANSITION[i0 >> 1]];
+
+        if (code > 3)
+        {
+          result = code;
+          code &= 3;
+          end = current;
+        }
+      }
+
+      result >>= 2;
+      if (result == 0)
+      {
+        end = current - 1;
+        int c1 = end < parser.size ? parser.input[end] : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000)
+        {
+          --end;
+        }
+        end = begin;
+        return -1;
+      }
+
+      if (end > parser.size) end = parser.size;
+      return (result & 7) - 1;
+    }
+
+  }
+
+  private class Heap<T> where T : IComparable<T>
+  {
+    private Object[] array = new Object[16];
+    private int size = 0;
+
+    public bool offer(T value)
+    {
+      int index = size;
+      if (++size >= array.Length)
+      {
+        Array.Resize(ref array, array.Length << 1);
+      }
+      while (index != 0)
+      {
+        int parentIndex = (index - 1) >> 1;
+        if (((T) array[parentIndex]).CompareTo(value) <= 0)
+          break;
+        array[index] = (T) array[parentIndex];
+        index = parentIndex;
+      }
+      array[index] = value;
+      return true;
+    }
+
+    public T poll()
+    {
+      if (size == 0)
+        return default (T);
+      T min = (T) array[0];
+      if (--size > 0)
+      {
+        T value = (T) array[size];
+        int index = 0;
+        for (int child;;)
+        {
+          child = (index << 1) + 2;
+          if (child < size)
+          {
+            int otherChild = child - 1;
+            if (otherChild < size && ((T) array[child]).CompareTo((T) array[otherChild]) > 0)
+                child = otherChild;
+          }
+          else if (--child >= size)
+          {
+            break;
+          }
+          if (value.CompareTo((T) array[child]) <= 0)
+          {
+            break;
+          }
+          array[index] = (T) array[child];
+          index = child;
+        }
+        array[index] = value;
+      }
+      return min;
+    }
+
+    public bool isEmpty()
+    {
+      return size == 0;
+    }
+
+    public T peek()
+    {
+      return (T) (size == 0 ? null : array[0]);
+    }
+  }
+
+  private static int goTo(int nonterminal, int state)
+  {
+    int i0 = (state << 3) + nonterminal;
+    return GOTO[(i0 & 1) + GOTO[i0 >> 1]];
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    List<String> expected = new List<String>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    for (int i = 0; i < 5; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 3 + s - 1;
+      uint f = EXPECTED[i0];
+      for ( ; f != 0; f >>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.Add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.ToArray();
+  }
+
+  private static readonly int[] MAP0 =
+  {
+    /*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static readonly int[] MAP1 =
+  {
+    /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+    /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+    /* 145 */ 3, 3, 0, 0, 0, 0, 0, 0
+  };
+
+  private static readonly int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static readonly int[] TRANSITION =
+  {
+    /*  0 */ 15, 15, 10, 15, 12, 15, 14, 14, 16, 15, 8, 8, 0, 20, 15, 0, 0, 16
+  };
+
+  private static readonly uint[] EXPECTED =
+  {
+    /* 0 */ 6, 26, 4
+  };
+
+  private static readonly int[] CASEID =
+  {
+    /*  0 */ 14, 16, 14, 16, 11, 16, 8, 16, 21, 25, 27, 21, 22, 24, 21, 20, 21, 21, 21, 21, 136, 0, 0, 24, 146, 0, 180,
+    /* 27 */ 14, 0
+  };
+
+  private static readonly int[] TOKENSET =
+  {
+    /* 0 */ 0, 0, 1, 1
+  };
+
+  private static readonly int[] APPENDIX =
+  {
+    /* 0 */ 73, 90
+  };
+
+  private static readonly int[] GOTO =
+  {
+    /*  0 */ 8, 10, 10, 10, 11, 10, 10, 10, 6, 137, 0, 0, 201
+  };
+
+  public static readonly String[] TOKEN =
+  {
+    "%ERROR",
+    "ws",
+    "integer",
+    "EOF",
+    "'+'"
+  };
+
+  public static readonly String[] NONTERMINAL =
+  {
+    "input",
+    "expr"
+  };
+}
+
+// End

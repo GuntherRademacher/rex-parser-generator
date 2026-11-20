@@ -1,0 +1,621 @@
+// This file was generated on Fri Nov 20, 2026 10:07 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q exprBNF.ebnf -lalr 1 -tree -main -nobuilder -scala -name exprBNF_nobuilder
+
+import java.io.OutputStreamWriter
+import java.io.Writer
+import collection.mutable.ArrayBuffer
+
+class exprBNF_nobuilder {
+
+  def this(string: String, eh: exprBNF_nobuilder.BottomUpEventHandler) = {
+    this()
+    initialize(string, eh)
+  }
+
+  def initialize(source: String, parsingEventHandler: exprBNF_nobuilder.BottomUpEventHandler): Unit = {
+    eventHandler = parsingEventHandler
+    input = source
+    size = source.length
+    reset(0, 0, 0)
+  }
+
+  def getInput: String = {
+    return input
+  }
+
+  def getTokenOffset: Int = {
+    return b0
+  }
+
+  def getTokenEnd: Int = {
+    return e0
+  }
+
+  def reset(l: Int, b: Int, e: Int): Unit = {
+    b0 = b; e0 = b
+    l1 = l; b1 = b; e1 = e
+    end = e
+    eventHandler.reset(input)
+  }
+
+  def reset: Unit = {
+    reset(0, 0, 0)
+  }
+
+  def parse_input: Unit = {
+    top = -1
+    parse(0, 0, eventHandler)
+  }
+
+  def getErrorMessage(e: exprBNF_nobuilder.ParseException) = {
+    var message = e.getMessage
+    val tokenSet = exprBNF_nobuilder.getExpectedTokenSet(e)
+    val found = exprBNF_nobuilder.getOffendingToken(e)
+    val size = e.end - e.begin
+    message += (if (found == null) "" else ", found " + found) + "\nwhile expecting " +
+      (if (tokenSet.length == 1) tokenSet(0) else "[" + (tokenSet mkString ", ") + "]") + "\n" +
+      (if (size == 0 || found != null) "" else "after successfully scanning " + size + " characters beginning ")
+    val prefix = input.substring(0, e.begin)
+    val line = prefix.replaceAll("[^\n]", "").length + 1
+    val column = prefix.length - prefix.lastIndexOf('\n')
+    message +
+      "at line " + line + ", column " + column + ":\n..." +
+      input.substring(e.begin, math.min(input.length, e.begin + 64)) + "..."
+  }
+
+  private def push(state: Int, lookback: Int, begin: Int): Unit = {
+    top += 3
+    if (top >= iStack.size) {
+      val newStack = new Array[Int](iStack.size << 1)
+      Array.copy(iStack, 0, newStack, 0, iStack.size)
+      iStack = newStack
+    }
+    iStack(top - 2) = begin
+    iStack(top - 1) = state
+    iStack(top) = lookback
+  }
+
+  private def parse(target: Int, initialState: Int, eventHandler: exprBNF_nobuilder.BottomUpEventHandler): Unit = {
+    var state = initialState
+    var bw = e0
+    var bs = e0
+    var es = e0
+    var t = top
+    var action = predict(state)
+    var nonterminalId = -1
+    while (true) {
+      val argument = action >> 6
+      val lookback = (action >> 3) & 7
+      var shift = -1
+      var reduce = -1
+      var symbols = -1
+      (action & 7) match {
+      case 1 => // SHIFT
+        shift = argument
+
+      case 2 => // REDUCE
+        reduce = argument
+        symbols = lookback
+
+      case 4 => // SHIFT+REDUCE
+        shift = state
+        reduce = argument
+        symbols = lookback + 1
+
+      case 6 => // ACCEPT
+        return
+
+      case _ => // ERROR
+        throw new exprBNF_nobuilder.ParseException(b1, e1, exprBNF_nobuilder.TOKENSET(state) + 1, l1, -1)
+      }
+
+      if (shift >= 0) {
+        if (nonterminalId < 0) {
+          if (eventHandler != null) {
+            eventHandler.terminal(l1, b1, e1)
+          }
+          es = e1
+          push(state, lookback, b1)
+          consume(l1)
+        }
+        else
+        {
+          push(state, lookback, bs)
+        }
+        state = shift
+      }
+
+      if (reduce < 0) {
+        action = predict(state)
+        nonterminalId = -1
+      }
+      else
+      {
+        nonterminalId = reduce
+        if (l1 == 0) {
+          b1 = e0
+        }
+        if (symbols > 0) {
+          top -= symbols * 3
+          state = iStack(top + 2)
+          bs = iStack(top + 1)
+        }
+        else
+        {
+          bs = b1
+          es = b1
+        }
+        if (nonterminalId == target && t == top) {
+          bs = bw
+          es = b1
+          bw = b1
+        }
+        if (eventHandler != null) {
+          eventHandler.nonterminal(nonterminalId, bs, es, symbols)
+        }
+        action = exprBNF_nobuilder.goTo(nonterminalId, state)
+      }
+    }
+  }
+
+  private def consume(t: Int): Unit = {
+    if (l1 == t) {
+      b0 = b1; e0 = e1; l1 = 0
+    }
+    else {
+      error(b1, e1, 0, l1, t)
+    }
+  }
+
+  private def matchW(tokenSetId: Int): Int = {
+    var continue = true
+    var code = 0
+    while (continue) {
+      code = matcher(tokenSetId)
+      if (code != 1) {              // ws
+        continue = false
+      }
+    }
+    code
+  }
+
+  def error(b: Int, e: Int, s: Int, l: Int, t: Int): Int = {
+    throw new exprBNF_nobuilder.ParseException(b, e, s, l, t)
+  }
+
+  private def predict(dpi: Int): Int = {
+    var d = dpi
+    if (l1 == 0) {
+      l1 = matchW(exprBNF_nobuilder.TOKENSET(d))
+      b1 = begin
+      e1 = end
+    }
+    val j10 = (d << 4) + l1
+    val j11 = j10 >> 2
+    var action = exprBNF_nobuilder.CASEID((j10 & 3) + exprBNF_nobuilder.CASEID((j11 & 7) + exprBNF_nobuilder.CASEID(j11 >> 3)))
+    return action >> 1
+    0
+  }
+
+  private def matcher(tokenSetId: Int) = {
+    begin = end
+    var current = end
+    var result = exprBNF_nobuilder.INITIAL(tokenSetId)
+    var state = 0
+    var code = result & 7
+
+    while (code != 0) {
+      var charclass = -1
+      var c0: Int = if (current < size) input(current) else 0
+      current += 1
+      if (c0 < 0x80) {
+        charclass = exprBNF_nobuilder.MAP0(c0)
+      }
+      else if (c0 < 0xd800) {
+        val c1 = c0 >> 5
+        charclass = exprBNF_nobuilder.MAP1((c0 & 31) + exprBNF_nobuilder.MAP1((c1 & 31) + exprBNF_nobuilder.MAP1(c1 >> 5)))
+      }
+      else {
+        charclass = 0
+      }
+
+      state = code
+      val i0 = (charclass << 3) + code - 1
+      code = exprBNF_nobuilder.TRANSITION((i0 & 3) + exprBNF_nobuilder.TRANSITION(i0 >> 2))
+
+      if (code > 7) {
+        result = code
+        code &= 7
+        end = current
+      }
+    }
+
+    result >>= 3
+    if (result == 0) {
+      end = current - 1
+      val c1 = if (end < size) input(end) else 0
+      if (c1 >= 0xdc00 && c1 < 0xe000) {
+        end -= 1
+      }
+      error(begin, end, state, -1, -1)
+    }
+    else {
+      if (end > size) end = size
+      (result & 15) - 1
+    }
+  }
+
+  var begin = 0
+  var end = 0
+
+  var lk = 0
+  var b0 = 0
+  var e0 = 0
+  var l1 = 0
+  var b1 = 0
+  var e1 = 0
+  var iStack = new Array[Int](192)
+  var top = -1
+  var eventHandler: exprBNF_nobuilder.BottomUpEventHandler = null
+  var input: String = null
+  var size = 0
+}
+
+object exprBNF_nobuilder {
+
+  def getOffendingToken(e: ParseException) = {
+    if (e.offending < 0) null else TOKEN(e.offending)
+  }
+
+  def getTerminalName(id: Int) = {
+    TOKEN(id)
+  }
+
+  def getNonterminalName(id: Int) = {
+    NONTERMINAL(id)
+  }
+
+  class ParseException(val begin: Int, val end: Int, val state: Int, val offending: Int, val expected: Int) extends RuntimeException {
+
+    override def getMessage = {
+      if (offending < 0) "lexical analysis failed" else "syntax error"
+    }
+  }
+
+  def getExpectedTokenSet(e: ParseException) = {
+    if (e.expected < 0) {
+      getTokenSet(- e.state)
+    }
+    else {
+      Array(TOKEN(e.expected))
+    }
+  }
+
+  trait EventHandler {
+    def reset(string: String): Unit
+    def startNonterminal(id: Int, begin: Int): Unit
+    def endNonterminal(id: Int, end: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit
+    def whitespace(begin: Int, end: Int): Unit
+  }
+
+  abstract class Symbol(i: Int, b: Int, e: Int) {
+    var id = i
+    var begin = b
+    var end = e
+
+    def getName: String
+
+    def send(e: EventHandler): Unit
+  }
+
+  class Terminal(id: Int, begin: Int, end: Int) extends Symbol(id, begin, end) {
+    override def getName: String = {
+      TOKEN(id)
+    }
+
+    override def send(e: EventHandler): Unit = {
+      e.terminal(id, begin, end)
+    }
+  }
+
+  class Nonterminal(id: Int, begin: Int, end: Int, c: ArrayBuffer[Symbol]) extends Symbol(id, begin, end) {
+    var children = c
+
+    override def getName: String = {
+      NONTERMINAL(id)
+    }
+
+    override def send(e: EventHandler): Unit = {
+      e.startNonterminal(id, begin)
+      var pos = begin
+      for (c <- children) {
+        if (pos < c.begin) e.whitespace(pos, c.begin)
+        c.send(e)
+        pos = c.end
+      }
+      if (pos < end) e.whitespace(pos, end)
+      e.endNonterminal(id, end)
+    }
+  }
+
+  trait BottomUpEventHandler {
+    def reset(string: String): Unit
+    def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit
+    def terminal(id: Int, begin: Int, end: Int): Unit
+  }
+
+  class XmlSerializer(val out: Writer, val indent: Boolean) extends EventHandler {
+    private var input: String = null
+    private var delayedTag: String = null
+    private var hasChildElement = false
+    private var depth = 0
+
+    def reset(string: String): Unit = {
+      writeOutput("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">")
+      input = string
+      delayedTag = null
+      hasChildElement = false
+      depth = 0
+    }
+
+    def startNonterminal(id: Int, begin: Int): Unit = {
+      startElement(getNonterminalName(id))
+    }
+
+    private def startElement(name: String): Unit = {
+      if (delayedTag != null) {
+        writeOutput("<")
+        writeOutput(delayedTag)
+        writeOutput(">")
+      }
+      delayedTag = name
+      if (indent) {
+        writeOutput("\n")
+        var i = 0
+        for (i <- 1 to depth) {
+          writeOutput("  ")
+        }
+      }
+      hasChildElement = false
+      depth += 1
+    }
+
+    def endNonterminal(id: Int, end: Int): Unit = {
+      endElement(getNonterminalName(id))
+    }
+
+    private def endElement(name: String): Unit = {
+      depth -= 1
+      if (delayedTag != null) {
+        delayedTag = null
+        writeOutput("<")
+        writeOutput(name)
+        writeOutput("/>")
+      }
+      else {
+        if (indent) {
+          if (hasChildElement) {
+            writeOutput("\n")
+            var i = 0
+            for (i <- 1 to depth) {
+              writeOutput("  ")
+            }
+          }
+        }
+        writeOutput("</")
+        writeOutput(name)
+        writeOutput(">")
+      }
+      hasChildElement = true
+    }
+
+    def terminal(id: Int, begin: Int, end: Int): Unit = {
+      val name = getTerminalName(id)
+      val tag = if (name(0) == '\'') "TOKEN" else name
+      startElement(tag)
+      characters(begin, end)
+      endElement(tag)
+    }
+
+    def whitespace(begin: Int, end: Int): Unit = {
+      characters(begin, end)
+    }
+
+    private def characters(begin: Int, end: Int): Unit = {
+      if (begin < end) {
+        if (delayedTag != null) {
+          writeOutput("<")
+          writeOutput(delayedTag)
+          writeOutput(">")
+          delayedTag = null
+        }
+        writeOutput(input.substring(begin, end)
+                         .replace("&", "&amp;")
+                         .replace("<", "&lt;")
+                         .replace(">", "&gt;"))
+      }
+    }
+
+    def writeOutput(content: String): Unit = {
+      out.write(content)
+    }
+  }
+
+  class ParseTreeBuilder extends BottomUpEventHandler {
+    var input: String = null
+    var stack = new ArrayBuffer[Symbol](64)
+    var top = -1
+
+    override def reset(input: String): Unit = {
+      this.input = input
+      top = -1
+    }
+
+    override def nonterminal(id: Int, begin: Int, end: Int, count: Int): Unit = {
+      push(new Nonterminal(id, begin, end, pop(count)))
+    }
+
+    override def terminal(id: Int, begin: Int, end: Int): Unit = {
+      push(new Terminal(id, begin, end))
+    }
+
+    def getRoot: Symbol = if (top >= 0) stack(0) else null
+
+    def serialize(e: EventHandler): Unit = {
+      e.reset(input)
+      var i = 0
+      for (i <- 0 to top)
+        stack(i).send(e)
+    }
+
+    def push(s: Symbol): Unit = {
+      top += 1
+      if (top == stack.length) stack += s else stack(top) = s
+    }
+
+    def pop(count: Int): ArrayBuffer[Symbol] = {
+      top -= count
+      stack.slice(top + 1, top + count + 1)
+    }
+  }
+
+  def main(args: Array[String]): Unit = {
+    if (args.length == 0) {
+      println("Usage: scala exprBNF_nobuilder [-i] INPUT...")
+      println()
+      println("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n")
+      println()
+      println("  Option:")
+      println("    -i     indented parse tree")
+    }
+    else {
+      var indent = false
+      for (arg <- args) {
+        if (arg == "-i") {
+          indent = true
+        }
+        else {
+          val w = new OutputStreamWriter(System.out, "utf-8")
+          val s = new XmlSerializer(w, indent)
+          val b = new ParseTreeBuilder
+          val parser = new exprBNF_nobuilder(read(arg), b)
+          try {
+            parser.parse_input
+            b.serialize(s)
+          }
+          catch {
+            case pe: ParseException =>
+              throw new RuntimeException("ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe))
+          }
+          finally {
+            w.close
+          }
+        }
+      }
+    }
+  }
+
+  private def read(fileName: String) = {
+    if (fileName(0) == '{' && fileName(fileName.length - 1) == '}') {
+      fileName.substring(1, fileName.length - 1)
+    }
+    else {
+      val file = io.Source.fromFile(fileName, "utf-8")
+      val content = file.mkString
+      file.close
+      if (content(0) == '\ufeff') content.substring(1) else content
+    }
+  }
+
+  private def goTo(nonterminal: Int, state: Int): Int = {
+    val i0 = (state << 3) + nonterminal
+    exprBNF_nobuilder.GOTO((i0 & 3) + exprBNF_nobuilder.GOTO(i0 >> 2))
+  }
+
+  private def getTokenSet(tokenSetId: Int) = {
+    var expected = ArrayBuffer[String]()
+    val s = if (tokenSetId < 0) - tokenSetId else INITIAL(tokenSetId) & 7
+    var i = 0
+    while (i < 10) {
+      var j = i
+      val i0 = (i >> 5) * 5 + s - 1
+      var f = EXPECTED(i0)
+      while (f != 0) {
+        if ((f & 1) != 0) {
+          expected += TOKEN(j)
+        }
+        f >>>= 1
+        j += 1
+      }
+      i += 32
+    }
+    expected.toArray
+  }
+
+  private final val MAP0 = Array(
+    /*   0 */ 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  )
+
+  private final val MAP1 = Array(
+    /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+    /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8,
+    /* 145 */ 8, 8, 0, 0, 0, 0, 0, 0
+  )
+
+  private final val INITIAL = Array(
+    /* 0 */ 1, 2, 3, 4
+  )
+
+  private final val TRANSITION = Array(
+    /*  0 */ 25, 25, 20, 25, 24, 25, 30, 25, 26, 25, 34, 25, 38, 25, 43, 25, 42, 42, 47, 25, 16, 16, 16, 16, 40, 0, 0,
+    /* 27 */ 0, 0, 72, 0, 0, 48, 48, 0, 56, 56, 56, 0, 64, 64, 64, 29, 0, 0, 0, 80, 0, 32, 0, 32
+  )
+
+  private final val EXPECTED = Array(
+    /* 0 */ 22, 202, 226, 1002, 4
+  )
+
+  private final val CASEID = Array(
+    /*  0 */ 5, 5, 5, 20, 12, 28, 37, 38, 38, 28, 37, 38, 38, 55, 38, 38, 31, 33, 47, 38, 39, 43, 38, 38, 49, 51, 47,
+    /* 27 */ 38, 0, 0, 392, 0, 0, 0, 180, 180, 180, 146, 0, 0, 0, 0, 24, 0, 0, 274, 402, 530, 658, 0, 0, 0, 148, 148,
+    /* 54 */ 148, 0, 424, 274, 402
+  )
+
+  private final val TOKENSET = Array(
+    /*  0 */ 0, 0, 0, 0, 0, 0, 1, 3, 2, 3
+  )
+
+  private final val GOTO = Array(
+    /*  0 */ 12, 16, 21, 16, 25, 16, 25, 16, 17, 16, 17, 16, 6, 393, 457, 132, 0, 0, 0, 0, 148, 0, 521, 457, 132, 0, 0,
+    /* 27 */ 585, 132
+  )
+
+  final val TOKEN = Array(
+    "%ERROR",
+    "ws",
+    "integer",
+    "EOF",
+    "'('",
+    "')'",
+    "'+'",
+    "'-'",
+    "'*'",
+    "'/'"
+  )
+
+  final val NONTERMINAL = Array(
+    "input",
+    "expr",
+    "term",
+    "factor"
+  )
+}
+
+// End

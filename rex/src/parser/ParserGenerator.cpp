@@ -67,6 +67,7 @@ static void usage()
   fprintf(stdout, "  -saxon          generate Saxon extension function (Java only)\n");
   fprintf(stdout, "  -basex          generate BaseX extension function (Java only)\n");
   fprintf(stdout, "  -interface NAME use interface NAME, or generate it (Java only)\n");
+  fprintf(stdout, "  -nobuilder      omit standard parse tree builder unless needed\n");
   fprintf(stdout, "\n");
   fprintf(stdout, "  -xml            create XML representation of grammar\n");
   fprintf(stdout, "  -xmlonly       create XML representation without generating a parser\n");
@@ -115,6 +116,7 @@ int generateParser(int argc, char **argv)
   bool faster = false;
   int saxon = 0;
   bool basex = false;
+  bool noBuilders = false;
   bool noThrow = false;
   bool noLexer = false;
   bool codepoints = false;
@@ -376,6 +378,10 @@ int generateParser(int argc, char **argv)
     {
       basex = true;
     }
+    else if (strcmp(*arguments, "-nobuilder") == 0)
+    {
+      noBuilders = true;
+    }
     else if (strncmp(*arguments, "-t", 2) == 0 && strlen(*arguments) == 2)
     {
       tables = 2;
@@ -521,6 +527,11 @@ int generateParser(int argc, char **argv)
     fprintf(stdout, "missing option: -basex also requires -java\n");
     fflush(stdout);
   }
+  else if (noBuilders && (targetLanguage == REX || targetLanguage == XQUERY || targetLanguage == XSLT))
+  {
+    fprintf(stdout, "missing option: -nobuilder also requires -cpp, -csharp, -go, -haxe, -java, -javascript, -python, -scala, or -typescript\n");
+    fflush(stdout);
+  }
   else if (wInterfaceName && targetLanguage != JAVA)
   {
     fprintf(stdout, "missing option: -interface also requires -java\n");
@@ -567,6 +578,9 @@ int generateParser(int argc, char **argv)
         pj.setCodepoints(codepoints);
         pj.setLrParser(maxLR >= 0);
         pj.setUseGlr(generalized);
+        pj.setNoBuilders(noBuilders);
+        pj.setBasex(basex);
+        pj.setAmbiguityResolution(resolvesAmbiguity, shiftAmbiguity);
         pj.printInterface();
       }
       break;
@@ -720,6 +734,8 @@ int generateParser(int argc, char **argv)
             grammar->codepoints = codepoints;
             grammar->singleLexer = singleLexer;
             grammar->basex = basex;
+            grammar->noBuilders = noBuilders;
+            grammar->mainOrPerformance = printMain || performance;
             grammar->noThrow = noThrow;
             grammar->tables = tables;
             grammar->verbose = verbose;

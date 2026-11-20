@@ -1,4 +1,4 @@
-// This file was generated on Tue Nov 3, 2026 22:59 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:12 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q JSONiqParser.ebnf -typescript -ll 2 -backtrack -main -tree
 
 export namespace JSONiqParser
@@ -34,7 +34,6 @@ export namespace JSONiqParser
     getState() {return this.state;}
     getExpected() {return this.expected;}
     getOffending() {return this.offending;}
-    isAmbiguousInput() {return false;}
 
     getMessage()
     {
@@ -42734,6 +42733,11 @@ export namespace JSONiqParser
     {
       var current = this.stack[this.stack.length - 1];
       current.children.push(s);
+    }
+
+    public getRoot(): Nonterminal | null
+    {
+      return this.stack !== undefined && this.stack.length > 0 ? this.stack[0] : null;
     }
 
     public serialize(e: ParsingEventHandler): void

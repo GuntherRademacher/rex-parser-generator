@@ -1,0 +1,9 @@
+input   ::= expr EOF
+expr    ::= expr '+' expr
+          | integer
+
+<?TOKENS?>
+
+integer ::= [0-9]+
+EOF     ::= $
+ws      ::= ' ' /* ws:definition */

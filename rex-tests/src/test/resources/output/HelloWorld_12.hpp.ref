@@ -1,4 +1,4 @@
-// This file was generated on Fri Nov 6, 2026 13:12 (UTC+01) by REx v7.0-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 20:37 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: HelloWorld.ebnf -name HelloWorld_12 -cpp -tree
 
 #ifndef HELLOWORLD_12_HPP
@@ -132,8 +132,8 @@ public:
     void startNonterminal(int id, int begin)
     {
       Nonterminal *nonterminal = new Nonterminal(id, begin, begin, new std::vector<Symbol *>());
-      if (top++ >= 0) addChild(nonterminal);
-      if ((size_t) top >= stack.size())
+      if (top >= 0) addChild(nonterminal);
+      if ((size_t) ++top >= stack.size())
         stack.resize(stack.size() == 0 ? 64 : stack.size() << 1);
       stack[top] = nonterminal;
     }
@@ -152,6 +152,8 @@ public:
     void whitespace(int begin, int end)
     {
     }
+
+    Nonterminal *getRoot() const {return top >= 0 ? stack[0] : 0;}
 
     void serialize(EventHandler *e)
     {

@@ -1,4 +1,4 @@
-// This file was generated on Wed Nov 18, 2026 07:32 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 22:42 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: CodeGeneratorXQuery.cpp.template
                                                             #line 1 "CodeGeneratorXQuery.cpp.template"
                                                             #include "../common/Memory.hpp"

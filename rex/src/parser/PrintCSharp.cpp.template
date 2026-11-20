@@ -1273,7 +1273,7 @@ public interface ~                                            print(className.c_
            ? "lexical analysis failed"
            : "syntax error";
     }
-~                                                             if (tree)
+~                                                             if (tree && rejectsAmbiguity())
                                                               {
 ~
     public void serialize(EventHandler eventHandler)
@@ -1289,33 +1289,41 @@ public interface ~                                            print(className.c_
     public int getEnd() {return end;}
     public int getState() {return state;}
     public int getOffending() {return offending;}
-    public int getExpected() {return expected;}
-    public bool isAmbiguousInput() {return ~                  if (rejectsAmbiguity())
+    public int getExpected() {return expected;}~              if (rejectsAmbiguity())
                                                               {
-                                           ~ambiguousInput~   }
-                                                              else
-                                                              {
-                                           ~false~            }
-                                           ~;}
+~
+    public bool isAmbiguousInput() {return ~                    if (rejectsAmbiguity())
+                                                                {
+                                           ~ambiguousInput~     }
+                                                                else
+                                                                {
+                                           ~false~              }
+                                           ~;}~               }
+~
   }
 ~                                                             if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
   public interface EventHandler
   {
     void reset(String s);
-    void startNonterminal(int id~                               if (! noPosition)
-                                                                {
-                                ~, int begin~                   }
+    void startNonterminal(int id~                                 if (! noPosition)
+                                                                  {
+                                ~, int begin~                     }
                                 ~);
-    void endNonterminal(int id~                                 if (! noPosition)
-                                                                {
-                              ~, int end~                       }
+    void endNonterminal(int id~                                   if (! noPosition)
+                                                                  {
+                              ~, int end~                         }
                               ~);
     void terminal(int id, int begin, int end);
     void whitespace(int begin, int end);
   }
-
+~                                                               }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+~
   public class TopDownTreeBuilder : EventHandler
   {
     private String input = null;
@@ -1358,13 +1366,21 @@ public interface ~                                            print(className.c_
       current.children[current.children.Length - 1] = s;
     }
 
+    public Nonterminal getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
+
     public void serialize(EventHandler e)
     {
       e.reset(input);
       stack[0].send(e);
     }
   }
-
+~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
+~
   public abstract class Symbol
   {
     public int id;
@@ -1413,8 +1429,8 @@ public interface ~                                            print(className.c_
 
     public override String getName()
     {
-      return ~                                                  printSyntheticNamePrefix();
-             ~NONTERMINAL[id]~                                  printSyntheticNameSuffix();
+      return ~                                                    printSyntheticNamePrefix();
+             ~NONTERMINAL[id]~                                    printSyntheticNameSuffix();
                              ~;
     }
 
@@ -1432,7 +1448,8 @@ public interface ~                                            print(className.c_
       e.endNonterminal(id, end);
     }
   }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
   public interface BottomUpEventHandler
@@ -1602,7 +1619,7 @@ public interface ~                                            print(className.c_
     public void whitespace(int begin, int end) {length += end - begin;}
   }
 ~                                                               }
-                                                                if (isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
   public class ParseTreeBuilder : BottomUpEventHandler
@@ -1650,6 +1667,11 @@ public interface ~                                            print(className.c_
     {
     }~                                                            }
 ~
+
+    public Symbol getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
 
     public void serialize(EventHandler e)
     {

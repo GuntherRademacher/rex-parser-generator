@@ -885,7 +885,7 @@ def error(self):
     return "lexical analysis failed"
   else:
     return "syntax error"
-~                                                             if (tree)
+~                                                             if (tree && rejectsAmbiguity())
                                                               {
 ~
 def serialize(self, eventHandler):~                             if (rejectsAmbiguity())
@@ -913,14 +913,17 @@ def getOffending(self):
 
 def getExpected(self):
   return self.expected
-
+~                                                             if (rejectsAmbiguity())
+                                                              {
+~
 def isAmbiguousInput(self):
-  return ~                                                    if (rejectsAmbiguity())
-                                                              {
-         ~self.ambiguousInput~                                }
-                                                              else
-                                                              {
-         ~False~                                              }
+  return ~                                                      if (rejectsAmbiguity())
+                                                                {
+         ~self.ambiguousInput~                                  }
+                                                                else
+                                                                {
+         ~False~                                                }
+                                                              }
                                                               decreaseIndent();
 ~
 ~                                                             if (noLexer)
@@ -939,7 +942,7 @@ def isAmbiguousInput(self):
     void match(int tokenset, Token token);
   }
 ~                                                             }
-                                                              if (tree)
+                                                              if (emitsTopDownTreeBuilder())
                                                               {
 ~
 class TopDownTreeBuilder:
@@ -952,11 +955,14 @@ def reset(self, inputString):
 
 def startNonterminal(self, id, begin):
   nonterminal = ~                                               print(className.c_str());
-                ~.Nonterminal(id, begin, begin)
+                ~.Nonterminal(id, begin, begin, [])
   if self.top >= 0:
     self.addChild(nonterminal)
   self.top += 1
-  self.stack[self.top] = nonterminal
+  if self.top < len(self.stack):
+    self.stack[self.top] = nonterminal
+  else:
+    self.stack.append(nonterminal)
 
 def endNonterminal(self, _, end):
   self.stack[self.top].end = end
@@ -974,10 +980,16 @@ def addChild(self, s):
   current = self.stack[self.top]
   current.addChild(s)
 
+def getRoot(self):
+  return self.stack[0] if getattr(self, "top", -1) >= 0 else None
+
 def serialize(self, e):
   e.reset(self.input)
   self.stack[0].send(e)
 ~                                                               decreaseIndent();
+                                                              }
+                                                              if (emitsTreeNodes())
+                                                              {
 ~
 class Symbol:
 ~                                                               increaseIndent();
@@ -1011,7 +1023,7 @@ def getName(self):
                                ~
 
 def addChild(self, s):
-  self.children = self.children.append(s)
+  self.children.append(s)
 
 def send(self, e):
   e.startNonterminal(self.id, self.getBegin())
@@ -1046,7 +1058,7 @@ def send(self, e):
                                                             {
                                                               if (tree)
                                                               {
-                                                                if (main || useGlr)
+                                                                if (emitsXmlSerializer())
                                                                 {
 ~
 class XmlSerializer:
@@ -1132,7 +1144,7 @@ def terminal(self, id, b, e):
   self.endElement(tag)
 ~                                                                 decreaseIndent();
                                                                 }
-                                                                if (isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
 class ParseTreeBuilder:
@@ -1170,6 +1182,9 @@ def ambiguity(self, begin, end):
   pass
 ~                                                                 }
 ~
+def getRoot(self):
+  return self.stack[0] if len(getattr(self, "stack", [])) > 0 else None
+
 def serialize(self, e):
   e.reset(self.input)
   for symbol in self.stack:

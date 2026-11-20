@@ -1,0 +1,762 @@
+// This file was generated on Fri Nov 20, 2026 10:07 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q exprBNF.ebnf -lalr 1 -tree -main -nobuilder -typescript -name exprBNF_nobuilder
+
+export namespace exprBNF_nobuilder
+{
+  export interface ParsingEventHandler
+  {
+    reset(source: string): void;
+    startNonterminal(id: number, begin: number): void;
+    endNonterminal(id: number, end: number): void;
+    terminal(id: number, begin: number, end: number): void;
+    whitespace(begin: number, end: number): void;
+  }
+
+  export interface BottomUpEventHandler
+  {
+    reset(input: string): void;
+    nonterminal(id: number, begin: number, end: number, count: number): void;
+    terminal(id: number, begin: number, end: number): void;
+  }
+
+  export class ParseException
+  {
+    private begin: number;
+    private end: number;
+    private state: number;
+    private offending: number;
+    private expected: number;
+
+    constructor(b: number, e: number, s: number, o: number, x: number)
+    {
+      this.begin = b;
+      this.end = e;
+      this.state = s;
+      this.offending = o;
+      this.expected = x;
+    }
+
+    getBegin() {return this.begin;}
+    getEnd() {return this.end;}
+    getState() {return this.state;}
+    getExpected() {return this.expected;}
+    getOffending() {return this.offending;}
+
+    getMessage()
+    {
+      return this.offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+  }
+
+  interface Memoizer
+  {
+    [index: number]: number;
+  }
+
+  export class Parser
+  {
+    constructor(source: string, parsingEventHandler: BottomUpEventHandler)
+    {
+      this.initialize(source, parsingEventHandler);
+    }
+
+    initialize(source: string, parsingEventHandler: BottomUpEventHandler)
+    {
+      this.eventHandler = parsingEventHandler;
+      this.input = source;
+      this.size = source.length;
+      this.reset(0, 0, 0);
+    }
+
+    getInput()
+    {
+      return this.input;
+    }
+
+    getTokenOffset()
+    {
+      return this.b0;
+    }
+
+    getTokenEnd()
+    {
+      return this.e0;
+    }
+
+    private reset(l: number, b: number, e: number)
+    {
+                   this.b0 = b; this.e0 = b;
+      this.l1 = l; this.b1 = b; this.e1 = e;
+      this.end = e;
+      this.eventHandler!.reset(this.input);
+    }
+
+    getOffendingToken(e: ParseException)
+    {
+      var o = e.getOffending();
+      return o >= 0 ? Parser.TOKEN[o] : null;
+    }
+
+    public static getTerminalName(id: number): string
+    {
+      return Parser.TOKEN[id];
+    }
+
+    public static getNonterminalName(id: number): string
+    {
+      return Parser.NONTERMINAL[id];
+    }
+
+    getExpectedTokenSet(e: ParseException)
+    {
+      var expected: string[];
+      if (e.getExpected() < 0)
+      {
+        expected = Parser.getTokenSet(- e.getState());
+      }
+      else
+      {
+        expected = [Parser.TOKEN[e.getExpected()]];
+      }
+      return expected;
+    }
+
+    getErrorMessage(e: ParseException)
+    {
+      var message = e.getMessage();
+      var found = this.getOffendingToken(e);
+      var tokenSet = this.getExpectedTokenSet(e);
+      var size = e.getEnd() - e.getBegin();
+      message += (found == null ? "" : ", found " + found)
+              + "\nwhile expecting "
+              + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
+              + "\n"
+              + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+      var prefix = this.input.substring(0, e.getBegin());
+      var lines = prefix.split("\n");
+      var line = lines.length;
+      var column = lines[line - 1].length + 1;
+      return message
+           + "at line " + line + ", column " + column + ":\n..."
+           + this.input.substring(e.getBegin(), Math.min(this.input.length, e.getBegin() + 64))
+           + "...";
+    }
+
+    parse_input()
+    {
+      this.top = -1;
+      this.parse(0, 0, this.eventHandler);
+    }
+
+    private push(state: number, lookback: number, begin: number)
+    {
+      this.top += 3;
+      this.iStack[this.top - 2] = begin;
+      this.iStack[this.top - 1] = state;
+      this.iStack[this.top] = lookback;
+    }
+
+    private parse(target: number, initialState: number, eventHandler: BottomUpEventHandler | null)
+    {
+      var state = initialState;
+      var bw = this.e0;
+      var bs = this.e0;
+      var es = this.e0;
+      var t = this.top;
+      var action = this.predict(state);
+      var nonterminalId = -1;
+      for (;;)
+      {
+        var argument = action >> 6;
+        var lookback = (action >> 3) & 7;
+        var shift = -1;
+        var reduce = -1;
+        var symbols = -1;
+        switch (action & 7)
+        {
+        case 1: // SHIFT
+          shift = argument;
+          break;
+
+        case 2: // REDUCE
+          reduce = argument;
+          symbols = lookback;
+          break;
+
+        case 4: // SHIFT+REDUCE
+          shift = state;
+          reduce = argument;
+          symbols = lookback + 1;
+          break;
+
+        case 6: // ACCEPT
+          return;
+
+        default: // ERROR
+          throw new ParseException(this.b1, this.e1, Parser.TOKENSET[state] + 1, this.l1, -1);
+        }
+
+        if (shift >= 0)
+        {
+          if (nonterminalId < 0)
+          {
+            if (eventHandler != null)
+            {
+              eventHandler.terminal(this.l1, this.b1, this.e1);
+            }
+            es = this.e1;
+            this.push(state, lookback, this.b1);
+            this.consume(this.l1);
+          }
+          else
+          {
+            this.push(state, lookback, bs);
+          }
+          state = shift;
+        }
+
+        if (reduce < 0)
+        {
+          action = this.predict(state);
+          nonterminalId = -1;
+        }
+        else
+        {
+          nonterminalId = reduce;
+          if (this.l1 == 0)
+          {
+            this.b1 = this.e0;
+          }
+          if (symbols > 0)
+          {
+            this.top -= symbols * 3;
+            state = this.iStack[this.top + 2];
+            bs = this.iStack[this.top + 1];
+          }
+          else
+          {
+            bs = this.b1;
+            es = this.b1;
+          }
+          if (nonterminalId == target && t == this.top)
+          {
+            bs = bw;
+            es = this.b1;
+            bw = this.b1;
+          }
+          if (eventHandler != null)
+          {
+            eventHandler.nonterminal(nonterminalId, bs, es, symbols);
+          }
+          action = Parser.goTo(nonterminalId, state);
+        }
+      }
+    }
+
+    private consume(t: number)
+    {
+      if (this.l1 == t)
+      {
+        this.b0 = this.b1; this.e0 = this.e1; this.l1 = 0;
+      }
+      else
+      {
+        this.error(this.b1, this.e1, 0, this.l1, t);
+      }
+    }
+
+    private matchW(tokenSetId: number)
+    {
+      var code: number;
+      for (;;)
+      {
+        code = this.match(tokenSetId);
+        if (code != 1)              // ws
+        {
+          break;
+        }
+      }
+      return code;
+    }
+
+    private error(b: number, e: number, s: number, l: number, t: number)
+    {
+      throw new ParseException(b, e, s, l, t);
+    }
+
+                         private b0!: number; private e0!: number;
+    private l1!: number; private b1!: number; private e1!: number;
+    private iStack: number[] = [];
+    private top: number = -1;
+    private eventHandler!: BottomUpEventHandler | null;
+
+    private input!: string;
+    private size!: number;
+    private begin!: number;
+    private end!: number;
+
+    private predict(dpi: number): number
+    {
+      var d = dpi;
+      if (this.l1 == 0)
+      {
+        this.l1 = this.matchW(Parser.TOKENSET[d]);
+        this.b1 = this.begin;
+        this.e1 = this.end;
+      }
+      var j10 = (d << 4) + this.l1;
+      var j11 = j10 >> 2;
+      var action = Parser.CASEID[(j10 & 3) + Parser.CASEID[(j11 & 7) + Parser.CASEID[j11 >> 3]]];
+      return action >> 1;
+    }
+
+    private match(tokenSetId: number): number
+    {
+      this.begin = this.end;
+      var current = this.end;
+      var result = Parser.INITIAL[tokenSetId];
+      var state = 0;
+      for (var code = result & 7; code != 0; )
+      {
+        var charclass: number;
+        var c0 = current < this.size ? this.input.charCodeAt(current) : 0;
+        ++current;
+        if (c0 < 0x80)
+        {
+          charclass = Parser.MAP0[c0];
+        }
+        else if (c0 < 0xd800)
+        {
+          var c1 = c0 >> 5;
+          charclass = Parser.MAP1[(c0 & 31) + Parser.MAP1[(c1 & 31) + Parser.MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+
+        state = code;
+        var i0 = (charclass << 3) + code - 1;
+        code = Parser.TRANSITION[(i0 & 3) + Parser.TRANSITION[i0 >> 2]];
+
+        if (code > 7)
+        {
+          result = code;
+          code &= 7;
+          this.end = current;
+        }
+      }
+
+      result >>= 3;
+      if (result == 0)
+      {
+        this.end = current - 1;
+        var c1: number = this.end < this.size ? this.input.charCodeAt(this.end) : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000) --this.end;
+        this.error(this.begin, this.end, state, -1, -1);
+      }
+
+      if (this.end > this.size) this.end = this.size;
+      return (result & 15) - 1;
+    }
+
+    private static goTo(nonterminal: number, state: number): number
+    {
+      var i0 = (state << 3) + nonterminal;
+      return Parser.GOTO[(i0 & 3) + Parser.GOTO[i0 >> 2]];
+    }
+
+    private static getTokenSet(tokenSetId: number)
+    {
+      var set: string[] = [];
+      var s = tokenSetId < 0 ? - tokenSetId : Parser.INITIAL[tokenSetId] & 7;
+      for (var i = 0; i < 10; i += 32)
+      {
+        var j = i;
+        var i0 = (i >> 5) * 5 + s - 1;
+        var f = Parser.EXPECTED[i0];
+        for ( ; f != 0; f >>>= 1, ++j)
+        {
+          if ((f & 1) != 0)
+          {
+            set.push(Parser.TOKEN[j]);
+          }
+        }
+      }
+      return set;
+    }
+
+    private static MAP0: number[] =
+    [
+      /*   0 */ 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+      /*  35 */ 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    ];
+
+    private static MAP1: number[] =
+    [
+      /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+      /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+      /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+      /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8,
+      /* 145 */ 8, 8, 0, 0, 0, 0, 0, 0
+    ];
+
+    private static INITIAL: number[] =
+    [
+      /* 0 */ 1, 2, 3, 4
+    ];
+
+    private static TRANSITION: number[] =
+    [
+      /*  0 */ 25, 25, 20, 25, 24, 25, 30, 25, 26, 25, 34, 25, 38, 25, 43, 25, 42, 42, 47, 25, 16, 16, 16, 16, 40, 0, 0,
+      /* 27 */ 0, 0, 72, 0, 0, 48, 48, 0, 56, 56, 56, 0, 64, 64, 64, 29, 0, 0, 0, 80, 0, 32, 0, 32
+    ];
+
+    private static EXPECTED: number[] =
+    [
+      /* 0 */ 22, 202, 226, 1002, 4
+    ];
+
+    private static CASEID: number[] =
+    [
+      /*  0 */ 5, 5, 5, 20, 12, 28, 37, 38, 38, 28, 37, 38, 38, 55, 38, 38, 31, 33, 47, 38, 39, 43, 38, 38, 49, 51, 47,
+      /* 27 */ 38, 0, 0, 392, 0, 0, 0, 180, 180, 180, 146, 0, 0, 0, 0, 24, 0, 0, 274, 402, 530, 658, 0, 0, 0, 148, 148,
+      /* 54 */ 148, 0, 424, 274, 402
+    ];
+
+    private static TOKENSET: number[] =
+    [
+      /*  0 */ 0, 0, 0, 0, 0, 0, 1, 3, 2, 3
+    ];
+
+    private static GOTO: number[] =
+    [
+      /*  0 */ 12, 16, 21, 16, 25, 16, 25, 16, 17, 16, 17, 16, 6, 393, 457, 132, 0, 0, 0, 0, 148, 0, 521, 457, 132, 0, 0,
+      /* 27 */ 585, 132
+    ];
+
+    public static TOKEN: string [] =
+    [
+      "%ERROR",
+      "ws",
+      "integer",
+      "EOF",
+      "'('",
+      "')'",
+      "'+'",
+      "'-'",
+      "'*'",
+      "'/'"
+    ];
+
+    public static NONTERMINAL: string [] =
+    [
+      "input",
+      "expr",
+      "term",
+      "factor"
+    ];
+  }
+
+  export abstract class Symbol
+  {
+    public id: number;
+    public begin: number;
+    public end: number;
+
+    constructor(id: number, begin: number, end: number)
+    {
+      this.id = id;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract getName(): string;
+
+    public abstract send(e: ParsingEventHandler): void;
+  }
+
+  export class Terminal extends Symbol
+  {
+    constructor(id: number, begin: number, end: number)
+    {
+      super(id, begin, end);
+    }
+
+    public getName(): string
+    {
+      return Parser.TOKEN[this.id];
+    }
+
+    public send(e: ParsingEventHandler): void
+    {
+      e.terminal(this.id, this.begin, this.end);
+    }
+  }
+
+  export class Nonterminal extends Symbol
+  {
+    public children: Symbol[];
+
+    constructor(id: number, begin: number, end: number, children: Symbol[])
+    {
+      super(id, begin, end);
+      this.children = children;
+    }
+
+    public getName(): string
+    {
+      return Parser.NONTERMINAL[this.id];
+    }
+
+    public send(e: ParsingEventHandler): void
+    {
+      e.startNonterminal(this.id, this.begin);
+      var pos = this.begin;
+      this.children.forEach
+      (
+        function(c): void
+        {
+          if (pos < c.begin) e.whitespace(pos, c.begin);
+          c.send(e);
+          pos = c.end;
+        }
+      );
+      if (pos < this.end) e.whitespace(pos, this.end);
+      e.endNonterminal(this.id, this.end);
+    }
+  }
+
+  export class ParseTreeBuilder implements BottomUpEventHandler
+  {
+    private input!: string;
+    private stack: Symbol[] = [];
+    private top!: number;
+
+    public reset(input: string): void
+    {
+      this.input = input;
+      this.top = -1;
+    }
+
+    public getStack(): Symbol[] {return this.stack;}
+    public getTop(): number {return this.top;}
+
+    public nonterminal(id: number, begin: number, end: number, count: number): void
+    {
+      this.push(new Nonterminal(id, begin, end, this.pop(count)));
+    }
+
+    public terminal(id: number, begin: number, end: number): void
+    {
+      this.push(new Terminal(id, begin, end));
+    }
+
+    public getRoot(): Symbol | null
+    {
+      return this.top >= 0 ? this.stack[0] : null;
+    }
+
+    public serialize(e: ParsingEventHandler): void
+    {
+      e.reset(this.input);
+      for (var i = 0; i <= this.top; ++i)
+      {
+        this.stack[i].send(e);
+      }
+    }
+
+    public push(s: Symbol): void
+    {
+      this.stack[++this.top] = s;
+    }
+
+    public pop(count: number): Symbol[]
+    {
+      this.top -= count;
+      return this.stack.slice(this.top + 1, this.top + 1 + count);
+    }
+  }
+}
+
+class XmlSerializer implements exprBNF_nobuilder.ParsingEventHandler
+{
+  private input!: string;
+  private delayedTag: string | null = null;
+  private indent: boolean;
+  private hasChildElement!: boolean;
+  private depth!: number;
+
+  constructor(indent: boolean)
+  {
+    this.indent = indent;
+  }
+
+  reset(source: string)
+  {
+    proc.stdout.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    this.input = source;
+    this.hasChildElement = false;
+    this.depth = 0;
+  }
+
+  startNonterminal(id: number, begin: number)
+  {
+    this.startElement(exprBNF_nobuilder.Parser.getNonterminalName(id));
+  }
+
+  private startElement(tag: string)
+  {
+    if (this.delayedTag != null)
+    {
+      proc.stdout.write("<");
+      proc.stdout.write(this.delayedTag);
+      proc.stdout.write(">");
+    }
+    this.delayedTag = tag;
+    if (this.indent)
+    {
+      proc.stdout.write("\n");
+      for (var i = 0; i < this.depth; ++i)
+      {
+        proc.stdout.write("  ");
+      }
+    }
+    this.hasChildElement = false;
+    ++this.depth;
+  }
+
+  endNonterminal(id: number, end: number)
+  {
+    this.endElement(exprBNF_nobuilder.Parser.getNonterminalName(id));
+  }
+
+  private endElement(tag: string)
+  {
+    --this.depth;
+    if (this.delayedTag != null)
+    {
+      this.delayedTag = null;
+      proc.stdout.write("<");
+      proc.stdout.write(tag);
+      proc.stdout.write("/>");
+    }
+    else
+    {
+      if (this.indent)
+      {
+        if (this.hasChildElement)
+        {
+          proc.stdout.write("\n");
+          for (var i = 0; i < this.depth; ++i)
+          {
+            proc.stdout.write("  ");
+          }
+        }
+      }
+      proc.stdout.write("</");
+      proc.stdout.write(tag);
+      proc.stdout.write(">");
+    }
+    this.hasChildElement = true;
+  }
+
+  terminal(id: number, begin: number, end: number)
+  {
+    var tag = exprBNF_nobuilder.Parser.getTerminalName(id);
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    this.startElement(tag);
+    this.characters(begin, end);
+    this.endElement(tag);
+  }
+
+  whitespace(begin: number, end: number)
+  {
+    this.characters(begin, end);
+  }
+
+  private characters(begin: number, end: number)
+  {
+    if (begin < end)
+    {
+      if (this.delayedTag != null)
+      {
+        proc.stdout.write("<");
+        proc.stdout.write(this.delayedTag);
+        proc.stdout.write(">");
+        this.delayedTag = null;
+      }
+      proc.stdout.write(this.input.substring(begin, end)
+                 .replace(/&/g, "&amp;")
+                 .replace(/</g, "&lt;")
+                 .replace(/>/g, "&gt;"));
+    }
+  }
+}
+
+// main program for use with node.js
+
+const proc: any = (globalThis as any).process;
+const requ: any = eval("require");
+const fs: any = requ("fs");
+
+if (proc.argv.length < 3)
+{
+  proc.stderr.write("Usage: node exprBNF_nobuilder.js [-i] INPUT...\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");
+  proc.stderr.write("\n");
+  proc.stderr.write("  Option:\n");
+  proc.stderr.write("    -i     indented parse tree\n");
+}
+else
+{
+  var indent = false;
+  for (var i = 2; i < proc.argv.length; ++i)
+  {
+    var arg = proc.argv[i];
+    if (arg === "-i")
+    {
+      indent = true;
+      continue;
+    }
+    var input: string;
+    if (/^{.*}$/.test(arg))
+    {
+      input = arg.substring(1, arg.length - 1);
+    }
+    else
+    {
+      var content = fs.readFileSync(arg, "utf-8");
+      input = content.length > 0 && content.charCodeAt(0) == 0xFEFF
+            ? content.substring(1)
+            : content;
+    }
+    var s = new XmlSerializer(indent);
+    var t = new exprBNF_nobuilder.ParseTreeBuilder();
+    var parser = new exprBNF_nobuilder.Parser(input, t);
+    try
+    {
+      parser.parse_input();
+      t.serialize(s);
+    }
+    catch (pe)
+    {
+      if (! (pe instanceof exprBNF_nobuilder.ParseException))
+      {
+        throw pe;
+      }
+      else
+      {
+        throw parser.getErrorMessage(pe);
+      }
+    }
+  }
+}
+
+// End

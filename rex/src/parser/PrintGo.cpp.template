@@ -1168,7 +1168,7 @@ func (this ParseError) Error() string {
     return "syntax error"
   }
 }
-~                                                             if (tree)
+~                                                             if (tree && rejectsAmbiguity())
                                                               {
 ~
 func (this *ParseError) Serialize(eventHandler EventHandler) {~ if (rejectsAmbiguity())
@@ -1183,16 +1183,20 @@ func (this *ParseError) GetBegin() int {return this.begin}
 func (this *ParseError) GetEnd() int {return this.end}
 func (this *ParseError) GetState() int {return this.state}
 func (this *ParseError) GetOffending() int {return this.offending}
-func (this *ParseError) GetExpected() int {return this.expected}
-func (this *ParseError) IsAmbiguousInput() bool {return ~     if (rejectsAmbiguity())
+func (this *ParseError) GetExpected() int {return this.expected}~
+                                                              if (rejectsAmbiguity())
                                                               {
+~
+func (this *ParseError) IsAmbiguousInput() bool {return ~       if (rejectsAmbiguity())
+                                                                {
                                                         ~this.ambiguousInput~
+                                                                }
+                                                                else
+                                                                {
+                                                        ~false~ }
+                                                              ~}~
                                                               }
-                                                              else
-                                                              {
-                                                        ~false~
-                                                              }
-                                                              ~}
+~
 ~                                                             if (noLexer)
                                                               {
 ~
@@ -1211,6 +1215,8 @@ func (this *ParseError) IsAmbiguousInput() bool {return ~     if (rejectsAmbigui
 ~                                                             }
                                                               if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
 type EventHandler interface {
   Reset(input string)
@@ -1219,7 +1225,10 @@ type EventHandler interface {
   Terminal(id int, begin, end int)
   Whitespace(begin, end int)
 }
-
+~                                                               }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+~
 type TopDownTreeBuilder struct {
   input string
   stack []*Nonterminal
@@ -1263,11 +1272,21 @@ func (this *TopDownTreeBuilder) addChild(s Symbol) {
   current.addChild(s)
 }
 
+func (this *TopDownTreeBuilder) GetRoot() Symbol {
+  if this.top >= 0 && len(this.stack) > 0 {
+    return this.stack[0]
+  }
+  return nil
+}
+
 func (this *TopDownTreeBuilder) Serialize(e EventHandler) {
   e.Reset(this.input)
   this.stack[0].send(e)
 }
-
+~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
+~
 type Symbol interface {
   GetId() int
   GetName() string
@@ -1297,6 +1316,10 @@ func (this *AbstractSymbol) GetEnd() int {
 type Nonterminal struct {
   *AbstractSymbol
   children []Symbol
+}
+
+func (this *Nonterminal) GetChildren() []Symbol {
+  return this.children
 }
 
 func (this *Nonterminal) addChild(s Symbol) {
@@ -1334,7 +1357,8 @@ func (this *Terminal) GetName() string {
 func (this *Terminal) send(e EventHandler) {
   e.Terminal(this.id, this.GetBegin(), this.GetEnd())
 }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
 type BottomUpEventHandler interface {
@@ -1354,7 +1378,7 @@ type BottomUpEventHandler interface {
                                                             {
                                                               if (tree)
                                                               {
-                                                                if (main || useGlr)
+                                                                if (emitsXmlSerializer())
                                                                 {
 ~
 type XmlSerializer struct {
@@ -1474,7 +1498,7 @@ func (this *ContentCounter) EndNonterminal(id int, end int) {}
 func (this *ContentCounter) Terminal(id int, begin, end int) {this.length += end - begin}
 func (this *ContentCounter) Whitespace(begin, end int) {this.length += end - begin}
 ~                                                               }
-                                                                if (isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
 type ParseTreeBuilder struct {
@@ -1520,6 +1544,13 @@ func (this *ParseTreeBuilder) Ambiguity(begin int, end int) {
 }
 ~                                                                 }
 ~
+func (this *ParseTreeBuilder) GetRoot() Symbol {
+  if this.top >= 0 && len(this.stack) > 0 {
+    return this.stack[0]
+  }
+  return nil
+}
+
 func (this *ParseTreeBuilder) Serialize(e EventHandler) {
   e.Reset(this.input)
   for i := 0; i <= this.top; i++ {

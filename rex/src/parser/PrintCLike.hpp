@@ -90,6 +90,8 @@ public:
     codepoints(false),
     isLrParser(false),
     useGlr(false),
+    noBuilders(false),
+    basex(false),
     resolvesAmbiguity(false),
     shiftAmbiguity(false)
   {
@@ -240,7 +242,31 @@ public:
   void setCodepoints(bool c) {codepoints = c;}
   void setLrParser(bool l) {isLrParser = l;}
   void setUseGlr(bool l) {useGlr = l;}
+  void setNoBuilders(bool b) {noBuilders = b;}
+  void setBasex(bool b) {basex = b;}
+  void setAmbiguityResolution(bool resolves, bool shift) {resolvesAmbiguity = resolves; shiftAmbiguity = shift;}
   bool rejectsAmbiguity() const {return useGlr && ! resolvesAmbiguity;}
+
+  // which standard event handler classes get generated: unless -nobuilder is given,
+  // TopDownTreeBuilder comes with -tree for LL parsers, ParseTreeBuilder for LR parsers,
+  // and XmlSerializer only serves the -main program
+  virtual bool builderNeededByTarget() const {return false;}
+  bool emitsXmlSerializer() const {return tree && main;}
+  bool emitsTopDownTreeBuilder() const {return tree && ! isLrParser && ! noBuilders;}
+  bool emitsParseTreeBuilder() const
+  {
+    return tree
+        && isLrParser
+        && (   ! noBuilders
+            || main
+            || performanceTest
+            || basex
+            || builderNeededByTarget()
+            || rejectsAmbiguity());
+  }
+  bool emitsTreeNodes() const {return emitsTopDownTreeBuilder() || emitsParseTreeBuilder();}
+  // the event handler interface of an LR parser is only needed by the classes that refer to it
+  bool emitsEventHandler() const {return tree && (! isLrParser || emitsParseTreeBuilder());}
 
   // names of the token and nonterminal tables; in Go, they are only exported when they are public
   const wchar_t *tokenTableName() {return isGo() && ! (tree || noLexer) ? L"token" : L"TOKEN";}
@@ -381,6 +407,8 @@ protected:
     grammar = node;
     isLrParser = grammar->states != 0;
     useGlr = grammar->useGlr;
+    noBuilders = grammar->noBuilders;
+    basex = grammar->basex;
     resolvesAmbiguity = grammar->resolvesAmbiguity;
     shiftAmbiguity = grammar->shiftAmbiguity;
     hasCustomCode = ! grammar->distinctCodeAnnotations.empty();
@@ -532,6 +560,8 @@ protected:
   bool codepoints;
   bool isLrParser;
   bool useGlr;
+  bool noBuilders;
+  bool basex;
   bool resolvesAmbiguity;
   bool shiftAmbiguity;
 };

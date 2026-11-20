@@ -1,0 +1,913 @@
+// This file was generated on Fri Nov 20, 2026 20:54 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q ambiguousExpr.ebnf -glalr 1 -ambiguity minimal -java -tree -name ambiguousExpr_glr
+
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
+@SuppressWarnings("all")
+public class ambiguousExpr_glr
+{
+  public static class ParseException extends RuntimeException
+  {
+    private static final long serialVersionUID = 1L;
+    private int begin, end, offending, expected, state;
+
+    public ParseException(int b, int e, int s, int o, int x)
+    {
+      begin = b;
+      end = e;
+      state = s;
+      offending = o;
+      expected = x;
+    }
+
+    @Override
+    public String getMessage()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    }
+
+    public int getBegin() {return begin;}
+    public int getEnd() {return end;}
+    public int getState() {return state;}
+    public int getOffending() {return offending;}
+    public int getExpected() {return expected;}
+  }
+
+  public interface EventHandler
+  {
+    public void reset(CharSequence string);
+    public void startNonterminal(int id, int begin);
+    public void endNonterminal(int id, int end);
+    public void terminal(int id, int begin, int end);
+    public void whitespace(int begin, int end);
+  }
+
+  public static abstract class Symbol
+  {
+    public int id;
+    public int begin;
+    public int end;
+
+    protected Symbol(int id, int begin, int end)
+    {
+      this.id = id;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract String getName();
+
+    public abstract void send(EventHandler e);
+  }
+
+  public static class Terminal extends Symbol
+  {
+    public Terminal(int id, int begin, int end)
+    {
+      super(id, begin, end);
+    }
+
+    @Override
+    public String getName()
+    {
+      return TOKEN[id];
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.terminal(id, begin, end);
+    }
+  }
+
+  public static class Nonterminal extends Symbol
+  {
+    public Symbol[] children;
+
+    public Nonterminal(int id, int begin, int end, Symbol[] children)
+    {
+      super(id, begin, end);
+      this.children = children;
+    }
+
+    @Override
+    public String getName()
+    {
+      return NONTERMINAL[id];
+    }
+
+    @Override
+    public void send(EventHandler e)
+    {
+      e.startNonterminal(id, begin);
+      int pos = begin;
+      for (Symbol c : children)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+      if (pos < end) e.whitespace(pos, end);
+      e.endNonterminal(id, end);
+    }
+  }
+
+  public interface BottomUpEventHandler
+  {
+    public void reset(CharSequence string);
+    public void nonterminal(int id, int begin, int end, int count);
+    public void terminal(int id, int begin, int end);
+    public void ambiguity(int begin, int end);
+  }
+
+  public static class ParseTreeBuilder implements BottomUpEventHandler
+  {
+    private CharSequence input;
+    public Symbol[] stack = new Symbol[64];
+    public int top = -1;
+
+    @Override
+    public void reset(CharSequence input)
+    {
+      this.input = input;
+      top = -1;
+    }
+
+    @Override
+    public void nonterminal(int id, int begin, int end, int count)
+    {
+      push(new Nonterminal(id, begin, end, pop(count)));
+    }
+
+    @Override
+    public void terminal(int id, int begin, int end)
+    {
+      push(new Terminal(id, begin, end));
+    }
+
+    @Override
+    public void ambiguity(int begin, int end)
+    {
+    }
+
+    public Symbol getRoot()
+    {
+      return top >= 0 ? stack[0] : null;
+    }
+
+    public void serialize(EventHandler e)
+    {
+      e.reset(input);
+      for (int i = 0; i <= top; ++i)
+      {
+        stack[i].send(e);
+      }
+    }
+
+    public void push(Symbol s)
+    {
+      if (++top >= stack.length)
+      {
+        stack = Arrays.copyOf(stack, stack.length << 1);
+      }
+      stack[top] = s;
+    }
+
+    public Symbol[] pop(int count)
+    {
+      top -= count;
+      return Arrays.copyOfRange(stack, top + 1, top + count + 1);
+    }
+  }
+
+  public ambiguousExpr_glr(CharSequence string, BottomUpEventHandler t)
+  {
+    initialize(string, t);
+  }
+
+  public void initialize(CharSequence source, BottomUpEventHandler parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.length();
+    maxId = 0;
+    thread = new ParsingThread();
+    thread.reset(0, 0, 0);
+  }
+
+  public static String getOffendingToken(ParseException e)
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static String getTerminalName(int id)
+  {
+    return TOKEN[id];
+  }
+
+  public static String getNonterminalName(int id)
+  {
+    return NONTERMINAL[id];
+  }
+
+  public static String[] getExpectedTokenSet(ParseException e)
+  {
+    String[] expected;
+    if (e.getExpected() >= 0)
+    {
+      expected = new String[]{TOKEN[e.getExpected()]};
+    }
+    else
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    return expected;
+  }
+
+  public String getErrorMessage(ParseException e)
+  {
+    String message = e.getMessage();
+    String[] tokenSet = getExpectedTokenSet(e);
+    String found = getOffendingToken(e);
+    int size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : java.util.Arrays.toString(tokenSet))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    String prefix = input.subSequence(0, e.getBegin()).toString();
+    int line = prefix.replaceAll("[^\n]", "").length() + 1;
+    int column = prefix.length() - prefix.lastIndexOf('\n');
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.subSequence(e.getBegin(), Math.min(input.length(), e.getBegin() + 64))
+         + "...";
+  }
+
+  public void parse_input()
+  {
+    thread = parse(0, 0, eventHandler, thread);
+  }
+
+  private static class StackNode
+  {
+    public int state;
+    public int pos;
+    public StackNode link;
+
+    public StackNode(int state, int pos, StackNode link)
+    {
+      this.state = state;
+      this.pos = pos;
+      this.link = link;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      StackNode lhs = this;
+      StackNode rhs = (StackNode) obj;
+      while (lhs != null && rhs != null)
+      {
+        if (lhs == rhs) return true;
+        if (lhs.state != rhs.state) return false;
+        if (lhs.pos != rhs.pos) return false;
+        lhs = lhs.link;
+        rhs = rhs.link;
+      }
+      return lhs == rhs;
+    }
+
+  }
+
+  private abstract static class DeferredEvent
+  {
+    public DeferredEvent link;
+    public int id;
+    public int begin;
+    public int end;
+
+    public DeferredEvent(DeferredEvent link, int id, int begin, int end)
+    {
+      this.link = link;
+      this.id = id;
+      this.begin = begin;
+      this.end = end;
+    }
+
+    public abstract void execute(BottomUpEventHandler eventHandler);
+
+    public void release(BottomUpEventHandler eventHandler)
+    {
+      DeferredEvent current = this;
+      DeferredEvent predecessor = current.link;
+      current.link = null;
+      while (predecessor != null)
+      {
+        DeferredEvent next = predecessor.link;
+        predecessor.link = current;
+        current = predecessor;
+        predecessor = next;
+      }
+      do
+      {
+        current.execute(eventHandler);
+        current = current.link;
+      }
+      while (current != null);
+    }
+
+  }
+
+  public static class AmbiguityEvent extends DeferredEvent
+  {
+    public AmbiguityEvent(DeferredEvent link, int begin, int end)
+    {
+      super(link, -1, begin, end);
+    }
+
+    @Override
+    public void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.ambiguity(begin, end);
+    }
+
+    @Override
+    public String toString()
+    {
+      return "ambiguity(" + begin + ", " + end + ")";
+    }
+  }
+
+  public static class TerminalEvent extends DeferredEvent
+  {
+    public TerminalEvent(DeferredEvent link, int id, int begin, int end)
+    {
+      super(link, id, begin, end);
+    }
+
+    @Override
+    public void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.terminal(id, begin, end);
+    }
+
+    @Override
+    public String toString()
+    {
+      return "terminal(" + TOKEN[id] + ", " + begin + ", " + end + ")";
+    }
+  }
+
+  public static class NonterminalEvent extends DeferredEvent
+  {
+    public int count;
+
+    public NonterminalEvent(DeferredEvent link, int id, int begin, int end, int count)
+    {
+      super(link, id, begin, end);
+      this.count = count;
+    }
+
+    @Override
+    public void execute(BottomUpEventHandler eventHandler)
+    {
+      eventHandler.nonterminal(id, begin, end, count);
+    }
+
+    @Override
+    public String toString()
+    {
+      return "nonterminal(" + NONTERMINAL[id] + ", " + begin + ", " + end + ", " + count + ")";
+    }
+  }
+
+  private static final int PARSING = 0;
+  private static final int ACCEPTED = 1;
+  private static final int ERROR = 2;
+
+  private ParsingThread parse(int target, int initialState, BottomUpEventHandler eventHandler, ParsingThread thread)
+  {
+    PriorityQueue<ParsingThread> threads = thread.open(initialState, eventHandler, target);
+    for (;;)
+    {
+      thread = threads.poll();
+      if (thread.accepted)
+      {
+        while (! threads.isEmpty())
+        {
+          ParsingThread other = threads.poll();
+          thread = thread.e0 < other.e0 ? other : resolve(thread, other);
+        }
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+        return thread;
+      }
+
+      while (! threads.isEmpty() && threads.peek().equals(thread))
+      {
+        thread = resolve(thread, threads.poll());
+      }
+      if (threads.isEmpty())
+      {
+        if (thread.deferredEvent != null)
+        {
+          thread.deferredEvent.release(eventHandler);
+          thread.deferredEvent = null;
+        }
+      }
+
+      int status;
+      for (;;)
+      {
+        if ((status = thread.parse()) != PARSING) break;
+        if (! threads.isEmpty()) break;
+      }
+
+      if (status != ERROR)
+      {
+        threads.offer(thread);
+      }
+      else if (threads.isEmpty())
+      {
+        throw new ParseException(thread.b1,
+                                 thread.e1,
+                                 TOKENSET[thread.state] + 1,
+                                 thread.l1,
+                                 -1
+                                );
+      }
+    }
+  }
+
+  private ParsingThread resolve(ParsingThread thread, ParsingThread other)
+  {
+    StackNode a = thread.stack;
+    StackNode b = other.stack;
+    int begin = a.pos;
+    while (a != b && a != null && b != null)
+    {
+      begin = a.pos;
+      a = a.link;
+      b = b.link;
+    }
+
+    if (other.eventCount < thread.eventCount)
+      thread = other;
+    thread.addAmbiguity(begin, thread.e0);
+    return thread;
+  }
+
+  private ParsingThread thread;
+  private BottomUpEventHandler eventHandler;
+  private CharSequence input = null;
+  private int size = 0;
+  private int maxId = 0;
+
+  private class ParsingThread implements Comparable<ParsingThread>
+  {
+    public PriorityQueue<ParsingThread> threads;
+    public boolean accepted;
+    public StackNode stack;
+    public int state;
+    public int action;
+    public int target;
+    public DeferredEvent deferredEvent;
+    public int id;
+    public int eventCount;
+
+    public PriorityQueue<ParsingThread> open(int initialState, BottomUpEventHandler eh, int t)
+    {
+      accepted = false;
+      target = t;
+      eventCount = 0;
+      eventHandler = eh;
+      if (eventHandler != null)
+      {
+        eventHandler.reset(input);
+      }
+      deferredEvent = null;
+      stack = new StackNode(-1, e0, null);
+      state = initialState;
+      action = predict(initialState);
+      bw = e0;
+      bs = e0;
+      es = e0;
+      threads = new PriorityQueue<>();
+      threads.offer(this);
+      return threads;
+    }
+
+    public void addAmbiguity(int begin, int end)
+    {
+      if (eventHandler != null)
+        deferredEvent = new AmbiguityEvent(deferredEvent, begin, end);
+    }
+
+    public ParsingThread copy(ParsingThread other, int action)
+    {
+      this.action = action;
+      accepted = other.accepted;
+      target = other.target;
+      eventCount = other.eventCount;
+      bs = other.bs;
+      es = other.es;
+      bw = other.bw;
+      eventHandler = other.eventHandler;
+      deferredEvent = other.deferredEvent;
+      id = ++maxId;
+      threads = other.threads;
+      state = other.state;
+      stack = other.stack;
+      b0 = other.b0;
+      e0 = other.e0;
+      l1 = other.l1;
+      b1 = other.b1;
+      e1 = other.e1;
+      end = other.end;
+      return this;
+    }
+
+    @Override
+    public int compareTo(ParsingThread other)
+    {
+      if (accepted != other.accepted)
+        return accepted ? 1 : -1;
+      int comp = e0 - other.e0;
+      return comp == 0 ? id - other.id : comp;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+      ParsingThread other = (ParsingThread) obj;
+      if (accepted != other.accepted) return false;
+      if (b1 != other.b1) return false;
+      if (e1 != other.e1) return false;
+      if (l1 != other.l1) return false;
+      if (state != other.state) return false;
+      if (action != other.action) return false;
+      if (! stack.equals(other.stack)) return false;
+      return true;
+    }
+
+    public int parse()
+    {
+      int nonterminalId = -1;
+      for (;;)
+      {
+        int argument = action >> 6;
+        int lookback = (action >> 3) & 7;
+        int shift = -1;
+        int reduce = -1;
+        int symbols = -1;
+        int pos = -1;
+        switch (action & 7)
+        {
+        case 1: // SHIFT
+          shift = argument;
+          break;
+
+        case 2: // REDUCE
+          reduce = argument;
+          symbols = lookback;
+          break;
+
+        case 4: // SHIFT+REDUCE
+          shift = state;
+          reduce = argument;
+          symbols = lookback + 1;
+          break;
+
+        case 6: // ACCEPT
+          accepted = true;
+          action = 0;
+          return ACCEPTED;
+
+        case 7: // FORK
+          threads.offer(new ParsingThread().copy(this, APPENDIX[argument]));
+          action = APPENDIX[argument + 1];
+          return PARSING;
+
+        default: // ERROR
+          return ERROR;
+        }
+
+        if (shift >= 0)
+        {
+          if (nonterminalId < 0)
+          {
+            eventCount++;
+            if (eventHandler != null)
+            {
+              if (isUnambiguous())
+              {
+                eventHandler.terminal(l1, b1, e1);
+              }
+              else
+              {
+                deferredEvent = new TerminalEvent(deferredEvent, l1, b1, e1);
+              }
+            }
+            es = e1;
+            pos = b1;
+            consume(l1);
+          }
+          else
+          {
+            pos = bs;
+          }
+        }
+
+        if (reduce < 0)
+        {
+          stack = new StackNode(state, pos, stack);
+          state = shift;
+          action = predict(state);
+          return PARSING;
+        }
+        else
+        {
+          nonterminalId = reduce;
+          eventCount++;
+          if (l1 == 0)
+          {
+            b1 = e0;
+          }
+          if (symbols > 0)
+          {
+            int n = symbols;
+            if (shift >= 0)
+            {
+              n -= 1;
+            }
+            if (n > 0)
+            {
+              for (int i = 1; i < n; i++)
+              {
+                stack = stack.link;
+              }
+              state = stack.state;
+              bs = stack.pos;
+              stack = stack.link;
+            }
+            else
+            {
+              bs = pos;
+            }
+          }
+          else
+          {
+            bs = b1;
+            es = b1;
+          }
+          if (nonterminalId == target && stack.link == null)
+          {
+            bs = bw;
+            es = b1;
+            bw = b1;
+          }
+          if (eventHandler != null)
+          {
+            if (isUnambiguous())
+            {
+              eventHandler.nonterminal(nonterminalId, bs, es, symbols);
+            }
+            else
+            {
+              deferredEvent = new NonterminalEvent(deferredEvent, nonterminalId, bs, es, symbols);
+            }
+          }
+          action = goTo(nonterminalId, state);
+        }
+      }
+    }
+
+    public boolean isUnambiguous()
+    {
+      return threads.isEmpty();
+    }
+
+    public final void reset(int l, int b, int e)
+    {
+              b0 = b; e0 = b;
+      l1 = l; b1 = b; e1 = e;
+      end = e;
+      maxId = 0;
+      id = maxId;
+    }
+
+    private void consume(int t)
+    {
+      if (l1 == t)
+      {
+        b0 = b1; e0 = e1; l1 = 0;
+      }
+      else
+      {
+        error(b1, e1, 0, l1, t);
+      }
+    }
+
+    private int matchW(int tokenSetId)
+    {
+      int code;
+      for (;;)
+      {
+        code = match(tokenSetId);
+        if (code != 1)              // ws
+        {
+          break;
+        }
+      }
+      return code;
+    }
+
+    private int error(int b, int e, int s, int l, int t)
+    {
+      throw new ParseException(b, e, s, l, t);
+    }
+
+    private int     b0, e0;
+    private int l1, b1, e1;
+    private int bw, bs, es;
+    private BottomUpEventHandler eventHandler = null;
+
+    private int begin = 0;
+    private int end = 0;
+
+    public int predict(int dpi)
+    {
+      int d = dpi;
+      if (l1 == 0)
+      {
+        l1 = matchW(TOKENSET[d]);
+        b1 = begin;
+        e1 = end;
+      }
+      if (l1 < 0)
+        return 0;
+      int j10 = (d << 4) + l1;
+      int j11 = j10 >> 1;
+      int action = CASEID[(j10 & 1) + CASEID[(j11 & 3) + CASEID[j11 >> 2]]];
+      return action >> 1;
+    }
+
+    private int match(int tokenSetId)
+    {
+      begin = end;
+      int current = end;
+      int result = INITIAL[tokenSetId];
+
+      for (int code = result & 3; code != 0; )
+      {
+        int charclass;
+        int c0 = current < size ? input.charAt(current) : 0;
+        ++current;
+        if (c0 < 0x80)
+        {
+          charclass = MAP0[c0];
+        }
+        else if (c0 < 0xd800)
+        {
+          int c1 = c0 >> 5;
+          charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+
+        int i0 = (charclass << 2) + code - 1;
+        code = TRANSITION[(i0 & 1) + TRANSITION[i0 >> 1]];
+
+        if (code > 3)
+        {
+          result = code;
+          code &= 3;
+          end = current;
+        }
+      }
+
+      result >>= 2;
+      if (result == 0)
+      {
+        end = current - 1;
+        int c1 = end < size ? input.charAt(end) : 0;
+        if (c1 >= 0xdc00 && c1 < 0xe000)
+        {
+          --end;
+        }
+        end = begin;
+        return -1;
+      }
+
+      if (end > size) end = size;
+      return (result & 7) - 1;
+    }
+
+  }
+
+  private static int goTo(int nonterminal, int state)
+  {
+    int i0 = (state << 3) + nonterminal;
+    return GOTO[(i0 & 1) + GOTO[i0 >> 1]];
+  }
+
+  private static String[] getTokenSet(int tokenSetId)
+  {
+    java.util.ArrayList<String> expected = new java.util.ArrayList<>();
+    int s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 3;
+    for (int i = 0; i < 5; i += 32)
+    {
+      int j = i;
+      int i0 = (i >> 5) * 3 + s - 1;
+      int f = EXPECTED[i0];
+      for ( ; f != 0; f >>>= 1, ++j)
+      {
+        if ((f & 1) != 0)
+        {
+          expected.add(TOKEN[j]);
+        }
+      }
+    }
+    return expected.toArray(new String[]{});
+  }
+
+  private static final int[] MAP0 =
+  {
+    /*   0 */ 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] MAP1 =
+  {
+    /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+    /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3,
+    /* 145 */ 3, 3, 0, 0, 0, 0, 0, 0
+  };
+
+  private static final int[] INITIAL =
+  {
+    /* 0 */ 1, 2
+  };
+
+  private static final int[] TRANSITION =
+  {
+    /*  0 */ 15, 15, 10, 15, 12, 15, 14, 14, 16, 15, 8, 8, 0, 20, 15, 0, 0, 16
+  };
+
+  private static final int[] EXPECTED =
+  {
+    /* 0 */ 6, 26, 4
+  };
+
+  private static final int[] CASEID =
+  {
+    /*  0 */ 14, 16, 14, 16, 11, 16, 8, 16, 21, 25, 27, 21, 22, 24, 21, 20, 21, 21, 21, 21, 136, 0, 0, 24, 146, 0, 180,
+    /* 27 */ 14, 0
+  };
+
+  private static final int[] TOKENSET =
+  {
+    /* 0 */ 0, 0, 1, 1
+  };
+
+  private static final int[] APPENDIX =
+  {
+    /* 0 */ 73, 90
+  };
+
+  private static final int[] GOTO =
+  {
+    /*  0 */ 8, 10, 10, 10, 11, 10, 10, 10, 6, 137, 0, 0, 201
+  };
+
+  public static final String[] TOKEN =
+  {
+    "%ERROR",
+    "ws",
+    "integer",
+    "EOF",
+    "'+'"
+  };
+
+  public static final String[] NONTERMINAL =
+  {
+    "input",
+    "expr"
+  };
+}
+
+// End

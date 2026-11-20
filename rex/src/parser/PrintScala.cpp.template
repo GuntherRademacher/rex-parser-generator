@@ -1035,7 +1035,7 @@ public interface ~                                            print(className.c_
                                                               {
       ~if (ambiguousInput) "ambiguous input" else ~           }
       ~if (offending < 0) "lexical analysis failed" else "syntax error"
-    }~                                                        if (useGlr)
+    }~                                                        if (rejectsAmbiguity())
                                                               {
 ~
 
@@ -1088,6 +1088,8 @@ public interface ~                                            print(className.c_
 ~                                                             }
                                                               if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
   trait EventHandler {
     def reset(string: String): Unit
@@ -1096,7 +1098,10 @@ public interface ~                                            print(className.c_
     def terminal(id: Int, begin: Int, end: Int): Unit
     def whitespace(begin: Int, end: Int): Unit
   }
-
+~                                                               }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
+~
   class TopDownTreeBuilder extends EventHandler {
     private var input: String = null
     private var stack = new ArrayBuffer[Nonterminal](64)
@@ -1132,12 +1137,17 @@ public interface ~                                            print(className.c_
       current.children += s
     }
 
+    def getRoot: Nonterminal = if (top >= 0) stack(0) else null
+
     def serialize(e: EventHandler): Unit = {
       e.reset(input)
       stack(0).send(e)
     }
   }
-
+~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
+~
   abstract class Symbol(i: Int, b: Int, e: Int) {
     var id = i
     var begin = b
@@ -1162,8 +1172,8 @@ public interface ~                                            print(className.c_
     var children = c
 
     override def getName: String = {
-      ~                                                         printSyntheticNamePrefix();
-      ~NONTERMINAL(id)~                                         printSyntheticNameSuffix();
+      ~                                                           printSyntheticNamePrefix();
+      ~NONTERMINAL(id)~                                           printSyntheticNameSuffix();
                       ~
     }
 
@@ -1179,7 +1189,8 @@ public interface ~                                            print(className.c_
       e.endNonterminal(id, end)
     }
   }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
   trait BottomUpEventHandler {
@@ -1293,7 +1304,7 @@ public interface ~                                            print(className.c_
     }
   }
 ~                                                               }
-                                                                if (tree && isLrParser)
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
   class ParseTreeBuilder extends BottomUpEventHandler {
@@ -1338,6 +1349,8 @@ public interface ~                                            print(className.c_
     }
 ~                                                                 }
 ~
+    def getRoot: Symbol = if (top >= 0) stack(0) else null
+
     def serialize(e: EventHandler): Unit = {
       e.reset(input)
       var i = 0

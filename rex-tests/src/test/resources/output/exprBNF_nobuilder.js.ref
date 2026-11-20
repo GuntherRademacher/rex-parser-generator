@@ -1,0 +1,749 @@
+// This file was generated on Fri Nov 20, 2026 10:18 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q exprBNF.ebnf -lalr 1 -tree -main -nobuilder -javascript -name exprBNF_nobuilder
+
+function exprBNF_nobuilder(string, parsingEventHandler)
+{
+  init(string, parsingEventHandler);
+
+  var thisParser = this;
+
+  this.ParseException = function(b, e, s, o, x)
+  {
+    var begin = b;
+    var end = e;
+    var state = s;
+    var offending = o;
+    var expected = x;
+
+    this.getBegin = function() {return begin;};
+    this.getEnd = function() {return end;};
+    this.getState = function() {return state;};
+    this.getExpected = function() {return expected;};
+    this.getOffending = function() {return offending;};
+
+    this.getMessage = function()
+    {
+      return offending < 0
+           ? "lexical analysis failed"
+           : "syntax error";
+    };
+  };
+
+  function init(source, parsingEventHandler)
+  {
+    eventHandler = parsingEventHandler;
+    input = source;
+    size = source.length;
+    reset(0, 0, 0);
+  }
+
+  this.getInput = function()
+  {
+    return input;
+  };
+
+  this.getTokenOffset = function()
+  {
+    return b0;
+  };
+
+  this.getTokenEnd = function()
+  {
+    return e0;
+  };
+
+  function reset(l, b, e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  this.reset = function(l, b, e)
+  {
+    reset(l, b, e);
+  };
+
+  this.getOffendingToken = function(e)
+  {
+    var o = e.getOffending();
+    return o >= 0 ? exprBNF_nobuilder.TOKEN[o] : null;
+  };
+
+  this.getTerminalName = function(id)
+  {
+    return exprBNF_nobuilder.TOKEN[id];
+  };
+
+  this.getNonterminalName = function(id)
+  {
+    return exprBNF_nobuilder.NONTERMINAL[id];
+  };
+
+  this.getExpectedTokenSet = function(e)
+  {
+    var expected;
+    if (e.getExpected() < 0)
+    {
+      expected = exprBNF_nobuilder.getTokenSet(- e.getState());
+    }
+    else
+    {
+      expected = [exprBNF_nobuilder.TOKEN[e.getExpected()]];
+    }
+    return expected;
+  };
+
+  this.getErrorMessage = function(e)
+  {
+    var message = e.getMessage();
+    var found = this.getOffendingToken(e);
+    var tokenSet = this.getExpectedTokenSet(e);
+    var size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    var prefix = input.substring(0, e.getBegin());
+    var lines = prefix.split("\n");
+    var line = lines.length;
+    var column = lines[line - 1].length + 1;
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.substring(e.getBegin(), Math.min(input.length, e.getBegin() + 64))
+         + "...";
+  };
+
+  this.parse_input = function()
+  {
+    top = -1;
+    parse(0, 0, eventHandler);
+  };
+
+  function push(state, lookback, begin)
+  {
+    top += 3;
+    iStack[top - 2] = begin;
+    iStack[top - 1] = state;
+    iStack[top] = lookback;
+  }
+
+  function parse(target, initialState, eventHandler)
+  {
+    var state = initialState;
+    var bw = e0;
+    var bs = e0;
+    var es = e0;
+    var t = top;
+    var action = predict(state);
+    var nonterminalId = -1;
+    for (;;)
+    {
+      var argument = action >> 6;
+      var lookback = (action >> 3) & 7;
+      var shift = -1;
+      var reduce = -1;
+      var symbols = -1;
+      switch (action & 7)
+      {
+      case 1: // SHIFT
+        shift = argument;
+        break;
+
+      case 2: // REDUCE
+        reduce = argument;
+        symbols = lookback;
+        break;
+
+      case 4: // SHIFT+REDUCE
+        shift = state;
+        reduce = argument;
+        symbols = lookback + 1;
+        break;
+
+      case 6: // ACCEPT
+        return;
+
+      default: // ERROR
+        throw new thisParser.ParseException(b1, e1, exprBNF_nobuilder.TOKENSET[state] + 1, l1, -1);
+      }
+
+      if (shift >= 0)
+      {
+        if (nonterminalId < 0)
+        {
+          if (eventHandler != null)
+          {
+            eventHandler.terminal(l1, b1, e1);
+          }
+          es = e1;
+          push(state, lookback, b1);
+          consume(l1);
+        }
+        else
+        {
+          push(state, lookback, bs);
+        }
+        state = shift;
+      }
+
+      if (reduce < 0)
+      {
+        action = predict(state);
+        nonterminalId = -1;
+      }
+      else
+      {
+        nonterminalId = reduce;
+        if (l1 == 0)
+        {
+          b1 = e0;
+        }
+        if (symbols > 0)
+        {
+          top -= symbols * 3;
+          state = iStack[top + 2];
+          bs = iStack[top + 1];
+        }
+        else
+        {
+          bs = b1;
+          es = b1;
+        }
+        if (nonterminalId == target && t == top)
+        {
+          bs = bw;
+          es = b1;
+          bw = b1;
+        }
+        if (eventHandler != null)
+        {
+          eventHandler.nonterminal(nonterminalId, bs, es, symbols);
+        }
+        action = exprBNF_nobuilder.goTo(nonterminalId, state);
+      }
+    }
+  }
+
+  function consume(t)
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  function matchW(tokenSetId)
+  {
+    var code;
+    for (;;)
+    {
+      code = match(tokenSetId);
+      if (code != 1)                // ws
+      {
+        break;
+      }
+    }
+    return code;
+  }
+
+  function error(b, e, s, l, t)
+  {
+    throw new thisParser.ParseException(b, e, s, l, t);
+  }
+
+  var     b0, e0;
+  var l1, b1, e1;
+  var iStack = [];
+  var top = -1;
+  var eventHandler;
+
+  var input;
+  var size;
+
+  var begin;
+  var end;
+
+  function predict(dpi)
+  {
+    var d = dpi;
+    if (l1 == 0)
+    {
+      l1 = matchW(exprBNF_nobuilder.TOKENSET[d]);
+      b1 = begin;
+      e1 = end;
+    }
+    var j10 = (d << 4) + l1;
+    var j11 = j10 >> 2;
+    var action = exprBNF_nobuilder.CASEID[(j10 & 3) + exprBNF_nobuilder.CASEID[(j11 & 7) + exprBNF_nobuilder.CASEID[j11 >> 3]]];
+    return action >> 1;
+  }
+
+  function match(tokenSetId)
+  {
+    begin = end;
+    var current = end;
+    var result = exprBNF_nobuilder.INITIAL[tokenSetId];
+    var state = 0;
+
+    for (var code = result & 7; code != 0; )
+    {
+      var charclass;
+      var c0 = current < size ? input.charCodeAt(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = exprBNF_nobuilder.MAP0[c0];
+      }
+      else if (c0 < 0xd800)
+      {
+        var c1 = c0 >> 5;
+        charclass = exprBNF_nobuilder.MAP1[(c0 & 31) + exprBNF_nobuilder.MAP1[(c1 & 31) + exprBNF_nobuilder.MAP1[c1 >> 5]]];
+      }
+      else
+      {
+        charclass = 0;
+      }
+
+      state = code;
+      var i0 = (charclass << 3) + code - 1;
+      code = exprBNF_nobuilder.TRANSITION[(i0 & 3) + exprBNF_nobuilder.TRANSITION[i0 >> 2]];
+
+      if (code > 7)
+      {
+        result = code;
+        code &= 7;
+        end = current;
+      }
+    }
+
+    result >>= 3;
+    if (result == 0)
+    {
+      end = current - 1;
+      var c1 = end < size ? input.charCodeAt(end) : 0;
+      if (c1 >= 0xdc00 && c1 < 0xe000) --end;
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 15) - 1;
+  }
+
+}
+
+exprBNF_nobuilder.XmlSerializer = function(log, indent)
+{
+  var input = null;
+  var delayedTag = null;
+  var hasChildElement = false;
+  var depth = 0;
+
+  this.reset = function(string)
+  {
+    log("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    input = string;
+    delayedTag = null;
+    hasChildElement = false;
+    depth = 0;
+  };
+
+  this.startNonterminal = function(id, begin)
+  {
+    startElement(exprBNF_nobuilder.NONTERMINAL[id]);
+  };
+
+  function startElement(tag)
+  {
+    if (delayedTag != null)
+    {
+      log("<");
+      log(delayedTag);
+      log(">");
+    }
+    delayedTag = tag;
+    if (indent)
+    {
+      log("\n");
+      for (var i = 0; i < depth; ++i)
+      {
+        log("  ");
+      }
+    }
+    hasChildElement = false;
+    ++depth;
+  }
+
+  this.endNonterminal = function(id, end)
+  {
+    endElement(exprBNF_nobuilder.NONTERMINAL[id]);
+  };
+
+  function endElement(tag)
+  {
+    --depth;
+    if (delayedTag != null)
+    {
+      delayedTag = null;
+      log("<");
+      log(tag);
+      log("/>");
+    }
+    else
+    {
+      if (indent)
+      {
+        if (hasChildElement)
+        {
+          log("\n");
+          for (var i = 0; i < depth; ++i)
+          {
+            log("  ");
+          }
+        }
+      }
+      log("</");
+      log(tag);
+      log(">");
+    }
+    hasChildElement = true;
+  }
+
+  this.terminal = function(id, begin, end)
+  {
+    var tag = exprBNF_nobuilder.TOKEN[id];
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    startElement(tag);
+    characters(begin, end);
+    endElement(tag);
+  };
+
+  this.whitespace = function(begin, end)
+  {
+    characters(begin, end);
+  };
+
+  function characters(begin, end)
+  {
+    if (begin < end)
+    {
+      if (delayedTag != null)
+      {
+        log("<");
+        log(delayedTag);
+        log(">");
+        delayedTag = null;
+      }
+      log(input.substring(begin, end)
+               .replace(/&/g, "&amp;")
+               .replace(/</g, "&lt;")
+               .replace(/>/g, "&gt;"));
+    }
+  }
+};
+
+exprBNF_nobuilder.goTo = function(nonterminal, state)
+{
+  var i0 = (state << 3) + nonterminal;
+  return exprBNF_nobuilder.GOTO[(i0 & 3) + exprBNF_nobuilder.GOTO[i0 >> 2]];
+};
+
+exprBNF_nobuilder.getTokenSet = function(tokenSetId)
+{
+  var set = [];
+  var s = tokenSetId < 0 ? - tokenSetId : exprBNF_nobuilder.INITIAL[tokenSetId] & 7;
+  for (var i = 0; i < 10; i += 32)
+  {
+    var j = i;
+    var i0 = (i >> 5) * 5 + s - 1;
+    var f = exprBNF_nobuilder.EXPECTED[i0];
+    for ( ; f != 0; f >>>= 1, ++j)
+    {
+      if ((f & 1) != 0)
+      {
+        set.push(exprBNF_nobuilder.TOKEN[j]);
+      }
+    }
+  }
+  return set;
+};
+
+exprBNF_nobuilder.ParseTreeBuilder = function()
+{
+  var input;
+  var stack;
+  var top;
+
+  this.reset = function(string)
+  {
+    input = string;
+    stack = [];
+    top = -1;
+  };
+
+  this.nonterminal = function(id, begin, end, count)
+  {
+    this.push(new exprBNF_nobuilder.Nonterminal(id, begin, end, this.pop(count)));
+  };
+
+  this.terminal = function(id, begin, end)
+  {
+    this.push(new exprBNF_nobuilder.Terminal(id, begin, end));
+  };
+
+  this.getRoot = function() {return top >= 0 ? stack[0] : null;};
+
+  this.serialize = function(e)
+  {
+    e.reset(input);
+    for (var i = 0; i <= top; ++i)
+    {
+      stack[i].send(e);
+    }
+  };
+
+  this.push = function(s)
+  {
+    stack[++top] = s;
+  };
+
+  this.pop = function(count)
+  {
+    top -= count;
+    return stack.slice(top + 1, top + 1 + count);
+  };
+};
+
+exprBNF_nobuilder.Terminal = function(id, begin, end)
+{
+  this.id = id;
+  this.begin = begin;
+  this.end = end;
+
+  this.getName = function()
+  {
+    return exprBNF_nobuilder.TOKEN[id];
+  };
+
+  this.send = function(e)
+  {
+    e.terminal(id, begin, end);
+  };
+};
+
+exprBNF_nobuilder.Nonterminal = function(id, begin, end, children)
+{
+  this.id = id;
+  this.begin = begin;
+  this.end = end;
+  this.children = children;
+
+  this.getName = function()
+  {
+    return exprBNF_nobuilder.NONTERMINAL[id];
+  };
+
+  this.send = function(e)
+  {
+    var end = this.end;
+    e.startNonterminal(id, begin);
+    var pos = begin;
+    this.children.forEach
+    (
+      function(c)
+      {
+        if (pos < c.begin) e.whitespace(pos, c.begin);
+        c.send(e);
+        pos = c.end;
+      }
+    );
+    if (pos < end) e.whitespace(pos, end);
+    e.endNonterminal(id, end);
+  };
+};
+
+exprBNF_nobuilder.MAP0 =
+[
+  /*   0 */ 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+  /*  36 */ 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  /*  72 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  /* 108 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+];
+
+exprBNF_nobuilder.MAP1 =
+[
+  /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+  /*  27 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+  /*  54 */ 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+  /*  81 */ 89, 89, 89, 89, 89, 89, 89, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  /* 115 */ 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0,
+  /* 151 */ 0, 0
+];
+
+exprBNF_nobuilder.INITIAL =
+[
+  /* 0 */ 1, 2, 3, 4
+];
+
+exprBNF_nobuilder.TRANSITION =
+[
+  /*  0 */ 25, 25, 20, 25, 24, 25, 30, 25, 26, 25, 34, 25, 38, 25, 43, 25, 42, 42, 47, 25, 16, 16, 16, 16, 40, 0, 0, 0,
+  /* 28 */ 0, 72, 0, 0, 48, 48, 0, 56, 56, 56, 0, 64, 64, 64, 29, 0, 0, 0, 80, 0, 32, 0, 32
+];
+
+exprBNF_nobuilder.EXPECTED =
+[
+  /* 0 */ 22, 202, 226, 1002, 4
+];
+
+exprBNF_nobuilder.CASEID =
+[
+  /*  0 */ 5, 5, 5, 20, 12, 28, 37, 38, 38, 28, 37, 38, 38, 55, 38, 38, 31, 33, 47, 38, 39, 43, 38, 38, 49, 51, 47, 38,
+  /* 28 */ 0, 0, 392, 0, 0, 0, 180, 180, 180, 146, 0, 0, 0, 0, 24, 0, 0, 274, 402, 530, 658, 0, 0, 0, 148, 148, 148, 0,
+  /* 56 */ 424, 274, 402
+];
+
+exprBNF_nobuilder.TOKENSET =
+[
+  /*  0 */ 0, 0, 0, 0, 0, 0, 1, 3, 2, 3
+];
+
+exprBNF_nobuilder.GOTO =
+[
+  /*  0 */ 12, 16, 21, 16, 25, 16, 25, 16, 17, 16, 17, 16, 6, 393, 457, 132, 0, 0, 0, 0, 148, 0, 521, 457, 132, 0, 0,
+  /* 27 */ 585, 132
+];
+
+exprBNF_nobuilder.TOKEN =
+[
+  "%ERROR",
+  "ws",
+  "integer",
+  "EOF",
+  "'('",
+  "')'",
+  "'+'",
+  "'-'",
+  "'*'",
+  "'/'"
+];
+
+exprBNF_nobuilder.NONTERMINAL =
+[
+  "input",
+  "expr",
+  "term",
+  "factor"
+];
+
+// main program for use with node.js, rhino, or jrunscript
+
+function main(args)
+{
+  if (typeof process !== "undefined")   // assume node.js
+  {
+    var command = "node";
+    var arguments = process.argv.slice(2);
+    var log = function(string) {process.stdout.write(string);};
+    var fs = require("fs");
+    var readTextFile = fs.readFileSync;
+  }
+  else                                  // assume rhino or jrunscript
+  {
+    var arguments = function()
+                    {
+                      var strings = [];
+                      for (var i = 0; i < args.length; ++i)
+                      {
+                        strings[i] = String(args[i]);
+                      }
+                      return strings;
+                    }();
+
+    if (typeof println == "undefined")  // assume rhino
+    {
+      var command = "java -jar js.jar";
+      var log = function(string) {java.lang.System.out.write(java.lang.String(string).getBytes("utf-8"));};
+      var readTextFile = readFile;
+    }
+    else                                // assume jrunscript
+    {
+      var command = "jrunscript";
+      var log = function(string) {java.lang.System.out.print(string);};
+      var readTextFile = function(filename, encoding)
+                         {
+                           var file = new java.io.File(filename);
+                           var buffer = javaByteArray(file.length());
+                           new java.io.FileInputStream(file).read(buffer);
+                           return String(new java.lang.String(buffer, encoding));
+                         };
+    }
+  }
+
+  function read(input)
+  {
+    if (/^{.*}$/.test(input))
+    {
+      return input.substring(1, input.length - 1);
+    }
+    else
+    {
+      var content = readTextFile(input, "utf-8");
+      return content.length > 0 && content.charCodeAt(0) == 0xFEFF
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  if (arguments.length == 0)
+  {
+    log("Usage: " + command + " exprBNF_nobuilder.js [-i] INPUT...\n");
+    log("\n");
+    log("  parse INPUT, which is either a filename or literal text enclosed in curly braces\n");
+    log("\n");
+    log("  Option:\n");
+    log("    -i     indented parse tree\n");
+  }
+  else
+  {
+    var indent = false;
+    for (var i = 0; i < arguments.length; ++i)
+    {
+      if (arguments[i] === "-i")
+      {
+        indent = true;
+        continue;
+      }
+      var input = read(String(arguments[i]));
+      var s = new exprBNF_nobuilder.XmlSerializer(log, indent);
+      var b = new exprBNF_nobuilder.ParseTreeBuilder();
+      var parser = new exprBNF_nobuilder(input, b);
+      try
+      {
+        parser.parse_input();
+        b.serialize(s);
+      }
+      catch (pe)
+      {
+        if (! (pe instanceof parser.ParseException))
+        {
+          throw pe;
+        }
+        else
+        {
+          throw parser.getErrorMessage(pe);
+        }
+      }
+    }
+  }
+}
+
+main(arguments);
+
+// End

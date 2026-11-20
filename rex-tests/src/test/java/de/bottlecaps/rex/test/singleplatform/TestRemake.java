@@ -68,6 +68,7 @@ public class TestRemake extends AbstractSinglePlatformTest
         case "-lalr":
         case "-glr":
         case "-glalr":
+        case "-ambiguity":
           i++;
           break;
         default:

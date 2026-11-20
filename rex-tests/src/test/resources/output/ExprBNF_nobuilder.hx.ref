@@ -1,0 +1,792 @@
+// This file was generated on Fri Nov 20, 2026 10:05 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// REx command line: -q exprBNF.ebnf -lalr 1 -tree -main -nobuilder -haxe -name exprBNF_nobuilder
+
+import haxe.io.Bytes;
+import sys.io.File;
+
+class ExprBNF_nobuilder
+{
+  public static function main()
+  {
+    var args = Sys.args();
+
+    if (args.length == 0)
+    {
+      Sys.println("Usage: ExprBNF_nobuilder [-i] INPUT...\n");
+      Sys.println("  parse INPUT, which is either a filename or literal text enclosed in curly braces");
+      Sys.println("");
+      Sys.println("  Option:");
+      Sys.println("    -i     indented parse tree");
+    }
+    else
+    {
+      var indent = false;
+      for (arg in args)
+      {
+        if (arg == "-i")
+        {
+          indent = true;
+          continue;
+        }
+
+        var input = read(arg);
+        var s = new XmlSerializer(indent);
+        var b = new ParseTreeBuilder();
+        var parser = new ExprBNF_nobuilder(input, b);
+        try
+        {
+          parser.parse_input();
+          b.serialize(s);
+        }
+        catch (pe: ParseException)
+        {
+          throw "ParseException while processing " + arg + ":\n" + parser.getErrorMessage(pe);
+        }
+      }
+    }
+  }
+
+  private static function read(input)
+  {
+    if (~/^\{.*\}$/g.match(input))
+    {
+      return input.substring(1, input.length - 1);
+    }
+    else
+    {
+      var content = File.getContent(input);
+      return content.length > 0 && content.charCodeAt(0) == 0xFEFF
+           ? content.substring(1)
+           : content;
+    }
+  }
+
+  public function new(string, t)
+  {
+    initialize(string, t);
+  }
+
+  public function initialize(source, parsingEventHandler): Void
+  {
+    eventHandler = parsingEventHandler;
+    input = Bytes.ofString(source);
+    size = source.length;
+    reset(0, 0, 0);
+  }
+
+  public function getInput(): Bytes
+  {
+    return input;
+  }
+
+  public function getTokenOffset(): Int
+  {
+    return b0;
+  }
+
+  public function getTokenEnd(): Int
+  {
+    return e0;
+  }
+
+  public function reset(l, b, e)
+  {
+            b0 = b; e0 = b;
+    l1 = l; b1 = b; e1 = e;
+    end = e;
+    eventHandler.reset(input);
+  }
+
+  public static function getOffendingToken(e): String
+  {
+    return e.getOffending() < 0 ? null : TOKEN[e.getOffending()];
+  }
+
+  public static function getTerminalName(id): String
+  {
+    return TOKEN[id];
+  }
+
+  public static function getNonterminalName(id): String
+  {
+    return NONTERMINAL[id];
+  }
+
+  public static function getExpectedTokenSet(e)
+  {
+    var expected;
+    if (e.getExpected() < 0)
+    {
+      expected = getTokenSet(- e.getState());
+    }
+    else
+    {
+      expected = [TOKEN[e.getExpected()]];
+    }
+    return expected;
+  };
+
+  public function getErrorMessage(e: ParseException): String
+  {
+    var message = e.getMessage();
+    var found = getOffendingToken(e);
+    var tokenSet = getExpectedTokenSet(e);
+    var size = e.getEnd() - e.getBegin();
+    message += (found == null ? "" : ", found " + found)
+            + "\nwhile expecting "
+            + (tokenSet.length == 1 ? tokenSet[0] : ("[" + tokenSet.join(", ") + "]"))
+            + "\n"
+            + (size == 0 || found != null ? "" : "after successfully scanning " + size + " characters beginning ");
+    var prefix = input.getString(0, e.getBegin());
+    var lines = prefix.split("\n");
+    var line = lines.length;
+    var column = lines[line - 1].length + 1;
+    return message
+         + "at line " + line + ", column " + column + ":\n..."
+         + input.getString(e.getBegin(), input.length < e.getBegin() + 64 ? input.length - e.getBegin() : 64)
+         + "...";
+  };
+
+  public function parse_input(): Void
+  {
+    top = -1;
+    parse(0, 0, eventHandler);
+  }
+
+  private function push(state, lookback, begin): Void
+  {
+    top += 3;
+    iStack[top - 2] = begin;
+    iStack[top - 1] = state;
+    iStack[top] = lookback;
+  }
+
+  private function parse(target, initialState, eventHandler): Void
+  {
+    var state = initialState;
+    var bw = e0;
+    var bs = e0;
+    var es = e0;
+    var t = top;
+    var action = predict(state);
+    var nonterminalId = -1;
+    while (true)
+    {
+      var argument = action >> 6;
+      var lookback = (action >> 3) & 7;
+      var shift = -1;
+      var reduce = -1;
+      var symbols = -1;
+      switch (action & 7)
+      {
+      case 1: // SHIFT
+        shift = argument;
+
+      case 2: // REDUCE
+        reduce = argument;
+        symbols = lookback;
+
+      case 4: // SHIFT+REDUCE
+        shift = state;
+        reduce = argument;
+        symbols = lookback + 1;
+
+      case 6: // ACCEPT
+        return;
+
+      default: // ERROR
+        throw new ParseException(b1, e1, TOKENSET[state] + 1, l1, -1);
+      }
+
+      if (shift >= 0)
+      {
+        if (nonterminalId < 0)
+        {
+          if (eventHandler != null)
+          {
+            eventHandler.terminal(l1, b1, e1);
+          }
+          es = e1;
+          push(state, lookback, b1);
+          consume(l1);
+        }
+        else
+        {
+          push(state, lookback, bs);
+        }
+        state = shift;
+      }
+
+      if (reduce < 0)
+      {
+        action = predict(state);
+        nonterminalId = -1;
+      }
+      else
+      {
+        nonterminalId = reduce;
+        if (l1 == 0)
+        {
+          b1 = e0;
+        }
+        if (symbols > 0)
+        {
+          top -= symbols * 3;
+          state = iStack[top + 2];
+          bs = iStack[top + 1];
+        }
+        else
+        {
+          bs = b1;
+          es = b1;
+        }
+        if (nonterminalId == target && t == top)
+        {
+          bs = bw;
+          es = b1;
+          bw = b1;
+        }
+        if (eventHandler != null)
+        {
+          eventHandler.nonterminal(nonterminalId, bs, es, symbols);
+        }
+        action = goTo(nonterminalId, state);
+      }
+    }
+  }
+
+  private function consume(t): Void
+  {
+    if (l1 == t)
+    {
+      b0 = b1; e0 = e1; l1 = 0;
+    }
+    else
+    {
+      error(b1, e1, 0, l1, t);
+    }
+  }
+
+  private function matchW(tokenSetId): Int
+  {
+    var code = 0;
+    while (true)
+    {
+      code = match(tokenSetId);
+      if (code != 1)                // ws
+      {
+        break;
+      }
+    }
+    return code;
+  }
+
+  private function error(b, e, s, l, t): Int
+  {
+    throw new ParseException(b, e, s, l, t);
+  }
+
+                       private var b0: Int; private var e0: Int;
+  private var l1: Int; private var b1: Int; private var e1: Int;
+  private var iStack = [];
+  private var top = -1;
+  private var eventHandler: BottomUpEventHandler = null;
+  private var input: Bytes = null;
+  private var size = 0;
+  private var begin = 0;
+  private var end = 0;
+
+  private function predict(dpi: Int): Int
+  {
+    var d = dpi;
+    if (l1 == 0)
+    {
+      l1 = matchW(TOKENSET[d]);
+      b1 = begin;
+      e1 = end;
+    }
+    var j10 = (d << 4) + l1;
+    var j11 = j10 >> 2;
+    var action = CASEID[(j10 & 3) + CASEID[(j11 & 7) + CASEID[j11 >> 3]]];
+    return action >> 1;
+  }
+
+  private function match(tokenSetId: Int): Int
+  {
+    begin = end;
+    var current = end;
+    var result = INITIAL[tokenSetId];
+    var state = 0;
+
+    var code = result & 7;
+    while (code != 0)
+    {
+      var charclass = 0;
+      var c0 = current < size ? input.get(current) : 0;
+      ++current;
+      if (c0 < 0x80)
+      {
+        charclass = MAP0[c0];
+      }
+      else
+      {
+        if      ((c0                     & 0xe0) == 0xc0
+              && (input.get(current    ) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                     & 0x1f) << 6)
+             |  (input.get(current    ) & 0x3f);
+          if (c0 < 0x80) c0 = -1; else ++current;
+        }
+        else if ((c0                     & 0xf0) == 0xe0
+              && (input.get(current    ) & 0xc0) == 0x80
+              && (input.get(current + 1) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                     & 0x0f) << 12)
+             | ((input.get(current    ) & 0x3f) <<  6)
+             |  (input.get(current + 1) & 0x3f);
+          if (c0 < 0x800) c0 = -1; else current += 2;
+        }
+        else if ((c0                     & 0xf8) == 0xf0
+              && (input.get(current    ) & 0xc0) == 0x80
+              && (input.get(current + 1) & 0xc0) == 0x80
+              && (input.get(current + 2) & 0xc0) == 0x80)
+        {
+          c0 = ((c0                     & 0x07) << 18)
+             | ((input.get(current    ) & 0x3f) << 12)
+             | ((input.get(current + 1) & 0x3f) <<  6)
+             | ( input.get(current + 2) & 0x3f       );
+          if (c0 < 0x10000 || c0 > 0x10ffff) c0 = -1; else current += 3;
+        }
+
+        if (c0 < 0xd800)
+        {
+          var c1 = c0 >> 5;
+          charclass = MAP1[(c0 & 31) + MAP1[(c1 & 31) + MAP1[c1 >> 5]]];
+        }
+        else
+        {
+          charclass = 0;
+        }
+      }
+
+      state = code;
+      var i0 = (charclass << 3) + code - 1;
+      code = TRANSITION[(i0 & 3) + TRANSITION[i0 >> 2]];
+
+      if (code > 7)
+      {
+        result = code;
+        code &= 7;
+        end = current;
+      }
+    }
+
+    result >>= 3;
+    if (result == 0)
+    {
+      end = current - 1;
+      var c1 = end < size ? input.get(end) : 0;
+      if (c1 & 0xc0 == 0x80)
+      {
+        --end;
+      }
+      return error(begin, end, state, -1, -1);
+    }
+
+    if (end > size) end = size;
+    return (result & 15) - 1;
+  }
+
+
+  private static function goTo(nonterminal, state): Int
+  {
+    var i0 = (state << 3) + nonterminal;
+    return GOTO[(i0 & 3) + GOTO[i0 >> 2]];
+  }
+
+  private static function getTokenSet(tokenSetId)
+  {
+    var set = [];
+    var s = tokenSetId < 0 ? - tokenSetId : INITIAL[tokenSetId] & 7;
+    var i = 0;
+    while (i < 10)
+    {
+      var j = i;
+      var i0 = (i >> 5) * 5 + s - 1;
+      var f = EXPECTED[i0];
+      while (f != 0)
+      {
+        if ((f & 1) != 0)
+        {
+          set.push(TOKEN[j]);
+        }
+        f >>>= 1;
+        ++j;
+      }
+      i += 32;
+    }
+    return set;
+  }
+
+  private static var MAP0 =
+  [
+    /*   0 */ 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
+    /*  35 */ 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /*  70 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 105 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  ];
+
+  private static var MAP1 =
+  [
+    /*   0 */ 54, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  26 */ 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56, 56,
+    /*  52 */ 56, 56, 88, 121, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 89,
+    /*  78 */ 89, 89, 89, 89, 89, 89, 89, 89, 89, 89, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    /* 110 */ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 0, 6, 0, 7, 8, 8, 8, 8, 8, 8, 8, 8,
+    /* 145 */ 8, 8, 0, 0, 0, 0, 0, 0
+  ];
+
+  private static var INITIAL =
+  [
+    /* 0 */ 1, 2, 3, 4
+  ];
+
+  private static var TRANSITION =
+  [
+    /*  0 */ 25, 25, 20, 25, 24, 25, 30, 25, 26, 25, 34, 25, 38, 25, 43, 25, 42, 42, 47, 25, 16, 16, 16, 16, 40, 0, 0,
+    /* 27 */ 0, 0, 72, 0, 0, 48, 48, 0, 56, 56, 56, 0, 64, 64, 64, 29, 0, 0, 0, 80, 0, 32, 0, 32
+  ];
+
+  private static var EXPECTED =
+  [
+    /* 0 */ 22, 202, 226, 1002, 4
+  ];
+
+  private static var CASEID =
+  [
+    /*  0 */ 5, 5, 5, 20, 12, 28, 37, 38, 38, 28, 37, 38, 38, 55, 38, 38, 31, 33, 47, 38, 39, 43, 38, 38, 49, 51, 47,
+    /* 27 */ 38, 0, 0, 392, 0, 0, 0, 180, 180, 180, 146, 0, 0, 0, 0, 24, 0, 0, 274, 402, 530, 658, 0, 0, 0, 148, 148,
+    /* 54 */ 148, 0, 424, 274, 402
+  ];
+
+  private static var TOKENSET =
+  [
+    /*  0 */ 0, 0, 0, 0, 0, 0, 1, 3, 2, 3
+  ];
+
+  private static var GOTO =
+  [
+    /*  0 */ 12, 16, 21, 16, 25, 16, 25, 16, 17, 16, 17, 16, 6, 393, 457, 132, 0, 0, 0, 0, 148, 0, 521, 457, 132, 0, 0,
+    /* 27 */ 585, 132
+  ];
+
+  public static var TOKEN =
+  [
+    "%ERROR",
+    "ws",
+    "integer",
+    "EOF",
+    "'('",
+    "')'",
+    "'+'",
+    "'-'",
+    "'*'",
+    "'/'"
+  ];
+
+  public static var NONTERMINAL =
+  [
+    "input",
+    "expr",
+    "term",
+    "factor"
+  ];
+}
+
+class ParseException
+{
+  private var begin: Int;
+  private var end: Int;
+  private var state: Int;
+  private var offending: Int;
+  private var expected: Int;
+
+  public function new(b, e, s, o, x)
+  {
+    begin = b;
+    end = e;
+    state = s;
+    offending = o;
+    expected = x;
+  }
+
+  public function getBegin() {return begin;}
+  public function getEnd() {return end;}
+  public function getState() {return state;}
+  public function getExpected() {return expected;}
+  public function getOffending() {return offending;}
+
+  public function getMessage()
+  {
+    return offending < 0
+         ? "lexical analysis failed"
+         : "syntax error";
+  }
+}
+
+interface EventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function startNonterminal(id: Int, begin: Int): Void;
+  public function endNonterminal(id: Int, end: Int): Void;
+  public function terminal(id: Int, begin: Int, end: Int): Void;
+  public function whitespace(begin: Int, end: Int): Void;
+}
+
+interface BottomUpEventHandler
+{
+  public function reset(input: Bytes): Void;
+  public function nonterminal(id: Int, begin: Int, end: Int, count: Int): Void;
+  public function terminal(id: Int, begin: Int, end: Int): Void;
+}
+
+class XmlSerializer implements EventHandler
+{
+  var input: Bytes = null;
+  var delayedTag: String = null;
+  var indent = false;
+  var hasChildElement = false;
+  var depth = 0;
+
+  public function new(indent)
+  {
+    this.indent = indent;
+  }
+
+  public function reset(bytes)
+  {
+    Sys.print("<?xml version=\"1.0\" encoding=\"UTF-8\"?" + ">");
+    input = bytes;
+    delayedTag = null;
+    hasChildElement = false;
+    depth = 0;
+  }
+
+  public function startNonterminal(id, begin)
+  {
+    startElement(ExprBNF_nobuilder.getNonterminalName(id));
+  }
+
+  private function startElement(tag: String): Void
+  {
+    if (delayedTag != null)
+    {
+      Sys.print("<");
+      Sys.print(delayedTag);
+      Sys.print(">");
+    }
+    delayedTag = tag;
+    if (indent)
+    {
+      Sys.print("\n");
+      for (i in 0...depth)
+      {
+        Sys.print("  ");
+      }
+    }
+    hasChildElement = false;
+    ++depth;
+  }
+
+  public function endNonterminal(id, end)
+  {
+    endElement(ExprBNF_nobuilder.getNonterminalName(id));
+  }
+
+  private function endElement(tag: String): Void
+  {
+    --depth;
+    if (delayedTag != null)
+    {
+      delayedTag = null;
+      Sys.print("<");
+      Sys.print(tag);
+      Sys.print("/>");
+    }
+    else
+    {
+      if (indent)
+      {
+        if (hasChildElement)
+        {
+          Sys.print("\n");
+          for (i in 0...depth)
+          {
+            Sys.print("  ");
+          }
+        }
+      }
+      Sys.print("</");
+      Sys.print(tag);
+      Sys.print(">");
+    }
+    hasChildElement = true;
+  }
+
+  public function terminal(id, begin, end)
+  {
+    var tag = ExprBNF_nobuilder.getTerminalName(id);
+    if (tag.charAt(0) == '\'') tag = "TOKEN";
+    startElement(tag);
+    characters(begin, end);
+    endElement(tag);
+  }
+
+  public function whitespace(begin, end)
+  {
+    characters(begin, end);
+  }
+
+  private function characters(begin, end)
+  {
+    if (begin < end)
+    {
+      if (delayedTag != null)
+      {
+        Sys.print("<");
+        Sys.print(delayedTag);
+        Sys.print(">");
+        delayedTag = null;
+      }
+      Sys.print(~/>/g.replace(
+                ~/</g.replace(
+                ~/&/g.replace(input.getString(begin, end - begin), "&amp;")
+                                                                  , "&lt;")
+                                                                  , "&gt;"));
+    }
+  }
+}
+
+class Symbol
+{
+  public var id: Int;
+  public var begin: Int;
+  public var end: Int;
+
+  private function new(id, begin, end)
+  {
+    this.id = id;
+    this.begin = begin;
+    this.end = end;
+  }
+
+  public function getName(): String {return null;}
+
+  public function send(e: EventHandler) {}
+}
+
+class Terminal extends Symbol
+{
+  public function new(id, begin, end)
+  {
+    super(id, begin, end);
+  }
+
+  override
+  public function getName(): String
+  {
+    return ExprBNF_nobuilder.TOKEN[id];
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.terminal(id, begin, end);
+  }
+}
+
+class Nonterminal extends Symbol
+{
+  public var children: Array<Symbol>;
+
+  public function new(id, begin, end, children)
+  {
+    super(id, begin, end);
+    this.children = children;
+  }
+
+  override
+  public function getName(): String
+  {
+    return ExprBNF_nobuilder.NONTERMINAL[id];
+  }
+
+  override
+  public function send(e: EventHandler)
+  {
+    e.startNonterminal(id, begin);
+    var pos = begin;
+    for (c in children)
+    {
+      if (pos < c.begin) e.whitespace(pos, c.begin);
+      c.send(e);
+      pos = c.end;
+    }
+    if (pos < end) e.whitespace(pos, end);
+    e.endNonterminal(id, end);
+  }
+}
+
+class ParseTreeBuilder implements BottomUpEventHandler
+{
+  var input : Bytes;
+  var stack = new Array<Symbol>();
+  var top = -1;
+
+  public function new() {}
+
+  public function reset(input: Bytes)
+  {
+    this.input = input;
+    top = -1;
+  }
+
+  public function nonterminal(id: Int, begin: Int, end: Int, count: Int)
+  {
+    push(new Nonterminal(id, begin, end, pop(count)));
+  }
+
+  public function terminal(id: Int, begin: Int, end: Int)
+  {
+    push(new Terminal(id, begin, end));
+  }
+
+  public function getRoot(): Symbol
+  {
+    return top >= 0 ? stack[0] : null;
+  }
+
+  public function serialize(e: EventHandler)
+  {
+    e.reset(input);
+    var i = 0;
+    while (i <= top)
+    {
+      stack[i].send(e);
+      ++i;
+    }
+  }
+
+  public function push(s: Symbol)
+  {
+    stack[++top] = s;
+  }
+
+  public function pop(count: Int)
+  {
+     top -= count;
+     return stack.slice(top + 1, top + count + 1);
+  }
+}
+
+// End

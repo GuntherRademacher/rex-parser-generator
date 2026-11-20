@@ -1,4 +1,4 @@
-// This file was generated on Wed Nov 18, 2026 17:22 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
+// This file was generated on Fri Nov 20, 2026 10:17 (UTC+01) by REx v7.1-SNAPSHOT which is Copyright (c) 1979-2026 by Gunther Rademacher <grd@gmx.net>
 // REx command line: -q Java.ebnf -backtrack -ll 2 -tree -main -javascript -name JavaJS
 
 function JavaJS(string, parsingEventHandler)
@@ -20,7 +20,6 @@ function JavaJS(string, parsingEventHandler)
     this.getState = function() {return state;};
     this.getExpected = function() {return expected;};
     this.getOffending = function() {return offending;};
-    this.isAmbiguousInput = function() {return false;};
 
     this.getMessage = function()
     {
@@ -10016,6 +10015,8 @@ JavaJS.TopDownTreeBuilder = function()
     current.children.push(s);
   }
 
+  this.getRoot = function() {return stack != null && stack.length > 0 ? stack[0] : null;};
+
   this.serialize = function(e)
   {
     e.reset(input);
@@ -10045,6 +10046,7 @@ JavaJS.Nonterminal = function(id, begin, end, children)
   this.id = id;
   this.begin = begin;
   this.end = end;
+  this.children = children;
 
   this.getName = function()
   {
@@ -10053,9 +10055,10 @@ JavaJS.Nonterminal = function(id, begin, end, children)
 
   this.send = function(e)
   {
+    var end = this.end;
     e.startNonterminal(id, begin);
     var pos = begin;
-    children.forEach
+    this.children.forEach
     (
       function(c)
       {

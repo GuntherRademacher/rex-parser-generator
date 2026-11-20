@@ -18,10 +18,10 @@
 package ~                                                         print(packageName.c_str());
         ~;
 ~                                                               }
-                                                                if (main || performanceTest)
+~
+import haxe.io.Bytes;~                                          if (main || performanceTest)
                                                                 {
 ~
-import haxe.io.Bytes;
 import sys.io.File;~                                              if (performanceTest)
                                                                   {
 ~
@@ -1258,14 +1258,17 @@ class ParseException
   public function getEnd() {return end;}
   public function getState() {return state;}
   public function getExpected() {return expected;}
-  public function getOffending() {return offending;}
-  public function isAmbiguousInput() {return ~                if (rejectsAmbiguity())
+  public function getOffending() {return offending;}~         if (rejectsAmbiguity())
                                                               {
-                                             ~ambiguousInput~ }
-                                                              else
-                                                              {
-                                             ~false~          }
-                                             ~;}
+~
+  public function isAmbiguousInput() {return ~                  if (rejectsAmbiguity())
+                                                                {
+                                             ~ambiguousInput~   }
+                                                                else
+                                                                {
+                                             ~false~            }
+                                             ~;}~             }
+~
 
   public function getMessage()
   {
@@ -1305,6 +1308,8 @@ class ParseException
 ~                                                             }
                                                               if (tree)
                                                               {
+                                                                if (emitsEventHandler())
+                                                                {
 ~
 interface EventHandler
 {
@@ -1314,7 +1319,8 @@ interface EventHandler
   public function terminal(id: Int, begin: Int, end: Int): Void;
   public function whitespace(begin: Int, end: Int): Void;
 }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (isLrParser)
                                                                 {
 ~
 interface BottomUpEventHandler
@@ -1587,6 +1593,8 @@ class ContentCounter implements EventHandler
   public function whitespace(begin, end) {length += end - begin;}
 }
 ~                                                               }
+                                                                if (emitsTopDownTreeBuilder())
+                                                                {
 ~
 class TopDownTreeBuilder implements EventHandler
 {
@@ -1633,13 +1641,21 @@ class TopDownTreeBuilder implements EventHandler
     current.children.push(s);
   }
 
+  public function getRoot(): Nonterminal
+  {
+    return stack != null && stack.length > 0 ? stack[0] : null;
+  }
+
   public function serialize(e: EventHandler)
   {
     e.reset(input);
     stack[0].send(e);
   }
 }
-
+~                                                               }
+                                                                if (emitsTreeNodes())
+                                                                {
+~
 class Symbol
 {
   public var id: Int;
@@ -1668,7 +1684,7 @@ class Terminal extends Symbol
   override
   public function getName(): String
   {
-    return ~                                                    print(className.c_str());
+    return ~                                                      print(className.c_str());
            ~.TOKEN[id];
   }
 
@@ -1692,9 +1708,9 @@ class Nonterminal extends Symbol
   override
   public function getName(): String
   {
-    return ~                                                    printSyntheticNamePrefix();
-                                                                print(className.c_str());
-           ~.NONTERMINAL[id]~                                   printSyntheticNameSuffix();
+    return ~                                                      printSyntheticNamePrefix();
+                                                                  print(className.c_str());
+           ~.NONTERMINAL[id]~                                     printSyntheticNameSuffix();
                             ~;
   }
 
@@ -1713,7 +1729,8 @@ class Nonterminal extends Symbol
     e.endNonterminal(id, end);
   }
 }
-~                                                               if (isLrParser)
+~                                                               }
+                                                                if (emitsParseTreeBuilder())
                                                                 {
 ~
 class ParseTreeBuilder implements BottomUpEventHandler
@@ -1766,6 +1783,11 @@ class ParseTreeBuilder implements BottomUpEventHandler
   {
   }~                                                              }
 ~
+
+  public function getRoot(): Symbol
+  {
+    return top >= 0 ? stack[0] : null;
+  }
 
   public function serialize(e: EventHandler)
   {
