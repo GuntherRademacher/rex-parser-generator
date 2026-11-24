@@ -1,6 +1,6 @@
 /* XQuery 4.0: An XML Query Language
  * version https://qt4cg.org/specifications/xquery-40/
- * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Wed Nov 18, 2026, 17:27 (UTC+01)
+ * extracted from https://qt4cg.org/specifications/xquery-40/xquery-40.html on Tue Nov 24, 2026, 20:07 (UTC+01)
  * with references to https://www.w3.org/TR/REC-xml/ resolved and inlined
  * with references to https://www.w3.org/TR/REC-xml-names/ resolved and inlined
  * reordered into depth-first order
@@ -624,23 +624,27 @@ SwitchComparand
          ::= '(' Expr? ')'
 Expr     ::= ExprSingle ( ',' ExprSingle )*
 SwitchCases
-         ::= SwitchCaseClause+ 'default' 'return' ExprSingle
+         ::= SwitchCaseClause+ SwitchDefaultClause
 SwitchCaseClause
          ::= ( 'case' SwitchCaseOperand )+ 'return' ExprSingle
 SwitchCaseOperand
          ::= Expr
+SwitchDefaultClause
+         ::= 'default' 'return' ExprSingle
 BracedSwitchCases
-         ::= '{' SwitchCases '}'
+         ::= '{' SwitchCaseClause+ SwitchDefaultClause? '}'
 TypeswitchExpr
          ::= 'typeswitch' '(' Expr ')' ( TypeswitchCases | BracedTypeswitchCases )
 TypeswitchCases
-         ::= CaseClause+ 'default' VarName? 'return' ExprSingle
+         ::= CaseClause+ TypeswitchDefaultClause
 CaseClause
          ::= 'case' ( VarName 'as' )? SequenceTypeUnion 'return' ExprSingle
 SequenceTypeUnion
          ::= SequenceType ( '|' SequenceType )*
+TypeswitchDefaultClause
+         ::= 'default' VarName? 'return' ExprSingle
 BracedTypeswitchCases
-         ::= '{' TypeswitchCases '}'
+         ::= '{' CaseClause+ TypeswitchDefaultClause? '}'
 IfExpr   ::= 'if' '(' Expr ')' ( UnbracedActions | BracedAction )
 UnbracedActions
          ::= 'then' ExprSingle 'else' ExprSingle
@@ -1155,7 +1159,9 @@ PositionalArgumentList
 LookupExpr
          ::= PostfixExpr Lookup
 MethodCall
-         ::= PostfixExpr '=?>' NCName PositionalArgumentList
+         ::= PostfixExpr '=?>' NCName MethodArgumentList
+MethodArgumentList
+         ::= '(' ( ExprSingle ( ',' ExprSingle )* )? ')'
 AxisStep ::= ( AbbreviatedStep | FullStep ) Predicate*
 AbbreviatedStep
          ::= '..'
